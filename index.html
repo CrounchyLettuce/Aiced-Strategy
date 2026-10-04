@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>ICE</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* The playfield is black by design (it's the game's whole look), so both themes share it. */
+:root {
+  --bg: #000000; --ink: #ececee; --dim: #85858c; --faint: rgba(255,255,255,.13); --hair: rgba(255,255,255,.07);
+  --blue: #3577ff; --blue-soft: rgba(53,119,255,.16);
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #000000; --ink: #ececee; --dim: #85858c; } }
+:root[data-theme="dark"] { --bg: #000000; --ink: #ececee; --dim: #85858c; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; background: var(--bg); }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  height: 100%; margin: 0; overflow: hidden; background: var(--bg); color: var(--ink);
+  font-family: 'Chakra Petch', 'Bahnschrift', 'DIN Alternate', 'Segoe UI', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums; touch-action: none; overscroll-behavior: none;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+#cv { position: fixed; inset: 0; display: block; }
+
+/* ---------- in-game HUD ---------- */
+#hud {
+  position: relative; height: 100%; pointer-events: none; display: grid; gap: 10px;
+  padding: 10px 12px;
+  grid-template-columns: 124px minmax(0,1fr) 58px; grid-template-rows: auto minmax(0,1fr);
+  grid-template-areas: "stats field ctrl" "upg field ctrl";
+}
+#hud[hidden] { display: none; }
+#field { grid-area: field; min-width: 0; min-height: 0; position: relative; }
+#bFit {
+  position: absolute; right: 6px; bottom: 6px; width: 44px; height: 44px; pointer-events: auto;
+  display: grid; place-items: center; border: 1px solid var(--faint); border-radius: 3px; background: rgba(0,0,0,.7);
+}
+#bFit[hidden] { display: none; }
+#bFit svg { width: 18px; height: 18px; }
+.rail { pointer-events: auto; }
+#stats { grid-area: stats; display: flex; flex-direction: column; gap: 7px; }
+#ctrl { grid-area: ctrl; display: flex; flex-direction: column; gap: 8px; }
+#bSound[aria-pressed="false"] { color: var(--dim); }
+#upg { grid-area: upg; align-self: end; display: flex; flex-direction: column; gap: 6px; }
+
+.army { display: flex; width: 100%; align-items: baseline; gap: 6px; font-size: 22px; font-weight: 600; line-height: 1; }
+.army svg { width: 12px; height: 12px; align-self: center; }
+.army .dim { font-size: 13px; font-weight: 500; color: var(--dim); }
+.terr { display: flex; height: 5px; gap: 1px; width: 100%; }
+.statbtn { display: flex; flex-direction: column; gap: 7px; width: 100%; text-align: left; }
+.statbtn .chev { margin-left: auto; width: 12px; height: 12px; align-self: center; color: var(--dim); transition: transform .2s; }
+.statbtn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.rivals[hidden] { display: none; }
+.rivals .hd svg { width: 8px; height: 8px; }
+.rivals { display: grid; grid-template-columns: 8px repeat(4, 1fr); column-gap: 4px; row-gap: 3px; align-items: center; font-size: 12px; font-weight: 500; margin-top: 2px; }
+.rivals span { text-align: right; }
+.rivals .hd { font-size: 10.5px; color: var(--dim); }
+.rivals .sw { width: 8px; height: 8px; }
+.rivals .out { opacity: .22; }
+.terr i { display: block; flex: 0 0 auto; flex-basis: 0; min-width: 0; transition: flex-grow .4s ease; }
+
+.ctl {
+  min-height: 46px; border: 1px solid var(--faint); border-radius: 3px; display: grid; place-items: center;
+  font-size: 15px; font-weight: 600; line-height: 1.05; text-align: center;
+}
+.ctl small { display: block; font-size: 10px; font-weight: 500; color: var(--dim); }
+.ctl svg { width: 16px; height: 16px; }
+.ctl:active { background: var(--hair); }
+
+.xp { display: flex; align-items: center; gap: 6px; height: 16px; }
+.xpbar { flex: 1; height: 3px; background: var(--faint); position: relative; overflow: hidden; }
+.xpbar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--blue); transition: width .2s linear; }
+#pts { min-width: 22px; text-align: right; font-size: 13px; font-weight: 700; color: var(--blue); }
+
+.up {
+  display: grid; grid-template-columns: 1fr auto; row-gap: 5px; align-items: center; text-align: left;
+  padding: 7px 9px; border: 1px solid var(--faint); border-radius: 3px; transition: border-color .15s, background .15s;
+}
+.up .nm { font-size: 13px; font-weight: 500; }
+.up .lv { font-size: 13px; font-weight: 600; color: var(--dim); }
+.up .pips { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; }
+.up .pips i { height: 4px; background: var(--faint); }
+.up .pips i.on { background: var(--blue); }
+.up:disabled { cursor: default; }
+.up.ready { border-color: var(--blue); background: var(--blue-soft); }
+.up.ready .lv { color: var(--ink); }
+.up.ready .lv::before { content: '+ '; color: var(--blue); }
+.up.max .nm, .up.max .lv { color: var(--dim); }
+.up.bump { animation: bump .25s ease-out; }
+#hud.watch #upg, #hud.watch #bSend, #hud.watch .army .tri { display: none; }
+@keyframes bump { 40% { transform: scale(.96); } }
+
+@media (orientation: portrait) {
+  #hud {
+    grid-template-columns: minmax(0,1fr) auto; grid-template-rows: auto minmax(0,1fr) auto;
+    grid-template-areas: "stats ctrl" "field field" "upg upg";
+  }
+  #stats { max-width: 190px; }
+  #ctrl { flex-direction: row; align-self: start; }
+  #ctrl .ctl { width: 54px; }
+  #upg { flex-direction: row; flex-wrap: wrap; }
+  #upg .xp { flex-basis: 100%; }
+  #upg .up { flex: 1 1 0; min-width: 0; }
+}
+
+/* ---------- overlays ---------- */
+.overlay {
+  position: fixed; inset: 0; display: grid; place-items: center; overflow: auto;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px))
+           max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: rgba(0,0,0,.68); touch-action: pan-y;
+}
+.overlay[hidden] { display: none; }
+.card { width: min(100%, 360px); display: flex; flex-direction: column; gap: 18px; }
+.mark { display: flex; align-items: center; gap: 14px; }
+.mark svg { width: 44px; height: 44px; flex: none; }
+.mark h1 { margin: 0; font-size: 64px; line-height: .9; font-weight: 700; letter-spacing: .14em; }
+.opt { display: flex; flex-direction: column; gap: 7px; }
+.opt > span { font-size: 13px; color: var(--dim); }
+.seg { display: flex; border: 1px solid var(--faint); border-radius: 3px; overflow: hidden; }
+.seg button { flex: 1; min-height: 42px; font-size: 14px; font-weight: 500; color: var(--dim); border-left: 1px solid var(--faint); }
+.seg button:first-child { border-left: 0; }
+.seg button[aria-pressed="true"] { color: var(--ink); background: var(--blue-soft); box-shadow: inset 0 -2px 0 var(--blue); }
+.btns { display: flex; gap: 8px; }
+.btns button { flex: 1; min-height: 50px; border-radius: 3px; font-size: 16px; font-weight: 600; }
+.primary { background: var(--blue); color: #fff; }
+.primary:active { filter: brightness(.9); }
+.ghost { border: 1px solid var(--faint); }
+.how { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; line-height: 1.4; color: var(--dim); max-width: 46ch; }
+.how b { color: var(--ink); font-weight: 500; }
+.rec { font-size: 13px; color: var(--dim); min-height: 1em; }
+#end .card { text-align: left; }
+#end h2 { margin: 0; font-size: 34px; line-height: 1.05; font-weight: 700; letter-spacing: .02em; }
+#end p { margin: 0; font-size: 15px; line-height: 1.45; color: var(--dim); max-width: 40ch; }
+#end .sw { display: inline-block; width: 12px; height: 12px; margin-right: 10px; vertical-align: 2px; }
+
+#menu .left, #menu .right { display: contents; }
+@media (orientation: landscape) and (max-height: 520px) {
+  #menu .card { width: min(100%, 700px); display: grid; grid-template-columns: 1fr 1fr; column-gap: 36px; row-gap: 14px; align-items: start; }
+  #menu .left { display: flex; flex-direction: column; gap: 16px; }
+  #menu .right { display: flex; flex-direction: column; gap: 10px; }
+  #menu .opt { flex-direction: row; align-items: center; gap: 10px; }
+  #menu .opt > span { flex: 0 0 92px; }
+  #menu .opt > .seg, #menu .opt > .sndrow { flex: 1; min-width: 0; }
+  #menu .seg button { min-height: 40px; }
+  .sndrow .seg button { padding: 0 10px; }
+  #menu .btns { margin-top: 4px; }
+  .mark h1 { font-size: 52px; }
+}
+.sndrow { display: flex; align-items: center; gap: 12px; }
+.sndrow .seg { flex: 0 0 auto; }
+.sndrow .seg button { padding: 0 14px; }
+#vol { flex: 1; min-width: 0; height: 42px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; touch-action: none; --p: 75%; }
+#vol::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(to right, var(--blue) var(--p), var(--faint) var(--p)); }
+#vol::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6.5px; border: 0; border-radius: 2px; background: var(--blue); }
+#vol::-moz-range-track { height: 3px; background: var(--faint); }
+#vol::-moz-range-progress { height: 3px; background: var(--blue); }
+#vol::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 2px; background: var(--blue); }
+#vol:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+#toast {
+  position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 12px); transform: translate(-50%, -6px);
+  display: flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid var(--faint); border-radius: 3px;
+  background: rgba(0,0,0,.85); font-size: 14px; font-weight: 500; opacity: 0; pointer-events: none;
+  transition: opacity .2s, transform .2s;
+}
+#toast.on { opacity: 1; transform: translate(-50%, 0); }
+#toast i { width: 10px; height: 10px; display: block; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="hud" hidden>
+  <div id="stats" class="rail">
+    <button class="statbtn" id="statsBtn" aria-expanded="false" aria-controls="rivals" title="Show every color's bases and upgrades">
+      <span class="army">
+        <svg class="tri" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 11H1Z" fill="#3577ff"/></svg>
+        <span id="army">0</span><span id="cap" class="dim">/20</span>
+        <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      </span>
+      <span class="terr" id="terr">
+        <i style="background:#3577ff"></i><i style="background:#f2433c"></i><i style="background:#2db857"></i>
+        <i style="background:#ffcd30"></i><i style="background:#a656ff"></i><i style="background:#3a3a3e"></i>
+      </span>
+    </button>
+    <div class="rivals" id="rivals" hidden>
+      <i></i><span class="hd" title="Bases"><svg viewBox="0 0 8 8" aria-hidden="true"><rect x=".75" y=".75" width="6.5" height="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="hd">hp</span><span class="hd">spd</span><span class="hd">dmg</span>
+    </div>
+  </div>
+  <div id="field">
+    <button id="bFit" hidden aria-label="Show the whole map" title="Show the whole map">
+      <svg viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M2 6V2h4M12 2h4v4M16 12v4h-4M6 16H2v-4"/></svg>
+    </button>
+  </div>
+  <div id="ctrl" class="rail">
+    <button class="ctl" id="bPause" aria-label="Pause">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" fill="currentColor"/></svg>
+    </button>
+    <button class="ctl" id="bSpeed" aria-label="Game speed">1×</button>
+    <button class="ctl" id="bSend" aria-label="How much of your army each tap sends"><span><span id="sendV">100%</span><small>send</small></span></button>
+    <button class="ctl" id="bSound" aria-label="Sound" aria-pressed="true">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path id="sndOn" d="M11 5.5c1 .7 1.5 1.6 1.5 2.5s-.5 1.8-1.5 2.5M12.6 3.6C14 4.7 14.8 6.3 14.8 8s-.8 3.3-2.2 4.4" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/><path id="sndOff" d="M11 6l4 4M15 6l-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="display:none"/></svg>
+    </button>
+  </div>
+  <div id="upg" class="rail">
+    <div class="xp" title="Kills fill this bar. Each full bar is one upgrade point."><div class="xpbar"><i id="xpfill"></i></div><span id="pts"></span></div>
+    <button class="up" data-k="hp"><span class="nm">Health</span><span class="lv">0</span><span class="pips"></span></button>
+    <button class="up" data-k="spd"><span class="nm">Speed</span><span class="lv">0</span><span class="pips"></span></button>
+    <button class="up" data-k="dmg"><span class="nm">Damage</span><span class="lv">0</span><span class="pips"></span></button>
+  </div>
+</div>
+
+<div id="menu" class="overlay">
+  <div class="card">
+    <div class="left">
+      <div class="mark">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 42 43 24 33.5 6 43Z" fill="#3577ff"/></svg>
+        <h1>ICE</h1>
+      </div>
+      <ul class="how">
+        <li>You're <b>blue</b>. Tap a base along one of your colored lines and your swarm heads there. Tap your own base to pull troops back.</li>
+        <li><b>Double-tap</b> a base to lock on. New troops keep heading there on their own until it's yours.</li>
+        <li>Kill a base's defenders, then wear the base itself down. Whoever lands the last hit takes it.</li>
+        <li>Kills fill your bar, and each full bar buys a level of health, speed or damage. More bases, bigger army.</li>
+        <li><b>Pinch</b> to zoom and drag to look around.</li>
+      </ul>
+    </div>
+    <div class="right">
+      <div class="opt"><span>Map size</span>
+        <div class="seg" data-key="size"><button data-v="small">Small</button><button data-v="medium">Medium</button><button data-v="large">Large</button></div>
+      </div>
+      <div class="opt"><span>Difficulty</span>
+        <div class="seg" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button></div>
+      </div>
+      <div class="opt"><span>Personalities</span>
+        <div class="seg" data-key="persona"><button data-v="mixed">Mixed</button><button data-v="adaptive">All adaptive</button></div>
+      </div>
+      <div class="opt"><span>Sound</span>
+        <div class="sndrow">
+          <input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume">
+          <div class="seg" data-key="tone" aria-label="Sound style"><button data-v="bright">Bright</button><button data-v="soft">Soft</button></div>
+        </div>
+      </div>
+      <div class="btns"><button id="bResume" class="ghost" hidden>Resume</button><button id="bPlay" class="primary">Play</button><button id="bWatch" class="ghost">AI vs AI</button></div>
+      <div class="rec" id="rec"></div>
+    </div>
+  </div>
+</div>
+
+<div id="end" class="overlay" hidden>
+  <div class="card">
+    <h2 id="endTitle"></h2>
+    <p id="endSub"></p>
+    <div class="btns"><button id="bAgain" class="primary">Play again</button><button id="bMenu" class="ghost">Menu</button></div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"><i id="toastSw"></i><span id="toastT"></span></div>
+
+<script>
+"use strict";
+// ================= ICE core (no DOM) =================
+let W = 1000, H = 560;               // world size; changes with map size
+const NEUTRAL = -1, PLAYER = 0;
+const TEAM_COLORS = ['#3577ff', '#f2433c', '#2db857', '#ffcd30', '#a656ff'];
+const TEAM_NAMES = ['Blue', 'Red', 'Green', 'Yellow', 'Purple'];
+const NEUTRAL_COLOR = '#d9d9d9';
+const C = {
+  hp: 10, dps: 4.2, spd: 46, hpPer: .15, dmgPer: .15, spdPer: .10,
+  range: 30, engage: 60, leash: 58, captureR: 44, presenceR: 60,
+  orbitMin: 16, orbitMax: 32, spawnEvery: 2.0, capBase: 8, capPer: 12,
+  startTroops: 6, peace: 20, maxLvl: 10, cell: 36, maxPoints: 30,
+  atkEvery: 0.55,                       // seconds between shots
+  baseHP: 1000, baseDpsCap: 110, baseRange: 40, baseRegen: 12, regenDelay: 4, flipHP: 0.3,
+  neutralHP: 1.1, neutralDmg: 1.0, neutralRespawn: 7,
+  blockSlow: 0.25,                      // speed while an enemy is in your way
+  baseDmgFactor: 0.5,                   // bases only feel half of the damage upgrade
+  spdAtk: 0.04,                         // each speed level also makes troops swing 4% faster
+  heatTau: 5, assaultHeat: 100, garrisonHeat: 25  // how a base "notices" it's under attack
+};
+const DIFF = {
+  // interval: how often the AI rethinks (s) · margin: how much stronger it wants to be before attacking
+  // frac: share of its army it commits · spawn: troop production speed · xp: how fast it earns upgrades
+  easy:   { interval: [3.4, 5.2], margin: 1.8,  frac: .6,  spawn: .85,  playerBias: 0,   xp: 1 },
+  normal: { interval: [2.2, 3.4], margin: 1.4,  frac: .75, spawn: 1,    playerBias: .15, xp: 1 },
+  hard:   { interval: [1.3, 2.1], margin: 1.18, frac: .85, spawn: 1.12, playerBias: .45, xp: 1 },
+  brutal: { interval: [0.7, 1.1], margin: 1.05, frac: .9,  spawn: 1.25, playerBias: .6,  xp: 1.25 }
+};
+// AI personalities: relative pull toward each upgrade when it spends a point
+const STYLES = [
+  { name: 'Balanced',     hp: 1,    spd: .6,  dmg: 1 },
+  { name: 'Tank',         hp: 1.6,  spd: .45, dmg: .8 },
+  { name: 'Glass cannon', hp: .7,   spd: .7,  dmg: 1.6 },
+  { name: 'Rusher',       hp: .85,  spd: 1.5, dmg: 1 },
+  { name: 'Bruiser',      hp: 1.4,  spd: .3,  dmg: 1.4 },   // health + damage, slow
+  { name: 'Skirmisher',   hp: .35,  spd: 1.4, dmg: 1.4 },   // speed + damage, fragile
+  { name: 'Vanguard',     hp: 1.4,  spd: 1.4, dmg: .35 },   // health + speed, light hitter
+  { name: 'Adaptive',     adaptive: true }                  // counters whoever is leading
+];
+const UPG = ['hp', 'spd', 'dmg'];
+// map sizes: base count, world size (bases keep the same spacing), and how much each base adds to your army limit
+const SIZES = {
+  small:  { n: [12, 14], w: 860,  h: 484, capPer: 13 },
+  medium: { n: [18, 22], w: 1000, h: 560, capPer: 11 },
+  large:  { n: [28, 34], w: 1300, h: 730, capPer: 8 }
+};
+const OPENING_DEFENDERS = 7; // every base next to a starting base gets the same garrison
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const colorOf = t => t < 0 ? NEUTRAL_COLOR : TEAM_COLORS[t];
+
+// ---- the hand-drawn reference map ----
+const SKETCH_RAW = [[720,375],[930,490],[575,605],[765,685],[728,842],[1118,582],[1207,358],[1490,392],
+  [1280,708],[1067,763],[1210,875],[1437,808],[1578,625],[1723,435],[1905,342],[1693,795]];
+const SKETCH_EDGES = [[0,2],[0,1],[2,1],[1,3],[3,4],[1,5],[5,6],[6,7],[5,8],[5,9],[9,10],[10,11],
+  [8,11],[8,7],[8,12],[7,12],[12,13],[13,14],[13,15],[12,15],[11,12]];
+const SKETCH_STARTS = [15, 5, 0, 7, 4]; // blue, red, green, yellow, purple
+
+function sketchMap() {
+  const xs = SKETCH_RAW.map(p => p[0]), ys = SKETCH_RAW.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  return {
+    nodes: SKETCH_RAW.map(([x, y]) => [70 + (x - x0) / (x1 - x0) * (W - 140), 66 + (y - y0) / (y1 - y0) * (H - 132)]),
+    edges: SKETCH_EDGES.map(e => e.slice()),
+    starts: SKETCH_STARTS.slice()
+  };
+}
+
+function hopMatrix(N, adj) {
+  const M = [];
+  for (let s = 0; s < N; s++) {
+    const d = new Array(N).fill(Infinity); d[s] = 0; const q = [s];
+    for (let qi = 0; qi < q.length; qi++) {
+      const u = q[qi];
+      for (const v of adj[u]) if (d[v] === Infinity) { d[v] = d[u] + 1; q.push(v); }
+    }
+    M.push(d);
+  }
+  return M;
+}
+
+// five starting bases: each with 2-3 ways out, none directly linked to another, spread as far apart as possible
+function pickStarts(pts, edges, rng) {
+  const N = pts.length, adj = pts.map(() => []);
+  for (const [a, b] of edges) { adj[a].push(b); adj[b].push(a); }
+  const M = hopMatrix(N, adj);
+  const ok = [...Array(N).keys()].filter(i => adj[i].length >= 2 && adj[i].length <= 3);
+  if (ok.length < 5) return null;
+  const eu = (a, b) => Math.hypot(pts[a][0] - pts[b][0], pts[a][1] - pts[b][1]);
+  let bestSet = null, bestScore = -Infinity;
+  for (let trial = 0; trial < 14; trial++) {
+    const chosen = [ok[Math.floor(rng() * ok.length)]];
+    while (chosen.length < 5) {
+      let best = -1, bs = -Infinity;
+      for (const i of ok) {
+        if (chosen.includes(i)) continue;
+        let mh = Infinity, me = Infinity;
+        for (const c of chosen) { mh = Math.min(mh, M[c][i]); me = Math.min(me, eu(c, i)); }
+        if (mh < 2 || mh === Infinity) continue;
+        const sc = mh * 1000 + me + rng() * 10;
+        if (sc > bs) { bs = sc; best = i; }
+      }
+      if (best < 0) break;
+      chosen.push(best);
+    }
+    if (chosen.length < 5) continue;
+    let mh = Infinity, me = Infinity;
+    for (let a = 0; a < 5; a++) for (let b = a + 1; b < 5; b++) {
+      mh = Math.min(mh, M[chosen[a]][chosen[b]]); me = Math.min(me, eu(chosen[a], chosen[b]));
+    }
+    const score = mh * 1000 + me;
+    if (score > bestScore) { bestScore = score; bestSet = chosen.slice(); }
+  }
+  if (!bestSet) return null;
+  for (let i = bestSet.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1)); [bestSet[i], bestSet[j]] = [bestSet[j], bestSet[i]];
+  }
+  return bestSet;
+}
+
+function randomMap(rng, spec) {
+  let fallback = null;
+  for (let attempt = 0; attempt < 80; attempt++) {
+    const N = spec.n[0] + Math.floor(rng() * (spec.n[1] - spec.n[0] + 1));
+    const pts = []; let tries = 0;
+    while (pts.length < N && tries < 6000) {
+      tries++;
+      const p = [70 + rng() * (W - 140), 66 + rng() * (H - 132)];
+      let ok = true;
+      for (const q of pts) if ((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2 < 100 * 100) { ok = false; break; }
+      if (ok) pts.push(p);
+    }
+    if (pts.length < spec.n[0]) continue;
+    const n = pts.length, d = (i, j) => Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]);
+    const edges = [];
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+      const dij = d(i, j), mx = (pts[i][0] + pts[j][0]) / 2, my = (pts[i][1] + pts[j][1]) / 2, r2 = (dij / 2) ** 2;
+      let rngEdge = true, gab = true;
+      for (let k = 0; k < n; k++) {
+        if (k === i || k === j) continue;
+        if (Math.max(d(i, k), d(j, k)) < dij) rngEdge = false;
+        if ((pts[k][0] - mx) ** 2 + (pts[k][1] - my) ** 2 < r2) gab = false;
+      }
+      if (rngEdge) edges.push([i, j]);                                   // backbone: always connected, never crossing
+      else if (gab && dij < 250 && rng() < 0.34) edges.push([i, j]);     // a few extra loops for strategy
+    }
+    const starts = pickStarts(pts, edges, rng);
+    if (starts) return { nodes: pts, edges, starts };
+    if (!fallback) fallback = { nodes: pts, edges };
+  }
+  // practically never reached: hand back a map anyway rather than hang
+  const all = fallback.nodes.map((_, i) => i);
+  return { ...fallback, starts: all.slice(0, 5) };
+}
+
+// ---- game state ----
+let G = null;
+
+function newGame(opts) {
+  opts = opts || {};
+  const seed = opts.seed != null ? opts.seed : (Math.random() * 4294967296) >>> 0;
+  const rng = mulberry32(seed);
+  const spec = SIZES[opts.size] || SIZES.medium;
+  let m;
+  if (opts.map === 'sketch') { W = 1000; H = 560; m = sketchMap(); }   // the original drawing, kept for reference
+  else { W = spec.w; H = spec.h; m = randomMap(rng, spec); }
+  const nodes = m.nodes.map((p, i) => ({ id: i, x: p[0], y: p[1], owner: NEUTRAL, adj: [],
+    hp: C.baseHP, maxHp: C.baseHP, budget: C.baseDpsCap, lastHitT: -99, nCap: 0, nCount: 0,
+    heat: 0, heatBy: null,
+    spawnT: rng() * C.spawnEvery, pres: new Int32Array(6) }));
+  for (const [a, b] of m.edges) { nodes[a].adj.push(b); nodes[b].adj.push(a); }
+  const D = DIFF[opts.diff] || DIFF.normal;
+  G = {
+    t: 0, step: 0, nodes, edges: m.edges, troops: [], nextId: 1, rng, seed,
+    diff: D, diffName: opts.diff || 'normal', sizeName: opts.size || 'medium',
+    capPer: opts.map === 'sketch' ? 12 : spec.capPer,
+    teams: TEAM_COLORS.map((c, i) => ({ i, alive: true, xp: 0, points: 0, earned: 0,
+      lv: { hp: 0, spd: 0, dmg: 0 }, kills: 0, bases: 0, count: 0,
+      aiT: 1.2 + rng() * 2, target: null, sent: 0, avoid: -1, avoidUntil: 0,
+      style: opts.persona === 'adaptive' ? STYLES.find(x => x.adaptive) : STYLES[Math.floor(rng() * STYLES.length)], diedAt: null })),
+    fx: [], sfx: [], lock: [null, null, null, null, null], over: false, result: null, winner: null, peak: 1, lost: 0
+  };
+  m.starts.forEach((n, team) => {
+    nodes[n].owner = team;
+    for (let k = 0; k < C.startTroops; k++) spawnTroop(team, n, true);
+  });
+  const opening = new Set();
+  for (const st of m.starts) for (const v of nodes[st].adj) opening.add(v);
+  for (const n of nodes) if (n.owner === NEUTRAL) {
+    const cnt = opening.has(n.id) ? OPENING_DEFENDERS : 4 + Math.floor(n.adj.length * 0.7) + Math.floor(rng() * 5);
+    for (let k = 0; k < cnt; k++) spawnTroop(NEUTRAL, n.id, true);
+    n.nCap = cnt;
+  }
+  presenceStep(0);
+  recount();
+  return G;
+}
+
+function spawnTroop(team, nodeId, spread) {
+  const n = G.nodes[nodeId], r = G.rng;
+  const ang = r() * Math.PI * 2, orad = C.orbitMin + r() * (C.orbitMax - C.orbitMin);
+  const t = { id: G.nextId++, team, home: nodeId, path: [], ang, orad, aspd: 0.55 + r() * 0.75,
+    lane: (r() * 2 - 1) * 7,
+    x: n.x + (spread ? Math.cos(ang) * orad : 0), y: n.y + (spread ? Math.sin(ang) * orad : 0),
+    hx: -Math.sin(ang), hy: Math.cos(ang), dmg: 0, tgt: null, dead: false, lastHit: null,
+    cd: r() * C.atkEvery, aim: null, hitT: -9 };
+  G.troops.push(t);
+  return t;
+}
+
+const lvOf = (team, k) => team < 0 ? 0 : G.teams[team].lv[k];
+const capOf = team => C.capBase + G.capPer * G.teams[team].bases;
+const needXP = T => 5 + 2 * T.earned;
+
+function statArrays() {
+  const hp = [], dp = [], sp = [], st = [], ar = [], bd = [];
+  for (let i = -1; i < 5; i++) {
+    const nm = i < 0;
+    const h = (nm ? C.neutralHP : 1) * (1 + C.hpPer * lvOf(i, 'hp'));
+    const d = (nm ? C.neutralDmg : 1) * (1 + C.dmgPer * lvOf(i, 'dmg'));
+    const a = 1 + C.spdAtk * lvOf(i, 'spd');                       // attack rate
+    hp.push(C.hp * h); dp.push(C.dps * d); sp.push(C.spd * (1 + C.spdPer * lvOf(i, 'spd')));
+    ar.push(a); st.push(h * d * a);                               // what the AI weighs when sizing up a fight
+    bd.push(C.dps * (1 + C.dmgPer * lvOf(i, 'dmg') * C.baseDmgFactor)); // damage against bases
+  }
+  return { hp, dp, sp, st, ar, bd };
+}
+
+function retarget() {
+  const cs = C.cell, grid = new Map();
+  for (const t of G.troops) {
+    const k = ((t.x / cs) | 0) + ((t.y / cs) | 0) * 64;
+    let a = grid.get(k); if (!a) grid.set(k, a = []); a.push(t);
+  }
+  const e2 = C.engage * C.engage;
+  for (const t of G.troops) {
+    const cx = (t.x / cs) | 0, cy = (t.y / cs) | 0;
+    let best = null, bd = e2;
+    for (let gy = cy - 2; gy <= cy + 2; gy++) for (let gx = cx - 2; gx <= cx + 2; gx++) {
+      const a = grid.get(gx + gy * 64); if (!a) continue;
+      for (let i = 0; i < a.length; i++) {
+        const o = a[i]; if (o.team === t.team) continue;
+        const dx = o.x - t.x, dy = o.y - t.y, d = dx * dx + dy * dy;
+        if (d < bd) { bd = d; best = o; }
+      }
+    }
+    t.tgt = best;
+  }
+}
+
+function update(dt) {
+  if (!G || G.over) return;
+  G.t += dt; G.step++;
+  const S = statArrays(), nodes = G.nodes, troops = G.troops;
+  const R2 = C.range * C.range, E2 = (C.engage * 1.6) ** 2, L2 = (C.leash + 12) ** 2, B2 = C.baseRange ** 2;
+  if (G.step % 3 === 1) retarget();
+
+  for (let i = 0; i < troops.length; i++) {
+    const t = troops[i], ti = t.team + 1;
+    t.cd = Math.max(0, t.cd - dt * S.ar[ti]);
+    t.aim = null;
+    let e = t.tgt, engaged = false;
+    if (e) {
+      if (e.dead) { t.tgt = e = null; }
+      else {
+        const dx = e.x - t.x, dy = e.y - t.y, dd = dx * dx + dy * dy;
+        if (dd <= R2) {
+          engaged = true; t.aim = e;
+          if (t.cd <= 0) {
+            t.hitT = G.t;
+            t.cd = C.atkEvery * (0.85 + G.rng() * 0.3);
+            e.dmg += S.dp[ti] * C.atkEvery; e.lastHit = t.team;
+            if (G.sfx.length < 48) G.sfx.push({ x: t.x, y: t.y, team: t.team, base: false });
+          }
+        } else if (dd > E2) { t.tgt = e = null; }
+      }
+    }
+    // nothing to shoot nearby: chip away at the base it's sitting on,
+    // but only once the owner has nobody left defending it
+    // (also on the move: leaving a base or arriving at one, anything in reach gets hit)
+    if (!engaged) {
+      let hit = null;
+      const h = nodes[t.home];
+      if (h.owner !== t.team && h.pres[h.owner + 1] === 0 && (h.x - t.x) ** 2 + (h.y - t.y) ** 2 <= B2) hit = h;
+      else if (t.path.length) {
+        const q = nodes[t.path[0]];
+        if (q.owner !== t.team && q.pres[q.owner + 1] === 0 && (q.x - t.x) ** 2 + (q.y - t.y) ** 2 <= B2) hit = q;
+      }
+      if (hit) {
+        t.aim = hit;
+        if (t.cd <= 0) {
+          t.cd = C.atkEvery * (0.85 + G.rng() * 0.3); t.hitT = G.t;
+          hitBase(hit, t.team, S.bd[ti] * C.atkEvery, t.x, t.y);
+        }
+      }
+    }
+    let tx, ty, sp = S.sp[ti];
+    if (t.path.length) {
+      const n = nodes[t.path[0]];
+      const dx = n.x - t.x, dy = n.y - t.y;
+      if (dx * dx + dy * dy < 256) {
+        t.home = t.path.shift();
+        if (!t.path.length) t.ang = Math.atan2(-dy, -dx);
+      }
+      if (t.path.length) {
+        const m = nodes[t.path[0]];
+        const ex = m.x - t.x, ey = m.y - t.y, el = Math.hypot(ex, ey) || 1;
+        tx = m.x - ey / el * t.lane; ty = m.y + ex / el * t.lane;
+      } else { tx = t.x; ty = t.y; }
+      if (engaged && e && t.path.length) {
+        const m = nodes[t.path[0]];
+        if ((m.x - t.x) * (e.x - t.x) + (m.y - t.y) * (e.y - t.y) > 0) sp *= C.blockSlow; // enemy ahead: blocked
+      }
+    } else {
+      const h = nodes[t.home];
+      t.ang += t.aspd * dt;
+      tx = h.x + Math.cos(t.ang) * t.orad; ty = h.y + Math.sin(t.ang) * t.orad;
+      if (engaged) sp *= 0.5;
+      else if (e) {
+        const hx = e.x - h.x, hy = e.y - h.y;
+        if (hx * hx + hy * hy < L2) { tx = e.x; ty = e.y; }
+      }
+    }
+    const mx = tx - t.x, my = ty - t.y, ml = Math.hypot(mx, my);
+    if (ml > 0.01) {
+      const st = Math.min(ml, sp * dt);
+      t.x += mx / ml * st; t.y += my / ml * st;
+      const k = Math.min(1, dt * 9);
+      t.hx += (mx / ml - t.hx) * k; t.hy += (my / ml - t.hy) * k;
+    }
+  }
+
+  let died = 0;
+  for (const t of troops) {
+    if (t.dmg >= S.hp[t.team + 1]) {
+      t.dead = true; died++;
+      if (t.lastHit !== null && t.lastHit >= 0) awardKill(t.lastHit);
+      if (t.team === PLAYER) G.lost++;
+      if (!t.path.length) {
+        const h = nodes[t.home];
+        if (h.owner === t.team && (t.x - h.x) ** 2 + (t.y - h.y) ** 2 < C.presenceR ** 2) {
+          h.heat += C.garrisonHeat; if (t.lastHit !== null) h.heatBy = t.lastHit;
+        }
+      }
+      if (G.fx.length < 400) G.fx.push({ k: 'pop', x: t.x, y: t.y, c: t.team, b: G.t });
+    }
+  }
+  if (died) G.troops = troops.filter(t => !t.dead);
+
+  presenceStep(dt);
+  recount();
+  spawnStep(dt);
+  for (let i = G.autoplay ? 0 : 1; i < G.teams.length; i++) {   // autoplay: the AI drives blue as well
+    const T = G.teams[i];
+    if (!T.alive) continue;
+    T.aiT -= dt;
+    if (T.aiT <= 0) {
+      aiThink(i);
+      const iv = G.diff.interval;
+      T.aiT = iv[0] + G.rng() * (iv[1] - iv[0]);
+    }
+  }
+  checkEnd();
+  if (G.step % 30 === 0) G.fx = G.fx.filter(f => G.t - f.b < 2);
+}
+
+function presenceStep(dt) {
+  const nodes = G.nodes, P2 = C.presenceR * C.presenceR;
+  for (const n of nodes) { n.pres.fill(0); n.nCount = 0; }
+  for (const t of G.troops) {
+    if (t.team === NEUTRAL) nodes[t.home].nCount++;
+    if (t.path.length) continue;
+    const h = nodes[t.home];
+    if ((t.x - h.x) ** 2 + (t.y - h.y) ** 2 < P2) h.pres[t.team + 1]++;
+  }
+  const cool = Math.exp(-dt / C.heatTau);
+  for (const n of nodes) {
+    n.heat *= cool;
+    n.budget = Math.min(C.baseDpsCap * 0.5, n.budget + C.baseDpsCap * dt);
+    if (n.hp < n.maxHp && G.t - n.lastHitT > C.regenDelay) n.hp = Math.min(n.maxHp, n.hp + C.baseRegen * dt);
+    if (n.owner === NEUTRAL && dt > 0) {
+      n.spawnT -= dt;
+      if (n.spawnT <= 0) {
+        n.spawnT = C.neutralRespawn;
+        if (n.nCount < n.nCap) { spawnTroop(NEUTRAL, n.id, false); n.nCount++; }
+      }
+    }
+  }
+}
+
+function hitBase(n, team, dmg, x, y) {
+  // a base can only soak up so much per second, so even a huge army needs a few seconds
+  const d = Math.min(dmg, n.budget);
+  n.budget -= d; n.hp -= d; n.lastHitT = G.t; n.heat += d; n.heatBy = team;
+  if (G.sfx.length < 48) G.sfx.push({ x, y, team, base: true });
+  if (n.hp <= 0) takeNode(n, team);
+}
+
+function takeNode(n, team) {
+  n.owner = team; n.hp = n.maxHp * C.flipHP; n.lastHitT = G.t; n.spawnT = C.spawnEvery * 0.5; n.heat = 0;
+  G.fx.push({ k: 'ring', x: n.x, y: n.y, c: team, b: G.t });
+  if (G.teams[team].target === n.id) G.teams[team].target = null;
+  if (G.lock[team] === n.id) G.lock[team] = null; // got it, lock's done
+}
+
+function spawnStep(dt) {
+  for (const n of G.nodes) {
+    if (n.owner < 0) continue;
+    const T = G.teams[n.owner];
+    n.spawnT -= dt * (n.owner === PLAYER && !G.autoplay ? 1 : G.diff.spawn);
+    if (n.spawnT <= 0) {
+      n.spawnT += C.spawnEvery;
+      if (T.count < capOf(n.owner)) {
+        const t = spawnTroop(n.owner, n.id, false); T.count++;
+        const L = G.lock[n.owner];
+        if (L != null && L !== n.id) sendTo(t, L);
+      }
+    }
+  }
+}
+
+// lock-on: fresh troops head straight for the locked base
+function setLock(team, nodeId) { G.lock[team] = nodeId; }
+function sendTo(t, target) {
+  let c = G._rtCache;
+  if (!c || c.team !== t.team || c.target !== target || c.step !== G.step) {
+    c = G._rtCache = { team: t.team, target, step: G.step, rt: routeTable(t.team, target) };
+  }
+  if (c.rt.dist[t.home] === Infinity) return;
+  const p = followPath(c.rt, t.home, target);
+  if (p) t.path = p;
+}
+
+function recount() {
+  for (const T of G.teams) { T.bases = 0; T.count = 0; }
+  for (const n of G.nodes) if (n.owner >= 0) G.teams[n.owner].bases++;
+  for (const t of G.troops) if (t.team >= 0) G.teams[t.team].count++;
+  for (const T of G.teams) {
+    const was = T.alive;
+    T.alive = T.bases > 0 || T.count > 0;
+    if (was && !T.alive) { T.diedAt = G.t; G.fx.push({ k: 'elim', c: T.i, b: G.t }); }
+  }
+  if (G.teams[PLAYER].bases > G.peak) G.peak = G.teams[PLAYER].bases;
+}
+
+function checkEnd() {
+  const N = G.nodes.length, P = G.teams[PLAYER];
+  const owner = G.teams.find(T => T.bases === N);
+  if (owner) { G.over = true; G.winner = owner.i; G.result = owner.i === PLAYER ? 'win' : 'lose'; }
+  else if (!P.alive && !G.autoplay) { G.over = true; G.result = 'lose'; }
+}
+
+function awardKill(team) {
+  const T = G.teams[team];
+  T.kills++;
+  if (T.earned >= C.maxPoints) return;
+  T.xp += (team === PLAYER && !G.autoplay) ? 1 : (G.diff.xp || 1);
+  while (T.earned < C.maxPoints && T.xp >= needXP(T)) { T.xp -= needXP(T); T.earned++; T.points++; }
+  if (team !== PLAYER || G.autoplay) aiSpend(team);
+}
+
+function upgrade(team, k) {
+  const T = G.teams[team];
+  if (T.points <= 0 || T.lv[k] >= C.maxLvl) return false;
+  T.points--; T.lv[k]++;
+  return true;
+}
+
+// Adaptive looks at the color holding the most bases: heavy hitters get answered with health,
+// tough ones with damage, and it keeps up if they're outrunning it
+function adaptiveWeights(team) {
+  let rival = null;
+  for (const R of G.teams) if (R.i !== team && R.alive && (!rival || R.bases > rival.bases)) rival = R;
+  if (!rival) return { hp: 1, spd: 1, dmg: 1 };
+  const r = rival.lv, me = G.teams[team].lv;
+  // hard hitters (damage, or speed's faster swings) get answered with health; tough ones with damage and speed
+  return {
+    hp: .6 + (r.dmg + r.spd * .7) * .3,
+    dmg: .6 + r.hp * .3,
+    spd: .7 + r.hp * .15 + Math.max(0, r.spd - me.spd) * .3
+  };
+}
+function aiSpend(team) {
+  const T = G.teams[team];
+  while (T.points > 0) {
+    const opts = UPG.filter(k => T.lv[k] < C.maxLvl);
+    if (!opts.length) break;
+    const w = T.style.adaptive ? adaptiveWeights(team) : T.style;
+    let tot = 0; for (const k of opts) tot += w[k];
+    let r = G.rng() * tot, pick = opts[0];
+    for (const k of opts) { r -= w[k]; if (r <= 0) { pick = k; break; } }
+    upgrade(team, pick);
+  }
+}
+
+// ---- routing & commands ----
+function routeTable(team, target) {
+  const nodes = G.nodes, N = nodes.length;
+  const dist = new Float64Array(N).fill(Infinity), next = new Int32Array(N).fill(-1), done = new Uint8Array(N);
+  dist[target] = 0;
+  for (;;) {
+    let u = -1, bd = Infinity;
+    for (let i = 0; i < N; i++) if (!done[i] && dist[i] < bd) { bd = dist[i]; u = i; }
+    if (u < 0) break;
+    done[u] = 1;
+    if (u !== target && nodes[u].owner !== team) continue; // can't route through it
+    for (const v of nodes[u].adj) {
+      if (done[v]) continue;
+      const nd = dist[u] + Math.hypot(nodes[u].x - nodes[v].x, nodes[u].y - nodes[v].y);
+      if (nd < dist[v]) { dist[v] = nd; next[v] = u; }
+    }
+  }
+  return { dist, next };
+}
+
+function followPath(rt, s, target) {
+  const p = []; let c = s, guard = 0;
+  while (c !== target && guard++ < 64) { c = rt.next[c]; if (c < 0) return null; p.push(c); }
+  return p;
+}
+
+function command(team, target, frac, filter) {
+  const nodes = G.nodes, rt = routeTable(team, target), cands = [];
+  for (const t of G.troops) {
+    if (t.team !== team || (filter && !filter(t))) continue;
+    let best = Infinity, path = null;
+    if (t.path.length) {
+      const p = t.path[0], h = t.home;
+      const cp = Math.hypot(nodes[p].x - t.x, nodes[p].y - t.y) + rt.dist[p];
+      const ch = Math.hypot(nodes[h].x - t.x, nodes[h].y - t.y) + rt.dist[h];
+      if (cp <= ch && cp < Infinity) { const f = followPath(rt, p, target); if (f) { best = cp; path = [p, ...f]; } }
+      else if (ch < Infinity) { const f = followPath(rt, h, target); if (f) { best = ch; path = [h, ...f]; } }
+    } else if (rt.dist[t.home] < Infinity) {
+      const f = followPath(rt, t.home, target);
+      if (f) { best = rt.dist[t.home]; path = f; }
+    }
+    if (path) cands.push({ t, best, path });
+  }
+  if (!cands.length) return null;
+  cands.sort((a, b) => a.best - b.best);
+  const k = Math.max(1, Math.ceil(cands.length * frac));
+  const edgeSet = new Set(), edges = [];
+  let moved = 0;
+  for (let i = 0; i < k; i++) {
+    const c = cands[i];
+    c.t.path = c.path; c.t.tgt = null;
+    if (c.path.length) {
+      moved++;
+      let prev = c.t.home;
+      for (const v of c.path) {
+        if (prev !== v && nodes[prev].adj.includes(v)) {
+          const key = prev < v ? prev + '-' + v : v + '-' + prev;
+          if (!edgeSet.has(key)) { edgeSet.add(key); edges.push([prev, v]); }
+        }
+        prev = v;
+      }
+    }
+  }
+  return { moved, cands: cands.length, sent: k, edges };
+}
+
+// ---- AI ----
+const finalDest = t => t.path.length ? t.path[t.path.length - 1] : t.home;
+
+function nearestOwned(team, from) {
+  const nodes = G.nodes, N = nodes.length, dist = new Float64Array(N).fill(Infinity), done = new Uint8Array(N);
+  dist[from] = 0;
+  for (;;) {
+    let u = -1, bd = Infinity;
+    for (let i = 0; i < N; i++) if (!done[i] && dist[i] < bd) { bd = dist[i]; u = i; }
+    if (u < 0) return -1;
+    if (u !== from && nodes[u].owner === team) return u;
+    done[u] = 1;
+    for (const v of nodes[u].adj) {
+      const nd = dist[u] + Math.hypot(nodes[u].x - nodes[v].x, nodes[u].y - nodes[v].y);
+      if (nd < dist[v]) dist[v] = nd;
+    }
+  }
+}
+
+function aiThink(team) {
+  const T = G.teams[team], D = G.diff, nodes = G.nodes, N = nodes.length, ti = team + 1;
+  if (!T.alive || !T.count) return;
+  aiSpend(team);
+  const S = statArrays();
+  const pres = nodes.map(() => new Float64Array(6));
+  const mine = new Float64Array(N);      // my strength sitting at / about to reach each node
+  const committed = new Float64Array(N); // my strength whose orders end at each node
+  const pr2 = (C.presenceR * 1.2) ** 2;
+  for (const t of G.troops) {
+    const st = S.st[t.team + 1];
+    if (t.team === team) {
+      mine[t.path.length ? t.path[0] : t.home] += st;
+      committed[finalDest(t)] += st;
+      continue;
+    }
+    // other colors: only what is physically there. Where they've been *ordered* to go is invisible.
+    const h = nodes[t.home];
+    if ((t.x - h.x) ** 2 + (t.y - h.y) ** 2 < pr2) { pres[t.home][t.team + 1] += st; continue; }
+    if (t.path.length) {
+      const q = nodes[t.path[0]];
+      if ((t.x - q.x) ** 2 + (t.y - q.y) ** 2 < pr2) pres[t.path[0]][t.team + 1] += st;
+    }
+  }
+  const enemyAt = v => { let s = 0; for (let k = 0; k < 6; k++) if (k !== ti) s += pres[v][k]; return s; };
+  const reachFrom = (rt, excl) => {
+    let s = 0;
+    for (let i = 0; i < N; i++) if (mine[i] > 0 && i !== excl && rt.dist[i] < Infinity) s += mine[i];
+    return s;
+  };
+
+  // 1. retreat: an attack that's clearly lost gets called off and the survivors pulled home
+  if (T.target != null && nodes[T.target].owner !== team) {
+    const v = T.target, en = enemyAt(v), have = committed[v];
+    T.sent = Math.max(T.sent, have);
+    if (en > 1 && have < en * 0.6 && have < T.sent * 0.55) {
+      const back = nearestOwned(team, v);
+      if (back >= 0) command(team, back, 1, t => finalDest(t) === v);
+      T.target = null; G.lock[team] = null; T.avoid = v; T.avoidUntil = G.t + 12;
+      G.fx.push({ k: 'retreat', c: team, b: G.t }); G.retreats = (G.retreats || 0) + 1;
+      return;
+    }
+  }
+
+  let best = null;
+  // 2. defend, but only a base that's actually under assault (real damage or a garrison being cut down)
+  for (const n of nodes) {
+    if (n.owner !== team || n.heat < C.assaultHeat) continue;
+    const en = enemyAt(n.id); if (en < 0.5) continue;
+    const my = committed[n.id]; if (my >= en * 1.25) continue;
+    const rt = routeTable(team, n.id), reach = reachFrom(rt, n.id);
+    if (reach <= 0.5) continue;
+    const sc = 2.5 + en / (my + 1) + (1 - n.hp / n.maxHp) * 1.5 + G.rng() * .3;
+    if (!best || sc > best.sc) best = { sc, node: n.id, frac: Math.min(1, Math.max(.4, (en * 1.3 - my) / reach)), kind: 'def' };
+  }
+
+  // 3. stick with an attack that's still going
+  if (!best && T.target != null) {
+    const v = T.target;
+    if (nodes[v].owner === team) T.target = null;
+    else if (committed[v] > 0.5 && committed[v] > enemyAt(v) * 0.9) return;
+    else { T.target = null; G.lock[team] = null; }
+  }
+
+  // 4. pick something to hit
+  if (!best) {
+    const front = new Set();
+    for (const n of nodes) if (n.owner === team || mine[n.id] > 0)
+      for (const v of n.adj) if (nodes[v].owner !== team) front.add(v);
+    const full = T.count >= capOf(team) * 0.9;
+    const margin = full ? Math.max(1.05, D.margin * 0.8) : D.margin, frac = full ? 0.95 : D.frac;
+    for (const v of front) {
+      const o = nodes[v].owner;
+      if (o >= 0 && G.t < C.peace) continue;              // opening ceasefire: neutrals only
+      if (v === T.avoid && G.t < T.avoidUntil) continue;  // just got bounced off this one
+      const def = enemyAt(v), rt = routeTable(team, v);
+      const avail = reachFrom(rt, -1) * frac;
+      if (avail < 5 || avail < def * margin + 1.2) continue;
+      let sc = (avail - def) / (def + 2);
+      sc += (1 - nodes[v].hp / nodes[v].maxHp) * 0.8;
+      if (o === NEUTRAL) sc += 0.6;
+      else {
+        if (o === PLAYER && !G.autoplay) sc += D.playerBias;   // nobody gangs up on blue when blue isn't you
+        if (G.teams[o].count < T.count * 0.6) sc += 0.3;
+      }
+      sc += G.rng() * 0.35;
+      if (!best || sc > best.sc) best = { sc, node: v, frac, kind: 'atk' };
+    }
+  }
+
+  if (best) {
+    const r = command(team, best.node, best.frac);
+    if (best.kind === 'atk') {
+      if (r) { T.target = best.node; T.sent = 0; G.lock[team] = best.node; } // AI locks on too
+    } else { T.target = null; G.lock[team] = null; }
+    return;
+  }
+
+  // 5. nothing worth hitting yet: mass up next to the softest neighbour
+  if (G.rng() < 0.4) {
+    let wv = -1, wd = Infinity;
+    for (const n of nodes) if (n.owner === team)
+      for (const v of n.adj) if (nodes[v].owner !== team) { const d = enemyAt(v); if (d < wd) { wd = d; wv = v; } }
+    if (wv >= 0) {
+      let stage = -1, sm = -1;
+      for (const u of nodes[wv].adj) if (nodes[u].owner === team && mine[u] > sm) { sm = mine[u]; stage = u; }
+      let total = 0; for (let i = 0; i < N; i++) total += mine[i];
+      if (stage >= 0 && mine[stage] < total * 0.5) command(team, stage, 0.6);
+    }
+  }
+}
+
+
+
+// ================= UI =================
+(function () {
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const $ = id => document.getElementById(id);
+const field = $('field'), hudEl = $('hud');
+const STEP = 1 / 60, SENDS = [1, .5, .25];
+const speeds = () => watching ? [1, 2, 4] : [1, 2];
+let dpr = 1, V = { s: 1, ex: 0, ey: 0, rot: false };
+let F = { x: 0, y: 0, w: 1, h: 1 }, s0 = 1, rot = false, cam = { z: 1, cu: W / 2, cv: H / 2 }, arrowHits = [];
+const zmax = () => 3 * Math.max(1, W / 1000);
+let mode = 'demo', speedMul = 1, last = performance.now(), acc = 0;
+let watching = false, watchRivals = true;   // watching: an AI-only match you spectate
+let hover = null, uiFx = [], hl = [], lastHud = 0, toastTimer = 0, lastTap = { id: -1, t: 0 }, lockHinted = false;
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function load(k, d) {
+  try { const v = localStorage.getItem(k); return Object.assign({}, d, v ? JSON.parse(v) : {}); }
+  catch (e) { return Object.assign({}, d); }
+}
+function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+const settings = load('ice-settings', { size: 'medium', diff: 'normal', persona: 'mixed', send: 1, sound: true, rivals: false, volume: 75, tone: 'bright' });
+if (settings.persona !== 'adaptive') settings.persona = 'mixed';
+if (!(settings.volume >= 0 && settings.volume <= 100)) settings.volume = 75;
+if (settings.tone !== 'soft') settings.tone = 'bright';
+delete settings.map;
+if (!['small', 'medium', 'large'].includes(settings.size)) settings.size = 'medium';
+const record = load('ice-record', { wins: 0, games: 0 });
+if (!SENDS.includes(settings.send)) settings.send = 1;
+
+// ---- view & camera ----
+// "view" coordinates are world coordinates turned to match the screen (sideways on tall screens)
+const viewSize = () => rot ? [H, W] : [W, H];
+function layout() {
+  dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const w = window.innerWidth, h = window.innerHeight;
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  cv.style.width = w + 'px'; cv.style.height = h + 'px';
+  let r;
+  if (!hudEl.hidden) r = field.getBoundingClientRect();
+  else { const b = document.body.getBoundingClientRect(); r = { left: b.left + 16, top: b.top + 16, width: b.width - 32, height: b.height - 32 }; }
+  const newRot = r.height > r.width * 1.1;
+  F = { x: r.left, y: r.top, w: Math.max(1, r.width), h: Math.max(1, r.height) };
+  if (newRot !== rot) { rot = newRot; resetCam(); }
+  const [ww, wh] = viewSize();
+  s0 = Math.max(0.05, Math.min(F.w / ww, F.h / wh));
+  updateView();
+}
+function resetCam() { const [ww, wh] = viewSize(); cam = { z: 1, cu: ww / 2, cv: wh / 2 }; }
+function updateView() {
+  const [ww, wh] = viewSize(), m = 30;
+  cam.z = Math.min(zmax(), Math.max(1, cam.z));
+  const s = s0 * cam.z, hw = F.w / (2 * s), hh = F.h / (2 * s);
+  if (cam.z <= 1.001 || 2 * hw >= ww) cam.cu = ww / 2; else cam.cu = Math.min(ww - hw + m, Math.max(hw - m, cam.cu));
+  if (cam.z <= 1.001 || 2 * hh >= wh) cam.cv = wh / 2; else cam.cv = Math.min(wh - hh + m, Math.max(hh - m, cam.cv));
+  V = { s, rot, ex: F.x + F.w / 2 - cam.cu * s, ey: F.y + F.h / 2 - cam.cv * s };
+  $('bFit').hidden = cam.z <= 1.01;
+}
+function zoomAround(px, py, z) {          // keep the point under (px, py) fixed while zooming
+  const au = cam.cu + (px - (F.x + F.w / 2)) / V.s, av = cam.cv + (py - (F.y + F.h / 2)) / V.s;
+  cam.z = Math.min(zmax(), Math.max(1, z));
+  const s = s0 * cam.z;
+  cam.cu = au - (px - (F.x + F.w / 2)) / s; cam.cv = av - (py - (F.y + F.h / 2)) / s;
+  updateView();
+}
+function centerOn(x, y) { cam.cu = rot ? H - y : x; cam.cv = rot ? x : y; updateView(); }
+function applyView() {
+  const k = dpr * V.s;
+  if (!V.rot) ctx.setTransform(k, 0, 0, k, dpr * V.ex, dpr * V.ey);
+  else ctx.setTransform(0, k, -k, 0, dpr * (V.ex + V.s * H), dpr * V.ey);
+}
+function toWorld(px, py) {
+  const u = (px - V.ex) / V.s, v = (py - V.ey) / V.s;
+  return V.rot ? { x: v, y: H - u } : { x: u, y: v };
+}
+function toScreen(x, y) {
+  const u = V.rot ? H - y : x, v = V.rot ? x : y;
+  return { x: V.ex + u * V.s, y: V.ey + v * V.s };
+}
+function pickNode(px, py) {
+  const w = toWorld(px, py), rad = Math.max(34, 24 / V.s);
+  let best = null, bd = rad * rad;
+  for (const n of G.nodes) { const d = (n.x - w.x) ** 2 + (n.y - w.y) ** 2; if (d < bd) { bd = d; best = n; } }
+  return best;
+}
+function reachable(n) {
+  if (n.owner === PLAYER) return true;
+  for (const v of n.adj) if (G.nodes[v].owner === PLAYER) return true;
+  for (const t of G.troops) if (t.team === PLAYER && n.adj.includes(t.home)) return true;
+  return false;
+}
+
+// ---- drawing ----
+function hexA(hex, a) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
+}
+function drawEdges(now) {
+  const nodes = G.nodes, lw = Math.max(1.4, 1.1 / V.s);
+  const slow = reduceMotion ? 0 : -now * 3, fast = reduceMotion ? 0 : -now * 9;
+  const inner = [[], [], [], [], []], out = [[], [], [], [], []];
+  ctx.setLineDash([5, 7]); ctx.lineDashOffset = slow; ctx.lineWidth = lw;
+  ctx.strokeStyle = 'rgba(255,255,255,0.17)';
+  ctx.beginPath();
+  for (const [a, b] of G.edges) {
+    const A = nodes[a], B = nodes[b], oa = A.owner, ob = B.owner;
+    if (oa < 0 && ob < 0) { ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); }        // nobody's
+    else if (oa === ob) inner[oa].push(A, B);                                     // inside one color's territory
+    else if (ob < 0) out[oa].push(A, B, 1);                                       // a way out: that color's to take
+    else if (oa < 0) out[ob].push(B, A, 1);
+    else { out[oa].push(A, B, 0.5); out[ob].push(B, A, 0.5); }                    // border between two colors
+  }
+  ctx.stroke();
+  for (let i = 0; i < 5; i++) {
+    const L = inner[i];
+    if (L.length) {
+      ctx.strokeStyle = hexA(TEAM_COLORS[i], 0.28); ctx.lineDashOffset = slow; ctx.beginPath();
+      for (let j = 0; j < L.length; j += 2) { ctx.moveTo(L[j].x, L[j].y); ctx.lineTo(L[j + 1].x, L[j + 1].y); }
+      ctx.stroke();
+    }
+    const O = out[i];
+    if (O.length) {   // drawn from the owner outward, so the dashes drift toward what they can attack
+      ctx.strokeStyle = hexA(TEAM_COLORS[i], 0.6); ctx.lineDashOffset = fast; ctx.lineWidth = lw * 1.25; ctx.beginPath();
+      for (let j = 0; j < O.length; j += 3) {
+        const P = O[j], Q = O[j + 1], f = O[j + 2];
+        ctx.moveTo(P.x, P.y); ctx.lineTo(P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f);
+      }
+      ctx.stroke(); ctx.lineWidth = lw;
+    }
+  }
+  ctx.setLineDash([]); ctx.lineDashOffset = 0;
+}
+function drawArrows(now) {            // your bases under attack while they're off-screen
+  arrowHits = [];
+  if (mode !== 'play' || watching || cam.z <= 1.01) return;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cx = F.x + F.w / 2, cy = F.y + F.h / 2, pad = 20;
+  for (const n of G.nodes) {
+    if (n.owner !== PLAYER || n.heat < C.assaultHeat) continue;
+    const p = toScreen(n.x, n.y);
+    if (p.x > F.x + pad && p.x < F.x + F.w - pad && p.y > F.y + pad && p.y < F.y + F.h - pad) continue;
+    const dx = p.x - cx, dy = p.y - cy;
+    const k = Math.min((F.w / 2 - pad) / Math.max(1e-6, Math.abs(dx)), (F.h / 2 - pad) / Math.max(1e-6, Math.abs(dy)));
+    const ax = cx + dx * k, ay = cy + dy * k;
+    ctx.save(); ctx.translate(ax, ay); ctx.rotate(Math.atan2(dy, dx));
+    ctx.globalAlpha = reduceMotion ? 1 : 0.7 + 0.3 * Math.sin(now * 7);
+    ctx.fillStyle = n.heatBy != null && n.heatBy >= 0 ? TEAM_COLORS[n.heatBy] : NEUTRAL_COLOR;
+    ctx.strokeStyle = TEAM_COLORS[PLAYER]; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(12, 0); ctx.lineTo(-8, -9); ctx.lineTo(-3, 0); ctx.lineTo(-8, 9); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+    arrowHits.push({ x: ax, y: ay, n });
+  }
+}
+function draw(now) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cv.width, cv.height);
+  if (!G) return;
+  ctx.save();                       // keep the zoomed map inside the play area, not under the side rails
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.beginPath(); ctx.rect(F.x, F.y, F.w, F.h); ctx.clip();
+  applyView();
+  const nodes = G.nodes;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  drawEdges(now);
+
+  for (let i = hl.length - 1; i >= 0; i--) {
+    const h = hl[i], age = now - h.b;
+    if (age > 0.9) { hl.splice(i, 1); continue; }
+    ctx.strokeStyle = hexA(TEAM_COLORS[PLAYER], (1 - age / 0.9) * 0.6); ctx.lineWidth = 2.6; ctx.setLineDash([]);
+    ctx.beginPath();
+    for (const [a, b] of h.edges) { ctx.moveTo(nodes[a].x, nodes[a].y); ctx.lineTo(nodes[b].x, nodes[b].y); }
+    ctx.stroke();
+  }
+
+  if (hover && mode === 'play') {
+    ctx.save(); ctx.translate(hover.x, hover.y); ctx.rotate(Math.PI / 4);
+    ctx.strokeStyle = hexA(TEAM_COLORS[PLAYER], .8); ctx.lineWidth = 1.3; ctx.setLineDash([3, 3]);
+    ctx.strokeRect(-17, -17, 34, 34); ctx.restore();
+  }
+
+  // lock-on markers: yours while playing, everyone's while watching (shows where each color is focused)
+  for (let i = 0; i < 5; i++) {
+    const L = G.lock[i];
+    if (L == null || !(mode === 'play' || mode === 'paused') || !G.teams[i].alive) continue;
+    if (!watching && i !== PLAYER) continue;
+    const n = nodes[L];
+    ctx.save(); ctx.translate(n.x, n.y); ctx.rotate(Math.PI / 4 + (reduceMotion ? 0 : now * 0.7) + i * 0.3);
+    ctx.strokeStyle = TEAM_COLORS[i]; ctx.lineWidth = 1.6; ctx.setLineDash([6, 4]);
+    ctx.strokeRect(-19, -19, 38, 38); ctx.restore();
+  }
+  for (const n of nodes) {
+    const c = colorOf(n.owner);
+    if (n.owner >= 0) {
+      ctx.globalAlpha = 0.38; ctx.strokeStyle = c; ctx.lineWidth = 1.3;
+      ctx.strokeRect(n.x - 11, n.y - 11, 22, 22); ctx.globalAlpha = 1;
+      ctx.fillStyle = c; ctx.fillRect(n.x - 6.5, n.y - 6.5, 13, 13);
+    } else {
+      ctx.fillStyle = NEUTRAL_COLOR; ctx.fillRect(n.x - 5.5, n.y - 5.5, 11, 11);
+    }
+    if (n.hp < n.maxHp - 0.5) {
+      const f = Math.max(0, n.hp / n.maxHp), hit = G.t - n.lastHitT < 0.15;
+      ctx.lineWidth = 2.2;
+      ctx.strokeStyle = hit ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
+      ctx.beginPath(); ctx.arc(n.x, n.y, 17, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = c;
+      ctx.beginPath(); ctx.arc(n.x, n.y, 17, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * f); ctx.stroke();
+    }
+  }
+
+  const buckets = [[], [], [], [], [], []];
+  for (const t of G.troops) buckets[t.team + 1].push(t);
+  const af = Math.min(1, Math.max(0, (cam.z - 1.15) / 0.85));
+  if (af > 0) {
+    ctx.lineWidth = 1 / V.s;                      // one screen pixel at any zoom
+    for (let b = 0; b < 6; b++) {
+      const arr = buckets[b]; if (!arr.length) continue;
+      const col = b === 0 ? NEUTRAL_COLOR : TEAM_COLORS[b - 1], fresh = [];
+      ctx.strokeStyle = hexA(col, 0.3 * af); ctx.beginPath();
+      for (const t of arr) {
+        const a = t.aim; if (!a) continue;
+        if (G.t - t.hitT < 0.12) { fresh.push(t); continue; }
+        ctx.moveTo(t.x, t.y); ctx.lineTo(a.x, a.y);
+      }
+      ctx.stroke();
+      if (fresh.length) {                         // a hit just landed: brief brighter flash
+        ctx.strokeStyle = hexA(col, 0.9 * af); ctx.beginPath();
+        for (const t of fresh) { ctx.moveTo(t.x, t.y); ctx.lineTo(t.aim.x, t.aim.y); }
+        ctx.stroke();
+      }
+    }
+  }
+  for (let b = 0; b < 6; b++) {
+    const arr = buckets[b]; if (!arr.length) continue;
+    ctx.fillStyle = b === 0 ? NEUTRAL_COLOR : TEAM_COLORS[b - 1];
+    ctx.beginPath();
+    for (const t of arr) {
+      let hx = t.hx, hy = t.hy; const l = Math.hypot(hx, hy) || 1; hx /= l; hy /= l;
+      ctx.moveTo(t.x + hx * 4.4, t.y + hy * 4.4);
+      ctx.lineTo(t.x - hx * 3 - hy * 2.8, t.y - hy * 3 + hx * 2.8);
+      ctx.lineTo(t.x - hx * 3 + hy * 2.8, t.y - hy * 3 - hx * 2.8);
+      ctx.closePath();
+    }
+    ctx.fill();
+  }
+
+  if (!reduceMotion) {
+    ctx.lineWidth = 1.1;
+    for (const f of G.fx) {
+      const age = G.t - f.b;
+      if (f.k === 'pop' && age < 0.3) {
+        const p = age / 0.3, s = 2 + p * 6;
+        ctx.globalAlpha = (1 - p) * 0.9; ctx.strokeStyle = colorOf(f.c);
+        ctx.strokeRect(f.x - s / 2, f.y - s / 2, s, s);
+      } else if (f.k === 'ring' && age < 0.9) {
+        const p = age / 0.9, s = 22 + p * 46;
+        ctx.globalAlpha = (1 - p) * 0.85; ctx.strokeStyle = colorOf(f.c); ctx.lineWidth = 1.6;
+        ctx.strokeRect(f.x - s / 2, f.y - s / 2, s, s); ctx.lineWidth = 1.1;
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  for (let i = uiFx.length - 1; i >= 0; i--) {
+    const f = uiFx[i], age = now - f.b;
+    if (age > 0.5) { uiFx.splice(i, 1); continue; }
+    const p = age / 0.5;
+    ctx.save(); ctx.translate(f.x, f.y); ctx.globalAlpha = 1 - p;
+    if (f.k === 'go') {
+      ctx.rotate(Math.PI / 4); const s = 18 + p * 22;
+      ctx.strokeStyle = TEAM_COLORS[PLAYER]; ctx.lineWidth = 1.8; ctx.strokeRect(-s / 2, -s / 2, s, s);
+    } else {
+      ctx.strokeStyle = '#9a9aa0'; ctx.lineWidth = 2; const s = 7;
+      ctx.beginPath(); ctx.moveTo(-s, -s); ctx.lineTo(s, s); ctx.moveTo(s, -s); ctx.lineTo(-s, s); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  ctx.restore();
+  drawArrows(now);
+}
+
+// ---- HUD ----
+const upBtns = [...document.querySelectorAll('.up')];
+const rivalCells = [];
+for (let i = 0; i < 5; i++) {
+  const sw = document.createElement('i'); sw.className = 'sw'; sw.style.background = TEAM_COLORS[i];
+  $('rivals').appendChild(sw);
+  const row = [sw];
+  for (let k = 0; k < 4; k++) { const c = document.createElement('span'); $('rivals').appendChild(c); row.push(c); }
+  rivalCells.push(row);
+}
+for (const b of upBtns) {
+  const p = b.querySelector('.pips');
+  for (let i = 0; i < 10; i++) p.appendChild(document.createElement('i'));
+  b.addEventListener('click', () => buy(b.dataset.k));
+}
+function buy(k) {
+  if (mode !== 'play' || !G || watching) return;
+  if (upgrade(PLAYER, k)) {
+    const b = upBtns.find(x => x.dataset.k === k);
+    b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
+  }
+  hud();
+}
+function hud() {
+  if (!G) return;
+  const P = G.teams[PLAYER];
+  if (watching) { $('army').textContent = fmt(G.t); $('cap').textContent = ''; }   // match clock instead of your army
+  else { $('army').textContent = P.count; $('cap').textContent = '/' + capOf(PLAYER); }
+  const segs = $('terr').children; let neu = G.nodes.length;
+  for (let i = 0; i < 5; i++) { segs[i].style.flexGrow = G.teams[i].bases; neu -= G.teams[i].bases; }
+  segs[5].style.flexGrow = neu;
+  const maxed = P.earned >= C.maxPoints;
+  $('xpfill').style.width = (maxed ? 100 : P.xp / needXP(P) * 100) + '%';
+  $('pts').textContent = P.points > 0 ? '+' + P.points : '';
+  for (const b of upBtns) {
+    const k = b.dataset.k, lv = P.lv[k], can = P.points > 0 && lv < C.maxLvl;
+    b.querySelector('.lv').textContent = lv;
+    const pips = b.querySelector('.pips').children;
+    for (let i = 0; i < 10; i++) pips[i].className = i < lv ? 'on' : '';
+    b.classList.toggle('ready', can); b.classList.toggle('max', lv >= C.maxLvl); b.disabled = !can;
+  }
+  for (let i = 0; i < 5; i++) {
+    const T = G.teams[i], row = rivalCells[i];
+    row[1].textContent = T.bases; row[2].textContent = T.lv.hp; row[3].textContent = T.lv.spd; row[4].textContent = T.lv.dmg;
+    for (const c of row) c.classList.toggle('out', !T.alive);
+  }
+  for (const f of G.fx) if (f.k === 'elim' && !f.seen) {
+    f.seen = true;
+    if (f.c !== PLAYER || watching) toast(TEAM_NAMES[f.c] + ' is out', TEAM_COLORS[f.c]);
+  }
+}
+function toast(msg, color) {
+  $('toastT').textContent = msg; $('toastSw').style.background = color;
+  $('toast').classList.add('on'); clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('toast').classList.remove('on'), 2200);
+}
+function syncCtrl() {
+  $('sendV').textContent = Math.round(settings.send * 100) + '%';
+  $('bSend').setAttribute('aria-label', 'Each tap sends ' + Math.round(settings.send * 100) + '% of your army');
+  $('bSpeed').textContent = speedMul + '×';
+}
+
+// ---- sound: soft blips, only when someone actually lands a shot ----
+let AC = null, master = null, bus = null, lastBlip = 0, lastBloop = 0;
+const PENTA = [0, 2, 4, 7, 9], ROOT = [79, 67, 71, 74, 64];
+const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+const pick = a => a[(Math.random() * a.length) | 0];
+// volume slider is perceptual (squared); "Soft" drops pitch, rounds off each blip's start and filters the top end
+const soundGain = () => settings.sound ? Math.pow(settings.volume / 100, 2) : 0;
+const cutoff = () => settings.tone === 'soft' ? 950 : 2800;
+function audioOn() {
+  try {
+    if (!AC) {
+      const Ctor = window.AudioContext || window.webkitAudioContext; if (!Ctor) return;
+      AC = new Ctor();
+      master = AC.createGain(); master.gain.value = soundGain();
+      bus = AC.createBiquadFilter(); bus.type = 'lowpass'; bus.frequency.value = cutoff(); bus.Q.value = 0.5;
+      bus.connect(master); master.connect(AC.destination);
+    }
+    if (AC.state === 'suspended') AC.resume();
+  } catch (e) { AC = null; }
+}
+function screenPan(x, y) {
+  const sx = toScreen(x, y).x;
+  return Math.max(-1, Math.min(1, sx / window.innerWidth * 2 - 1)) * 0.6;
+}
+function tone(f1, f2, dur, peak, type, pan, atk) {
+  const t0 = AC.currentTime + 0.005, o = AC.createOscillator(), g = AC.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(f1, t0); o.frequency.exponentialRampToValueAtTime(f2, t0 + dur);
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(peak, t0 + (atk || 0.008));
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g);
+  if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); p.connect(bus); }
+  else g.connect(bus);
+  o.start(t0); o.stop(t0 + dur + 0.03);
+}
+function playSfx(nowMs) {
+  const ev = G.sfx; if (!ev.length) return;
+  G.sfx = [];
+  if (!AC || !settings.sound || mode !== 'play' || AC.state !== 'running') return;
+  const soft = settings.tone === 'soft';
+  if (nowMs - lastBloop > 150) {              // base hits: a lower bloop that drops in pitch
+    const hits = ev.filter(e => e.base);
+    if (hits.length) {
+      const e = (!watching && hits.find(h => h.team === PLAYER)) || pick(hits), mine = e.team === PLAYER && !watching;
+      const f = hz(45 + pick(PENTA));
+      tone(f * (soft ? 1.4 : 1.7), f, soft ? 0.2 : 0.16, mine ? 0.11 : watching ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y), soft ? 0.02 : 0.008);
+      lastBloop = nowMs;
+    }
+  }
+  if (nowMs - lastBlip > 55) {                // troop hits: short bleeps, yours a bit brighter
+    const shots = ev.filter(e => !e.base);
+    if (shots.length) {
+      const mineShots = watching ? [] : shots.filter(e => e.team === PLAYER);
+      const e = mineShots.length && Math.random() < 0.65 ? pick(mineShots) : pick(shots), mine = e.team === PLAYER && !watching;
+      const f = soft
+        ? hz((e.team < 0 ? 60 : ROOT[e.team]) - 12 + pick(PENTA))                                   // an octave down, no high jumps
+        : hz((e.team < 0 ? 60 : ROOT[e.team]) + pick(PENTA) + (Math.random() < 0.25 ? 12 : 0));
+      tone(f, f * 0.94, soft ? 0.1 : (mine ? 0.075 : 0.06), mine ? 0.055 : watching ? 0.035 : 0.022,
+        mine && !soft ? 'triangle' : 'sine', screenPan(e.x, e.y), soft ? 0.018 : 0.008);
+      lastBlip = nowMs + Math.random() * 25;
+    }
+  }
+}
+function syncRivals() {
+  const open = watching ? watchRivals : settings.rivals;
+  $('rivals').hidden = !open;
+  $('statsBtn').setAttribute('aria-expanded', String(open));
+}
+function syncSound() {
+  const on = settings.sound && settings.volume > 0;
+  $('bSound').setAttribute('aria-pressed', String(on));
+  $('bSound').setAttribute('aria-label', on ? 'Mute sound' : 'Turn sound on');
+  $('sndOn').style.display = on ? '' : 'none';
+  $('sndOff').style.display = on ? 'none' : '';
+  $('vol').value = settings.volume; $('vol').style.setProperty('--p', settings.volume + '%');
+  if (AC) {
+    master.gain.setTargetAtTime(soundGain(), AC.currentTime, 0.02);
+    bus.frequency.setTargetAtTime(cutoff(), AC.currentTime, 0.02);
+  }
+}
+let lastPreview = 0;
+function previewSound() {                       // a sample bleep and bloop so you can hear the setting
+  const now = performance.now();
+  if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < 140) return;
+  lastPreview = now;
+  const soft = settings.tone === 'soft', f = hz(ROOT[PLAYER] - (soft ? 12 : 0) + pick(PENTA));
+  tone(f, f * 0.94, soft ? 0.1 : 0.075, 0.055, soft ? 'sine' : 'triangle', 0, soft ? 0.018 : 0.008);
+  setTimeout(() => { if (AC) { const b = hz(45 + pick(PENTA)); tone(b * (soft ? 1.4 : 1.7), b, soft ? 0.2 : 0.16, 0.08, 'sine', 0, soft ? 0.02 : 0.008); } }, 120);
+}
+
+// ---- screens ----
+const show = (id, on) => { $(id).hidden = !on; };
+function syncSeg() {
+  document.querySelectorAll('.seg').forEach(seg => {
+    const key = seg.dataset.key;
+    seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === settings[key])));
+  });
+}
+function renderRecord() {
+  $('rec').textContent = record.games ? `${record.wins} ${record.wins === 1 ? 'win' : 'wins'} in ${record.games} ${record.games === 1 ? 'game' : 'games'}` : '';
+}
+function startDemo() {
+  newGame({ size: settings.size, diff: 'normal' });
+  G.autoplay = true; mode = 'demo'; acc = 0; hl = []; uiFx = [];
+  resetCam(); layout();
+}
+function startGame(watch) {
+  audioOn();
+  watching = !!watch;
+  if (watching) watchRivals = true;               // every AI vs AI match opens with the stats table showing
+  newGame({ size: settings.size, diff: settings.diff, persona: settings.persona });
+  G.autoplay = watching;
+  if (!speeds().includes(speedMul)) speedMul = 1;
+  mode = 'play'; acc = 0; hl = []; uiFx = []; hover = null; last = performance.now();
+  show('menu', false); show('end', false); hudEl.hidden = false;
+  hudEl.classList.toggle('watch', watching);
+  $('bAgain').textContent = watching ? 'Watch again' : 'Play again';
+  syncCtrl(); syncRivals(); resetCam(); layout(); hud();
+}
+function pause() {
+  if (mode !== 'play') return;
+  mode = 'paused'; hover = null;
+  $('bResume').hidden = false; $('bPlay').textContent = 'New game';
+  show('menu', true); $('bResume').focus({ preventScroll: true });
+}
+function resume() {
+  if (mode !== 'paused') return;
+  audioOn();
+  mode = 'play'; last = performance.now(); show('menu', false);
+}
+function fmt(t) { const m = Math.floor(t / 60), s = Math.floor(t % 60); return m + ':' + String(s).padStart(2, '0'); }
+function showEnd() {
+  mode = 'over';
+  const P = G.teams[PLAYER], N = G.nodes.length;
+  if (watching) {                                   // spectated matches don't count toward your record
+    const w = G.winner, T = G.teams[w];
+    $('endTitle').innerHTML = `<span class="sw" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`;
+    $('endSub').textContent = `${TEAM_NAMES[w]} took all ${N} bases in ${fmt(G.t)} and knocked out ${T.kills} troops along the way.`;
+    show('end', true); $('bAgain').focus({ preventScroll: true });
+    return;
+  }
+  record.games++; if (G.result === 'win') record.wins++; save('ice-record', record);
+  const t = $('endTitle'), sub = $('endSub');
+  if (G.result === 'win') {
+    t.innerHTML = '<span class="sw" style="background:#3577ff"></span>The map is blue';
+    sub.textContent = `You took all ${N} bases in ${fmt(G.t)} and knocked out ${P.kills} troops along the way.`;
+  } else {
+    const w = G.winner;
+    t.innerHTML = w != null
+      ? `<span class="sw" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`
+      : '<span class="sw" style="background:#3577ff"></span>Blue is gone';
+    sub.textContent = `You lasted ${fmt(G.t)}, held up to ${G.peak} ${G.peak === 1 ? 'base' : 'bases'} at once and knocked out ${P.kills} troops.`;
+  }
+  show('end', true); $('bAgain').focus({ preventScroll: true });
+}
+function toMenu() {
+  watching = false; hudEl.classList.remove('watch');
+  show('end', false); hudEl.hidden = true;
+  $('bResume').hidden = true; $('bPlay').textContent = 'Play';
+  startDemo(); resetCam(); layout(); renderRecord(); show('menu', true);
+}
+
+// ---- input ----
+function handleTap(px, py) {
+  if (mode !== 'play' || !G || G.over) return;
+  audioOn();
+  if (watching) return;                             // spectating: look around, no orders
+  for (const a of arrowHits) if ((a.x - px) ** 2 + (a.y - py) ** 2 < 30 * 30) { centerOn(a.n.x, a.n.y); return; }
+  const n = pickNode(px, py); if (!n) return;
+  const nowMs = performance.now(), now = nowMs / 1000;
+  const dbl = lastTap.id === n.id && nowMs - lastTap.t < 380;
+  lastTap = { id: dbl ? -1 : n.id, t: nowMs };
+  const r = command(PLAYER, n.id, settings.send);
+  if (r) {
+    uiFx.push({ k: 'go', x: n.x, y: n.y, b: now });
+    if (r.edges.length) hl.push({ edges: r.edges, b: now });
+    if (dbl) {
+      setLock(PLAYER, n.id);
+      if (!lockHinted) { lockHinted = true; toast('Locked on. New troops will head there automatically.', TEAM_COLORS[PLAYER]); }
+    } else if (G.lock[PLAYER] != null && G.lock[PLAYER] !== n.id) setLock(PLAYER, null); // new orders cancel the lock
+  } else uiFx.push({ k: 'no', x: n.x, y: n.y, b: now });
+}
+const ptrs = new Map();
+let gest = null;
+function pinchState() {
+  const [a, b] = [...ptrs.values()];
+  return { mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) || 1 };
+}
+cv.addEventListener('pointerdown', e => {
+  if (mode !== 'play') return;
+  try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (ptrs.size === 1) gest = { kind: 'tap', sx: e.clientX, sy: e.clientY, lx: e.clientX, ly: e.clientY, type: e.pointerType };
+  else if (ptrs.size === 2) { const p = pinchState(); gest = { kind: 'pinch', d0: p.d, z0: cam.z, lx: p.mx, ly: p.my }; hover = null; }
+});
+cv.addEventListener('pointermove', e => {
+  const p = ptrs.get(e.pointerId);
+  if (!p) {                                   // mouse just hovering
+    if (e.pointerType !== 'mouse' || mode !== 'play' || watching || !G) { hover = null; return; }
+    const n = pickNode(e.clientX, e.clientY);
+    hover = n && reachable(n) ? n : null;
+    cv.style.cursor = hover ? 'pointer' : 'default';
+    return;
+  }
+  p.x = e.clientX; p.y = e.clientY;
+  if (!gest) return;
+  if (gest.kind === 'pinch' && ptrs.size >= 2) {
+    const q = pinchState();
+    cam.cu -= (q.mx - gest.lx) / V.s; cam.cv -= (q.my - gest.ly) / V.s; updateView();   // two-finger drag pans
+    zoomAround(q.mx, q.my, gest.z0 * q.d / gest.d0);
+    gest.lx = q.mx; gest.ly = q.my;
+  } else if (gest.kind === 'tap' || gest.kind === 'pan') {
+    const thr = gest.type === 'mouse' ? 4 : 10;
+    if (gest.kind === 'tap' && Math.hypot(e.clientX - gest.sx, e.clientY - gest.sy) > thr) { gest.kind = 'pan'; hover = null; }
+    if (gest.kind === 'pan') { cam.cu -= (e.clientX - gest.lx) / V.s; cam.cv -= (e.clientY - gest.ly) / V.s; updateView(); }
+    gest.lx = e.clientX; gest.ly = e.clientY;
+  }
+});
+function endPtr(e) {
+  if (!ptrs.has(e.pointerId)) return;
+  ptrs.delete(e.pointerId);
+  if (gest && gest.kind === 'tap' && ptrs.size === 0 && e.type === 'pointerup') handleTap(e.clientX, e.clientY);
+  if (ptrs.size === 0) gest = null;
+  else if (gest && gest.kind === 'pinch') { const [q] = [...ptrs.values()]; gest = { kind: 'pan', lx: q.x, ly: q.y, type: 'touch' }; }
+}
+cv.addEventListener('pointerup', endPtr);
+cv.addEventListener('pointercancel', endPtr);
+cv.addEventListener('pointerleave', e => { if (!ptrs.has(e.pointerId)) hover = null; });
+cv.addEventListener('wheel', e => {
+  if (mode !== 'play') return;
+  e.preventDefault();
+  zoomAround(e.clientX, e.clientY, cam.z * Math.exp(-e.deltaY * 0.0015));
+}, { passive: false });
+$('bFit').addEventListener('click', () => { resetCam(); updateView(); });
+cv.addEventListener('contextmenu', e => e.preventDefault());
+
+document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  settings[seg.dataset.key] = b.dataset.v; save('ice-settings', settings); syncSeg();
+  if (seg.dataset.key === 'size' && mode === 'demo') startDemo();
+  if (seg.dataset.key === 'tone') { audioOn(); syncSound(); setTimeout(previewSound, 30); }
+}));
+$('bPlay').addEventListener('click', () => startGame(false));
+$('bWatch').addEventListener('click', () => startGame(true));
+$('bResume').addEventListener('click', resume);
+$('bAgain').addEventListener('click', () => startGame(watching));
+$('bMenu').addEventListener('click', toMenu);
+$('bPause').addEventListener('click', pause);
+$('bSpeed').addEventListener('click', () => { const sp = speeds(); speedMul = sp[(sp.indexOf(speedMul) + 1) % sp.length]; syncCtrl(); });
+$('statsBtn').addEventListener('click', () => {
+  if (watching) watchRivals = !watchRivals;
+  else { settings.rivals = !settings.rivals; save('ice-settings', settings); }
+  syncRivals(); layout();
+});
+$('vol').addEventListener('input', () => {
+  settings.volume = +$('vol').value;
+  if (settings.volume > 0) settings.sound = true;
+  save('ice-settings', settings); audioOn(); syncSound(); previewSound();
+});
+$('bSound').addEventListener('click', () => { settings.sound = !settings.sound; save('ice-settings', settings); audioOn(); syncSound(); });
+$('bSend').addEventListener('click', () => { settings.send = SENDS[(SENDS.indexOf(settings.send) + 1) % SENDS.length]; save('ice-settings', settings); syncCtrl(); });
+
+window.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'Escape' || e.key === 'p') {
+    if (mode === 'play') { pause(); e.preventDefault(); }
+    else if (mode === 'paused') { resume(); e.preventDefault(); }
+    return;
+  }
+  if (mode !== 'play') return;
+  if (watching && e.key !== 'f' && e.key !== 'm') return;
+  if (e.key === '1' || e.key === 'q') buy('hp');
+  else if (e.key === '2' || e.key === 'w') buy('spd');
+  else if (e.key === '3' || e.key === 'e') buy('dmg');
+  else if (e.key === 'f') $('bSpeed').click();
+  else if (e.key === 's') $('bSend').click();
+  else if (e.key === 'm') $('bSound').click();
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+window.addEventListener('resize', layout);
+if (window.ResizeObserver) new ResizeObserver(layout).observe(document.body);
+
+// ---- loop ----
+function frame(nowMs) {
+  const dt = Math.min(0.1, (nowMs - last) / 1000); last = nowMs;
+  const running = (mode === 'play') || (mode === 'demo' && !reduceMotion);
+  if (G && running && !G.over) {
+    acc += dt * (mode === 'demo' ? 0.85 : speedMul);
+    let n = 0;
+    while (acc >= STEP && n < 16) {
+      update(STEP);
+      acc -= STEP; n++;
+      if (G.over) break;
+    }
+    if (n >= 16) acc = 0;
+    if (G.over) {
+      if (mode === 'play') { hud(); showEnd(); }
+      else setTimeout(() => { if (mode === 'demo') startDemo(); }, 1800);
+    }
+  }
+  if (G) playSfx(nowMs);
+  draw(nowMs / 1000);
+  if (mode === 'play' && nowMs - lastHud > 100) { lastHud = nowMs; hud(); }
+  requestAnimationFrame(frame);
+}
+
+syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
+requestAnimationFrame(frame);
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
