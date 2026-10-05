@@ -37,28 +37,29 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 #cv { position: fixed; inset: 0; display: block; }
 
-/* ---------- in-game HUD ---------- */
-#hud {
-  position: relative; height: 100%; pointer-events: none; display: grid; gap: 10px;
-  padding: 10px 12px;
-  grid-template-columns: 124px minmax(0,1fr) 58px; grid-template-rows: auto minmax(0,1fr);
-  grid-template-areas: "stats field ctrl" "upg field ctrl";
-}
+/* ---------- in-game HUD: floats over a full-screen map ---------- */
+body { position: relative; }
+#hud { position: absolute; inset: 0; pointer-events: none; }
 #hud[hidden] { display: none; }
-#field { grid-area: field; min-width: 0; min-height: 0; position: relative; }
+#field { position: absolute; inset: 0; }
+.rail { position: absolute; pointer-events: auto; }
+.panel {
+  background: rgba(0,0,0,.6); border: 1px solid var(--hair); border-radius: 4px;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+#stats { top: 8px; left: 10px; width: 136px; padding: 8px 9px; display: flex; flex-direction: column; gap: 7px; }
+#ctrl { top: 8px; right: 10px; display: flex; gap: 6px; }
+#upg { left: 10px; bottom: 8px; width: 336px; padding: 7px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+#upg .xp { grid-column: 1 / -1; }
 #bFit {
-  position: absolute; right: 6px; bottom: 6px; width: 44px; height: 44px; pointer-events: auto;
-  display: grid; place-items: center; border: 1px solid var(--faint); border-radius: 3px; background: rgba(0,0,0,.7);
+  position: absolute; right: 10px; bottom: 8px; width: 46px; height: 46px; pointer-events: auto;
+  display: grid; place-items: center; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.6);
 }
 #bFit[hidden] { display: none; }
 #bFit svg { width: 18px; height: 18px; }
-.rail { pointer-events: auto; }
-#stats { grid-area: stats; display: flex; flex-direction: column; gap: 7px; }
-#ctrl { grid-area: ctrl; display: flex; flex-direction: column; gap: 8px; }
 #bSound[aria-pressed="false"] { color: var(--dim); }
-#upg { grid-area: upg; align-self: end; display: flex; flex-direction: column; gap: 6px; }
 
-.army { display: flex; width: 100%; align-items: baseline; gap: 6px; font-size: 22px; font-weight: 600; line-height: 1; }
+.army { display: flex; width: 100%; align-items: baseline; gap: 6px; font-size: 21px; font-weight: 600; line-height: 1; }
 .army svg { width: 12px; height: 12px; align-self: center; }
 .army .dim { font-size: 13px; font-weight: 500; color: var(--dim); }
 .terr { display: flex; height: 5px; gap: 1px; width: 100%; }
@@ -75,24 +76,25 @@ button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 .terr i { display: block; flex: 0 0 auto; flex-basis: 0; min-width: 0; transition: flex-grow .4s ease; }
 
 .ctl {
-  min-height: 46px; border: 1px solid var(--faint); border-radius: 3px; display: grid; place-items: center;
-  font-size: 15px; font-weight: 600; line-height: 1.05; text-align: center;
+  width: 48px; min-height: 46px; border: 1px solid var(--faint); border-radius: 4px; display: grid; place-items: center;
+  font-size: 14px; font-weight: 600; line-height: 1.05; text-align: center; background: rgba(0,0,0,.6);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
 .ctl small { display: block; font-size: 10px; font-weight: 500; color: var(--dim); }
 .ctl svg { width: 16px; height: 16px; }
-.ctl:active { background: var(--hair); }
+.ctl:active { background: rgba(40,40,44,.8); }
 
-.xp { display: flex; align-items: center; gap: 6px; height: 16px; }
+.xp { display: flex; align-items: center; gap: 6px; height: 14px; }
 .xpbar { flex: 1; height: 3px; background: var(--faint); position: relative; overflow: hidden; }
 .xpbar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--blue); transition: width .2s linear; }
 #pts { min-width: 22px; text-align: right; font-size: 13px; font-weight: 700; color: var(--blue); }
 
 .up {
-  display: grid; grid-template-columns: 1fr auto; row-gap: 5px; align-items: center; text-align: left;
-  padding: 7px 9px; border: 1px solid var(--faint); border-radius: 3px; transition: border-color .15s, background .15s;
+  display: grid; grid-template-columns: 1fr auto; row-gap: 4px; align-items: center; text-align: left; min-width: 0;
+  padding: 6px 8px; border: 1px solid var(--faint); border-radius: 3px; transition: border-color .15s, background .15s;
 }
-.up .nm { font-size: 13px; font-weight: 500; }
-.up .lv { font-size: 13px; font-weight: 600; color: var(--dim); }
+.up .nm { font-size: 12.5px; font-weight: 500; }
+.up .lv { font-size: 12.5px; font-weight: 600; color: var(--dim); }
 .up .pips { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; }
 .up .pips i { height: 4px; background: var(--faint); }
 .up .pips i.on { background: var(--blue); }
@@ -106,16 +108,8 @@ button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 @keyframes bump { 40% { transform: scale(.96); } }
 
 @media (orientation: portrait) {
-  #hud {
-    grid-template-columns: minmax(0,1fr) auto; grid-template-rows: auto minmax(0,1fr) auto;
-    grid-template-areas: "stats ctrl" "field field" "upg upg";
-  }
-  #stats { max-width: 190px; }
-  #ctrl { flex-direction: row; align-self: start; }
-  #ctrl .ctl { width: 54px; }
-  #upg { flex-direction: row; flex-wrap: wrap; }
-  #upg .xp { flex-basis: 100%; }
-  #upg .up { flex: 1 1 0; min-width: 0; }
+  #upg { right: 10px; width: auto; }
+  #toast { top: calc(env(safe-area-inset-top, 0px) + 66px) !important; }
 }
 
 /* ---------- overlays ---------- */
@@ -158,13 +152,21 @@ button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
   #menu .opt > span { flex: 0 0 92px; }
   #menu .opt > .seg, #menu .opt > .sndrow { flex: 1; min-width: 0; }
   #menu .seg button { min-height: 40px; }
-  .sndrow .seg button { padding: 0 10px; }
   #menu .btns { margin-top: 4px; }
   .mark h1 { font-size: 52px; }
 }
 .sndrow { display: flex; align-items: center; gap: 12px; }
-.sndrow .seg { flex: 0 0 auto; }
-.sndrow .seg button { padding: 0 14px; }
+.selwrap { position: relative; flex: 0 0 auto; }
+#tone {
+  -webkit-appearance: none; appearance: none; font: inherit; font-size: 14px; font-weight: 500; color: var(--ink);
+  height: 42px; min-width: 132px; padding: 0 34px 0 12px; border: 1px solid var(--faint); border-radius: 3px; background: rgba(0,0,0,.4);
+}
+#tone option { background: #121214; color: #ececee; }
+#tone:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.selwrap::after {
+  content: ''; position: absolute; right: 13px; top: 50%; width: 7px; height: 7px; pointer-events: none;
+  border-right: 1.6px solid var(--dim); border-bottom: 1.6px solid var(--dim); transform: translateY(-70%) rotate(45deg);
+}
 #vol { flex: 1; min-width: 0; height: 42px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; touch-action: none; --p: 75%; }
 #vol::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(to right, var(--blue) var(--p), var(--faint) var(--p)); }
 #vol::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6.5px; border: 0; border-radius: 2px; background: var(--blue); }
@@ -188,7 +190,7 @@ button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 <canvas id="cv"></canvas>
 
 <div id="hud" hidden>
-  <div id="stats" class="rail">
+  <div id="stats" class="rail panel">
     <button class="statbtn" id="statsBtn" aria-expanded="false" aria-controls="rivals" title="Show every color's bases and upgrades">
       <span class="army">
         <svg class="tri" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 11H1Z" fill="#3577ff"/></svg>
@@ -219,7 +221,7 @@ button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path id="sndOn" d="M11 5.5c1 .7 1.5 1.6 1.5 2.5s-.5 1.8-1.5 2.5M12.6 3.6C14 4.7 14.8 6.3 14.8 8s-.8 3.3-2.2 4.4" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/><path id="sndOff" d="M11 6l4 4M15 6l-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="display:none"/></svg>
     </button>
   </div>
-  <div id="upg" class="rail">
+  <div id="upg" class="rail panel">
     <div class="xp" title="Kills fill this bar. Each full bar is one upgrade point."><div class="xpbar"><i id="xpfill"></i></div><span id="pts"></span></div>
     <button class="up" data-k="hp"><span class="nm">Health</span><span class="lv">0</span><span class="pips"></span></button>
     <button class="up" data-k="spd"><span class="nm">Speed</span><span class="lv">0</span><span class="pips"></span></button>
@@ -255,7 +257,9 @@ button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
       <div class="opt"><span>Sound</span>
         <div class="sndrow">
           <input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume">
-          <div class="seg" data-key="tone" aria-label="Sound style"><button data-v="bright">Bright</button><button data-v="soft">Soft</button></div>
+          <div class="selwrap"><select id="tone" aria-label="Sound style">
+            <option value="bright">Bright</option><option value="soft">Soft</option><option value="felt">Felt</option><option value="hum">Low hum</option>
+          </select></div>
         </div>
       </div>
       <div class="btns"><button id="bResume" class="ghost" hidden>Resume</button><button id="bPlay" class="primary">Play</button><button id="bWatch" class="ghost">AI vs AI</button></div>
@@ -402,7 +406,10 @@ function pickStarts(pts, edges, rng) {
   return bestSet;
 }
 
-function randomMap(rng, spec) {
+// keep: rectangles (world units) where no base may sit, so the floating HUD never covers one
+function randomMap(rng, spec, keep) {
+  keep = keep || [];
+  const blocked = p => keep.some(k => p[0] > k.x0 && p[0] < k.x1 && p[1] > k.y0 && p[1] < k.y1);
   let fallback = null;
   for (let attempt = 0; attempt < 80; attempt++) {
     const N = spec.n[0] + Math.floor(rng() * (spec.n[1] - spec.n[0] + 1));
@@ -410,6 +417,7 @@ function randomMap(rng, spec) {
     while (pts.length < N && tries < 6000) {
       tries++;
       const p = [70 + rng() * (W - 140), 66 + rng() * (H - 132)];
+      if (blocked(p)) continue;
       let ok = true;
       for (const q of pts) if ((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2 < 100 * 100) { ok = false; break; }
       if (ok) pts.push(p);
@@ -432,7 +440,7 @@ function randomMap(rng, spec) {
     if (starts) return { nodes: pts, edges, starts };
     if (!fallback) fallback = { nodes: pts, edges };
   }
-  // practically never reached: hand back a map anyway rather than hang
+  if (!fallback) return keep.length ? randomMap(rng, spec, []) : null;   // HUD zones too greedy: ignore them
   const all = fallback.nodes.map((_, i) => i);
   return { ...fallback, starts: all.slice(0, 5) };
 }
@@ -447,7 +455,11 @@ function newGame(opts) {
   const spec = SIZES[opts.size] || SIZES.medium;
   let m;
   if (opts.map === 'sketch') { W = 1000; H = 560; m = sketchMap(); }   // the original drawing, kept for reference
-  else { W = spec.w; H = spec.h; m = randomMap(rng, spec); }
+  else {
+    // the world can be reshaped to match the screen; the base count per area stays the same
+    if (opts.world) { W = opts.world.w; H = opts.world.h; } else { W = spec.w; H = spec.h; }
+    m = randomMap(rng, spec, opts.keep);
+  }
   const nodes = m.nodes.map((p, i) => ({ id: i, x: p[0], y: p[1], owner: NEUTRAL, adj: [],
     hp: C.baseHP, maxHp: C.baseHP, budget: C.baseDpsCap, lastHitT: -99, nCap: 0, nCount: 0,
     heat: 0, heatBy: null,
@@ -999,7 +1011,7 @@ function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch 
 const settings = load('ice-settings', { size: 'medium', diff: 'normal', persona: 'mixed', send: 1, sound: true, rivals: false, volume: 75, tone: 'bright' });
 if (settings.persona !== 'adaptive') settings.persona = 'mixed';
 if (!(settings.volume >= 0 && settings.volume <= 100)) settings.volume = 75;
-if (settings.tone !== 'soft') settings.tone = 'bright';
+if (!['bright', 'soft', 'felt', 'hum'].includes(settings.tone)) settings.tone = 'bright';
 delete settings.map;
 if (!['small', 'medium', 'large'].includes(settings.size)) settings.size = 'medium';
 const record = load('ice-record', { wins: 0, games: 0 });
@@ -1014,14 +1026,29 @@ function layout() {
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
   cv.style.width = w + 'px'; cv.style.height = h + 'px';
   let r;
-  if (!hudEl.hidden) r = field.getBoundingClientRect();
-  else { const b = document.body.getBoundingClientRect(); r = { left: b.left + 16, top: b.top + 16, width: b.width - 32, height: b.height - 32 }; }
+  const b = document.body.getBoundingClientRect();
+  r = hudEl.hidden ? { left: b.left + 16, top: b.top + 16, width: b.width - 32, height: b.height - 32 } : b;
   const newRot = r.height > r.width * 1.1;
   F = { x: r.left, y: r.top, w: Math.max(1, r.width), h: Math.max(1, r.height) };
   if (newRot !== rot) { rot = newRot; resetCam(); }
   const [ww, wh] = viewSize();
   s0 = Math.max(0.05, Math.min(F.w / ww, F.h / wh));
   updateView();
+}
+function worldPlan(withHud) {
+  const aspect = Math.min(2.5, Math.max(1.4, rot ? F.h / F.w : F.w / F.h));
+  const spec = SIZES[settings.size] || SIZES.medium, area = spec.w * spec.h;
+  const h = Math.sqrt(area / aspect), w = area / h;
+  const ww = rot ? h : w, wh = rot ? w : h, s = Math.min(F.w / ww, F.h / wh);
+  const ex = F.x + F.w / 2 - ww / 2 * s, ey = F.y + F.h / 2 - wh / 2 * s;
+  const toW = (px, py) => { const u = (px - ex) / s, v = (py - ey) / s; return rot ? { x: v, y: h - u } : { x: u, y: v }; };
+  const keep = [];
+  if (withHud) for (const el of [$('statsBtn'), $('rivals'), $('ctrl'), $('upg')]) {
+    const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+    const a = toW(r.left - 6, r.top - 6), c = toW(r.right + 6, r.bottom + 6), m = 36;   // m: room for troops circling a base
+    keep.push({ x0: Math.min(a.x, c.x) - m, x1: Math.max(a.x, c.x) + m, y0: Math.min(a.y, c.y) - m, y1: Math.max(a.y, c.y) + m });
+  }
+  return { world: { w, h }, keep };
 }
 function resetCam() { const [ww, wh] = viewSize(); cam = { z: 1, cu: ww / 2, cv: wh / 2 }; }
 function updateView() {
@@ -1324,7 +1351,7 @@ const hz = m => 440 * Math.pow(2, (m - 69) / 12);
 const pick = a => a[(Math.random() * a.length) | 0];
 // volume slider is perceptual (squared); "Soft" drops pitch, rounds off each blip's start and filters the top end
 const soundGain = () => settings.sound ? Math.pow(settings.volume / 100, 2) : 0;
-const cutoff = () => settings.tone === 'soft' ? 950 : 2800;
+const cutoff = () => ({ hum: 420, soft: 950, felt: 900 })[settings.tone] || 2800;
 function audioOn() {
   try {
     if (!AC) {
@@ -1352,10 +1379,14 @@ function tone(f1, f2, dur, peak, type, pan, atk) {
   else g.connect(bus);
   o.start(t0); o.stop(t0 + dur + 0.03);
 }
-function playSfx(nowMs) {
-  const ev = G.sfx; if (!ev.length) return;
-  G.sfx = [];
+function playSfx(nowMs, dt) {
+  const ev = G.sfx; G.sfx = [];
+  // how much fighting is going on right now (hits per second, smoothed); "Low hum" swells with it
+  shotRate += (ev.length / Math.max(dt, 1 / 120) - shotRate) * (1 - Math.exp(-dt / 1.2));
+  if (!ev.length) return;
   if (!AC || !settings.sound || mode !== 'play' || AC.state !== 'running') return;
+  if (settings.tone === 'hum') { humHits(ev, nowMs); return; }
+  if (settings.tone === 'felt') { feltHits(ev, nowMs); return; }
   const soft = settings.tone === 'soft';
   if (nowMs - lastBloop > 150) {              // base hits: a lower bloop that drops in pitch
     const hits = ev.filter(e => e.base);
@@ -1380,6 +1411,142 @@ function playSfx(nowMs) {
     }
   }
 }
+// ---- "Low hum": a breathing drone under the whole match, plus soft low pulses for hits ----
+// The drone is an A chord in the bass. It swells and opens up as the fighting heats up, and its middle
+// note leans major while you (or, when watching, the leader) hold a big share of the map, minor when you don't.
+let amb = null, shotRate = 0;
+const HUM_PULSE = [55, 61.74, 82.41, 110];          // A1 B1 E2 A2: fits both the minor and major chord
+function humHits(ev, nowMs) {
+  if (nowMs - lastBloop > 260) {                    // base hits: a deep, slow thud
+    const hits = ev.filter(e => e.base);
+    if (hits.length) {
+      const e = (!watching && hits.find(h => h.team === PLAYER)) || pick(hits), mine = e.team === PLAYER && !watching;
+      const pan = screenPan(e.x, e.y) * 0.6;
+      tone(41.2 * 1.6, 41.2, 0.42, mine ? 0.17 : 0.1, 'sine', pan, 0.03);
+      tone(82.41 * 1.3, 82.41, 0.3, mine ? 0.06 : 0.035, 'triangle', pan, 0.025);   // the overtone a phone speaker can actually play
+      lastBloop = nowMs;
+    }
+  }
+  if (nowMs - lastBlip > 110) {                     // troop hits: muffled low pulses
+    const shots = ev.filter(e => !e.base);
+    if (shots.length) {
+      const mineShots = watching ? [] : shots.filter(e => e.team === PLAYER);
+      const e = mineShots.length && Math.random() < 0.6 ? pick(mineShots) : pick(shots), mine = e.team === PLAYER && !watching;
+      const f = pick(HUM_PULSE);
+      tone(f * 1.25, f, 0.26, mine ? 0.07 : watching ? 0.05 : 0.035, 'triangle', screenPan(e.x, e.y) * 0.6, 0.024);
+      lastBlip = nowMs + Math.random() * 45;
+    }
+  }
+}
+function ambStart() {
+  const t = AC.currentTime, out = AC.createGain(), lp = AC.createBiquadFilter();
+  out.gain.value = 0.0001; lp.type = 'lowpass'; lp.frequency.value = 240; lp.Q.value = 0.8;
+  out.connect(lp); lp.connect(bus);
+  const oscs = [];
+  const voice = (f, type, g, cents) => {
+    const o = AC.createOscillator(), v = AC.createGain();
+    o.type = type; o.frequency.value = f; o.detune.value = cents || 0; v.gain.value = g;
+    o.connect(v); v.connect(out); o.start(t); oscs.push(o); return v;
+  };
+  voice(55, 'sine', 0.5);                            // A1, felt more than heard
+  voice(110, 'triangle', 0.2, -5); voice(110, 'triangle', 0.2, 5);   // A2, a slightly detuned pair that slowly beats
+  voice(164.81, 'sine', 0.14);                       // E3
+  const minor = voice(130.81, 'sine', 0.1), major = voice(138.59, 'sine', 0);   // C3 or C#3
+  const lfo = AC.createOscillator(), depth = AC.createGain();   // slow "breathing" of the filter
+  lfo.frequency.value = 0.06; depth.gain.value = 70; lfo.connect(depth); depth.connect(lp.frequency); lfo.start(t); oscs.push(lfo);
+  amb = { out, lp, minor, major, oscs };
+}
+function ambStop() {
+  if (!amb) return;
+  const a = amb, t = AC.currentTime; amb = null;
+  a.out.gain.cancelScheduledValues(t); a.out.gain.setTargetAtTime(0.0001, t, 0.5);
+  for (const o of a.oscs) o.stop(t + 3);
+}
+function ambTick() {
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'hum' && mode === 'play' && G && !G.over;
+  if (want && !amb) ambStart();
+  if (!want) { if (amb) ambStop(); return; }
+  const t = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);   // 0 calm .. 1 all-out war
+  amb.out.gain.setTargetAtTime(0.03 + 0.09 * heat, t, 1.2);
+  amb.lp.frequency.setTargetAtTime(220 + 360 * heat, t, 1.5);
+  let share;
+  if (watching) share = Math.max(...G.teams.map(T => T.bases)) / G.nodes.length;
+  else share = G.teams[PLAYER].bases / G.nodes.length;
+  const m = Math.min(1, Math.max(0, (share - 0.18) / 0.2));        // leaning major as the share grows
+  amb.minor.gain.setTargetAtTime(0.1 * (1 - m), t, 4);
+  amb.major.gain.setTargetAtTime(0.1 * m, t, 4);
+}
+function humPreview() {                             // a short swell of the drone and one pulse
+  const t = AC.currentTime + 0.01, g = AC.createGain();
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+  g.connect(bus);
+  for (const [f, type, v] of [[55, 'sine', .5], [110, 'triangle', .35], [164.81, 'sine', .14], [130.81, 'sine', .1]]) {
+    const o = AC.createOscillator(), vg = AC.createGain(); o.type = type; o.frequency.value = f; vg.gain.value = v;
+    o.connect(vg); vg.connect(g); o.start(t); o.stop(t + 2.3);
+  }
+  setTimeout(() => { if (AC) tone(82.41 * 1.25, 82.41, 0.26, 0.07, 'triangle', 0, 0.024); }, 700);
+  setTimeout(() => { if (AC) tone(41.2 * 1.6, 41.2, 0.42, 0.14, 'sine', 0, 0.03); }, 1150);
+}
+// ---- "Felt": Soft's bloops for bases; troop hits become quiet felt-mallet taps that snap to a gentle beat ----
+// Hits are collected and played on a 16th-note grid at 108 bpm, walking an up-and-down pentatonic pattern,
+// so a fight reads as a soft rhythm. Quiet fights only fill the main beats; busy ones fill in the off-beats too.
+// Your army's taps are clear, fights between AI colors are a faint patter on the main beats only.
+const FELT_STEP = 60 / 108 / 4, FELT_SEQ = [50, 52, 55, 57, 60, 57, 55, 52];   // D3 E3 G3 A3 C4 A3 G3 E3: below Soft's bleeps
+let feltNext = 0, feltStep = 0, feltPool = [], noiseBuf = null;
+function feltHits(ev, nowMs) {
+  if (nowMs - lastBloop > 150) {                    // base hits: exactly Soft's bloop, kept near the center
+    const hits = ev.filter(e => e.base);
+    if (hits.length) {
+      const e = (!watching && hits.find(h => h.team === PLAYER)) || pick(hits), mine = e.team === PLAYER && !watching;
+      const f = hz(45 + pick(PENTA));
+      tone(f * 1.4, f, 0.2, mine ? 0.11 : watching ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y) * 0.4, 0.02);
+      lastBloop = nowMs;
+    }
+  }
+  for (const e of ev) if (!e.base) feltPool.push(e);
+  if (feltPool.length > 64) feltPool.splice(0, feltPool.length - 64);
+}
+function feltTap(t, f, peak, pan) {
+  if (!noiseBuf) {
+    noiseBuf = AC.createBuffer(1, Math.floor(AC.sampleRate * 0.3), AC.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  let out = bus;
+  if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = Math.max(-1, Math.min(1, pan)); p.connect(bus); out = p; }
+  const n = AC.createBufferSource(), bp = AC.createBiquadFilter(), ng = AC.createGain();   // the felt: a tiny puff of filtered noise
+  n.buffer = noiseBuf; bp.type = 'bandpass'; bp.frequency.value = f * 1.8; bp.Q.value = 2;
+  ng.gain.setValueAtTime(0.0001, t); ng.gain.exponentialRampToValueAtTime(peak * 1.1, t + 0.004); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+  n.connect(bp); bp.connect(ng); ng.connect(out); n.start(t, Math.random() * 0.2, 0.08);
+  const o = AC.createOscillator(), og = AC.createGain();                                   // the wood: a short, round body
+  o.type = 'sine'; o.frequency.setValueAtTime(f * 1.03, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.03);
+  og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(peak, t + 0.006); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+  o.connect(og); og.connect(out); o.start(t); o.stop(t + 0.14);
+}
+function feltClock() {                              // runs every frame; schedules taps slightly ahead on the beat grid
+  if (!AC || AC.state !== 'running' || !settings.sound || settings.tone !== 'felt' || mode !== 'play' || !G || G.over) {
+    feltPool.length = 0; feltNext = 0; return;
+  }
+  const now = AC.currentTime;
+  if (!feltNext || feltNext < now - 0.25) feltNext = now + 0.03;
+  while (feltNext < now + 0.06) {
+    const n = feltPool.length, off = feltStep % 2 === 1;
+    if (n) {
+      const mineList = watching ? [] : feltPool.filter(e => e.team === PLAYER), mine = mineList.length > 0;
+      const e = mine ? mineList[mineList.length - 1] : feltPool[n - 1];
+      if (!off || (n >= 3 && (mine || watching))) {
+        const accent = feltStep % 4 === 0 ? 1.2 : 1;
+        feltTap(Math.max(feltNext, now), hz(FELT_SEQ[feltStep % FELT_SEQ.length]), (mine ? 0.042 : watching ? 0.026 : 0.013) * accent, screenPan(e.x, e.y) * 1.5);
+        feltPool.length = 0;
+      }
+    }
+    feltStep++; feltNext += FELT_STEP;
+  }
+}
+function feltPreview() {
+  const t = AC.currentTime + 0.03;
+  [0, 2, 3, 4, 6, 7].forEach(k => feltTap(t + k * FELT_STEP, hz(FELT_SEQ[k]), k % 4 === 0 ? 0.05 : 0.042, 0));
+  setTimeout(() => { if (AC) { const b = hz(45 + pick(PENTA)); tone(b * 1.4, b, 0.2, 0.09, 'sine', 0, 0.02); } }, 1150);
+}
 function syncRivals() {
   const open = watching ? watchRivals : settings.rivals;
   $('rivals').hidden = !open;
@@ -1392,6 +1559,7 @@ function syncSound() {
   $('sndOn').style.display = on ? '' : 'none';
   $('sndOff').style.display = on ? 'none' : '';
   $('vol').value = settings.volume; $('vol').style.setProperty('--p', settings.volume + '%');
+  $('tone').value = settings.tone;
   if (AC) {
     master.gain.setTargetAtTime(soundGain(), AC.currentTime, 0.02);
     bus.frequency.setTargetAtTime(cutoff(), AC.currentTime, 0.02);
@@ -1399,9 +1567,11 @@ function syncSound() {
 }
 let lastPreview = 0;
 function previewSound() {                       // a sample bleep and bloop so you can hear the setting
-  const now = performance.now();
-  if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < 140) return;
+  const now = performance.now(), hum = settings.tone === 'hum';
+  if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < (hum ? 1200 : settings.tone === 'felt' ? 900 : 140)) return;
   lastPreview = now;
+  if (hum) { humPreview(); return; }
+  if (settings.tone === 'felt') { feltPreview(); return; }
   const soft = settings.tone === 'soft', f = hz(ROOT[PLAYER] - (soft ? 12 : 0) + pick(PENTA));
   tone(f, f * 0.94, soft ? 0.1 : 0.075, 0.055, soft ? 'sine' : 'triangle', 0, soft ? 0.018 : 0.008);
   setTimeout(() => { if (AC) { const b = hz(45 + pick(PENTA)); tone(b * (soft ? 1.4 : 1.7), b, soft ? 0.2 : 0.16, 0.08, 'sine', 0, soft ? 0.02 : 0.008); } }, 120);
@@ -1419,7 +1589,8 @@ function renderRecord() {
   $('rec').textContent = record.games ? `${record.wins} ${record.wins === 1 ? 'win' : 'wins'} in ${record.games} ${record.games === 1 ? 'game' : 'games'}` : '';
 }
 function startDemo() {
-  newGame({ size: settings.size, diff: 'normal' });
+  layout();
+  newGame({ size: settings.size, diff: 'normal', ...worldPlan(false) });
   G.autoplay = true; mode = 'demo'; acc = 0; hl = []; uiFx = [];
   resetCam(); layout();
 }
@@ -1427,14 +1598,15 @@ function startGame(watch) {
   audioOn();
   watching = !!watch;
   if (watching) watchRivals = true;               // every AI vs AI match opens with the stats table showing
-  newGame({ size: settings.size, diff: settings.diff, persona: settings.persona });
-  G.autoplay = watching;
-  if (!speeds().includes(speedMul)) speedMul = 1;
-  mode = 'play'; acc = 0; hl = []; uiFx = []; hover = null; last = performance.now();
   show('menu', false); show('end', false); hudEl.hidden = false;
   hudEl.classList.toggle('watch', watching);
   $('bAgain').textContent = watching ? 'Watch again' : 'Play again';
-  syncCtrl(); syncRivals(); resetCam(); layout(); hud();
+  syncCtrl(); syncRivals(); layout();                 // HUD in place first, so the map can be built around it
+  newGame({ size: settings.size, diff: settings.diff, persona: settings.persona, ...worldPlan(true) });
+  G.autoplay = watching;
+  if (!speeds().includes(speedMul)) speedMul = 1;
+  mode = 'play'; acc = 0; hl = []; uiFx = []; hover = null; last = performance.now();
+  syncCtrl(); resetCam(); layout(); hud();
 }
 function pause() {
   if (mode !== 'play') return;
@@ -1557,7 +1729,7 @@ document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e
   const b = e.target.closest('button'); if (!b) return;
   settings[seg.dataset.key] = b.dataset.v; save('ice-settings', settings); syncSeg();
   if (seg.dataset.key === 'size' && mode === 'demo') startDemo();
-  if (seg.dataset.key === 'tone') { audioOn(); syncSound(); setTimeout(previewSound, 30); }
+
 }));
 $('bPlay').addEventListener('click', () => startGame(false));
 $('bWatch').addEventListener('click', () => startGame(true));
@@ -1570,6 +1742,10 @@ $('statsBtn').addEventListener('click', () => {
   if (watching) watchRivals = !watchRivals;
   else { settings.rivals = !settings.rivals; save('ice-settings', settings); }
   syncRivals(); layout();
+});
+$('tone').addEventListener('change', () => {
+  settings.tone = $('tone').value; save('ice-settings', settings);
+  audioOn(); syncSound(); lastPreview = 0; setTimeout(previewSound, 30);
 });
 $('vol').addEventListener('input', () => {
   settings.volume = +$('vol').value;
@@ -1616,7 +1792,8 @@ function frame(nowMs) {
       else setTimeout(() => { if (mode === 'demo') startDemo(); }, 1800);
     }
   }
-  if (G) playSfx(nowMs);
+  if (G) playSfx(nowMs, dt);
+  if (AC) { ambTick(); feltClock(); }
   draw(nowMs / 1000);
   if (mode === 'play' && nowMs - lastHud > 100) { lastHud = nowMs; hud(); }
   requestAnimationFrame(frame);
