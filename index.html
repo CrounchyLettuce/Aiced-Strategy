@@ -51,12 +51,16 @@ body { position: relative; }
 #ctrl { top: 8px; right: 10px; display: flex; gap: 6px; }
 #upg { left: 10px; bottom: 8px; width: 336px; padding: 7px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 #upg .xp { grid-column: 1 / -1; }
-#bFit {
-  position: absolute; right: 10px; bottom: 8px; width: 46px; height: 46px; pointer-events: auto;
-  display: grid; place-items: center; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.6);
+#mapWrap { position: absolute; right: 10px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; pointer-events: none; }
+#mapWrap > * { pointer-events: auto; }
+#mm { display: block; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.72); touch-action: none; }
+#mm[hidden] { display: none; }
+#bMap {
+  width: 46px; height: 46px; display: grid; place-items: center; border: 1px solid var(--faint); border-radius: 4px;
+  background: rgba(0,0,0,.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
-#bFit[hidden] { display: none; }
-#bFit svg { width: 18px; height: 18px; }
+#bMap[aria-pressed="true"] { border-color: var(--blue); }
+#bMap svg { width: 20px; height: 20px; }
 #bSound[aria-pressed="false"] { color: var(--dim); }
 
 .army { display: flex; width: 100%; align-items: baseline; gap: 6px; font-size: 21px; font-weight: 600; line-height: 1; }
@@ -114,49 +118,95 @@ body { position: relative; }
 
 /* ---------- overlays ---------- */
 .overlay {
-  position: fixed; inset: 0; display: grid; place-items: center; overflow: auto;
+  position: fixed; inset: 0; display: flex; flex-direction: column; overflow-y: auto;
   padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px))
            max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
   background: rgba(0,0,0,.68); touch-action: pan-y;
 }
 .overlay[hidden] { display: none; }
-.card { width: min(100%, 360px); display: flex; flex-direction: column; gap: 18px; }
+.screen, .endcard { margin: auto; width: min(100%, 380px); display: flex; flex-direction: column; gap: 14px; }
+.screen[hidden] { display: none !important; }
+.screen.wide { width: min(100%, 560px); }
+.screen header { display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.screen h2 { margin: 0; font-size: 22px; font-weight: 600; }
+.back { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.35); }
+.back svg { width: 16px; height: 16px; }
+.big { min-height: 56px; border-radius: 4px; font-size: 18px; font-weight: 600; }
+.big2 { min-height: 50px; border-radius: 4px; font-size: 16px; font-weight: 600; }
+.small { min-height: 44px; border-radius: 4px; font-size: 14px; color: var(--dim); }
 .mark { display: flex; align-items: center; gap: 14px; }
 .mark svg { width: 44px; height: 44px; flex: none; }
 .mark h1 { margin: 0; font-size: 64px; line-height: .9; font-weight: 700; letter-spacing: .14em; }
-.opt { display: flex; flex-direction: column; gap: 7px; }
-.opt > span { font-size: 13px; color: var(--dim); }
+.homeL, .homeR { display: flex; flex-direction: column; gap: 10px; }
+.homeL { gap: 14px; }
+.homenav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 2px; }
+.homenav button {
+  min-height: 62px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.35); font-size: 12.5px; color: var(--dim);
+}
+.homenav svg { width: 20px; height: 20px; color: var(--ink); }
+.homenav button:active, .ghost:active, .back:active { background: rgba(40,40,44,.8); }
+.opts { display: flex; flex-direction: column; gap: 12px; }
+.opt { display: flex; align-items: center; gap: 12px; }
+.opt[hidden] { display: none; }
+.swatches button i { display: block; width: 18px; height: 18px; margin: auto; }
+.seg.swatches button[aria-pressed="true"] { background: rgba(255,255,255,.08); box-shadow: inset 0 -2px 0 #fff; }
+.swatches button[aria-pressed="true"] i { outline: 2px solid #fff; outline-offset: 2px; }
+.opt > span { flex: 0 0 96px; font-size: 13px; color: var(--dim); }
+.opt > .seg, .opt > #vol, .opt > .selwrap { flex: 1; min-width: 0; }
+.opt > .selwrap select { width: 100%; }           /* the dropdown fills its row, so its arrow sits inside the box */
 .seg { display: flex; border: 1px solid var(--faint); border-radius: 3px; overflow: hidden; }
-.seg button { flex: 1; min-height: 42px; font-size: 14px; font-weight: 500; color: var(--dim); border-left: 1px solid var(--faint); }
+.seg button { flex: 1; min-height: 44px; font-size: 14px; font-weight: 500; color: var(--dim); border-left: 1px solid var(--faint); }
 .seg button:first-child { border-left: 0; }
 .seg button[aria-pressed="true"] { color: var(--ink); background: var(--blue-soft); box-shadow: inset 0 -2px 0 var(--blue); }
 .btns { display: flex; gap: 8px; }
-.btns button { flex: 1; min-height: 50px; border-radius: 3px; font-size: 16px; font-weight: 600; }
+.btns button { flex: 1; min-height: 50px; border-radius: 4px; font-size: 16px; font-weight: 600; }
 .primary { background: var(--blue); color: #fff; }
 .primary:active { filter: brightness(.9); }
-.ghost { border: 1px solid var(--faint); }
-.how { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; line-height: 1.4; color: var(--dim); max-width: 46ch; }
+.ghost { border: 1px solid var(--faint); background: rgba(0,0,0,.35); }
+.how { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; line-height: 1.45; color: var(--dim); }
 .how b { color: var(--ink); font-weight: 500; }
-.rec .build { float: right; opacity: .7; }
 .rec { font-size: 13px; color: var(--dim); min-height: 1em; }
-#end .card { text-align: left; }
-#end h2 { margin: 0; font-size: 34px; line-height: 1.05; font-weight: 700; letter-spacing: .02em; }
-#end p { margin: 0; font-size: 15px; line-height: 1.45; color: var(--dim); max-width: 40ch; }
-#end .sw { display: inline-block; width: 12px; height: 12px; margin-right: 10px; vertical-align: 2px; }
+.rec .build { float: right; opacity: .7; }
 
-#menu .left, #menu .right { display: contents; }
+#statsBody { display: flex; flex-direction: column; gap: 10px; }
+#statsBody h3 { margin: 6px 0 0; font-size: 13px; font-weight: 500; color: var(--dim); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+.tile { display: flex; flex-direction: column; gap: 3px; padding: 9px 10px; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.35); }
+.tile b { font-size: 20px; font-weight: 600; }
+.tile span { font-size: 11.5px; color: var(--dim); }
+.bars { display: grid; grid-template-columns: 10px 1fr auto; gap: 7px 10px; align-items: center; }
+.bars .sw { width: 10px; height: 10px; }
+.bars .bar { height: 6px; background: var(--faint); }
+.bars .bar i { display: block; height: 100%; }
+.bars b { font-size: 13px; min-width: 2ch; text-align: right; }
+.prow { display: flex; justify-content: space-between; font-size: 14px; padding: 7px 0; border-bottom: 1px solid var(--hair); }
+.none { margin: 0; font-size: 14px; color: var(--dim); }
+
+.endcard { width: min(100%, 440px); gap: 12px; }
+.endcard h2 { margin: 0; font-size: 30px; line-height: 1.05; font-weight: 700; letter-spacing: .02em; }
+.endcard p { margin: 0; font-size: 15px; line-height: 1.45; color: var(--dim); max-width: 42ch; }
+.endcard .sw { display: inline-block; width: 12px; height: 12px; margin-right: 10px; vertical-align: 2px; }
+.tlbox canvas { display: block; width: 100%; height: 118px; }
+.tlx { display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--dim); }
+.moments { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; }
+.moments li { display: grid; grid-template-columns: 36px 10px 1fr; gap: 8px; align-items: center; }
+.moments time { font-size: 12px; color: var(--dim); }
+.moments i { width: 10px; height: 10px; }
+
 @media (orientation: landscape) and (max-height: 520px) {
-  #menu .card { width: min(100%, 700px); display: grid; grid-template-columns: 1fr 1fr; column-gap: 36px; row-gap: 14px; align-items: start; }
-  #menu .left { display: flex; flex-direction: column; gap: 16px; }
-  #menu .right { display: flex; flex-direction: column; gap: 10px; }
-  #menu .opt { flex-direction: row; align-items: center; gap: 10px; }
-  #menu .opt > span { flex: 0 0 92px; }
-  #menu .opt > .seg, #menu .opt > .sndrow { flex: 1; min-width: 0; }
-  #menu .seg button { min-height: 40px; }
-  #menu .btns { margin-top: 4px; }
-  .mark h1 { font-size: 52px; }
+  #scrSetup { width: min(100%, 800px); }
+  #scrSetup .opts { display: grid; grid-template-columns: 1fr 1fr; column-gap: 26px; row-gap: 10px; }   /* two columns: everything fits */
+  #scrHome { width: min(100%, 720px); display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; align-items: center; }
+  .mark h1 { font-size: 56px; }
+  .endcard {
+    width: min(100%, 780px); display: grid; grid-template-columns: 1fr 1.25fr; column-gap: 28px; row-gap: 10px; align-items: start;
+    grid-template-areas: "title chart" "sub chart" "btns moments";
+  }
+  .endcard h2 { grid-area: title; } .endcard p { grid-area: sub; } .endcard .btns { grid-area: btns; }
+  .endcard .tlbox { grid-area: chart; } .endcard .moments { grid-area: moments; }
 }
-.sndrow { display: flex; align-items: center; gap: 12px; }
+@media (max-width: 340px) { .opt { flex-direction: column; align-items: stretch; } .opt > span { flex: none; } }
 .selwrap { position: relative; flex: 0 0 auto; }
 .selwrap select {
   -webkit-appearance: none; appearance: none; font: inherit; font-size: 14px; font-weight: 500; color: var(--ink);
@@ -176,6 +226,11 @@ body { position: relative; }
 #vol::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 2px; background: var(--blue); }
 #vol:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
+#perf {
+  position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 6px); transform: translateX(-50%); z-index: 5;
+  padding: 4px 8px; border-radius: 3px; background: rgba(0,0,0,.75); font: 11px/1.3 ui-monospace, monospace; color: #9fe; pointer-events: none; white-space: pre;
+}
+#perf[hidden] { display: none; }
 #toast {
   position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 12px); transform: translate(-50%, -6px);
   display: flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid var(--faint); border-radius: 3px;
@@ -194,7 +249,7 @@ body { position: relative; }
   <div id="stats" class="rail panel">
     <button class="statbtn" id="statsBtn" aria-expanded="false" aria-controls="rivals" title="Show every color's bases and upgrades">
       <span class="army">
-        <svg class="tri" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 11H1Z" fill="#3577ff"/></svg>
+        <svg class="tri" viewBox="0 0 12 12" aria-hidden="true"><path id="triPath" d="M6 1 11 11H1Z" fill="#3577ff"/></svg>
         <span id="army">0</span><span id="cap" class="dim">/20</span>
         <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
       </span>
@@ -208,9 +263,12 @@ body { position: relative; }
     </div>
   </div>
   <div id="field">
-    <button id="bFit" hidden aria-label="Show the whole map" title="Show the whole map">
-      <svg viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M2 6V2h4M12 2h4v4M16 12v4h-4M6 16H2v-4"/></svg>
-    </button>
+    <div id="mapWrap">
+      <canvas id="mm" hidden aria-label="Minimap. Tap or drag to move the view."></canvas>
+      <button id="bMap" aria-pressed="false" aria-label="Map. Tap for the minimap, double-tap to see the whole battlefield." title="Tap: minimap · Double-tap: whole battlefield">
+        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="3.5" width="15" height="13" rx="1"/><path d="M6.3 7.3 12.8 8.8 9.3 12.8" stroke-width="1"/><rect x="5" y="6" width="2.6" height="2.6" fill="currentColor" stroke="none"/><rect x="11.5" y="7.5" width="2.6" height="2.6" fill="currentColor" stroke="none"/><rect x="8" y="11.5" width="2.6" height="2.6" fill="currentColor" stroke="none"/></svg>
+      </button>
+    </div>
   </div>
   <div id="ctrl" class="rail">
     <button class="ctl" id="bPause" aria-label="Pause">
@@ -231,23 +289,48 @@ body { position: relative; }
 </div>
 
 <div id="menu" class="overlay">
-  <div class="card">
-    <div class="left">
+  <section class="screen" id="scrHome">
+    <div class="homeL">
       <div class="mark">
         <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 42 43 24 33.5 6 43Z" fill="#3577ff"/></svg>
         <h1>ICE</h1>
       </div>
-      <ul class="how">
-        <li>You're <b>blue</b>. Tap a base along one of your colored lines and your swarm heads there. Tap your own base to pull troops back.</li>
-        <li><b>Double-tap</b> a base to lock on. New troops keep heading there on their own until it's yours.</li>
-        <li>Kill a base's defenders, then wear the base itself down. Whoever lands the last hit takes it.</li>
-        <li>Kills fill your bar, and each full bar buys a level of health, speed or damage. More bases, bigger army.</li>
-        <li><b>Pinch</b> to zoom and drag to look around.</li>
-      </ul>
+      <div class="rec"><span id="rec"></span><span class="build">Build 21</span></div>
     </div>
-    <div class="right">
+    <div class="homeR">
+      <button id="bPlay" class="primary big">Play</button>
+      <button id="bWatch" class="ghost big2">AI vs AI</button>
+      <nav class="homenav" aria-label="More">
+        <button data-go="scrStats"><svg viewBox="0 0 20 20" aria-hidden="true" fill="currentColor"><rect x="3" y="10" width="3" height="7"/><rect x="8.5" y="4" width="3" height="13"/><rect x="14" y="7" width="3" height="10"/></svg>Stats</button>
+        <button data-go="scrSettings"><svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h14M3 14h14"/><rect x="11" y="3.5" width="3.5" height="5" fill="currentColor" stroke="none"/><rect x="5.5" y="11.5" width="3.5" height="5" fill="currentColor" stroke="none"/></svg>Settings</button>
+        <button data-go="scrHelp"><svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="14" height="14" rx="1"/><path d="M7.9 8a2.1 2.1 0 1 1 3.1 1.9c-.7.4-1 .9-1 1.6v.4"/><path d="M10 14.4v.2" stroke-width="2.2" stroke-linecap="round"/></svg>How to play</button>
+      </nav>
+    </div>
+  </section>
+
+  <section class="screen" id="scrSetup" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2 id="setupTitle">New game</h2></header>
+    <div class="opts">
+      <div class="opt" id="colorRow"><span>Your color</span>
+        <div class="seg swatches" data-key="color">
+          <button data-v="blue" aria-label="Blue"><i style="background:#3577ff"></i></button>
+          <button data-v="red" aria-label="Red"><i style="background:#f2433c"></i></button>
+          <button data-v="green" aria-label="Green"><i style="background:#2db857"></i></button>
+          <button data-v="yellow" aria-label="Yellow"><i style="background:#ffcd30"></i></button>
+          <button data-v="purple" aria-label="Purple"><i style="background:#a656ff"></i></button>
+        </div>
+      </div>
       <div class="opt"><span>Map size</span>
-        <div class="seg" data-key="size"><button data-v="small">Small</button><button data-v="medium">Medium</button><button data-v="large">Large</button></div>
+        <div class="seg" data-key="size"><button data-v="classic">Classic</button><button data-v="small">Small</button><button data-v="medium">Medium</button><button data-v="large">Large</button></div>
+      </div>
+      <div class="opt" id="oppRow"><span id="oppLbl">Opponents</span>
+        <div class="seg" data-key="opp"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button></div>
+      </div>
+      <div class="opt"><span>Map shape</span>
+        <div class="selwrap"><select id="shape" aria-label="Map shape">
+          <option value="random">Random</option><option value="continent">Continent</option><option value="islands">Islands</option>
+          <option value="ring">Ring</option><option value="river">River</option>
+        </select></div>
       </div>
       <div class="opt"><span>Difficulty</span>
         <div class="seg" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button></div>
@@ -255,43 +338,94 @@ body { position: relative; }
       <div class="opt"><span>Personalities</span>
         <div class="seg" data-key="persona"><button data-v="mixed">Mixed</button><button data-v="adaptive">All adaptive</button></div>
       </div>
-      <div class="opt"><span>Visuals</span>
-        <div class="selwrap"><select id="visual" aria-label="Visual style">
-          <option value="classic">Classic</option><option value="spark">Spark</option>
+    </div>
+    <button id="bStart" class="primary big">Start</button>
+  </section>
+
+  <section class="screen" id="scrSettings" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Settings</h2></header>
+    <div class="opts">
+      <div class="opt"><span>Volume</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"></div>
+      <div class="opt"><span>Sound style</span>
+        <div class="selwrap"><select id="tone" aria-label="Sound style">
+          <option value="bright">Bright</option><option value="soft">Soft</option><option value="felt">Felt</option><option value="hum">Low hum</option><option value="overdrive">Overdrive</option>
         </select></div>
       </div>
-      <div class="opt"><span>Sound</span>
-        <div class="sndrow">
-          <input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume">
-          <div class="selwrap"><select id="tone" aria-label="Sound style">
-            <option value="bright">Bright</option><option value="soft">Soft</option><option value="felt">Felt</option><option value="hum">Low hum</option>
-          </select></div>
-        </div>
+      <div class="opt"><span>Visuals</span>
+        <div class="selwrap"><select id="visual" aria-label="Visual style">
+          <option value="classic">Classic</option><option value="spark">Spark</option><option value="overload">Overload</option>
+        </select></div>
       </div>
-      <div class="btns"><button id="bResume" class="ghost" hidden>Resume</button><button id="bPlay" class="primary">Play</button><button id="bWatch" class="ghost">AI vs AI</button></div>
-      <div class="rec"><span id="rec"></span><span class="build">Build 14</span></div>
     </div>
-  </div>
+  </section>
+
+  <section class="screen wide" id="scrStats" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Stats</h2></header>
+    <div id="statsBody"></div>
+    <button id="bReset" class="ghost small">Reset stats</button>
+  </section>
+
+  <section class="screen" id="scrHelp" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>How to play</h2></header>
+    <ul class="how">
+      <li>Pick <b>your color</b> before each game. Tap a base along one of your colored lines and your swarm heads there. Tap your own base to pull troops back.</li>
+      <li><b>Double-tap</b> a base to lock on. New troops keep heading there on their own until it's yours.</li>
+      <li>Kill a base's defenders, then wear the base itself down. Whoever lands the last hit takes it.</li>
+      <li>Kills fill your bar, and each full bar buys a level of health, speed or damage. More bases means a bigger army.</li>
+      <li>The <b>send</b> button sets how much of your army each tap sends, so you can leave some behind to defend.</li>
+      <li><b>Map shapes</b> change the terrain: islands joined by bridges, a ring around an empty middle, or a river with a few crossings. Bridges are chokepoints.</li>
+      <li><b>Pinch</b> to zoom and drag to look around. The <b>map button</b> in the corner shows a minimap, and a double-tap on it pulls back to the whole battlefield.</li>
+      <li>Tap your army count to see every color's bases and upgrades.</li>
+    </ul>
+  </section>
+
+  <section class="screen" id="scrPause" hidden>
+    <header><h2>Paused</h2></header>
+    <button id="bResume" class="primary big">Resume</button>
+    <button class="ghost big2" data-go="scrSettings">Settings</button>
+    <button id="bQuit" class="ghost big2">Quit to menu</button>
+  </section>
 </div>
 
 <div id="end" class="overlay" hidden>
-  <div class="card">
+  <section class="endcard">
     <h2 id="endTitle"></h2>
     <p id="endSub"></p>
+    <div class="tlbox">
+      <canvas id="tl" role="img" aria-label="Bases held by each color over the match"></canvas>
+      <div class="tlx"><span>0:00</span><span id="tlEnd"></span></div>
+    </div>
+    <ol id="moments" class="moments"></ol>
     <div class="btns"><button id="bAgain" class="primary">Play again</button><button id="bMenu" class="ghost">Menu</button></div>
-  </div>
+  </section>
 </div>
 
+<div id="perf" hidden></div>
 <div id="toast" role="status" aria-live="polite"><i id="toastSw"></i><span id="toastT"></span></div>
 
 <script>
 "use strict";
 // ================= ICE core (no DOM) =================
+// Pure game simulation: no drawing, no sound, no page. Everything the screen shows is read from G.
+//   constants .......... team colors/palette, tuning numbers (C), difficulty (DIFF), AI personalities, map sizes
+//   maps ............... the original sketch (kept for reference) and the random map generator + start picking
+//   game state ......... newGame, spawning, per-team stats, target finding (grid), update() = one 1/60 s step
+//   bases .............. presence, health/regen, neutral respawns, captures, history for the end-screen timeline
+//   progression ........ kills -> XP -> upgrade points, AI spending (incl. Adaptive)
+//   routing ............ shortest paths through your own territory, command() = send troops somewhere
+//   AI ................. perception (only what's physically there), retreat, defend, attack, consolidate
 let W = 1000, H = 560;               // world size; changes with map size
 const NEUTRAL = -1, PLAYER = 0;
 const TEAM_COLORS = ['#3577ff', '#f2433c', '#2db857', '#ffcd30', '#a656ff'];
 const TEAM_NAMES = ['Blue', 'Red', 'Green', 'Yellow', 'Purple'];
 const NEUTRAL_COLOR = '#d9d9d9';
+// The player is always team 0; colors are just paint. applyPalette(k) dresses team 0 in palette color k
+// and hands the other four colors to the AI in the usual order.
+const PALETTE = TEAM_COLORS.map((c, i) => ({ c, name: TEAM_NAMES[i] }));
+function applyPalette(first) {
+  const order = [first, ...[0, 1, 2, 3, 4].filter(i => i !== first)];
+  order.forEach((k, i) => { TEAM_COLORS[i] = PALETTE[k].c; TEAM_NAMES[i] = PALETTE[k].name; });
+}
 const C = {
   hp: 10, dps: 4.2, spd: 46, hpPer: .15, dmgPer: .15, spdPer: .10,
   range: 30, engage: 60, leash: 58, captureR: 44, presenceR: 60,
@@ -326,10 +460,14 @@ const STYLES = [
 ];
 const UPG = ['hp', 'spd', 'dmg'];
 // map sizes: base count, world size (bases keep the same spacing), and how much each base adds to your army limit
+// map sizes: base count, world area (about 31k square units per base, so spacing never changes), how many
+// colors play by default, and how much each base adds to an army limit (less on bigger maps to keep armies sane).
+// Classic is the original feel: fits the screen, five colors.
 const SIZES = {
-  small:  { n: [12, 14], w: 860,  h: 484, capPer: 13 },
-  medium: { n: [18, 22], w: 1000, h: 560, capPer: 11 },
-  large:  { n: [28, 34], w: 1300, h: 730, capPer: 8 }
+  classic: { n: [16, 20], area: 560000,  teams: 5, capPer: 12, fit: true },
+  small:   { n: [18, 22], area: 640000,  teams: 3, capPer: 12 },
+  medium:  { n: [28, 34], area: 960000,  teams: 4, capPer: 10 },
+  large:   { n: [42, 50], area: 1420000, teams: 5, capPer: 8 }
 };
 const OPENING_DEFENDERS = 7; // every base next to a starting base gets the same garrison
 
@@ -343,7 +481,7 @@ function mulberry32(a) {
 }
 const colorOf = t => t < 0 ? NEUTRAL_COLOR : TEAM_COLORS[t];
 
-// ---- the hand-drawn reference map ----
+// ---- maps: the hand-drawn reference map (not offered in the menu any more) ----
 const SKETCH_RAW = [[720,375],[930,490],[575,605],[765,685],[728,842],[1118,582],[1207,358],[1490,392],
   [1280,708],[1067,763],[1210,875],[1437,808],[1578,625],[1723,435],[1905,342],[1693,795]];
 const SKETCH_EDGES = [[0,2],[0,1],[2,1],[1,3],[3,4],[1,5],[5,6],[6,7],[5,8],[5,9],[9,10],[10,11],
@@ -374,17 +512,18 @@ function hopMatrix(N, adj) {
 }
 
 // five starting bases: each with 2-3 ways out, none directly linked to another, spread as far apart as possible
-function pickStarts(pts, edges, rng) {
+function pickStarts(pts, edges, rng, k) {
+  k = k || 5;
   const N = pts.length, adj = pts.map(() => []);
   for (const [a, b] of edges) { adj[a].push(b); adj[b].push(a); }
   const M = hopMatrix(N, adj);
   const ok = [...Array(N).keys()].filter(i => adj[i].length >= 2 && adj[i].length <= 3);
-  if (ok.length < 5) return null;
+  if (ok.length < k) return null;
   const eu = (a, b) => Math.hypot(pts[a][0] - pts[b][0], pts[a][1] - pts[b][1]);
   let bestSet = null, bestScore = -Infinity;
   for (let trial = 0; trial < 14; trial++) {
     const chosen = [ok[Math.floor(rng() * ok.length)]];
-    while (chosen.length < 5) {
+    while (chosen.length < k) {
       let best = -1, bs = -Infinity;
       for (const i of ok) {
         if (chosen.includes(i)) continue;
@@ -397,9 +536,9 @@ function pickStarts(pts, edges, rng) {
       if (best < 0) break;
       chosen.push(best);
     }
-    if (chosen.length < 5) continue;
+    if (chosen.length < k) continue;
     let mh = Infinity, me = Infinity;
-    for (let a = 0; a < 5; a++) for (let b = a + 1; b < 5; b++) {
+    for (let a = 0; a < k; a++) for (let b = a + 1; b < k; b++) {
       mh = Math.min(mh, M[chosen[a]][chosen[b]]); me = Math.min(me, eu(chosen[a], chosen[b]));
     }
     const score = mh * 1000 + me;
@@ -413,42 +552,132 @@ function pickStarts(pts, edges, rng) {
 }
 
 // keep: rectangles (world units) where no base may sit, so the floating HUD never covers one
-function randomMap(rng, spec, keep) {
+// ---- map shapes ----
+// Every shape uses the same pipeline: scatter bases inside the shape's land (never closer than 100 apart), connect
+// neighbours with a planar graph (relative-neighbourhood backbone plus a few Gabriel extras), then cut any line that
+// crosses water or the void and add back a handful of deliberate bridges. Bridges are remembered so they can be
+// drawn as crossings. Bigger water means more world: each shape gets a little extra area (SHAPE_AREA).
+const SHAPES = ['continent', 'islands', 'ring', 'river'];
+const SHAPE_AREA = { continent: 1, islands: 1.3, ring: 1.2, river: 1.12 };
+function segCross(a, b, c, d) {                      // do segments ab and cd properly cross (shared endpoints don't count)?
+  const o = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  const d1 = o(c, d, a), d2 = o(c, d, b), d3 = o(a, b, c), d4 = o(a, b, d);
+  return ((d1 > 0) !== (d2 > 0)) && ((d3 > 0) !== (d4 > 0)) && d1 * d2 < 0 && d3 * d4 < 0;
+}
+function segDist(p, a, b) {                          // distance from point p to segment ab
+  const vx = b[0] - a[0], vy = b[1] - a[1], l2 = vx * vx + vy * vy || 1;
+  const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy) / l2));
+  return Math.hypot(p[0] - a[0] - t * vx, p[1] - a[1] - t * vy);
+}
+function makeShape(shape, rng, N) {
+  const cx = W / 2, cy = H / 2;
+  if (shape === 'islands') {
+    const n = N < 24 ? 3 : N < 40 ? 4 : 5, isl = [];
+    const r0 = Math.sqrt(W * H * 0.6 / (n * Math.PI)), minD = r0 * 1.85;
+    for (let tries = 0; isl.length < n && tries < 4000; tries++) {
+      const c = [W * 0.14 + rng() * W * 0.72, H * 0.16 + rng() * H * 0.68];
+      if (isl.every(o => Math.hypot(o.x - c[0], o.y - c[1]) > minD * (tries > 2000 ? 0.8 : 1)))
+        isl.push({ x: c[0], y: c[1], r: r0 * (0.9 + rng() * 0.25), ph: rng() * 6.28, sx: 1 + (rng() - .5) * .35 });
+    }
+    const q = (o, x, y) => { const dx = (x - o.x) / o.sx, dy = (y - o.y) * o.sx, a = Math.atan2(dy, dx);
+      return Math.hypot(dx, dy) / (o.r * (1 + 0.14 * Math.sin(3 * a + o.ph))); };          // a lumpy, irregular coast
+    const group = (x, y) => { let b = 0, bq = Infinity; isl.forEach((o, i) => { const v = q(o, x, y); if (v < bq) { bq = v; b = i; } }); return b; };
+    return { inside: (x, y) => isl.some(o => q(o, x, y) < 1), group, groups: isl.length, deco: { kind: 'islands' } };
+  }
+  if (shape === 'ring') {
+    const rx = (W - 140) / 2, ry = (H - 132) / 2, rin = 0.42;
+    const q = (x, y) => ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
+    const voidHit = (a, b) => { for (let t = 0.2; t <= 0.8; t += 0.15) if (q(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t) < rin * rin * 0.92) return true; return false; };
+    return { inside: (x, y) => { const v = q(x, y); return v < 1 && v > rin * rin; }, cut: voidHit, deco: { kind: 'ring', cx, cy, rx: rx * rin, ry: ry * rin } };
+  }
+  if (shape === 'river') {
+    const A = W * (0.05 + rng() * 0.04), f = 1 + rng() * 0.8, ph = rng() * 6.28, hw = 58;
+    const rxAt = y => cx + A * Math.sin(y / H * Math.PI * 2 * f + ph);
+    const side = (x, y) => x < rxAt(y) ? 0 : 1;
+    const line = []; for (let y = -20; y <= H + 20; y += 16) line.push([rxAt(y), y]);
+    return { inside: (x, y) => Math.abs(x - rxAt(y)) > hw, group: side, groups: 2, crossings: N < 24 ? 2 : N < 40 ? 3 : 4, deco: { kind: 'river', line, hw } };
+  }
+  return { inside: () => true, deco: null };
+}
+// keep: rectangles (world units) where no base may sit, so the floating HUD never covers one
+function randomMap(rng, spec, keep, k, shapeName) {
   keep = keep || [];
-  const blocked = p => keep.some(k => p[0] > k.x0 && p[0] < k.x1 && p[1] > k.y0 && p[1] < k.y1);
+  const shape = SHAPES.includes(shapeName) ? shapeName : 'continent';
+  const blocked = p => keep.some(r => p[0] > r.x0 && p[0] < r.x1 && p[1] > r.y0 && p[1] < r.y1);
   let fallback = null;
   for (let attempt = 0; attempt < 80; attempt++) {
     const N = spec.n[0] + Math.floor(rng() * (spec.n[1] - spec.n[0] + 1));
+    const S = makeShape(shape, rng, N);
     const pts = []; let tries = 0;
-    while (pts.length < N && tries < 6000) {
+    while (pts.length < N && tries < 9000) {
       tries++;
       const p = [70 + rng() * (W - 140), 66 + rng() * (H - 132)];
-      if (blocked(p)) continue;
+      if (blocked(p) || !S.inside(p[0], p[1])) continue;
       let ok = true;
       for (const q of pts) if ((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2 < 100 * 100) { ok = false; break; }
       if (ok) pts.push(p);
     }
     if (pts.length < spec.n[0]) continue;
     const n = pts.length, d = (i, j) => Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]);
-    const edges = [];
+    const grp = S.group ? pts.map(p => S.group(p[0], p[1])) : null;
+    let edges = [];
+    const across = [];                               // candidate lines that would cross water: bridge material
     for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
       const dij = d(i, j), mx = (pts[i][0] + pts[j][0]) / 2, my = (pts[i][1] + pts[j][1]) / 2, r2 = (dij / 2) ** 2;
       let rngEdge = true, gab = true;
-      for (let k = 0; k < n; k++) {
-        if (k === i || k === j) continue;
-        if (Math.max(d(i, k), d(j, k)) < dij) rngEdge = false;
-        if ((pts[k][0] - mx) ** 2 + (pts[k][1] - my) ** 2 < r2) gab = false;
+      for (let kk = 0; kk < n; kk++) {
+        if (kk === i || kk === j) continue;
+        if (Math.max(d(i, kk), d(j, kk)) < dij) rngEdge = false;
+        if ((pts[kk][0] - mx) ** 2 + (pts[kk][1] - my) ** 2 < r2) gab = false;
       }
-      if (rngEdge) edges.push([i, j]);                                   // backbone: always connected, never crossing
+      const wet = (grp && grp[i] !== grp[j]) || (S.cut && S.cut(pts[i], pts[j]));
+      if (wet) { if (gab || rngEdge) across.push([dij, i, j]); continue; }
+      if (rngEdge) edges.push([i, j]);                                   // backbone
       else if (gab && dij < 250 && rng() < 0.34) edges.push([i, j]);     // a few extra loops for strategy
     }
-    const starts = pickStarts(pts, edges, rng);
-    if (starts) return { nodes: pts, edges, starts };
-    if (!fallback) fallback = { nodes: pts, edges };
+    const bridges = [];
+    const fits = (i, j) => !edges.some(([a, b]) => a !== i && a !== j && b !== i && b !== j && segCross(pts[i], pts[j], pts[a], pts[b])) &&
+      !pts.some((p, kk) => kk !== i && kk !== j && segDist(p, pts[i], pts[j]) < 42);
+    const addBridge = (i, j) => { edges.push([i, j]); bridges.push([i, j]); };
+    if (shape === 'river') {                         // a few crossings spread along the river, shortest in each stretch
+      const want = S.crossings, bands = Array.from({ length: want }, () => []);
+      for (const c of across) { const my = (pts[c[1]][1] + pts[c[2]][1]) / 2; bands[Math.min(want - 1, Math.max(0, Math.floor(my / H * want)))].push(c); }
+      for (const band of bands) { band.sort((a, b) => a[0] - b[0]); const c = band.find(c => c[0] < 390 && fits(c[1], c[2])); if (c) addBridge(c[1], c[2]); }
+    }
+    // join any separate pieces (islands, ring gaps, river banks) with the shortest bridge that fits
+    const comp = () => { const id = new Array(n).fill(-1); let c = 0; const adj = pts.map(() => []); for (const [a, b] of edges) { adj[a].push(b); adj[b].push(a); }
+      for (let s0 = 0; s0 < n; s0++) if (id[s0] < 0) { const st = [s0]; id[s0] = c; while (st.length) { const u = st.pop(); for (const v of adj[u]) if (id[v] < 0) { id[v] = c; st.push(v); } } c++; } return { id, c }; };
+    let C = comp(), guard = 0;
+    const allPairs = shape === 'continent' ? [] : [];
+    while (C.c > 1 && guard++ < 20) {
+      let bestPair = null, bd = Infinity;
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+        if (C.id[i] === C.id[j]) continue;
+        const dij = d(i, j); if (dij < bd && fits(i, j)) { bd = dij; bestPair = [i, j]; }
+      }
+      if (!bestPair) break;
+      addBridge(bestPair[0], bestPair[1]); C = comp();
+    }
+    if (C.c > 1) continue;
+    if (shape === 'islands') {                      // one or two extra bridges so islands aren't a simple chain
+      const extra = (S.groups >= 4 ? 2 : 1), pairsUsed = new Set(bridges.map(([a, b]) => [grp[a], grp[b]].sort().join()));
+      across.sort((a, b) => a[0] - b[0]);
+      for (const c of across) {
+        if (bridges.length >= S.groups - 1 + extra) break;
+        const key = [grp[c[1]], grp[c[2]]].sort().join();
+        if (pairsUsed.has(key) || c[0] > 420 || !fits(c[1], c[2])) continue;
+        pairsUsed.add(key); addBridge(c[1], c[2]);
+      }
+    }
+    const starts = pickStarts(pts, edges, rng, k);
+    const out = { nodes: pts, edges, bridges, deco: S.deco, shape };
+    if (shape === 'islands') out.deco = { kind: 'islands', groups: grp };
+    if (starts) return { ...out, starts };
+    if (!fallback) fallback = out;
   }
-  if (!fallback) { if (keep.length) { randomMap.fellBack = (randomMap.fellBack || 0) + 1; return randomMap(rng, spec, []); } return null; }
+  if (!fallback) return keep.length ? randomMap(rng, spec, [], k, shape) : (shape !== 'continent' ? randomMap(rng, spec, [], k, 'continent') : null);
   const all = fallback.nodes.map((_, i) => i);
-  return { ...fallback, starts: all.slice(0, 5) };
+  return { ...fallback, starts: all.slice(0, k) };
 }
 
 // ---- game state ----
@@ -458,13 +687,19 @@ function newGame(opts) {
   opts = opts || {};
   const seed = opts.seed != null ? opts.seed : (Math.random() * 4294967296) >>> 0;
   const rng = mulberry32(seed);
-  const spec = SIZES[opts.size] || SIZES.medium;
+  const spec = SIZES[opts.size] || SIZES.classic;
+  // which colors are in this match: you (team 0) plus a random pick of the others, or any colors when only AIs play
+  const nTeams = opts.map === 'sketch' ? 5 : Math.max(2, Math.min(5, opts.teams || spec.teams));
+  const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const active = opts.watch ? shuffled([0, 1, 2, 3, 4]).slice(0, nTeams).sort() : [0, ...shuffled([1, 2, 3, 4]).slice(0, nTeams - 1).sort()];
   let m;
   if (opts.map === 'sketch') { W = 1000; H = 560; m = sketchMap(); }   // the original drawing, kept for reference
   else {
     // the world can be reshaped to match the screen; the base count per area stays the same
-    if (opts.world) { W = opts.world.w; H = opts.world.h; } else { W = spec.w; H = spec.h; }
-    m = randomMap(rng, spec, opts.keep);
+    const shape = SHAPES.includes(opts.shape) ? opts.shape : 'continent';
+    if (opts.world) { W = opts.world.w; H = opts.world.h; }
+    else { const area = spec.area * SHAPE_AREA[shape]; H = Math.sqrt(area / 1.78); W = area / H; }
+    m = randomMap(rng, spec, opts.keep, nTeams, shape);
   }
   const nodes = m.nodes.map((p, i) => ({ id: i, x: p[0], y: p[1], owner: NEUTRAL, adj: [],
     hp: C.baseHP, maxHp: C.baseHP, budget: C.baseDpsCap, lastHitT: -99, nCap: 0, nCount: 0,
@@ -474,16 +709,22 @@ function newGame(opts) {
   const D = DIFF[opts.diff] || DIFF.normal;
   G = {
     t: 0, step: 0, nodes, edges: m.edges, troops: [], nextId: 1, rng, seed,
-    diff: D, diffName: opts.diff || 'normal', sizeName: opts.size || 'medium',
+    shape: m.shape || 'continent', deco: m.deco || null,
+    bridges: new Set((m.bridges || []).map(([a, b]) => a < b ? a + '-' + b : b + '-' + a)),
+    diff: D, diffName: opts.diff || 'normal', sizeName: opts.size || 'classic', active,
     capPer: opts.map === 'sketch' ? 12 : spec.capPer,
-    teams: TEAM_COLORS.map((c, i) => ({ i, alive: true, xp: 0, points: 0, earned: 0,
+    teams: TEAM_COLORS.map((c, i) => ({ i, active: active.includes(i), alive: active.includes(i), xp: 0, points: 0, earned: 0,
       lv: { hp: 0, spd: 0, dmg: 0 }, kills: 0, bases: 0, count: 0,
       aiT: 1.2 + rng() * 2, target: null, sent: 0, avoid: -1, avoidUntil: 0,
       style: opts.persona === 'adaptive' ? STYLES.find(x => x.adaptive) : STYLES[Math.floor(rng() * STYLES.length)], diedAt: null })),
-    fx: [], sfx: [], lock: [null, null, null, null, null], over: false, result: null, winner: null, peak: 1, lost: 0
+    fx: [], sfx: [], lock: [null, null, null, null, null], over: false,
+    // match history for the end-screen timeline: base counts once a second, plus notable moments
+    hist: [], nextSample: 0, log: [], homes: [-1, -1, -1, -1, -1], lastTaker: [null, null, null, null, null],
+    leader: -1, leadCand: -1, leadSince: 0, playerCaps: 0, result: null, winner: null, peak: 1, lost: 0
   };
-  m.starts.forEach((n, team) => {
-    nodes[n].owner = team;
+  m.starts.forEach((n, j) => {
+    const team = active[j];
+    nodes[n].owner = team; G.homes[team] = n;
     for (let k = 0; k < C.startTroops; k++) spawnTroop(team, n, true);
   });
   const opening = new Set();
@@ -515,6 +756,7 @@ const capOf = team => C.capBase + G.capPer * G.teams[team].bases;
 const needXP = T => 5 + 2 * T.earned;
 
 function statArrays() {
+  if (G._S && G._S.step === G.step) return G._S;
   const hp = [], dp = [], sp = [], st = [], ar = [], bd = [];
   for (let i = -1; i < 5; i++) {
     const nm = i < 0;
@@ -525,24 +767,40 @@ function statArrays() {
     ar.push(a); st.push(h * d * a);                               // what the AI weighs when sizing up a fight
     bd.push(C.dps * (1 + C.dmgPer * lvOf(i, 'dmg') * C.baseDmgFactor)); // damage against bases
   }
-  return { hp, dp, sp, st, ar, bd };
+  return (G._S = { hp, dp, sp, st, ar, bd, step: G.step });
 }
 
+// Each troop looks for the nearest enemy within engage range. Troops are bucketed into a grid of
+// C.cell-sized squares (a counting sort into reusable typed arrays, so nothing is allocated per call),
+// then each troop only checks the 5x5 cells around it.
+const GRID = { w: 0, h: 0, count: new Int32Array(0), start: new Int32Array(0), order: new Int32Array(0), cellOf: new Int32Array(0) };
 function retarget() {
-  const cs = C.cell, grid = new Map();
-  for (const t of G.troops) {
-    const k = ((t.x / cs) | 0) + ((t.y / cs) | 0) * 64;
-    let a = grid.get(k); if (!a) grid.set(k, a = []); a.push(t);
+  const troops = G.troops, n = troops.length, cs = C.cell;
+  const gw = Math.ceil(W / cs) + 2, gh = Math.ceil(H / cs) + 2, cells = gw * gh;
+  if (GRID.count.length < cells) { GRID.count = new Int32Array(cells); GRID.start = new Int32Array(cells + 1); }
+  if (GRID.order.length < n) { GRID.order = new Int32Array(n * 2); GRID.cellOf = new Int32Array(n * 2); }
+  const count = GRID.count, start = GRID.start, order = GRID.order, cellOf = GRID.cellOf;
+  count.fill(0, 0, cells);
+  for (let i = 0; i < n; i++) {
+    const t = troops[i];
+    const cx = Math.min(gw - 1, Math.max(0, ((t.x / cs) | 0) + 1)), cy = Math.min(gh - 1, Math.max(0, ((t.y / cs) | 0) + 1));
+    const c = cx + cy * gw; cellOf[i] = c; count[c]++;
   }
+  start[0] = 0;
+  for (let c = 0; c < cells; c++) start[c + 1] = start[c] + count[c];
+  for (let c = 0; c < cells; c++) count[c] = start[c];          // reuse count as a write cursor
+  for (let i = 0; i < n; i++) order[count[cellOf[i]]++] = i;
   const e2 = C.engage * C.engage;
-  for (const t of G.troops) {
-    const cx = (t.x / cs) | 0, cy = (t.y / cs) | 0;
+  for (let i = 0; i < n; i++) {
+    const t = troops[i], team = t.team, tx = t.x, ty = t.y, c = cellOf[i];
+    const cx = c % gw, cy = (c / gw) | 0;
+    const x0 = Math.max(0, cx - 2), x1 = Math.min(gw - 1, cx + 2), y0 = Math.max(0, cy - 2), y1 = Math.min(gh - 1, cy + 2);
     let best = null, bd = e2;
-    for (let gy = cy - 2; gy <= cy + 2; gy++) for (let gx = cx - 2; gx <= cx + 2; gx++) {
-      const a = grid.get(gx + gy * 64); if (!a) continue;
-      for (let i = 0; i < a.length; i++) {
-        const o = a[i]; if (o.team === t.team) continue;
-        const dx = o.x - t.x, dy = o.y - t.y, d = dx * dx + dy * dy;
+    for (let gy = y0; gy <= y1; gy++) {
+      const row = gy * gw;
+      for (let k = start[row + x0], end = start[row + x1 + 1]; k < end; k++) {   // cells in a row are contiguous
+        const o = troops[order[k]]; if (o.team === team) continue;
+        const dx = o.x - tx, dy = o.y - ty, d = dx * dx + dy * dy;
         if (d < bd) { bd = d; best = o; }
       }
     }
@@ -644,10 +902,14 @@ function update(dt) {
           h.heat += C.garrisonHeat; if (t.lastHit !== null) h.heatBy = t.lastHit;
         }
       }
-      if (G.fx.length < 400) G.fx.push({ k: 'pop', x: t.x, y: t.y, c: t.team, b: G.t });
+      if (G.fx.length < 400) G.fx.push({ k: 'pop', x: t.x, y: t.y, c: t.team, b: G.t, by: t.lastHit });
     }
   }
-  if (died) G.troops = troops.filter(t => !t.dead);
+  if (died) {
+    let w = 0;
+    for (let i = 0; i < troops.length; i++) if (!troops[i].dead) troops[w++] = troops[i];
+    troops.length = w;
+  }
 
   presenceStep(dt);
   recount();
@@ -662,7 +924,9 @@ function update(dt) {
       T.aiT = iv[0] + G.rng() * (iv[1] - iv[0]);
     }
   }
+  sampleHistory();
   checkEnd();
+  if (G.over) sampleHistory(true);
   if (G.step % 30 === 0) G.fx = G.fx.filter(f => G.t - f.b < 2);
 }
 
@@ -699,6 +963,12 @@ function hitBase(n, team, dmg, x, y) {
 }
 
 function takeNode(n, team) {
+  const prev = n.owner;
+  if (prev >= 0) {
+    G.lastTaker[prev] = team;
+    if (G.homes[prev] === n.id) G.log.push({ t: G.t, k: 'home', a: team, b: prev });
+  }
+  if (team === PLAYER) G.playerCaps++;
   n.owner = team; n.hp = n.maxHp * C.flipHP; n.lastHitT = G.t; n.spawnT = C.spawnEvery * 0.5; n.heat = 0;
   G.fx.push({ k: 'ring', x: n.x, y: n.y, c: team, b: G.t });
   if (G.teams[team].target === n.id) G.teams[team].target = null;
@@ -740,9 +1010,25 @@ function recount() {
   for (const T of G.teams) {
     const was = T.alive;
     T.alive = T.bases > 0 || T.count > 0;
-    if (was && !T.alive) { T.diedAt = G.t; G.fx.push({ k: 'elim', c: T.i, b: G.t }); }
+    if (was && !T.alive) {
+      T.diedAt = G.t; G.fx.push({ k: 'elim', c: T.i, b: G.t });
+      G.log.push({ t: G.t, k: 'out', b: T.i, a: G.lastTaker[T.i] });
+    }
   }
   if (G.teams[PLAYER].bases > G.peak) G.peak = G.teams[PLAYER].bases;
+}
+
+function sampleHistory(force) {
+  if (!force && G.t < G.nextSample) return;
+  G.nextSample = G.t + 1;
+  const b = G.teams.map(T => T.bases);
+  G.hist.push([G.t, ...b]);
+  // a lead change only counts once someone has been out in front on their own for 5 seconds
+  const mx = Math.max(...b), cand = b.filter(x => x === mx).length === 1 ? b.indexOf(mx) : -1;
+  if (cand !== G.leadCand) { G.leadCand = cand; G.leadSince = G.t; }
+  else if (cand >= 0 && cand !== G.leader && G.t - G.leadSince >= 5 && G.t > C.peace) {
+    G.leader = cand; G.log.push({ t: G.leadSince, k: 'lead', a: cand });
+  }
 }
 
 function checkEnd() {
@@ -764,7 +1050,7 @@ function awardKill(team) {
 function upgrade(team, k) {
   const T = G.teams[team];
   if (T.points <= 0 || T.lv[k] >= C.maxLvl) return false;
-  T.points--; T.lv[k]++;
+  T.points--; T.lv[k]++; G._S = null;               // stats changed: recompute next time they're asked for
   return true;
 }
 
@@ -821,7 +1107,7 @@ function followPath(rt, s, target) {
   return p;
 }
 
-function command(team, target, frac, filter) {
+function command(team, target, frac, filter, maxCost = Infinity) {
   const nodes = G.nodes, rt = routeTable(team, target), cands = [];
   for (const t of G.troops) {
     if (t.team !== team || (filter && !filter(t))) continue;
@@ -836,7 +1122,7 @@ function command(team, target, frac, filter) {
       const f = followPath(rt, t.home, target);
       if (f) { best = rt.dist[t.home]; path = f; }
     }
-    if (path) cands.push({ t, best, path });
+    if (path && best <= maxCost) cands.push({ t, best, path });
   }
   if (!cands.length) return null;
   cands.sort((a, b) => a.best - b.best);
@@ -885,9 +1171,8 @@ function aiThink(team) {
   if (!T.alive || !T.count) return;
   aiSpend(team);
   const S = statArrays();
-  const pres = nodes.map(() => new Float64Array(6));
-  const mine = new Float64Array(N);      // my strength sitting at / about to reach each node
-  const committed = new Float64Array(N); // my strength whose orders end at each node
+  if (!G._ai || G._ai.N !== N) G._ai = { N, pres: new Float64Array(N * 6), mine: new Float64Array(N), committed: new Float64Array(N) };
+  const P6 = G._ai.pres.fill(0), mine = G._ai.mine.fill(0), committed = G._ai.committed.fill(0);
   const pr2 = (C.presenceR * 1.2) ** 2;
   for (const t of G.troops) {
     const st = S.st[t.team + 1];
@@ -898,19 +1183,30 @@ function aiThink(team) {
     }
     // other colors: only what is physically there. Where they've been *ordered* to go is invisible.
     const h = nodes[t.home];
-    if ((t.x - h.x) ** 2 + (t.y - h.y) ** 2 < pr2) { pres[t.home][t.team + 1] += st; continue; }
+    if ((t.x - h.x) ** 2 + (t.y - h.y) ** 2 < pr2) { P6[t.home * 6 + t.team + 1] += st; continue; }
     if (t.path.length) {
       const q = nodes[t.path[0]];
-      if ((t.x - q.x) ** 2 + (t.y - q.y) ** 2 < pr2) pres[t.path[0]][t.team + 1] += st;
+      if ((t.x - q.x) ** 2 + (t.y - q.y) ** 2 < pr2) P6[t.path[0] * 6 + t.team + 1] += st;
     }
   }
-  const enemyAt = v => { let s = 0; for (let k = 0; k < 6; k++) if (k !== ti) s += pres[v][k]; return s; };
-  const reachFrom = (rt, excl) => {
+  const enemyAt = v => { let s = 0; for (let k = 0; k < 6; k++) if (k !== ti) s += P6[v * 6 + k]; return s; };
+  const reachFrom = (rt, excl, R = Infinity) => {   // my strength that can get there, optionally only from within R
     let s = 0;
-    for (let i = 0; i < N; i++) if (mine[i] > 0 && i !== excl && rt.dist[i] < Infinity) s += mine[i];
+    for (let i = 0; i < N; i++) if (mine[i] > 0 && i !== excl && rt.dist[i] <= R) s += mine[i];
     return s;
   };
+  // the smallest route distance from which enough of my strength can gather (Infinity if it can't)
+  const gatherRadius = (rt, need) => {
+    const order = [];
+    for (let i = 0; i < N; i++) if (mine[i] > 0 && rt.dist[i] < Infinity) order.push(i);
+    order.sort((a, b) => rt.dist[a] - rt.dist[b]);
+    let acc = 0;
+    for (const i of order) { acc += mine[i]; if (acc >= need) return rt.dist[i]; }
+    return Infinity;
+  };
+  const DEF_R = 420, ATK_R = 900;                     // defense is local; attacks gather from at most this far
 
+  primary: {
   // 1. retreat: an attack that's clearly lost gets called off and the survivors pulled home
   if (T.target != null && nodes[T.target].owner !== team) {
     const v = T.target, en = enemyAt(v), have = committed[v];
@@ -919,8 +1215,9 @@ function aiThink(team) {
       const back = nearestOwned(team, v);
       if (back >= 0) command(team, back, 1, t => finalDest(t) === v);
       T.target = null; G.lock[team] = null; T.avoid = v; T.avoidUntil = G.t + 12;
-      G.fx.push({ k: 'retreat', c: team, b: G.t }); G.retreats = (G.retreats || 0) + 1;
-      return;
+      G.fx.push({ k: 'retreat', c: team, b: G.t });
+      G.log.push({ t: G.t, k: 'retreat', a: team });
+      break primary;
     }
   }
 
@@ -930,17 +1227,18 @@ function aiThink(team) {
     if (n.owner !== team || n.heat < C.assaultHeat) continue;
     const en = enemyAt(n.id); if (en < 0.5) continue;
     const my = committed[n.id]; if (my >= en * 1.25) continue;
-    const rt = routeTable(team, n.id), reach = reachFrom(rt, n.id);
+    const rt = routeTable(team, n.id), reach = reachFrom(rt, n.id, DEF_R);
     if (reach <= 0.5) continue;
     const sc = 2.5 + en / (my + 1) + (1 - n.hp / n.maxHp) * 1.5 + G.rng() * .3;
-    if (!best || sc > best.sc) best = { sc, node: n.id, frac: Math.min(1, Math.max(.4, (en * 1.3 - my) / reach)), kind: 'def' };
+    if (!best || sc > best.sc) best = { sc, node: n.id, frac: Math.min(1, Math.max(.4, (en * 1.3 - my) / reach)), kind: 'def', R: DEF_R };
   }
 
-  // 3. stick with an attack that's still going
+  // 3. stick with an attack that's still going (and give a fresh one time to arrive before second-guessing it)
+  if (!best && T.target != null && nodes[T.target].owner !== team && G.t < (T.busyUntil || 0) && committed[T.target] > 0.5) break primary;
   if (!best && T.target != null) {
     const v = T.target;
     if (nodes[v].owner === team) T.target = null;
-    else if (committed[v] > 0.5 && committed[v] > enemyAt(v) * 0.9) return;
+    else if (committed[v] > 0.5 && committed[v] > enemyAt(v) * 0.9) break primary;
     else { T.target = null; G.lock[team] = null; }
   }
 
@@ -955,10 +1253,11 @@ function aiThink(team) {
       const o = nodes[v].owner;
       if (o >= 0 && G.t < C.peace) continue;              // opening ceasefire: neutrals only
       if (v === T.avoid && G.t < T.avoidUntil) continue;  // just got bounced off this one
-      const def = enemyAt(v), rt = routeTable(team, v);
-      const avail = reachFrom(rt, -1) * frac;
-      if (avail < 5 || avail < def * margin + 1.2) continue;
-      let sc = (avail - def) / (def + 2);
+      const def = enemyAt(v), rt = routeTable(team, v), need = Math.max(5, def * margin + 1.2) / frac;
+      const R = gatherRadius(rt, need);
+      if (R > ATK_R) continue;                          // not enough strength close enough
+      const avail = reachFrom(rt, -1, R + 80) * frac;
+      let sc = (avail - def) / (def + 2) - R / 1500;    // nearer targets win ties
       sc += (1 - nodes[v].hp / nodes[v].maxHp) * 0.8;
       if (o === NEUTRAL) sc += 0.6;
       else {
@@ -966,16 +1265,19 @@ function aiThink(team) {
         if (G.teams[o].count < T.count * 0.6) sc += 0.3;
       }
       sc += G.rng() * 0.35;
-      if (!best || sc > best.sc) best = { sc, node: v, frac, kind: 'atk' };
+      if (!best || sc > best.sc) best = { sc, node: v, frac, kind: 'atk', R: R + 80 };
     }
   }
 
   if (best) {
-    const r = command(team, best.node, best.frac);
+    const r = command(team, best.node, best.frac, null, best.R);
     if (best.kind === 'atk') {
-      if (r) { T.target = best.node; T.sent = 0; G.lock[team] = best.node; } // AI locks on too
+      if (r) {
+        T.target = best.node; T.sent = 0; G.lock[team] = best.node;     // AI locks on too
+        T.busyUntil = G.t + Math.min(30, Math.max(8, best.R / S.sp[ti] + 6));
+      }
     } else { T.target = null; G.lock[team] = null; }
-    return;
+    break primary;
   }
 
   // 5. nothing worth hitting yet: mass up next to the softest neighbour
@@ -987,14 +1289,56 @@ function aiThink(team) {
       let stage = -1, sm = -1;
       for (const u of nodes[wv].adj) if (nodes[u].owner === team && mine[u] > sm) { sm = mine[u]; stage = u; }
       let total = 0; for (let i = 0; i < N; i++) total += mine[i];
-      if (stage >= 0 && mine[stage] < total * 0.5) command(team, stage, 0.6);
+      if (stage >= 0 && mine[stage] < total * 0.5) command(team, stage, 0.6, null, 520);
     }
   }
+  } // end primary
+
+  // 6. a second front: once the army is big, troops sitting idle at home raid the softest target elsewhere,
+  //    so big maps don't grind down to one attack at a time. Raids retreat by the same rule as main attacks.
+  if (T.count < 60 || G.t < C.peace) { T.raid = null; return; }
+  const idle = t => t.team === team && !t.path.length && nodes[t.home].owner === team && t.home !== T.target;
+  if (T.raid != null) {
+    const v = T.raid;
+    if (nodes[v].owner === team || committed[v] < 0.5) T.raid = null;            // taken, or the raiders are gone
+    else if (enemyAt(v) > 1 && committed[v] < enemyAt(v) * 0.6) {                // losing: pull back
+      const back = nearestOwned(team, v);
+      if (back >= 0) command(team, back, 1, t => finalDest(t) === v);
+      T.raid = null; T.avoid = v; T.avoidUntil = G.t + 12;
+      return;
+    } else return;                                                                // still going
+  }
+  let idleStr = 0;
+  for (const t of G.troops) if (idle(t)) idleStr += S.st[ti];
+  if (idleStr < 22) return;
+  let pick = null;
+  for (const n of nodes) {
+    if (n.owner !== team) continue;
+    for (const v of n.adj) {
+      const o = nodes[v].owner;
+      if (o === team || v === T.target || (v === T.avoid && G.t < T.avoidUntil)) continue;
+      const def = enemyAt(v), avail = idleStr * 0.65;
+      if (avail < def * D.margin + 2) continue;
+      const sc = (avail - def) / (def + 2) + (o === NEUTRAL ? 0.5 : 0) + (1 - nodes[v].hp / nodes[v].maxHp) * 0.6 + G.rng() * 0.3;
+      if (!pick || sc > pick.sc) pick = { sc, v };
+    }
+  }
+  if (pick && command(team, pick.v, 0.65, idle)) T.raid = pick.v;
 }
 
 
 
 // ================= UI =================
+// Everything you see and hear. Reads the simulation's state (G) every frame and draws it.
+//   view & camera ...... fitting the map to the screen, pinch/drag/zoom, screen <-> world conversion
+//   drawing ............ lines, bases, troops, attack lines, effects; Spark extras (glows, sparks, dust)
+//   HUD ................ army count, territory bar, rival table, upgrades (only writes values that changed)
+//   sound .............. shared hit picking + four profiles: Bright, Soft, Felt, Low hum
+//   screens ............ menu stack (home, setup, settings, stats, how to play, pause), starting/ending games
+//   end screen ......... match timeline chart and key moments
+//   back gesture ....... Android back steps through menus and pauses matches
+//   input .............. taps, double-tap lock-on, drag, pinch, mouse wheel, keyboard
+//   loop ............... fixed 1/60 s simulation steps, drawing, ?perf readout, adaptive resolution
 (function () {
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 const $ = id => document.getElementById(id);
@@ -1014,21 +1358,49 @@ function load(k, d) {
   catch (e) { return Object.assign({}, d); }
 }
 function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-const settings = load('ice-settings', { size: 'medium', diff: 'normal', persona: 'mixed', send: 1, sound: true, rivals: false, volume: 75, tone: 'bright' });
+const COLOR_KEYS = ['blue', 'red', 'green', 'yellow', 'purple'];
+const settings = load('ice-settings', { size: 'classic', diff: 'normal', persona: 'mixed', send: 1, sound: true, rivals: false, volume: 75, tone: 'bright' });
 if (settings.persona !== 'adaptive') settings.persona = 'mixed';
+if (!SIZES[settings.size]) settings.size = 'classic';
+const defaultOpp = size => String(SIZES[size].teams - 1);
+const defaultShape = size => size === 'classic' ? 'continent' : 'random';   // Classic stays the original experience
+const pickShape = () => settings.shape === 'random' ? SHAPES[Math.floor(Math.random() * SHAPES.length)] : settings.shape;
+if (!['1', '2', '3', '4'].includes(settings.opp)) settings.opp = defaultOpp(settings.size);
+if (!['random', ...SHAPES].includes(settings.shape)) settings.shape = defaultShape(settings.size);
 if (!(settings.volume >= 0 && settings.volume <= 100)) settings.volume = 75;
-if (!['bright', 'soft', 'felt', 'hum'].includes(settings.tone)) settings.tone = 'bright';
-if (settings.visual !== 'spark') settings.visual = 'classic';
+if (!['bright', 'soft', 'felt', 'hum', 'overdrive'].includes(settings.tone)) settings.tone = 'bright';
+if (!['classic', 'spark', 'overload'].includes(settings.visual)) settings.visual = 'classic';
+if (!COLOR_KEYS.includes(settings.color)) settings.color = 'blue';
 delete settings.map;
-if (!['small', 'medium', 'large'].includes(settings.size)) settings.size = 'medium';
-const record = load('ice-record', { wins: 0, games: 0 });
+const stats = load('ice-stats', {
+  play: { games: 0, wins: 0, kills: 0, caps: 0, time: 0, most: 0, fastest: {} },
+  watch: { matches: 0, byColor: [0, 0, 0, 0, 0], byStyle: {}, appColor: [0, 0, 0, 0, 0], appStyle: {} }
+});
+// win *rates* need appearances; matches from before every color always played count as all five appearing
+if (!stats.watch.appColor) stats.watch.appColor = [0, 0, 0, 0, 0].map(() => stats.watch.matches);
+if (!stats.watch.appStyle) stats.watch.appStyle = {};
+(() => {                                             // carry over the win record from before stats existed
+  const old = load('ice-record', { wins: 0, games: 0 });
+  if (!stats.play.games && old.games) { stats.play.games = old.games; stats.play.wins = old.wins; save('ice-stats', stats); }
+})();
 if (!SENDS.includes(settings.send)) settings.send = 1;
 
 // ---- view & camera ----
 // "view" coordinates are world coordinates turned to match the screen (sideways on tall screens)
 const viewSize = () => rot ? [H, W] : [W, H];
+// Render resolution: capped at 2.5x (indistinguishable on a phone, about a third fewer pixels than 3x), and
+// stepped down automatically if the frame rate stays low, so a slower phone trades sharpness for smoothness.
+const DPR_MAX = Math.min(window.devicePixelRatio || 1, 2.5), QUALITY = [1, 0.8, 0.65, 0.5];
+let quality = 0, slowSince = 0, frameAvg = 16.7;
+function watchFrameRate(frameMs, nowMs) {
+  if (mode !== 'play' || document.hidden) { slowSince = 0; frameAvg = 16.7; return; }
+  frameAvg += (Math.min(frameMs, 100) - frameAvg) * 0.05;
+  if (frameAvg < 22) { slowSince = 0; return; }                 // ~45 fps or better: leave it alone
+  if (!slowSince) slowSince = nowMs;
+  else if (nowMs - slowSince > 3000 && quality < QUALITY.length - 1) { quality++; slowSince = 0; frameAvg = 16.7; layout(); }
+}
 function layout() {
-  dpr = Math.min(window.devicePixelRatio || 1, 3);
+  dpr = Math.max(1, DPR_MAX * QUALITY[quality]);
   const w = window.innerWidth, h = window.innerHeight;
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
   cv.style.width = w + 'px'; cv.style.height = h + 'px';
@@ -1041,21 +1413,77 @@ function layout() {
   const [ww, wh] = viewSize();
   s0 = Math.max(0.05, Math.min(F.w / ww, F.h / wh));
   updateView();
+  if (!$('mm').hidden) sizeMinimap();
+  if (!hudEl.hidden) placeMapButton();
 }
-function worldPlan(withHud) {
+function worldPlan(withHud, shape) {
   const aspect = Math.min(2.5, Math.max(1.4, rot ? F.h / F.w : F.w / F.h));
-  const spec = SIZES[settings.size] || SIZES.medium, area = spec.w * spec.h;
+  const spec = SIZES[settings.size] || SIZES.classic, area = spec.area * (SHAPE_AREA[shape] || 1);
   const h = Math.sqrt(area / aspect), w = area / h;
   const ww = rot ? h : w, wh = rot ? w : h, s = Math.min(F.w / ww, F.h / wh);
   const ex = F.x + F.w / 2 - ww / 2 * s, ey = F.y + F.h / 2 - wh / 2 * s;
   const toW = (px, py) => { const u = (px - ex) / s, v = (py - ey) / s; return rot ? { x: v, y: h - u } : { x: u, y: v }; };
   const keep = [];
-  if (withHud) for (const el of [$('statsBtn'), $('rivals'), $('ctrl'), $('upg')]) {
+  if (withHud && spec.fit) for (const el of [$('statsBtn'), $('rivals'), $('ctrl'), $('upg')]) {
     const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
     const a = toW(r.left - 6, r.top - 6), c = toW(r.right + 6, r.bottom + 6), m = 36;   // m: room for troops circling a base
     keep.push({ x0: Math.min(a.x, c.x) - m, x1: Math.max(a.x, c.x) + m, y0: Math.min(a.y, c.y) - m, y1: Math.max(a.y, c.y) + m });
   }
   return { world: { w, h }, keep };
+}
+// ---- minimap: hidden until the map button is tapped; tap or drag on it to move the view ----
+let mmCtx = null;
+function sizeMinimap() {
+  const c = $('mm'), [ww, wh] = viewSize();
+  const k = Math.min(Math.min(200, F.w * 0.42) / ww, Math.min(150, F.h * 0.42) / wh);
+  const w = Math.max(40, Math.round(ww * k)), h = Math.max(30, Math.round(wh * k)), d = Math.min(window.devicePixelRatio || 1, 2.5);
+  c.width = Math.round(w * d); c.height = Math.round(h * d); c.style.width = w + 'px'; c.style.height = h + 'px';
+  c._w = w; c._h = h; c._d = d; mmCtx = c.getContext('2d');
+}
+function setMinimap(on) { $('mm').hidden = !on; $('bMap').setAttribute('aria-pressed', String(on)); if (on) sizeMinimap(); }
+function drawMinimap() {
+  const c = $('mm'); if (c.hidden || !G || !mmCtx) return;
+  const x = mmCtx, w = c._w, h = c._h, [ww, wh] = viewSize(), k = Math.min(w / ww, h / wh);
+  const P = (px, py) => rot ? [(H - py) * k, px * k] : [px * k, py * k];
+  x.setTransform(c._d, 0, 0, c._d, 0, 0); x.clearRect(0, 0, w, h);
+  const D = G.deco;
+  if (D && D.kind === 'river') { x.strokeStyle = 'rgba(90,140,220,0.35)'; x.lineWidth = Math.max(2, D.hw * k); x.beginPath(); D.line.forEach(([px, py], i) => { const p = P(px, py); i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1]); }); x.stroke(); }
+  if (D && D.kind === 'islands') { x.fillStyle = 'rgba(255,255,255,0.06)'; for (const hl of islandHulls()) { x.beginPath(); hl.forEach(([px, py], i) => { const p = P(px, py); i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1]); }); x.closePath(); x.fill(); } }
+  x.strokeStyle = 'rgba(255,255,255,0.16)'; x.lineWidth = 1; x.beginPath();
+  for (const [a, b] of G.edges) { const p = P(G.nodes[a].x, G.nodes[a].y), q = P(G.nodes[b].x, G.nodes[b].y); x.moveTo(p[0], p[1]); x.lineTo(q[0], q[1]); }
+  x.stroke();
+  x.globalAlpha = 0.6;                                // armies as faint specks, so you can see where they are
+  for (let team = 0; team < 5; team++) {
+    if (!G.teams[team].alive) continue;
+    x.fillStyle = TEAM_COLORS[team]; x.beginPath();
+    for (const t of G.troops) if (t.team === team) { const p = P(t.x, t.y); x.rect(p[0] - 0.5, p[1] - 0.5, 1, 1); }
+    x.fill();
+  }
+  x.globalAlpha = 1;
+  for (const n of G.nodes) {
+    const p = P(n.x, n.y), sz = n.owner >= 0 ? 4 : 3;
+    x.fillStyle = colorOf(n.owner); x.fillRect(p[0] - sz / 2, p[1] - sz / 2, sz, sz);
+  }
+  const s = V.s, u0 = cam.cu - F.w / (2 * s), v0 = cam.cv - F.h / (2 * s);
+  const rx0 = Math.max(0.6, u0 * k), ry0 = Math.max(0.6, v0 * k);              // your view, kept inside the minimap's edges
+  const rx1 = Math.min(w - 0.6, (u0 + F.w / s) * k), ry1 = Math.min(h - 0.6, (v0 + F.h / s) * k);
+  x.strokeStyle = '#fff'; x.lineWidth = 1.2; x.strokeRect(rx0, ry0, Math.max(2, rx1 - rx0), Math.max(2, ry1 - ry0));
+}
+function mmJump(e) {
+  const c = $('mm'), r = c.getBoundingClientRect(), [ww, wh] = viewSize(), k = Math.min(c._w / ww, c._h / wh);
+  cam.cu = (e.clientX - r.left) / k; cam.cv = (e.clientY - r.top) / k; fling.vx = fling.vy = 0; updateView();
+}
+// fling: a quick swipe keeps gliding and slows down, like any map app
+const fling = { vx: 0, vy: 0 }, panHist = [];
+function stepFling(dt) {
+  if (Math.abs(fling.vx) + Math.abs(fling.vy) < 20 || mode !== 'play') { fling.vx = fling.vy = 0; return; }
+  cam.cu -= fling.vx * dt / V.s; cam.cv -= fling.vy * dt / V.s;
+  const k = Math.exp(-dt * 4.2); fling.vx *= k; fling.vy *= k; updateView();
+}
+function placeMapButton() {                           // in portrait, sit above the upgrade strip
+  const wrap = $('mapWrap'), upg = $('upg'), r = upg.getBoundingClientRect();
+  const fr = field.getBoundingClientRect();
+  wrap.style.bottom = (rot && r.height && !hudEl.classList.contains('watch') ? Math.round(fr.bottom - r.top + 8) : 8) + 'px';
 }
 function resetCam() { const [ww, wh] = viewSize(); cam = { z: 1, cu: ww / 2, cv: wh / 2 }; }
 function updateView() {
@@ -1065,7 +1493,6 @@ function updateView() {
   if (cam.z <= 1.001 || 2 * hw >= ww) cam.cu = ww / 2; else cam.cu = Math.min(ww - hw + m, Math.max(hw - m, cam.cu));
   if (cam.z <= 1.001 || 2 * hh >= wh) cam.cv = wh / 2; else cam.cv = Math.min(wh - hh + m, Math.max(hh - m, cam.cv));
   V = { s, rot, ex: F.x + F.w / 2 - cam.cu * s, ey: F.y + F.h / 2 - cam.cv * s };
-  $('bFit').hidden = cam.z <= 1.01;
 }
 function zoomAround(px, py, z) {          // keep the point under (px, py) fixed while zooming
   const au = cam.cu + (px - (F.x + F.w / 2)) / V.s, av = cam.cv + (py - (F.y + F.h / 2)) / V.s;
@@ -1075,10 +1502,10 @@ function zoomAround(px, py, z) {          // keep the point under (px, py) fixed
   updateView();
 }
 function centerOn(x, y) { cam.cu = rot ? H - y : x; cam.cv = rot ? x : y; updateView(); }
-function applyView() {
+function applyView(sx = 0, sy = 0) {                 // sx, sy: screen-shake offset in CSS pixels
   const k = dpr * V.s;
-  if (!V.rot) ctx.setTransform(k, 0, 0, k, dpr * V.ex, dpr * V.ey);
-  else ctx.setTransform(0, k, -k, 0, dpr * (V.ex + V.s * H), dpr * V.ey);
+  if (!V.rot) ctx.setTransform(k, 0, 0, k, dpr * (V.ex + sx), dpr * (V.ey + sy));
+  else ctx.setTransform(0, k, -k, 0, dpr * (V.ex + sx + V.s * H), dpr * (V.ey + sy));
 }
 function toWorld(px, py) {
   const u = (px - V.ex) / V.s, v = (py - V.ey) / V.s;
@@ -1102,14 +1529,151 @@ function reachable(n) {
 }
 
 // ---- drawing ----
-function hexA(hex, a) {
-  const n = parseInt(hex.slice(1), 16);
-  return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
+const hexCache = new Map();
+function hexA(hex, a) {                              // '#rrggbb' + alpha -> 'rgba(...)', memoized (alpha to 2 decimals)
+  const q = Math.round(a * 100), key = hex + q;
+  let v = hexCache.get(key);
+  if (!v) { const n = parseInt(hex.slice(1), 16); v = `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${q / 100})`; hexCache.set(key, v); }
+  return v;
 }
+// ---- "Overload": Spark taken deliberately too far ----
+// Everything throbs to a 108 bpm beat, nothing is fully erased between frames (so it all smears), the camera
+// shakes, attacks are lightning, neutrals cycle the rainbow, troops spin, hits throw damage numbers, captures
+// burst into confetti, knockouts get glitchy banners, kills stack into a combo counter, and behind it all is a
+// hyperspace starfield with giant rotating shapes. Guard rails: full-screen flashes are dim and at most two a
+// second (no strobing), it switches itself off under "reduce motion", and adaptive quality trims it on slow phones.
+const isOver = () => settings.visual === 'overload' && !reduceMotion;
+function hslHex(h, sat, lig) {
+  sat /= 100; lig /= 100;
+  const a = sat * Math.min(lig, 1 - lig), f = n => { const k = (n + h / 30) % 12; return Math.round(255 * (lig - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))); };
+  return '#' + [f(0), f(8), f(4)].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+const RAINBOW = Array.from({ length: 36 }, (_, i) => hslHex(i * 10, 95, 62));
+const rainbowAt = (x, y, now) => RAINBOW[((((x * 0.22 + y * 0.13 + now * 80) % 360) + 360) % 360 / 10) | 0];
+let kick = 0, shakeAmp = 0, lastFlash = -9, flash = null, combo = 0, comboT = -9, lastDrawT = 0, vig = null;
+const texts = [], banners = [], stars = [], RB = Array.from({ length: 36 }, () => []);
+const beatKick = now => Math.exp(-((now * 108 / 60) % 1) * 5);          // a kick-drum envelope on every beat
+function shake(px) { shakeAmp = Math.max(shakeAmp, px); }
+function flashScreen(color) { const now = performance.now() / 1000; if (now - lastFlash < 0.5) return; lastFlash = now; flash = { c: color, t0: now }; }
+function floatText(x, y, str, c, size, life, spray) {
+  if (texts.length > 90) texts.shift();
+  texts.push({ x, y, str, c, size, life, max: life, oy: 0, ox: spray ? (Math.random() * 2 - 1) * 16 : 0, vx: spray ? (Math.random() * 2 - 1) * 20 : 0 });
+}
+function banner(str, c) { banners.push({ str, c, t0: performance.now() / 1000 }); if (banners.length > 3) banners.shift(); }
+function drawOverloadBg(now, dt) {
+  const cx = W / 2, cy = H / 2, R = Math.hypot(W, H) * 0.55, want = [140, 100, 60, 0][quality];
+  if (stars.R !== R || stars.length !== want) { stars.length = 0; stars.R = R; for (let i = 0; i < want; i++) stars.push({ a: Math.random() * 6.283, r: Math.random() * R, v: 40 + Math.random() * 120 }); }
+  ctx.lineWidth = 1 / V.s; ctx.strokeStyle = hexA(rainbowAt(0, 0, now), 0.05 + 0.1 * kick); ctx.beginPath();   // a grid that pulses
+  for (let x = 0; x <= W; x += 60) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+  for (let y = 0; y <= H; y += 60) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+  ctx.stroke();
+  ctx.globalCompositeOperation = 'lighter';
+  if (quality < 2) {                                 // a giant square and triangle slowly turning against each other
+    const s = H * (0.78 + 0.05 * kick), r = H * (0.62 + 0.05 * kick);
+    ctx.lineWidth = 3;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(now * 0.12);
+    ctx.strokeStyle = hexA(rainbowAt(100, 0, now), 0.08 + 0.1 * kick); ctx.strokeRect(-s / 2, -s / 2, s, s); ctx.restore();
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-now * 0.09);
+    ctx.strokeStyle = hexA(rainbowAt(0, 200, now), 0.08 + 0.1 * kick); ctx.beginPath();
+    for (let k = 0; k < 3; k++) { const a = -Math.PI / 2 + k * 2.0944; if (k) ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); else ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+    ctx.closePath(); ctx.stroke(); ctx.restore();
+  }
+  ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(170,200,255,0.35)'; ctx.beginPath();   // hyperspace, faster on the beat
+  const sp = 1 + kick * 2.5;
+  for (const st of stars) {
+    st.r += st.v * dt * sp; if (st.r > R) { st.r = 10 + Math.random() * 40; st.a = Math.random() * 6.283; }
+    const len = 4 + st.r * 0.06 * sp, ca = Math.cos(st.a), sa = Math.sin(st.a);
+    ctx.moveTo(cx + ca * st.r, cy + sa * st.r); ctx.lineTo(cx + ca * (st.r - len), cy + sa * (st.r - len));
+  }
+  ctx.stroke(); ctx.globalCompositeOperation = 'source-over';
+}
+function drawLightning(buckets) {                    // every attack is a flickering bolt, at any zoom
+  ctx.globalCompositeOperation = 'lighter'; ctx.lineWidth = 1.3;
+  for (let b = 0; b < 6; b++) {
+    const arr = buckets[b]; if (!arr.length) continue;
+    ctx.strokeStyle = hexA(b === 0 ? '#ffffff' : TEAM_COLORS[b - 1], 0.55); ctx.beginPath();
+    for (const t of arr) {
+      const a = t.aim; if (!a) continue;
+      const dx = a.x - t.x, dy = a.y - t.y, l = Math.hypot(dx, dy) || 1, px = -dy / l, py = dx / l;
+      const j1 = (Math.random() * 2 - 1) * 5, j2 = (Math.random() * 2 - 1) * 5;
+      ctx.moveTo(t.x, t.y);
+      ctx.lineTo(t.x + dx * 0.33 + px * j1, t.y + dy * 0.33 + py * j1);
+      ctx.lineTo(t.x + dx * 0.66 + px * j2, t.y + dy * 0.66 + py * j2);
+      ctx.lineTo(a.x, a.y);
+    }
+    ctx.stroke();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+function drawOverloadOverlay(now, dt) {              // screen-space layer: numbers, banners, combo, flash, vignette
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+  for (let i = texts.length - 1; i >= 0; i--) {
+    const t = texts[i]; t.life -= dt; t.oy -= 34 * dt; t.ox += t.vx * dt;
+    if (t.life <= 0) { texts.splice(i, 1); continue; }
+    const p = toScreen(t.x, t.y);
+    ctx.globalAlpha = Math.min(1, (t.life / t.max) * 1.6); ctx.fillStyle = t.c;
+    ctx.font = `700 ${Math.round(t.size * Math.min(2, Math.max(1, cam.z * 0.8)))}px 'Chakra Petch', system-ui, sans-serif`;
+    ctx.fillText(t.str, p.x + t.ox, p.y + t.oy);
+  }
+  const cx = F.x + F.w / 2;
+  for (let i = banners.length - 1; i >= 0; i--) {    // knockouts sweep across with an RGB-split glitch
+    const bn = banners[i], age = now - bn.t0;
+    if (age > 1.8) { banners.splice(i, 1); continue; }
+    const x = age < 0.35 ? cx + Math.pow(1 - age / 0.35, 3) * F.w : age > 1.4 ? cx - Math.pow((age - 1.4) / 0.4, 2) * F.w : cx;
+    const y = F.y + F.h * (0.4 + i * 0.13), g = Math.random() < 0.3 ? Math.random() * 8 - 4 : 0;
+    ctx.font = `700 ${Math.round(Math.min(F.w / 11, 52))}px 'Chakra Petch', system-ui, sans-serif`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '6px';
+    ctx.globalAlpha = 0.75; ctx.fillStyle = '#ff2a6d'; ctx.fillText(bn.str, x - 3 + g, y + (g ? 2 : 0));
+    ctx.fillStyle = '#05d9e8'; ctx.fillText(bn.str, x + 3 - g, y);
+    ctx.globalAlpha = 1; ctx.fillStyle = bn.c; ctx.fillText(bn.str, x, y);
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+  }
+  if (combo >= 5 && now - comboT < 1.6) {            // a combo counter while you keep the kills coming
+    const sc = 1 + kick * 0.15 + Math.min(0.6, combo / 120), fade = Math.min(1, (1.6 - (now - comboT)) * 3);
+    ctx.font = `700 ${Math.round(22 * sc)}px 'Chakra Petch', system-ui, sans-serif`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '3px';
+    ctx.globalAlpha = 0.9 * fade; ctx.fillStyle = TEAM_COLORS[PLAYER];
+    ctx.fillText(`COMBO ×${combo}`, cx, F.y + F.h * 0.2);
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+  }
+  if (flash) {                                       // capture flash: dim, short, rate-limited
+    const age = now - flash.t0;
+    if (age > 0.35) flash = null;
+    else { ctx.globalAlpha = 0.16 * (1 - age / 0.35); ctx.fillStyle = flash.c; ctx.fillRect(F.x, F.y, F.w, F.h); }
+  }
+  if (!vig || vig.w !== F.w || vig.h !== F.h) {
+    const gr = ctx.createRadialGradient(cx, F.y + F.h / 2, Math.min(F.w, F.h) * 0.35, cx, F.y + F.h / 2, Math.hypot(F.w, F.h) * 0.6);
+    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.6)'); vig = { w: F.w, h: F.h, g: gr };
+  }
+  ctx.globalAlpha = 0.6 + 0.4 * kick; ctx.fillStyle = vig.g; ctx.fillRect(F.x, F.y, F.w, F.h);
+  ctx.globalAlpha = 0.05 * kick; ctx.fillStyle = watching ? rainbowAt(0, 0, now) : TEAM_COLORS[PLAYER];   // a faint tint on the beat
+  ctx.fillRect(F.x, F.y, F.w, F.h);
+  ctx.globalAlpha = 1;
+}
+function drawRainbowNeutrals(arr, now) {             // neutral troops shimmer through the rainbow, spinning
+  for (const L of RB) L.length = 0;
+  for (const t of arr) RB[((((t.x * 0.22 + t.y * 0.13 + now * 80) % 360) + 360) % 360 / 10) | 0].push(t);
+  const sc = 1 + 0.3 * kick;
+  for (let i = 0; i < 36; i++) {
+    const L = RB[i]; if (!L.length) continue;
+    ctx.fillStyle = RAINBOW[i]; ctx.beginPath();
+    for (const t of L) {
+      const a = now * 7 + t.id * 1.7, hx = Math.cos(a), hy = Math.sin(a);
+      ctx.moveTo(t.x + hx * 4.4 * sc, t.y + hy * 4.4 * sc);
+      ctx.lineTo(t.x + (-hx * 3 - hy * 2.8) * sc, t.y + (-hy * 3 + hx * 2.8) * sc);
+      ctx.lineTo(t.x + (-hx * 3 + hy * 2.8) * sc, t.y + (-hy * 3 - hx * 2.8) * sc);
+      ctx.closePath();
+    }
+    ctx.fill();
+  }
+}
+
 // ---- "Spark" visuals: same squares, triangles and colors, with more life ----
 // glowing troops with short streaks, sparks where hits land, shards when troops fall, a shockwave and
 // pulses racing down the lines when a base changes hands, slowly turning base frames, and faint drifting ice dust.
-const isSpark = () => settings.visual === 'spark';
+const isSpark = () => settings.visual !== 'classic';     // Overload builds on everything Spark does
 const glowCache = new Map();
 function glow(color) {                               // a soft round glow, pre-drawn once per color
   let g = glowCache.get(color);
@@ -1121,34 +1685,71 @@ function glow(color) {                               // a soft round glow, pre-d
   }
   return g;
 }
-const parts = [], pulses = [], PMAX = 700;
+const parts = [], pulses = [];
+const pmax = () => (isOver() ? [1400, 900, 600, 300] : [700, 550, 400, 250])[quality];   // fewer at lower quality steps
 let motes = null, lastGT = 0;
-function emit(x, y, c, n, sp, life, size, shape, dx, dy, spread) {
-  for (let i = 0; i < n && parts.length < PMAX; i++) {
+function emit(x, y, c, n, sp, life, size, shape, dx, dy, spread, g) {
+  for (let i = 0, cap = pmax(); i < n && parts.length < cap; i++) {
     const a = dx === undefined ? Math.random() * 6.283 : Math.atan2(dy, dx) + (Math.random() - .5) * (spread || 1.2);
     const v = sp * (0.5 + Math.random() * 0.7);
     parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life, max: life, c, s: size * (0.7 + Math.random() * 0.6),
-      sh: shape, r: Math.random() * 6.283, vr: (Math.random() - .5) * 14 });
+      sh: shape, r: Math.random() * 6.283, vr: (Math.random() - .5) * 14, g: g || 0 });
+  }
+}
+// Troops are summed into 22-unit cells (reusable typed arrays, nothing allocated per frame) and each occupied
+// cell gets one glow at its centre, bigger and brighter the more troops it holds. A 200-troop swarm costs a few
+// dozen glow draws instead of 200, and dense clumps read as a bloom.
+const CG = { cells: 0, x: new Float32Array(0), y: new Float32Array(0), n: new Uint16Array(0), touched: new Int32Array(0) };
+function drawClusterGlows(arr, img, strength) {
+  const cs = 22, gw = Math.ceil(W / cs) + 2, cells = gw * (Math.ceil(H / cs) + 2);
+  if (CG.cells < cells) { CG.cells = cells; CG.x = new Float32Array(cells); CG.y = new Float32Array(cells); CG.n = new Uint16Array(cells); CG.touched = new Int32Array(cells); }
+  const X = CG.x, Y = CG.y, Nn = CG.n, touched = CG.touched; let tc = 0;
+  for (const t of arr) {
+    const c = Math.max(0, Math.min(cells - 1, (((t.x / cs) | 0) + 1) + (((t.y / cs) | 0) + 1) * gw));
+    if (!Nn[c]) touched[tc++] = c;
+    X[c] += t.x; Y[c] += t.y; Nn[c]++;
+  }
+  for (let i = 0; i < tc; i++) {
+    const c = touched[i], k = Nn[c], r = 9 + Math.min(10, k) * 1.4;
+    ctx.globalAlpha = Math.min(0.85, 0.45 + k * 0.05) * strength;
+    ctx.drawImage(img, X[c] / k - r, Y[c] / k - r, r * 2, r * 2);
+    X[c] = 0; Y[c] = 0; Nn[c] = 0;
   }
 }
 function vfxHits(ev) {                               // sparks where hits land, flying the way the blow went
   if (!isSpark() || reduceMotion) return;
-  let budget = 10;
+  const OV = isOver(), mult = OV ? 3 : 1;
+  let budget = OV ? 16 : 10, numbers = 0;
   for (const e of ev) {
     if (budget-- <= 0 || e.tx === undefined) break;
-    if (e.base) emit(e.tx, e.ty, colorOf(e.team), 2, 60, 0.35, 1.8, 0, e.tx - e.x, e.ty - e.y, 1.6);
-    else emit(e.tx, e.ty, colorOf(e.team), Math.random() < .5 ? 1 : 2, 70, 0.25, 1.4, 0, e.tx - e.x, e.ty - e.y, 1.1);
+    if (e.base) emit(e.tx, e.ty, colorOf(e.team), 2 * mult, 60 * (OV ? 1.6 : 1), 0.35, 1.8, 0, e.tx - e.x, e.ty - e.y, 1.6);
+    else emit(e.tx, e.ty, colorOf(e.team), (Math.random() < .5 ? 1 : 2) * mult, 70 * (OV ? 1.5 : 1), 0.25, 1.4, 0, e.tx - e.x, e.ty - e.y, 1.1);
+    if (OV && numbers < 4 && Math.random() < 0.5) {
+      const S = statArrays(), d = (e.base ? S.bd : S.dp)[e.team + 1] * C.atkEvery;
+      floatText(e.tx, e.ty, '-' + d.toFixed(1), colorOf(e.team), e.base ? 13 : 10, 0.7, true); numbers++;
+    }
   }
 }
 function vfxFx() {                                   // deaths and captures from the simulation, handled once each
   for (const f of G.fx) {
     if (f.sp) continue; f.sp = 1;
     if (!isSpark() || reduceMotion) continue;
-    if (f.k === 'pop') emit(f.x, f.y, colorOf(f.c), 5, 70, 0.55, 2.4, 1);
-    else if (f.k === 'ring') {
-      emit(f.x, f.y, colorOf(f.c), 22, 110, 0.9, 2.2, 0);
+    const OV = isOver(), now = performance.now() / 1000;
+    if (f.k === 'pop') {
+      emit(f.x, f.y, colorOf(f.c), OV ? 12 : 5, OV ? 110 : 70, OV ? 0.8 : 0.55, OV ? 2.8 : 2.4, 1);
+      if (OV) {
+        emit(f.x, f.y, rainbowAt(f.x, f.y, now), 8, 130, 0.6, 1.8, 0);
+        if (f.by === PLAYER && !watching) { combo = now - comboT < 1.6 ? combo + 1 : 1; comboT = now; }
+      }
+    } else if (f.k === 'ring') {
+      emit(f.x, f.y, colorOf(f.c), OV ? 40 : 22, OV ? 170 : 110, 0.9, 2.2, 0);
       const n = G.nodes.find(nd => nd.x === f.x && nd.y === f.y);
       if (n) for (const v of n.adj) pulses.push({ a: n.id, b: v, t0: G.t, c: colorOf(f.c) });
+      if (OV) {                                      // confetti in every color, falling under gravity
+        for (let k = 0; k < 5; k++) emit(f.x, f.y, TEAM_COLORS[k], 9, 190, 1.6, 2.6, 0, 0, -1, 2.6, 160);
+        flashScreen(colorOf(f.c)); shake(7);
+        floatText(f.x, f.y - 18, f.c === PLAYER && !watching ? '+1 BASE' : 'CAPTURED', colorOf(f.c), 15, 1.2);
+      }
     }
   }
 }
@@ -1158,22 +1759,36 @@ function stepParts() {
   for (let i = parts.length - 1; i >= 0; i--) {
     const p = parts[i]; p.life -= gdt;
     if (p.life <= 0) { parts[i] = parts[parts.length - 1]; parts.pop(); continue; }
-    const k = Math.exp(-gdt * 3.2); p.vx *= k; p.vy *= k; p.x += p.vx * gdt; p.y += p.vy * gdt; p.r += p.vr * gdt;
+    const k = Math.exp(-gdt * 3.2); p.vx *= k; p.vy = p.vy * k + p.g * gdt; p.x += p.vx * gdt; p.y += p.vy * gdt; p.r += p.vr * gdt;
   }
   for (let i = pulses.length - 1; i >= 0; i--) if (G.t - pulses[i].t0 > 0.7 || G.t < pulses[i].t0) pulses.splice(i, 1);
 }
+const PB = [];                                        // reusable particle batches: [color][brightness step]
 function drawParts() {
   ctx.globalCompositeOperation = 'lighter';
+  const colors = [];
   for (const p of parts) {
-    const a = p.life / p.max;
-    ctx.globalAlpha = a * (0.25 + 0.75 * a); ctx.fillStyle = p.c;
-    if (p.sh === 0) { ctx.fillRect(p.x - p.s / 2, p.y - p.s / 2, p.s, p.s); continue; }
-    const s = p.s * 1.4;                             // a tumbling triangle shard
-    ctx.beginPath();
-    ctx.moveTo(p.x + Math.cos(p.r) * s, p.y + Math.sin(p.r) * s);
-    ctx.lineTo(p.x + Math.cos(p.r + 2.4) * s * .8, p.y + Math.sin(p.r + 2.4) * s * .8);
-    ctx.lineTo(p.x + Math.cos(p.r - 2.4) * s * .8, p.y + Math.sin(p.r - 2.4) * s * .8);
-    ctx.closePath(); ctx.fill();
+    if (!inV(p.x, p.y)) continue;
+    let ci = colors.indexOf(p.c); if (ci < 0) { ci = colors.length; colors.push(p.c); }
+    const a = p.life / p.max, lvl = Math.min(3, ((a * (0.25 + 0.75 * a)) * 4) | 0), k = ci * 4 + lvl;
+    (PB[k] || (PB[k] = [])).push(p);
+  }
+  for (let ci = 0; ci < colors.length; ci++) {
+    ctx.fillStyle = colors[ci];
+    for (let lvl = 0; lvl < 4; lvl++) {
+      const list = PB[ci * 4 + lvl]; if (!list || !list.length) continue;
+      ctx.globalAlpha = (lvl + 0.6) / 4;
+      ctx.beginPath();
+      for (const p of list) {
+        if (p.sh === 0) { ctx.rect(p.x - p.s / 2, p.y - p.s / 2, p.s, p.s); continue; }
+        const s = p.s * 1.4;                         // a tumbling triangle shard
+        ctx.moveTo(p.x + Math.cos(p.r) * s, p.y + Math.sin(p.r) * s);
+        ctx.lineTo(p.x + Math.cos(p.r + 2.4) * s * .8, p.y + Math.sin(p.r + 2.4) * s * .8);
+        ctx.lineTo(p.x + Math.cos(p.r - 2.4) * s * .8, p.y + Math.sin(p.r - 2.4) * s * .8);
+        ctx.closePath();
+      }
+      ctx.fill(); list.length = 0;
+    }
   }
   ctx.lineWidth = 2.4;
   for (const u of pulses) {                          // light racing outward along each line from a base that just flipped
@@ -1198,15 +1813,74 @@ function drawMotes(now) {                            // faint ice dust drifting 
   }
   ctx.globalAlpha = 1;
 }
+const EDGE_IN = [[], [], [], [], []], EDGE_OUT = [[], [], [], [], []], BUCKETS = [[], [], [], [], [], []];
+// the part of the world on screen (plus a margin); anything outside it is skipped when drawing
+const VIS = { x0: -1e9, x1: 1e9, y0: -1e9, y1: 1e9 };
+const inV = (x, y) => x > VIS.x0 && x < VIS.x1 && y > VIS.y0 && y < VIS.y1;
+function updateVis() {
+  const a = toWorld(F.x, F.y), b = toWorld(F.x + F.w, F.y + F.h), m = 70;
+  VIS.x0 = Math.min(a.x, b.x) - m; VIS.x1 = Math.max(a.x, b.x) + m; VIS.y0 = Math.min(a.y, b.y) - m; VIS.y1 = Math.max(a.y, b.y) + m;
+}
+// shape decoration: barely-there hints of the terrain, in keeping with the black-background look
+function islandHulls() {                             // a soft outline around each island's bases, computed once per map
+  if (G.deco._hulls) return G.deco._hulls;
+  const groups = {};
+  G.nodes.forEach((n, i) => { const g = G.deco.groups[i]; (groups[g] || (groups[g] = [])).push([n.x, n.y]); });
+  const hulls = [];
+  for (const pts of Object.values(groups)) {
+    pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const lo = [], up = [];
+    for (const p of pts) { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+    for (const p of pts.slice().reverse()) { while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+    const hull = lo.slice(0, -1).concat(up.slice(0, -1)), cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+    hulls.push(hull.map(([x, y]) => { const dx = x - cx, dy = y - cy, l = Math.hypot(dx, dy) || 1; return [x + dx / l * 40, y + dy / l * 40]; }));
+  }
+  return (G.deco._hulls = hulls);
+}
+function drawDeco(now) {
+  const D = G.deco; if (!D) return;
+  if (D.kind === 'river') {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(70,120,200,0.07)'; ctx.lineWidth = D.hw * 1.7; ctx.beginPath();
+    D.line.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+    ctx.strokeStyle = 'rgba(120,170,235,0.2)'; ctx.lineWidth = 1.4; ctx.setLineDash([10, 14]);
+    ctx.lineDashOffset = reduceMotion ? 0 : -now * 12; ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0;   // the current, flowing
+  } else if (D.kind === 'islands') {
+    ctx.fillStyle = 'rgba(255,255,255,0.028)'; ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1.2; ctx.setLineDash([2, 7]);
+    for (const h of islandHulls()) { ctx.beginPath(); h.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    ctx.setLineDash([]);
+  } else if (D.kind === 'ring') {
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1.2; ctx.setLineDash([3, 9]);
+    ctx.beginPath(); ctx.ellipse(D.cx, D.cy, D.rx, D.ry, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+  }
+}
+function drawBridges() {                             // crossties along every bridge, so chokepoints read at a glance
+  if (!G.bridges.size) return;
+  if (!G._ties) {
+    G._ties = [];
+    for (const key of G.bridges) {
+      const [a, b] = key.split('-').map(Number), A = G.nodes[a], B = G.nodes[b];
+      const dx = B.x - A.x, dy = B.y - A.y, l = Math.hypot(dx, dy) || 1, px = -dy / l * 5.5, py = dx / l * 5.5;
+      for (let t = 22; t < l - 22; t += 15) { const x = A.x + dx / l * t, y = A.y + dy / l * t; G._ties.push(x - px, y - py, x + px, y + py); }
+    }
+  }
+  ctx.strokeStyle = 'rgba(255,255,255,0.34)'; ctx.lineWidth = 1.5; ctx.beginPath();
+  const T = G._ties;
+  for (let i = 0; i < T.length; i += 4) { if (!inV(T[i], T[i + 1])) continue; ctx.moveTo(T[i], T[i + 1]); ctx.lineTo(T[i + 2], T[i + 3]); }
+  ctx.stroke();
+}
 function drawEdges(now) {
   const nodes = G.nodes, lw = Math.max(1.4, 1.1 / V.s);
   const slow = reduceMotion ? 0 : -now * 3, fast = reduceMotion ? 0 : -now * 9;
-  const inner = [[], [], [], [], []], out = [[], [], [], [], []];
+  const inner = EDGE_IN, out = EDGE_OUT;
+  for (let i = 0; i < 5; i++) { inner[i].length = 0; out[i].length = 0; }
   ctx.setLineDash([5, 7]); ctx.lineDashOffset = slow; ctx.lineWidth = lw;
   ctx.strokeStyle = 'rgba(255,255,255,0.17)';
   ctx.beginPath();
   for (const [a, b] of G.edges) {
     const A = nodes[a], B = nodes[b], oa = A.owner, ob = B.owner;
+    if (Math.max(A.x, B.x) < VIS.x0 || Math.min(A.x, B.x) > VIS.x1 || Math.max(A.y, B.y) < VIS.y0 || Math.min(A.y, B.y) > VIS.y1) continue;
     if (oa < 0 && ob < 0) { ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); }        // nobody's
     else if (oa === ob) inner[oa].push(A, B);                                     // inside one color's territory
     else if (ob < 0) out[oa].push(A, B, 1);                                       // a way out: that color's to take
@@ -1229,54 +1903,88 @@ function drawEdges(now) {
         ctx.moveTo(P.x, P.y); ctx.lineTo(P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f);
       }
       ctx.stroke(); ctx.lineWidth = lw;
-      if (isSpark() && !reduceMotion) {             // a small light drifting outward along each way out
+      if (isOver()) {                                // Overload: the same lines again, wide and glowing, on the beat
+        ctx.setLineDash([]); ctx.globalCompositeOperation = 'lighter';
+        ctx.strokeStyle = hexA(TEAM_COLORS[i], 0.1 + 0.14 * kick); ctx.lineWidth = lw * 5; ctx.stroke();
+        ctx.lineWidth = lw; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([5, 7]);
+      }
+      if (isSpark() && !reduceMotion) {             // a small light drifting outward along each way out (comets in Overload)
         ctx.setLineDash([]); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = TEAM_COLORS[i];
+        const OV = isOver(), np = OV ? 3 : 1;
         for (let j = 0; j < O.length; j += 3) {
-          const P = O[j], Q = O[j + 1], f = O[j + 2], ph = (now * 0.4 + ((P.id * 7 + Q.id * 13) * 0.618) % 1) % 1;
-          ctx.globalAlpha = 0.75 * Math.sin(Math.PI * ph);
-          const x = P.x + (Q.x - P.x) * f * ph, y = P.y + (Q.y - P.y) * f * ph;
-          ctx.fillRect(x - 1.4, y - 1.4, 2.8, 2.8);
+          const P = O[j], Q = O[j + 1], f = O[j + 2];
+          for (let q = 0; q < np; q++) {
+            const ph = (now * (OV ? 0.7 : 0.4) + q / np + ((P.id * 7 + Q.id * 13) * 0.618) % 1) % 1;
+            ctx.globalAlpha = 0.75 * Math.sin(Math.PI * ph);
+            const x = P.x + (Q.x - P.x) * f * ph, y = P.y + (Q.y - P.y) * f * ph, sz = OV ? 3.6 : 2.8;
+            ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz);
+            if (OV) {
+              const t0 = Math.max(0, ph - 0.12);
+              ctx.strokeStyle = TEAM_COLORS[i]; ctx.lineWidth = 2; ctx.beginPath();
+              ctx.moveTo(P.x + (Q.x - P.x) * f * t0, P.y + (Q.y - P.y) * f * t0); ctx.lineTo(x, y); ctx.stroke();
+            }
+          }
         }
         ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([5, 7]);
       }
     }
   }
   ctx.setLineDash([]); ctx.lineDashOffset = 0;
+  drawBridges();
 }
-function drawArrows(now) {            // your bases under attack while they're off-screen
+function drawArrows(now) {            // off-screen pointers: your bases under attack (filled) and your lock-on target (outline)
   arrowHits = [];
   if (mode !== 'play' || watching || cam.z <= 1.01) return;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const cx = F.x + F.w / 2, cy = F.y + F.h / 2, pad = 20;
-  for (const n of G.nodes) {
-    if (n.owner !== PLAYER || n.heat < C.assaultHeat) continue;
+  // arrows ride the edge of the open play area between the HUD panels, so none hides under a panel
+  const pad = 20, rb = el => { const r = el.getBoundingClientRect(); return r.width ? r : null; };
+  const top = Math.max(F.y + pad, ...['stats', 'ctrl'].map(id => rb($(id))).filter(Boolean).map(r => r.bottom + 14));
+  const low = [rb($('upg')), rb($('bMap')), $('mm').hidden ? null : rb($('mm'))].filter(Boolean).map(r => r.top - 14);
+  const bot = Math.min(F.y + F.h - pad, ...low);
+  const x0 = F.x + pad, x1 = F.x + F.w - pad, y0 = Math.min(top, bot - 40), y1 = Math.max(bot, y0 + 40);
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  const point = (n, fill) => {
     const p = toScreen(n.x, n.y);
-    if (p.x > F.x + pad && p.x < F.x + F.w - pad && p.y > F.y + pad && p.y < F.y + F.h - pad) continue;
+    if (p.x > F.x + pad && p.x < F.x + F.w - pad && p.y > F.y + pad && p.y < F.y + F.h - pad) return;
     const dx = p.x - cx, dy = p.y - cy;
-    const k = Math.min((F.w / 2 - pad) / Math.max(1e-6, Math.abs(dx)), (F.h / 2 - pad) / Math.max(1e-6, Math.abs(dy)));
-    const ax = cx + dx * k, ay = cy + dy * k;
+    const kx = dx > 0 ? (x1 - cx) / dx : dx < 0 ? (x0 - cx) / dx : Infinity;
+    const ky = dy > 0 ? (y1 - cy) / dy : dy < 0 ? (y0 - cy) / dy : Infinity;
+    const k = Math.min(kx, ky), ax = cx + dx * k, ay = cy + dy * k;
     ctx.save(); ctx.translate(ax, ay); ctx.rotate(Math.atan2(dy, dx));
-    ctx.globalAlpha = reduceMotion ? 1 : 0.7 + 0.3 * Math.sin(now * 7);
-    ctx.fillStyle = n.heatBy != null && n.heatBy >= 0 ? TEAM_COLORS[n.heatBy] : NEUTRAL_COLOR;
-    ctx.strokeStyle = TEAM_COLORS[PLAYER]; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(12, 0); ctx.lineTo(-8, -9); ctx.lineTo(-3, 0); ctx.lineTo(-8, 9); ctx.closePath();
-    ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.strokeStyle = TEAM_COLORS[PLAYER]; ctx.lineWidth = 1.5;
+    if (fill) { ctx.globalAlpha = reduceMotion ? 1 : 0.7 + 0.3 * Math.sin(now * 7); ctx.fillStyle = fill; ctx.fill(); }
+    else { ctx.globalAlpha = 0.85; ctx.setLineDash([3, 2]); }
+    ctx.stroke(); ctx.restore();
     arrowHits.push({ x: ax, y: ay, n });
-  }
+  };
+  for (const n of G.nodes) if (n.owner === PLAYER && n.heat >= C.assaultHeat)
+    point(n, n.heatBy != null && n.heatBy >= 0 ? TEAM_COLORS[n.heatBy] : NEUTRAL_COLOR);
+  const L = G.lock[PLAYER];
+  if (L != null) point(G.nodes[L], null);
 }
 function draw(now) {
+  const OV = isOver(), dtD = Math.min(0.1, Math.max(0, now - lastDrawT)); lastDrawT = now;
+  kick = OV ? beatKick(now) : 0;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.fillStyle = OV ? 'rgba(0,0,0,0.26)' : '#000';   // Overload never fully clears, so everything leaves a smear
+  ctx.fillRect(0, 0, cv.width, cv.height);
   if (!G) return;
-  ctx.save();                       // keep the zoomed map inside the play area, not under the side rails
+  let sx = 0, sy = 0;
+  if (OV && shakeAmp > 0.3) { sx = (Math.random() * 2 - 1) * shakeAmp; sy = (Math.random() * 2 - 1) * shakeAmp; shakeAmp *= Math.exp(-dtD * 8); }
+  else shakeAmp = 0;
+  ctx.save();                       // keep the zoomed map inside the play area
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.beginPath(); ctx.rect(F.x, F.y, F.w, F.h); ctx.clip();
-  applyView();
+  applyView(sx, sy);
+  updateVis();
   const nodes = G.nodes, SP = isSpark();
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   vfxFx(); stepParts();
-  if (SP) drawMotes(reduceMotion ? 0 : now);
+  if (OV) drawOverloadBg(now, dtD);
+  else if (SP && quality < 3) drawMotes(reduceMotion ? 0 : now);
 
+  drawDeco(now);
   drawEdges(now);
 
   for (let i = hl.length - 1; i >= 0; i--) {
@@ -1305,18 +2013,26 @@ function draw(now) {
     ctx.strokeRect(-19, -19, 38, 38); ctx.restore();
   }
   for (const n of nodes) {
+    if (!inV(n.x, n.y)) continue;
     const c = colorOf(n.owner);
     if (SP) {                                        // Spark: soft glow, a slowly turning frame, a breathing core
-      const mv = reduceMotion ? 0 : 1, br = 1 + 0.07 * Math.sin(now * 2.2 + n.id) * mv, own = n.owner >= 0;
-      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = own ? 0.75 : 0.3;
-      const gs = 46 * br; ctx.drawImage(glow(c), n.x - gs / 2, n.y - gs / 2, gs, gs);
+      const mv = reduceMotion ? 0 : 1, own = n.owner >= 0, cc = OV && !own ? rainbowAt(n.x, n.y, now) : c;
+      const br = (1 + 0.07 * Math.sin(now * 2.2 + n.id) * mv) * (OV ? 1 + 0.35 * kick : 1);
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = own ? 0.75 : (OV ? 0.6 : 0.3);
+      const gs = 46 * br * (OV ? 1.4 : 1); ctx.drawImage(glow(cc), n.x - gs / 2, n.y - gs / 2, gs, gs);
       ctx.globalCompositeOperation = 'source-over';
       if (own) {
         ctx.save(); ctx.translate(n.x, n.y); ctx.rotate((now * 0.35 + n.id) * mv);
         ctx.globalAlpha = 0.5; ctx.strokeStyle = c; ctx.lineWidth = 1.3; ctx.strokeRect(-11, -11, 22, 22); ctx.restore();
+        if (OV) {                                    // a second frame turning the other way, and three orbiting satellites
+          ctx.save(); ctx.translate(n.x, n.y); ctx.rotate(-now * 0.8 - n.id);
+          ctx.globalAlpha = 0.35; ctx.strokeRect(-15 * br, -15 * br, 30 * br, 30 * br); ctx.restore();
+          ctx.globalAlpha = 0.9; ctx.fillStyle = c;
+          for (let k = 0; k < 3; k++) { const a = now * 2.4 + n.id + k * 2.0944; ctx.fillRect(n.x + Math.cos(a) * 21 - 1.8, n.y + Math.sin(a) * 21 - 1.8, 3.6, 3.6); }
+        }
       }
       const s = (own ? 6.5 : 5.5) * br;
-      ctx.globalAlpha = 1; ctx.fillStyle = c; ctx.fillRect(n.x - s, n.y - s, 2 * s, 2 * s);
+      ctx.globalAlpha = 1; ctx.fillStyle = cc; ctx.fillRect(n.x - s, n.y - s, 2 * s, 2 * s);
       if (G.t - n.lastHitT < 0.07) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.fillRect(n.x - s, n.y - s, 2 * s, 2 * s); ctx.globalAlpha = 1; }
     } else if (n.owner >= 0) {
       ctx.globalAlpha = 0.38; ctx.strokeStyle = c; ctx.lineWidth = 1.3;
@@ -1335,9 +2051,15 @@ function draw(now) {
     }
   }
 
-  const buckets = [[], [], [], [], [], []];
-  for (const t of G.troops) buckets[t.team + 1].push(t);
-  const af = Math.min(1, Math.max(0, (cam.z - 1.15) / 0.85));
+  const buckets = BUCKETS;
+  for (const bk of buckets) bk.length = 0;
+  for (const t of G.troops) {                        // bucket by color, and normalize each heading once for every pass below
+    if (!inV(t.x, t.y)) continue;                    // off screen: skip it entirely
+    const l = Math.hypot(t.hx, t.hy) || 1; t.nx = t.hx / l; t.ny = t.hy / l;
+    buckets[t.team + 1].push(t);
+  }
+  const af = OV ? 0 : Math.min(1, Math.max(0, (cam.z - 1.15) / 0.85));
+  if (OV) drawLightning(buckets);
   if (af > 0) {
     ctx.lineWidth = 1 / V.s;                      // one screen pixel at any zoom
     for (let b = 0; b < 6; b++) {
@@ -1364,27 +2086,36 @@ function draw(now) {
       if (!reduceMotion) {
         ctx.strokeStyle = hexA(col, 0.35); ctx.lineWidth = 1.6; ctx.beginPath();
         for (const t of arr) {
-          let hx = t.hx, hy = t.hy; const l = Math.hypot(hx, hy) || 1; hx /= l; hy /= l;
-          const L = t.path.length ? 10 : 4;
-          ctx.moveTo(t.x - hx * 2.5, t.y - hy * 2.5); ctx.lineTo(t.x - hx * L, t.y - hy * L);
+          const L = t.path.length ? (OV ? 18 : 10) : (OV ? 8 : 4);
+          ctx.moveTo(t.x - t.nx * 2.5, t.y - t.ny * 2.5); ctx.lineTo(t.x - t.nx * L, t.y - t.ny * L);
         }
         ctx.stroke();
       }
-      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = b === 0 ? 0.3 : 0.5;
-      const gi = glow(col);
-      for (const t of arr) ctx.drawImage(gi, t.x - 9, t.y - 9, 18, 18);
+      ctx.globalCompositeOperation = 'lighter';
+      if (OV) {                                      // a glow on every single troop, beating, with a red/cyan split
+        const gi = glow(col), r = 10 + kick * 5;
+        ctx.globalAlpha = b === 0 ? 0.45 : 0.65;
+        for (const t of arr) ctx.drawImage(gi, t.x - r, t.y - r, 2 * r, 2 * r);
+        if (quality === 0) {
+          const gR = glow('#ff2a6d'), gC = glow('#05d9e8'); ctx.globalAlpha = 0.22;
+          for (const t of arr) { ctx.drawImage(gR, t.x - r - 2, t.y - r, 2 * r, 2 * r); ctx.drawImage(gC, t.x - r + 2, t.y - r, 2 * r, 2 * r); }
+        }
+      } else drawClusterGlows(arr, glow(col), b === 0 ? 0.6 : 1);
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     }
   }
   for (let b = 0; b < 6; b++) {
     const arr = buckets[b]; if (!arr.length) continue;
+    if (OV && b === 0) { drawRainbowNeutrals(arr, now); continue; }
     ctx.fillStyle = b === 0 ? NEUTRAL_COLOR : TEAM_COLORS[b - 1];
     ctx.beginPath();
+    const sc = OV ? 1 + 0.3 * kick : 1;
     for (const t of arr) {
-      let hx = t.hx, hy = t.hy; const l = Math.hypot(hx, hy) || 1; hx /= l; hy /= l;
-      ctx.moveTo(t.x + hx * 4.4, t.y + hy * 4.4);
-      ctx.lineTo(t.x - hx * 3 - hy * 2.8, t.y - hy * 3 + hx * 2.8);
-      ctx.lineTo(t.x - hx * 3 + hy * 2.8, t.y - hy * 3 - hx * 2.8);
+      let hx = t.nx, hy = t.ny;
+      if (OV) { const a = now * 7 + t.id * 1.7; hx = Math.cos(a); hy = Math.sin(a); }   // spinning like shuriken
+      ctx.moveTo(t.x + hx * 4.4 * sc, t.y + hy * 4.4 * sc);
+      ctx.lineTo(t.x + (-hx * 3 - hy * 2.8) * sc, t.y + (-hy * 3 + hx * 2.8) * sc);
+      ctx.lineTo(t.x + (-hx * 3 + hy * 2.8) * sc, t.y + (-hy * 3 - hx * 2.8) * sc);
       ctx.closePath();
     }
     ctx.fill();
@@ -1402,6 +2133,11 @@ function draw(now) {
         const p = age / 0.9, s = 22 + p * 46;
         ctx.globalAlpha = (1 - p) * 0.85; ctx.strokeStyle = colorOf(f.c); ctx.lineWidth = 1.6;
         ctx.strokeRect(f.x - s / 2, f.y - s / 2, s, s); ctx.lineWidth = 1.1;
+        if (OV && age > 0.22) {                      // Overload: and a third, wider one
+          const q = (age - 0.22) / 0.68, s3 = 30 + q * 120;
+          ctx.globalAlpha = (1 - q) * 0.5; ctx.strokeStyle = colorOf(f.c); ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.arc(f.x, f.y, s3 / 2, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1.1;
+        }
         if (SP && age > 0.1) {                       // Spark: a second, turning shockwave just behind the first
           const q = (age - 0.1) / 0.8, s2 = 16 + q * 70;
           ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(Math.PI / 4 + q * 1.2);
@@ -1431,6 +2167,7 @@ function draw(now) {
     ctx.restore();
   }
   ctx.restore();
+  if (OV) drawOverloadOverlay(now, dtD);
   drawArrows(now);
 }
 
@@ -1456,37 +2193,47 @@ function buy(k) {
     b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
     if (isSpark() && !reduceMotion) {               // Spark: every one of your bases sends out a ring
       const now = performance.now() / 1000;
-      for (const n of G.nodes) if (n.owner === PLAYER) uiFx.push({ k: 'rip', x: n.x, y: n.y, b: now });
+      for (const n of G.nodes) if (n.owner === PLAYER) {
+        uiFx.push({ k: 'rip', x: n.x, y: n.y, b: now });
+        if (isOver()) floatText(n.x, n.y, '+' + { hp: 'HEALTH', spd: 'SPEED', dmg: 'DAMAGE' }[k], TEAM_COLORS[PLAYER], 13, 1.1);
+      }
+      if (isOver()) shake(4);
     }
   }
   hud();
 }
+// write-if-changed helpers: the HUD refreshes 10x a second, but the page is only touched when a value differs
+function setText(el, v) { v = String(v); if (el._t !== v) { el._t = v; el.textContent = v; } }
+function setStyle(el, prop, v) { const k = '_s' + prop; if (el[k] !== v) { el[k] = v; el.style[prop] = v; } }
+function setClass(el, cls, on) { const k = '_c' + cls; if (el[k] !== on) { el[k] = on; el.classList.toggle(cls, on); } }
 function hud() {
   if (!G) return;
   const P = G.teams[PLAYER];
-  if (watching) { $('army').textContent = fmt(G.t); $('cap').textContent = ''; }   // match clock instead of your army
-  else { $('army').textContent = P.count; $('cap').textContent = '/' + capOf(PLAYER); }
+  if (watching) { setText($('army'), fmt(G.t)); setText($('cap'), ''); }   // match clock instead of your army
+  else { setText($('army'), P.count); setText($('cap'), '/' + capOf(PLAYER)); }
   const segs = $('terr').children; let neu = G.nodes.length;
-  for (let i = 0; i < 5; i++) { segs[i].style.flexGrow = G.teams[i].bases; neu -= G.teams[i].bases; }
-  segs[5].style.flexGrow = neu;
+  for (let i = 0; i < 5; i++) { setStyle(segs[i], 'flexGrow', String(G.teams[i].bases)); neu -= G.teams[i].bases; }
+  setStyle(segs[5], 'flexGrow', String(neu));
   const maxed = P.earned >= C.maxPoints;
-  $('xpfill').style.width = (maxed ? 100 : P.xp / needXP(P) * 100) + '%';
-  $('pts').textContent = P.points > 0 ? '+' + P.points : '';
+  setStyle($('xpfill'), 'width', (maxed ? 100 : Math.round(P.xp / needXP(P) * 1000) / 10) + '%');
+  setText($('pts'), P.points > 0 ? '+' + P.points : '');
   for (const b of upBtns) {
-    const k = b.dataset.k, lv = P.lv[k], can = P.points > 0 && lv < C.maxLvl;
-    b.querySelector('.lv').textContent = lv;
-    const pips = b.querySelector('.pips').children;
-    for (let i = 0; i < 10; i++) pips[i].className = i < lv ? 'on' : '';
-    b.classList.toggle('ready', can); b.classList.toggle('max', lv >= C.maxLvl); b.disabled = !can;
+    const lv = P.lv[b.dataset.k], can = P.points > 0 && lv < C.maxLvl;
+    setText(b._lv || (b._lv = b.querySelector('.lv')), lv);
+    const pips = b._pips || (b._pips = b.querySelector('.pips').children);
+    for (let i = 0; i < 10; i++) setClass(pips[i], 'on', i < lv);
+    setClass(b, 'ready', can); setClass(b, 'max', lv >= C.maxLvl);
+    if (b.disabled === can) b.disabled = !can;
   }
   for (let i = 0; i < 5; i++) {
     const T = G.teams[i], row = rivalCells[i];
-    row[1].textContent = T.bases; row[2].textContent = T.lv.hp; row[3].textContent = T.lv.spd; row[4].textContent = T.lv.dmg;
-    for (const c of row) c.classList.toggle('out', !T.alive);
+    setText(row[1], T.bases); setText(row[2], T.lv.hp); setText(row[3], T.lv.spd); setText(row[4], T.lv.dmg);
+    for (const c of row) setClass(c, 'out', !T.alive);
   }
   for (const f of G.fx) if (f.k === 'elim' && !f.seen) {
     f.seen = true;
     if (f.c !== PLAYER || watching) toast(TEAM_NAMES[f.c] + ' is out', TEAM_COLORS[f.c]);
+    if (isOver()) { banner(TEAM_NAMES[f.c].toUpperCase() + ' IS OUT', TEAM_COLORS[f.c]); shake(10); }
   }
 }
 function toast(msg, color) {
@@ -1507,7 +2254,7 @@ const hz = m => 440 * Math.pow(2, (m - 69) / 12);
 const pick = a => a[(Math.random() * a.length) | 0];
 // volume slider is perceptual (squared); "Soft" drops pitch, rounds off each blip's start and filters the top end
 const soundGain = () => settings.sound ? Math.pow(settings.volume / 100, 2) : 0;
-const cutoff = () => ({ hum: 420, soft: 950, felt: 900 })[settings.tone] || 2800;
+const cutoff = () => ({ hum: 420, soft: 950, felt: 900, overdrive: 9000 })[settings.tone] || 2800;
 function audioOn() {
   try {
     if (!AC) {
@@ -1535,6 +2282,21 @@ function tone(f1, f2, dur, peak, type, pan, atk) {
   else g.connect(bus);
   o.start(t0); o.stop(t0 + dur + 0.03);
 }
+// One pass over this frame's hits: a random base hit and troop hit (reservoir sampling), and the same
+// restricted to your own army. Every sound profile picks from these instead of filtering the list itself.
+const HITS = { base: null, baseMine: null, shot: null, shotMine: null };
+function scanHits(ev) {
+  let nb = 0, ns = 0, nm = 0;
+  HITS.base = HITS.baseMine = HITS.shot = HITS.shotMine = null;
+  for (const e of ev) {
+    const mine = e.team === PLAYER && !watching;
+    if (e.base) { if (Math.random() * ++nb < 1) HITS.base = e; if (mine) HITS.baseMine = e; }
+    else { if (Math.random() * ++ns < 1) HITS.shot = e; if (mine && Math.random() * ++nm < 1) HITS.shotMine = e; }
+  }
+  return HITS;
+}
+const pickShot = (h, mineChance) => h.shotMine && Math.random() < mineChance ? h.shotMine : h.shot;
+const isMine = e => e.team === PLAYER && !watching;
 function playSfx(nowMs, dt) {
   const ev = G.sfx; G.sfx = [];
   vfxHits(ev);
@@ -1542,23 +2304,24 @@ function playSfx(nowMs, dt) {
   shotRate += (ev.length / Math.max(dt, 1 / 120) - shotRate) * (1 - Math.exp(-dt / 1.2));
   if (!ev.length) return;
   if (!AC || !settings.sound || mode !== 'play' || AC.state !== 'running') return;
-  if (settings.tone === 'hum') { humHits(ev, nowMs); return; }
-  if (settings.tone === 'felt') { feltHits(ev, nowMs); return; }
+  const h = scanHits(ev);
+  if (settings.tone === 'hum') { humHits(h, nowMs); return; }
+  if (settings.tone === 'felt') { feltHits(h, ev, nowMs); return; }
+  if (settings.tone === 'overdrive') { odHits(ev); return; }
   const soft = settings.tone === 'soft';
   if (nowMs - lastBloop > 150) {              // base hits: a lower bloop that drops in pitch
-    const hits = ev.filter(e => e.base);
-    if (hits.length) {
-      const e = (!watching && hits.find(h => h.team === PLAYER)) || pick(hits), mine = e.team === PLAYER && !watching;
+    const e = h.baseMine || h.base;
+    if (e) {
+      const mine = isMine(e);
       const f = hz(45 + pick(PENTA));
       tone(f * (soft ? 1.4 : 1.7), f, soft ? 0.2 : 0.16, mine ? 0.11 : watching ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y), soft ? 0.02 : 0.008);
       lastBloop = nowMs;
     }
   }
   if (nowMs - lastBlip > 55) {                // troop hits: short bleeps, yours a bit brighter
-    const shots = ev.filter(e => !e.base);
-    if (shots.length) {
-      const mineShots = watching ? [] : shots.filter(e => e.team === PLAYER);
-      const e = mineShots.length && Math.random() < 0.65 ? pick(mineShots) : pick(shots), mine = e.team === PLAYER && !watching;
+    const e = pickShot(h, 0.65);
+    if (e) {
+      const mine = isMine(e);
       const f = soft
         ? hz((e.team < 0 ? 60 : ROOT[e.team]) - 12 + pick(PENTA))                                   // an octave down, no high jumps
         : hz((e.team < 0 ? 60 : ROOT[e.team]) + pick(PENTA) + (Math.random() < 0.25 ? 12 : 0));
@@ -1573,11 +2336,11 @@ function playSfx(nowMs, dt) {
 // note leans major while you (or, when watching, the leader) hold a big share of the map, minor when you don't.
 let amb = null, shotRate = 0;
 const HUM_PULSE = [55, 61.74, 82.41, 110];          // A1 B1 E2 A2: fits both the minor and major chord
-function humHits(ev, nowMs) {
+function humHits(h, nowMs) {
   if (nowMs - lastBloop > 260) {                    // base hits: a deep, slow thud
-    const hits = ev.filter(e => e.base);
-    if (hits.length) {
-      const e = (!watching && hits.find(h => h.team === PLAYER)) || pick(hits), mine = e.team === PLAYER && !watching;
+    const e = h.baseMine || h.base;
+    if (e) {
+      const mine = isMine(e);
       const pan = screenPan(e.x, e.y) * 0.6;
       tone(41.2 * 1.6, 41.2, 0.42, mine ? 0.17 : 0.1, 'sine', pan, 0.03);
       tone(82.41 * 1.3, 82.41, 0.3, mine ? 0.06 : 0.035, 'triangle', pan, 0.025);   // the overtone a phone speaker can actually play
@@ -1585,10 +2348,9 @@ function humHits(ev, nowMs) {
     }
   }
   if (nowMs - lastBlip > 110) {                     // troop hits: muffled low pulses
-    const shots = ev.filter(e => !e.base);
-    if (shots.length) {
-      const mineShots = watching ? [] : shots.filter(e => e.team === PLAYER);
-      const e = mineShots.length && Math.random() < 0.6 ? pick(mineShots) : pick(shots), mine = e.team === PLAYER && !watching;
+    const e = pickShot(h, 0.6);
+    if (e) {
+      const mine = isMine(e);
       const f = pick(HUM_PULSE);
       tone(f * 1.25, f, 0.26, mine ? 0.07 : watching ? 0.05 : 0.035, 'triangle', screenPan(e.x, e.y) * 0.6, 0.024);
       lastBlip = nowMs + Math.random() * 45;
@@ -1650,11 +2412,11 @@ function humPreview() {                             // a short swell of the dron
 // Your army's taps are clear, fights between AI colors are a faint patter on the main beats only.
 const FELT_STEP = 60 / 108 / 4, FELT_SEQ = [50, 52, 55, 57, 60, 57, 55, 52];   // D3 E3 G3 A3 C4 A3 G3 E3: below Soft's bleeps
 let feltNext = 0, feltStep = 0, feltPool = [], noiseBuf = null;
-function feltHits(ev, nowMs) {
+function feltHits(h, ev, nowMs) {
   if (nowMs - lastBloop > 150) {                    // base hits: exactly Soft's bloop, kept near the center
-    const hits = ev.filter(e => e.base);
-    if (hits.length) {
-      const e = (!watching && hits.find(h => h.team === PLAYER)) || pick(hits), mine = e.team === PLAYER && !watching;
+    const e = h.baseMine || h.base;
+    if (e) {
+      const mine = isMine(e);
       const f = hz(45 + pick(PENTA));
       tone(f * 1.4, f, 0.2, mine ? 0.11 : watching ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y) * 0.4, 0.02);
       lastBloop = nowMs;
@@ -1663,11 +2425,15 @@ function feltHits(ev, nowMs) {
   for (const e of ev) if (!e.base) feltPool.push(e);
   if (feltPool.length > 64) feltPool.splice(0, feltPool.length - 64);
 }
-function feltTap(t, f, peak, pan) {
+function noise() {                                  // one shared buffer of white noise for every profile
   if (!noiseBuf) {
-    noiseBuf = AC.createBuffer(1, Math.floor(AC.sampleRate * 0.3), AC.sampleRate);
+    noiseBuf = AC.createBuffer(1, Math.floor(AC.sampleRate * 0.5), AC.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   }
+  return noiseBuf;
+}
+function feltTap(t, f, peak, pan) {
+  noise();
   let out = bus;
   if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = Math.max(-1, Math.min(1, pan)); p.connect(bus); out = p; }
   const n = AC.createBufferSource(), bp = AC.createBiquadFilter(), ng = AC.createGain();   // the felt: a tiny puff of filtered noise
@@ -1688,8 +2454,8 @@ function feltClock() {                              // runs every frame; schedul
   while (feltNext < now + 0.06) {
     const n = feltPool.length, off = feltStep % 2 === 1;
     if (n) {
-      const mineList = watching ? [] : feltPool.filter(e => e.team === PLAYER), mine = mineList.length > 0;
-      const e = mine ? mineList[mineList.length - 1] : feltPool[n - 1];
+      let e = feltPool[n - 1], mine = false;
+      if (!watching) for (let i = n - 1; i >= 0; i--) if (feltPool[i].team === PLAYER) { e = feltPool[i]; mine = true; break; }
       if (!off || (n >= 3 && (mine || watching))) {
         const accent = feltStep % 4 === 0 ? 1.2 : 1;
         feltTap(Math.max(feltNext, now), hz(FELT_SEQ[feltStep % FELT_SEQ.length]), (mine ? 0.042 : watching ? 0.026 : 0.013) * accent, screenPan(e.x, e.y) * 1.5);
@@ -1703,6 +2469,178 @@ function feltPreview() {
   const t = AC.currentTime + 0.03;
   [0, 2, 3, 4, 6, 7].forEach(k => feltTap(t + k * FELT_STEP, hz(FELT_SEQ[k]), k % 4 === 0 ? 0.05 : 0.042, 0));
   setTimeout(() => { if (AC) { const b = hz(45 + pick(PENTA)); tone(b * 1.4, b, 0.2, 0.09, 'sine', 0, 0.02); } }, 1150);
+}
+function applyColors(watch) {
+  applyPalette(watch ? 0 : COLOR_KEYS.indexOf(settings.color));   // AI vs AI always uses the standard lineup
+  const me = TEAM_COLORS[PLAYER], segs = $('terr').children;
+  for (let i = 0; i < 5; i++) { segs[i].style.background = TEAM_COLORS[i]; rivalCells[i][0].style.background = TEAM_COLORS[i]; }
+  $('triPath').setAttribute('fill', me);
+  hudEl.style.setProperty('--blue', me); hudEl.style.setProperty('--blue-soft', hexA(me, 0.16));   // HUD accents follow you
+}
+// ---- "Overdrive": a darkcore track for Overload, built live from the battle ----
+// A 16th-note sequencer at 108 bpm, phase-locked to the beat the Overload visuals pulse on. Am - F - C - G in the bass,
+// four-on-the-floor kick with sidechain pumping, and layers that arrive as the fighting heats up:
+//   calm: kick, offbeat bass, dark pad      warming up: hats, snare on 2 and 4
+//   heavy: rolling 16th bass, 16th hats, a square-wave arpeggio with echo      all-out: higher arp, snare rolls
+// Troop hits are laser zaps and base hits are distorted impacts, both snapped onto the grid so they play in time.
+// Captures land a boom on the next beat; a knockout drops a long falling sweep.
+const OD_STEP = 60 / 108 / 4;
+const OD_CHORDS = [                                   // bass root and pad voicing per bar (MIDI)
+  { root: 33, pad: [57, 60, 64], arp: [57, 60, 64, 69, 72, 69, 64, 60] },   // Am
+  { root: 29, pad: [57, 60, 65], arp: [53, 57, 60, 65, 69, 65, 60, 57] },   // F
+  { root: 36, pad: [55, 60, 64], arp: [55, 60, 64, 67, 72, 67, 64, 60] },   // C
+  { root: 31, pad: [55, 59, 62], arp: [55, 59, 62, 67, 71, 67, 62, 59] }    // G
+];
+const OD = { nodes: null, next: 0, step: 0, heat: 0, zaps: [], hits: [], boom: 0, preview: 0 };
+function distCurve(k) {
+  const n = 1024, c = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const x = i * 2 / n - 1; c[i] = (1 + k) * x / (1 + k * Math.abs(x)); }
+  return c;
+}
+function odBuild(withPad) {                           // the mixing desk: drums, a ducked music bus, an echo, a distortion
+  const t = AC.currentTime, N = {};
+  N.comp = AC.createDynamicsCompressor(); N.comp.threshold.value = -14; N.comp.ratio.value = 4;
+  N.out = AC.createGain(); N.out.gain.value = 0.13; N.comp.connect(N.out); N.out.connect(bus);   // sits near the other profiles' level
+  N.music = AC.createGain(); N.music.gain.value = 0.0001; N.music.gain.setTargetAtTime(1, t, 0.25); N.music.connect(N.comp);
+  N.duck = AC.createGain(); N.duck.connect(N.music);                       // bass, pad and arp pump against the kick
+  N.drums = AC.createGain(); N.drums.connect(N.music);
+  const dl = AC.createDelay(1), fb = AC.createGain(), dlp = AC.createBiquadFilter();
+  dl.delayTime.value = OD_STEP * 3; fb.gain.value = 0.33; dlp.type = 'lowpass'; dlp.frequency.value = 2200;
+  dl.connect(dlp); dlp.connect(fb); fb.connect(dl); dlp.connect(N.music);
+  N.send = AC.createGain(); N.send.gain.value = 0.35; N.send.connect(dl);
+  N.shaper = AC.createWaveShaper(); N.shaper.curve = distCurve(16); N.shaper.oversample = '2x';
+  const sh = AC.createGain(); sh.gain.value = 0.45; N.shaper.connect(sh); sh.connect(N.music);
+  N.oscs = [];
+  if (withPad) {
+    N.padLP = AC.createBiquadFilter(); N.padLP.type = 'lowpass'; N.padLP.frequency.value = 500; N.padLP.Q.value = 3;
+    N.padG = AC.createGain(); N.padG.gain.value = 0.0001; N.padLP.connect(N.padG); N.padG.connect(N.duck);
+    N.voices = [];
+    for (let i = 0; i < 3; i++) for (const det of [-9, 9]) {
+      const o = AC.createOscillator(), g = AC.createGain();
+      o.type = 'sawtooth'; o.detune.value = det; o.frequency.value = hz(OD_CHORDS[0].pad[i]); g.gain.value = 0.05;
+      o.connect(g); g.connect(N.padLP); o.start(t); N.voices.push({ o, i }); N.oscs.push(o);
+    }
+  }
+  return N;
+}
+function env(g, t, peak, atk, dur) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + atk); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); }
+function odKick(N, t, v) {
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.frequency.setValueAtTime(155, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.13);
+  env(g, t, 0.9 * v, 0.002, 0.38); o.connect(g); g.connect(N.drums); o.start(t); o.stop(t + 0.4);
+  N.duck.gain.cancelScheduledValues(t); N.duck.gain.setValueAtTime(0.32, t); N.duck.gain.linearRampToValueAtTime(1, t + 0.24);
+}
+function odNoise(N, t, type, freq, q, peak, dur, dest) {
+  const n = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  n.buffer = noise(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+  env(g, t, peak, 0.001, dur); n.connect(f); f.connect(g); g.connect(dest); n.start(t, Math.random() * 0.3, dur + 0.05);
+}
+function odBass(N, t, midi, h) {
+  const o = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain();
+  o.type = 'sawtooth'; o.frequency.value = hz(midi);
+  f.type = 'lowpass'; f.Q.value = 7; f.frequency.setValueAtTime(260 + 1300 * h, t); f.frequency.exponentialRampToValueAtTime(140, t + 0.16);
+  env(g, t, 0.16, 0.004, 0.19); o.connect(f); f.connect(g); g.connect(N.duck); g.connect(N.shaper); o.start(t); o.stop(t + 0.22);
+}
+function odArp(N, t, midi, h) {
+  const o = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain();
+  o.type = 'square'; o.frequency.value = hz(midi); f.type = 'lowpass'; f.frequency.value = 1100 + 1500 * h;
+  env(g, t, 0.035, 0.002, 0.13); o.connect(f); f.connect(g); g.connect(N.duck); g.connect(N.send); o.start(t); o.stop(t + 0.15);
+}
+function odZap(N, t, midi, peak, pan) {               // a laser: a falling sawtooth through a resonant band
+  const o = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain(), fr = hz(midi);
+  o.type = 'sawtooth'; o.frequency.setValueAtTime(fr * 2, t); o.frequency.exponentialRampToValueAtTime(fr / 2, t + 0.08);
+  f.type = 'bandpass'; f.frequency.value = fr * 1.5; f.Q.value = 4; env(g, t, peak, 0.002, 0.1);
+  o.connect(f); f.connect(g);
+  let out = g; if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); out = p; }
+  out.connect(N.music); out.connect(N.send); o.start(t); o.stop(t + 0.12);
+}
+function odImpact(N, t, peak, pan, big) {             // industrial thud: a sub drop and a crunchy noise burst, distorted
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.frequency.setValueAtTime(big ? 120 : 95, t); o.frequency.exponentialRampToValueAtTime(big ? 30 : 38, t + (big ? 0.5 : 0.25));
+  env(g, t, peak, 0.003, big ? 0.7 : 0.32); o.connect(g);
+  let out = g; if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan * 0.5; g.connect(p); out = p; }
+  out.connect(N.shaper); out.connect(N.drums); o.start(t); o.stop(t + (big ? 0.75 : 0.35));
+  odNoise(N, t, 'lowpass', big ? 1400 : 900, 1, peak * 0.6, big ? 0.45 : 0.16, N.shaper);
+}
+function odFall(N, t) {                               // a knockout: a long distorted sweep falling into the floor
+  const o = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain();
+  o.type = 'sawtooth'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(45, t + 1.3);
+  f.type = 'lowpass'; f.frequency.setValueAtTime(3000, t); f.frequency.exponentialRampToValueAtTime(120, t + 1.3);
+  env(g, t, 0.12, 0.02, 1.35); o.connect(f); f.connect(g); g.connect(N.shaper); o.start(t); o.stop(t + 1.4);
+}
+function odPlayStep(N, t, k, h, live) {
+  const s = k % 16, bar = Math.floor(k / 16) % 4, ch = OD_CHORDS[bar];
+  if (s === 0 && N.voices) {                          // new bar: glide the pad to the next chord, open it up with the heat
+    for (const v of N.voices) v.o.frequency.setTargetAtTime(hz(ch.pad[v.i]), t, 0.06);
+    N.padG.gain.setTargetAtTime(0.035 + 0.06 * h, t, 0.5);
+    N.padLP.frequency.setTargetAtTime(420 + 1800 * h, t, 0.6);
+  }
+  if (s % 4 === 0) odKick(N, t, 0.55 + 0.45 * h);
+  if (h < 0.5 ? s % 4 === 2 : s % 4 !== 0) odBass(N, t, ch.root + 12 + (s % 8 === 6 ? 12 : 0), h);
+  if (h > 0.22 && s % 4 === 2) odNoise(N, t, 'highpass', 7500, 0.7, 0.07, 0.11, N.drums);           // open hat
+  if (h > 0.5 && s % 2 === 1) odNoise(N, t, 'highpass', 9000, 0.7, 0.035, 0.035, N.drums);          // closed hats
+  if (h > 0.3 && (s === 4 || s === 12)) {                                                           // snare on 2 and 4
+    odNoise(N, t, 'bandpass', 1900, 0.8, 0.22, 0.18, N.drums);
+    const o = AC.createOscillator(), g = AC.createGain(); o.type = 'triangle'; o.frequency.setValueAtTime(210, t); o.frequency.exponentialRampToValueAtTime(150, t + 0.08);
+    env(g, t, 0.12, 0.002, 0.1); o.connect(g); g.connect(N.drums); o.start(t); o.stop(t + 0.12);
+  }
+  if (h > 0.8 && bar === 3 && s >= 12) odNoise(N, t, 'bandpass', 2100, 0.8, 0.08 + (s - 12) * 0.04, 0.09, N.drums);   // roll
+  if (h > 0.55) odArp(N, t, ch.arp[k % 8] + (h > 0.8 && bar % 2 ? 12 : 0), h);
+  if (!live) return;
+  if (OD.zaps.length) {                               // hits since the last step, played in time
+    let e = OD.zaps[OD.zaps.length - 1], mine = false;
+    if (!watching) for (let i = OD.zaps.length - 1; i >= 0; i--) if (OD.zaps[i].team === PLAYER) { e = OD.zaps[i]; mine = true; break; }
+    odZap(N, t, ch.arp[(k * 3) % 8] + 12, mine ? 0.07 : watching ? 0.045 : 0.025, screenPan(e.x, e.y));
+    OD.zaps.length = 0;
+  }
+  if (s % 2 === 0 && OD.hits.length) {
+    const e = OD.hits.find(x => x.team === PLAYER && !watching) || OD.hits[0], mine = e.team === PLAYER && !watching;
+    odImpact(N, t, mine ? 0.32 : 0.16, screenPan(e.x, e.y), false);
+    OD.hits.length = 0;
+  }
+  if (s % 4 === 0 && OD.boom) { odImpact(N, t, 0.45, 0, true); OD.boom = 0; }
+}
+function odHits(ev) {
+  for (const e of ev) (e.base ? OD.hits : OD.zaps).push(e);
+  if (OD.zaps.length > 32) OD.zaps.splice(0, OD.zaps.length - 32);
+  if (OD.hits.length > 16) OD.hits.splice(0, OD.hits.length - 16);
+}
+function odTick() {                                   // every frame: start, stop, or keep the sequencer fed
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'overdrive' && mode === 'play' && G && !G.over;
+  if (!want) {
+    if (OD.nodes) { const N = OD.nodes, t = AC.currentTime; OD.nodes = null; N.music.gain.cancelScheduledValues(t); N.music.gain.setTargetAtTime(0.0001, t, 0.35); for (const o of N.oscs) o.stop(t + 2); }
+    OD.zaps.length = 0; OD.hits.length = 0; return;
+  }
+  if (!OD.nodes) {
+    OD.nodes = odBuild(true);
+    const perfNow = performance.now() / 1000, lat = AC.outputLatency || AC.baseLatency || 0;
+    OD.step = Math.ceil(perfNow / OD_STEP);           // same clock and phase as the Overload pulse
+    OD.next = AC.currentTime + (OD.step * OD_STEP - perfNow) - lat;
+    while (OD.next < AC.currentTime + 0.02) { OD.next += OD_STEP; OD.step++; }
+  }
+  for (const f of G.fx) {                             // captures and knockouts become musical events
+    if (f.od) continue; f.od = 1;
+    if (f.k === 'ring') OD.boom = 1;
+    else if (f.k === 'elim') odFall(OD.nodes, AC.currentTime + 0.02);
+  }
+  const now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
+  if (OD.next < now - 0.25) { const skip = Math.ceil((now - OD.next) / OD_STEP); OD.next += skip * OD_STEP; OD.step += skip; }
+  while (OD.next < now + 0.1) {
+    if (OD.step % 16 === 0) {                         // once a bar, nudge back into phase with the screen's clock
+      const lat = AC.outputLatency || AC.baseLatency || 0;
+      const target = now + (OD.step * OD_STEP - performance.now() / 1000) - lat, d = target - OD.next;
+      if (Math.abs(d) < 0.05) OD.next += d * 0.25;
+    }
+    OD.heat += (heat - OD.heat) * 0.05;               // layers come and go smoothly, not on every flicker
+    odPlayStep(OD.nodes, OD.next, OD.step, OD.heat, true);
+    OD.next += OD_STEP; OD.step++;
+  }
+}
+function odPreview() {                                // one bar of the track at full tilt, with a couple of zaps and a hit
+  const N = odBuild(false), t0 = AC.currentTime + 0.05;
+  for (let k = 0; k < 16; k++) odPlayStep(N, t0 + k * OD_STEP, k, 0.85, false);
+  odZap(N, t0 + 2 * OD_STEP, 81, 0.06, -0.3); odZap(N, t0 + 7 * OD_STEP, 76, 0.06, 0.3); odImpact(N, t0 + 10 * OD_STEP, 0.3, 0, false);
+  N.music.gain.setTargetAtTime(0.0001, t0 + 16 * OD_STEP, 0.2);
 }
 function syncRivals() {
   const open = watching ? watchRivals : settings.rivals;
@@ -1725,10 +2663,12 @@ function syncSound() {
 let lastPreview = 0;
 function previewSound() {                       // a sample bleep and bloop so you can hear the setting
   const now = performance.now(), hum = settings.tone === 'hum';
-  if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < (hum ? 1200 : settings.tone === 'felt' ? 900 : 140)) return;
+  const gap = hum ? 1200 : settings.tone === 'felt' ? 900 : settings.tone === 'overdrive' ? 2400 : 140;
+  if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < gap) return;
   lastPreview = now;
   if (hum) { humPreview(); return; }
   if (settings.tone === 'felt') { feltPreview(); return; }
+  if (settings.tone === 'overdrive') { odPreview(); return; }
   const soft = settings.tone === 'soft', f = hz(ROOT[PLAYER] - (soft ? 12 : 0) + pick(PENTA));
   tone(f, f * 0.94, soft ? 0.1 : 0.075, 0.055, soft ? 'sine' : 'triangle', 0, soft ? 0.018 : 0.008);
   setTimeout(() => { if (AC) { const b = hz(45 + pick(PENTA)); tone(b * (soft ? 1.4 : 1.7), b, soft ? 0.2 : 0.16, 0.08, 'sine', 0, soft ? 0.02 : 0.008); } }, 120);
@@ -1742,36 +2682,101 @@ function syncSeg() {
     seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === settings[key])));
   });
 }
-function renderRecord() {
-  $('rec').textContent = record.games ? `${record.wins} ${record.wins === 1 ? 'win' : 'wins'} in ${record.games} ${record.games === 1 ? 'game' : 'games'}` : '';
+// menu screens work like a little stack: each one you open goes on top, Back (or Android's back gesture) pops it
+let stack = ['scrHome'], setupWatch = false;
+function showScreen(id) {
+  for (const sc of document.querySelectorAll('#menu .screen')) sc.hidden = sc.id !== id;
+  if (id === 'scrStats') renderStats();
+  const f = $(id).querySelector('.primary, .back, button'); if (f) f.focus({ preventScroll: true });
 }
+function go(id) { stack.push(id); showScreen(id); armBack(); }
+function back() { if (stack.length > 1) { stack.pop(); showScreen(stack[stack.length - 1]); return true; } return false; }
+function resetStack(root) { stack = [root]; showScreen(root); }
+function openSetup(watch) {
+  setupWatch = watch;
+  $('setupTitle').textContent = watch ? 'AI vs AI' : 'New game';
+  $('bStart').textContent = watch ? 'Start watching' : 'Start';
+  $('colorRow').hidden = watch;                      // no player color to pick when only the AI plays
+  $('oppLbl').textContent = watch ? 'Colors' : 'Opponents';          // AI vs AI counts every color, play counts rivals
+  $('oppRow').querySelectorAll('button').forEach(b => { b.textContent = watch ? String(+b.dataset.v + 1) : b.dataset.v; });
+  go('scrSetup');
+}
+function renderRecord() {
+  const p = stats.play;
+  $('rec').textContent = p.games ? `${p.wins} ${p.wins === 1 ? 'win' : 'wins'} in ${p.games} ${p.games === 1 ? 'game' : 'games'}` : '';
+}
+function fmtLong(t) {
+  const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60);
+  return h ? `${h}h ${m}m` : m ? `${m}m` : `${Math.floor(t)}s`;
+}
+function renderStats() {
+  const p = stats.play, w = stats.watch, dash = '–';
+  const tile = (v, l) => `<div class="tile"><b>${v}</b><span>${l}</span></div>`;
+  const fast = k => p.fastest[k] ? fmt(p.fastest[k]) : dash;
+  let h = `<h3>Your games</h3><div class="tiles">
+    ${tile(p.games, 'Played')}${tile(p.wins, 'Won')}${tile(p.games ? Math.round(100 * p.wins / p.games) + '%' : dash, 'Win rate')}
+    ${tile(p.most || dash, 'Most bases held')}${tile(p.kills.toLocaleString(), 'Troops knocked out')}
+    ${tile(p.caps, 'Bases taken')}${tile(p.time ? fmtLong(p.time) : dash, 'Time played')}</div>
+    <h3>Fastest win</h3><div class="tiles">${tile(fast('small'), 'Small map')}${tile(fast('medium'), 'Medium map')}${tile(fast('large'), 'Large map')}</div>
+    <h3>AI vs AI</h3>`;
+  if (!w.matches) h += `<p class="none">No AI vs AI matches watched yet.</p>`;
+  else {
+    const rate = (wins, apps) => apps ? wins / apps : 0;
+    h += `<div class="tiles">${tile(w.matches, 'Matches watched')}</div><h3>Win rate by color</h3><div class="bars">` +
+      w.byColor.map((n, i) => { const r = rate(n, w.appColor[i]);
+        return `<i class="sw" style="background:${PALETTE[i].c}"></i><span class="bar"><i style="width:${100 * r}%;background:${PALETTE[i].c}"></i></span><b>${Math.round(100 * r)}%</b>`; }).join('') +
+      `</div><h3>Win rate by personality</h3><div>` +
+      Object.keys(Object.assign({}, w.byStyle, w.appStyle)).map(k => [k, w.byStyle[k] || 0, w.appStyle[k] || 0])
+        .sort((a, b) => rate(b[1], b[2]) - rate(a[1], a[2]) || b[1] - a[1])
+        .map(([k, n, ap]) => `<div class="prow"><span>${k}</span><b>${ap ? Math.round(100 * n / ap) + '% · ' + n + ' of ' + ap : n + (n === 1 ? ' win' : ' wins')}</b></div>`).join('') + `</div>`;
+  }
+  $('statsBody').innerHTML = h;
+}
+let resetArmed = 0;
+function resetStats() {
+  if (Date.now() - resetArmed > 3000) { resetArmed = Date.now(); $('bReset').textContent = 'Tap again to reset'; setTimeout(() => { $('bReset').textContent = 'Reset stats'; }, 3000); return; }
+  stats.play = { games: 0, wins: 0, kills: 0, caps: 0, time: 0, most: 0, fastest: {} };
+  stats.watch = { matches: 0, byColor: [0, 0, 0, 0, 0], byStyle: {}, appColor: [0, 0, 0, 0, 0], appStyle: {} };
+  save('ice-stats', stats); resetArmed = 0; $('bReset').textContent = 'Reset stats'; renderStats(); renderRecord();
+}
+function clearEffects() { parts.length = 0; pulses.length = 0; texts.length = 0; banners.length = 0; lastGT = 0; combo = 0; shakeAmp = 0; flash = null; }
 function startDemo() {
-  parts.length = 0; pulses.length = 0; lastGT = 0;
+  clearEffects();
+  applyColors(true);
   layout();
-  newGame({ size: settings.size, diff: 'normal', ...worldPlan(false) });
+  const shape = pickShape();
+  newGame({ size: settings.size, diff: 'normal', watch: true, shape, ...worldPlan(false, shape) });
   G.autoplay = true; mode = 'demo'; acc = 0; hl = []; uiFx = [];
   resetCam(); layout();
 }
 function startGame(watch) {
-  audioOn();
+  audioOn(); armBack();
   watching = !!watch;
   if (watching) watchRivals = true;               // every AI vs AI match opens with the stats table showing
   show('menu', false); show('end', false); hudEl.hidden = false;
   hudEl.classList.toggle('watch', watching);
   $('bAgain').textContent = watching ? 'Watch again' : 'Play again';
-  parts.length = 0; pulses.length = 0; lastGT = 0;
+  clearEffects();
+  applyColors(watching);
   syncCtrl(); syncRivals(); layout();                 // HUD in place first, so the map can be built around it
-  newGame({ size: settings.size, diff: settings.diff, persona: settings.persona, ...worldPlan(true) });
+  const shape = pickShape();
+  newGame({ size: settings.size, diff: settings.diff, persona: settings.persona, teams: +settings.opp + 1, watch: watching, shape, ...worldPlan(true, shape) });
+  for (let i = 0; i < 5; i++) for (const c of rivalCells[i]) c.style.display = G.teams[i].active ? '' : 'none';   // only colors in play
+  setMinimap(false); fling.vx = fling.vy = 0;
   G.autoplay = watching;
   if (!speeds().includes(speedMul)) speedMul = 1;
   mode = 'play'; acc = 0; hl = []; uiFx = []; hover = null; last = performance.now();
-  syncCtrl(); resetCam(); layout(); hud();
+  syncCtrl(); resetCam(); layout();
+  if (!watching && !SIZES[settings.size].fit) {       // bigger maps start zoomed in on your home base
+    const home = G.nodes[G.homes[PLAYER]];
+    cam.z = Math.max(1, Math.min(F.w, F.h) / 520 / s0); centerOn(home.x, home.y);
+  }
+  hud();
 }
 function pause() {
   if (mode !== 'play') return;
   mode = 'paused'; hover = null;
-  $('bResume').hidden = false; $('bPlay').textContent = 'New game';
-  show('menu', true); $('bResume').focus({ preventScroll: true });
+  resetStack('scrPause'); show('menu', true);
 }
 function resume() {
   if (mode !== 'paused') return;
@@ -1779,36 +2784,103 @@ function resume() {
   mode = 'play'; last = performance.now(); show('menu', false);
 }
 function fmt(t) { const m = Math.floor(t / 60), s = Math.floor(t % 60); return m + ':' + String(s).padStart(2, '0'); }
+
+// ---- end screen: the match as a timeline, plus the moments that shaped it ----
+function pickMoments() {
+  const L = G.log.slice(), you = i => i === PLAYER && !watching;
+  // a home base that was also a color's last base reads better as just the knockout
+  const keep = L.filter(e => !(e.k === 'home' && L.some(o => o.k === 'out' && o.b === e.b && o.a === e.a && Math.abs(o.t - e.t) < 1.5)));
+  const weight = { out: 4, home: 3, lead: 2, retreat: 1 };
+  keep.forEach(e => { e.w = weight[e.k] + ((you(e.a) || you(e.b)) ? 1.5 : 0); });
+  return keep.sort((a, b) => b.w - a.w).slice(0, 5).sort((a, b) => a.t - b.t);
+}
+function momentText(e) {
+  const you = i => i === PLAYER && !watching;
+  const who = i => i == null || i < 0 ? 'Someone' : you(i) ? 'You' : TEAM_NAMES[i];
+  const whose = i => you(i) ? 'your' : TEAM_NAMES[i] + "'s";
+  if (e.k === 'home') return `${who(e.a)} took ${whose(e.b)} home base`;
+  if (e.k === 'out') {
+    if (you(e.b)) return e.a != null && e.a >= 0 ? `You were knocked out by ${TEAM_NAMES[e.a]}` : 'You were knocked out';
+    return e.a != null && e.a >= 0 ? `${who(e.a)} knocked out ${TEAM_NAMES[e.b]}` : `${TEAM_NAMES[e.b]} was knocked out`;
+  }
+  if (e.k === 'lead') return `${who(e.a)} took the lead`;
+  return `${who(e.a)} pulled back from a losing fight`;
+}
+function momentColor(e) { const i = e.k === 'out' && (e.a == null || e.a < 0) ? e.b : e.a; return colorOf(i == null ? -1 : i); }
+function drawTimeline(moments) {
+  const c = $('tl'), r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 3);
+  if (!r.width) return;
+  c.width = Math.round(r.width * d); c.height = Math.round(r.height * d);
+  const x = c.getContext('2d'), w = r.width, h = r.height, N = G.nodes.length, T = Math.max(1, G.t), hs = G.hist;
+  x.setTransform(d, 0, 0, d, 0, 0);
+  x.fillStyle = '#232327'; x.fillRect(0, 0, w, h);            // unclaimed ground
+  if (hs.length > 1) {
+    const X = t => t / T * w, Y = v => h - v / N * h;
+    let low = hs.map(() => 0);
+    for (let k = 0; k < 5; k++) {                              // each color's share of the map, stacked, blue at the bottom
+      x.beginPath();
+      hs.forEach((smp, i) => { const y = Y(low[i] + smp[k + 1]); i ? x.lineTo(X(smp[0]), y) : x.moveTo(X(smp[0]), y); });
+      for (let i = hs.length - 1; i >= 0; i--) x.lineTo(X(hs[i][0]), Y(low[i]));
+      x.closePath(); x.fillStyle = TEAM_COLORS[k]; x.fill();
+      low = low.map((v, i) => v + hs[i][k + 1]);
+    }
+    x.fillStyle = '#fff';
+    for (const m of moments) { const mx = Math.max(1, Math.min(w - 1, X(m.t))); x.globalAlpha = .85; x.fillRect(mx - 0.75, 0, 1.5, h); }
+    x.globalAlpha = 1;
+  }
+  $('tlEnd').textContent = fmt(G.t);
+}
 function showEnd() {
   mode = 'over';
-  const P = G.teams[PLAYER], N = G.nodes.length;
-  if (watching) {                                   // spectated matches don't count toward your record
+  const P = G.teams[PLAYER], N = G.nodes.length, t = $('endTitle'), sub = $('endSub');
+  if (watching) {                                   // spectated matches go into the AI vs AI stats, not your record
     const w = G.winner, T = G.teams[w];
-    $('endTitle').innerHTML = `<span class="sw" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`;
-    $('endSub').textContent = `${TEAM_NAMES[w]} took all ${N} bases in ${fmt(G.t)} and knocked out ${T.kills} troops along the way.`;
-    show('end', true); $('bAgain').focus({ preventScroll: true });
-    return;
-  }
-  record.games++; if (G.result === 'win') record.wins++; save('ice-record', record);
-  const t = $('endTitle'), sub = $('endSub');
-  if (G.result === 'win') {
-    t.innerHTML = '<span class="sw" style="background:#3577ff"></span>The map is blue';
-    sub.textContent = `You took all ${N} bases in ${fmt(G.t)} and knocked out ${P.kills} troops along the way.`;
+    t.innerHTML = `<span class="sw" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`;
+    sub.textContent = `${TEAM_NAMES[w]} (${T.style.name}) took all ${N} bases in ${fmt(G.t)} and knocked out ${T.kills} troops along the way.`;
+    const sw = stats.watch;
+    sw.matches++; sw.byColor[w]++; sw.byStyle[T.style.name] = (sw.byStyle[T.style.name] || 0) + 1;
+    for (const A of G.teams) if (A.active) { sw.appColor[A.i]++; sw.appStyle[A.style.name] = (sw.appStyle[A.style.name] || 0) + 1; }
   } else {
-    const w = G.winner;
-    t.innerHTML = w != null
-      ? `<span class="sw" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`
-      : '<span class="sw" style="background:#3577ff"></span>Blue is gone';
-    sub.textContent = `You lasted ${fmt(G.t)}, held up to ${G.peak} ${G.peak === 1 ? 'base' : 'bases'} at once and knocked out ${P.kills} troops.`;
+    const p = stats.play, win = G.result === 'win';
+    p.games++; if (win) p.wins++;
+    p.kills += P.kills; p.caps += G.playerCaps; p.time += G.t; p.most = Math.max(p.most, G.peak);
+    if (win && (!p.fastest[G.sizeName] || G.t < p.fastest[G.sizeName])) p.fastest[G.sizeName] = Math.round(G.t);
+    if (win) {
+      t.innerHTML = `<span class="sw" style="background:${TEAM_COLORS[PLAYER]}"></span>The map is ${TEAM_NAMES[PLAYER].toLowerCase()}`;
+      sub.textContent = `You took all ${N} bases in ${fmt(G.t)} and knocked out ${P.kills} troops along the way.`;
+    } else {
+      const w = G.winner;
+      t.innerHTML = w != null
+        ? `<span class="sw" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`
+        : `<span class="sw" style="background:${TEAM_COLORS[PLAYER]}"></span>${TEAM_NAMES[PLAYER]} is gone`;
+      sub.textContent = `You lasted ${fmt(G.t)}, held up to ${G.peak} ${G.peak === 1 ? 'base' : 'bases'} at once and knocked out ${P.kills} troops.`;
+    }
   }
+  save('ice-stats', stats);
+  const moments = pickMoments();
+  $('moments').innerHTML = moments.map(m => `<li><time>${fmt(m.t)}</time><i style="background:${momentColor(m)}"></i><span>${momentText(m)}</span></li>`).join('');
   show('end', true); $('bAgain').focus({ preventScroll: true });
+  requestAnimationFrame(() => drawTimeline(moments));
 }
 function toMenu() {
   watching = false; hudEl.classList.remove('watch');
   show('end', false); hudEl.hidden = true;
-  $('bResume').hidden = true; $('bPlay').textContent = 'Play';
-  startDemo(); resetCam(); layout(); renderRecord(); show('menu', true);
+  startDemo(); resetCam(); layout(); renderRecord(); resetStack('scrHome'); show('menu', true);
 }
+
+// ---- Android back gesture: steps back through the menus, pauses a running game, never dumps you out mid-match ----
+let armed = false;
+function armBack() { if (!armed) { try { history.pushState({ ice: 1 }, ''); armed = true; } catch (e) {} } }
+function onBack() {
+  if (!$('end').hidden) { toMenu(); return true; }
+  if (mode === 'play') { pause(); return true; }
+  if (!$('menu').hidden && stack.length > 1) { back(); return true; }
+  if (mode === 'paused') { resume(); return true; }
+  toast('Press back again to exit', '#3a3a3e');
+  return false;
+}
+window.addEventListener('popstate', () => { armed = false; if (onBack()) armBack(); });
+document.addEventListener('pointerdown', armBack, true);   // browsers only honor this after a real tap
 
 // ---- input ----
 function handleTap(px, py) {
@@ -1839,6 +2911,7 @@ function pinchState() {
 cv.addEventListener('pointerdown', e => {
   if (mode !== 'play') return;
   try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+  fling.vx = fling.vy = 0; panHist.length = 0;
   ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (ptrs.size === 1) gest = { kind: 'tap', sx: e.clientX, sy: e.clientY, lx: e.clientX, ly: e.clientY, type: e.pointerType };
   else if (ptrs.size === 2) { const p = pinchState(); gest = { kind: 'pinch', d0: p.d, z0: cam.z, lx: p.mx, ly: p.my }; hover = null; }
@@ -1862,7 +2935,10 @@ cv.addEventListener('pointermove', e => {
   } else if (gest.kind === 'tap' || gest.kind === 'pan') {
     const thr = gest.type === 'mouse' ? 4 : 10;
     if (gest.kind === 'tap' && Math.hypot(e.clientX - gest.sx, e.clientY - gest.sy) > thr) { gest.kind = 'pan'; hover = null; }
-    if (gest.kind === 'pan') { cam.cu -= (e.clientX - gest.lx) / V.s; cam.cv -= (e.clientY - gest.ly) / V.s; updateView(); }
+    if (gest.kind === 'pan') {
+      cam.cu -= (e.clientX - gest.lx) / V.s; cam.cv -= (e.clientY - gest.ly) / V.s; updateView();
+      panHist.push([performance.now(), e.clientX, e.clientY]); if (panHist.length > 8) panHist.shift();
+    }
     gest.lx = e.clientX; gest.ly = e.clientY;
   }
 });
@@ -1870,6 +2946,13 @@ function endPtr(e) {
   if (!ptrs.has(e.pointerId)) return;
   ptrs.delete(e.pointerId);
   if (gest && gest.kind === 'tap' && ptrs.size === 0 && e.type === 'pointerup') handleTap(e.clientX, e.clientY);
+  if (gest && gest.kind === 'pan' && ptrs.size === 0 && e.type === 'pointerup') {
+    const now = performance.now(), recent = panHist.filter(q => now - q[0] < 120);
+    if (recent.length >= 2) {
+      const a = recent[0], b = recent[recent.length - 1], dt = Math.max(16, b[0] - a[0]);
+      fling.vx = (b[1] - a[1]) / dt * 1000; fling.vy = (b[2] - a[2]) / dt * 1000;
+    }
+  }
   if (ptrs.size === 0) gest = null;
   else if (gest && gest.kind === 'pinch') { const [q] = [...ptrs.values()]; gest = { kind: 'pan', lx: q.x, ly: q.y, type: 'touch' }; }
 }
@@ -1881,20 +2964,37 @@ cv.addEventListener('wheel', e => {
   e.preventDefault();
   zoomAround(e.clientX, e.clientY, cam.z * Math.exp(-e.deltaY * 0.0015));
 }, { passive: false });
-$('bFit').addEventListener('click', () => { resetCam(); updateView(); });
+let mapTapT = 0, mapTapTimer = 0;
+$('bMap').addEventListener('click', () => {           // tap: minimap on/off; double-tap: the whole battlefield
+  const now = performance.now();
+  if (now - mapTapT < 300) { clearTimeout(mapTapTimer); mapTapT = 0; fling.vx = fling.vy = 0; resetCam(); updateView(); return; }
+  mapTapT = now;
+  mapTapTimer = setTimeout(() => { mapTapT = 0; setMinimap($('mm').hidden); }, 300);
+});
+let mmDrag = false;
+$('mm').addEventListener('pointerdown', e => { mmDrag = true; try { $('mm').setPointerCapture(e.pointerId); } catch (_) {} mmJump(e); });
+$('mm').addEventListener('pointermove', e => { if (mmDrag) mmJump(e); });
+$('mm').addEventListener('pointerup', () => { mmDrag = false; });
+$('mm').addEventListener('pointercancel', () => { mmDrag = false; });
 cv.addEventListener('contextmenu', e => e.preventDefault());
 
 document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   settings[seg.dataset.key] = b.dataset.v; save('ice-settings', settings); syncSeg();
+  if (seg.dataset.key === 'size') { settings.opp = defaultOpp(settings.size); settings.shape = defaultShape(settings.size); $('shape').value = settings.shape; save('ice-settings', settings); syncSeg(); }   // each size has its own default count
   if (seg.dataset.key === 'size' && mode === 'demo') startDemo();
 
 }));
-$('bPlay').addEventListener('click', () => startGame(false));
-$('bWatch').addEventListener('click', () => startGame(true));
+$('bPlay').addEventListener('click', () => openSetup(false));
+$('bWatch').addEventListener('click', () => openSetup(true));
+$('bStart').addEventListener('click', () => startGame(setupWatch));
 $('bResume').addEventListener('click', resume);
+$('bQuit').addEventListener('click', toMenu);
 $('bAgain').addEventListener('click', () => startGame(watching));
 $('bMenu').addEventListener('click', toMenu);
+$('bReset').addEventListener('click', resetStats);
+document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
+document.querySelectorAll('#menu .back').forEach(b => b.addEventListener('click', back));
 $('bPause').addEventListener('click', pause);
 $('bSpeed').addEventListener('click', () => { const sp = speeds(); speedMul = sp[(sp.indexOf(speedMul) + 1) % sp.length]; syncCtrl(); });
 $('statsBtn').addEventListener('click', () => {
@@ -1903,7 +3003,12 @@ $('statsBtn').addEventListener('click', () => {
   syncRivals(); layout();
 });
 $('visual').value = settings.visual;
-$('visual').addEventListener('change', () => { settings.visual = $('visual').value; save('ice-settings', settings); });
+$('shape').value = settings.shape;
+$('shape').addEventListener('change', () => { settings.shape = $('shape').value; save('ice-settings', settings); if (mode === 'demo') startDemo(); });
+$('visual').addEventListener('change', () => {
+  settings.visual = $('visual').value; save('ice-settings', settings);
+  quality = 0; slowSince = 0; frameAvg = 16.7; layout();   // a new style gets a fresh shot at full resolution
+});
 $('tone').addEventListener('change', () => {
   settings.tone = $('tone').value; save('ice-settings', settings);
   audioOn(); syncSound(); lastPreview = 0; setTimeout(previewSound, 30);
@@ -1917,9 +3022,10 @@ $('bSound').addEventListener('click', () => { settings.sound = !settings.sound; 
 $('bSend').addEventListener('click', () => { settings.send = SENDS[(SENDS.indexOf(settings.send) + 1) % SENDS.length]; save('ice-settings', settings); syncCtrl(); });
 
 window.addEventListener('keydown', e => {
-  if (e.key === ' ' || e.key === 'Escape' || e.key === 'p') {
+  if (e.key === 'Escape') { onBack(); e.preventDefault(); return; }
+  if (e.key === ' ' || e.key === 'p') {
     if (mode === 'play') { pause(); e.preventDefault(); }
-    else if (mode === 'paused') { resume(); e.preventDefault(); }
+    else if (mode === 'paused' && stack.length === 1) { resume(); e.preventDefault(); }
     return;
   }
   if (mode !== 'play') return;
@@ -1932,12 +3038,26 @@ window.addEventListener('keydown', e => {
   else if (e.key === 'm') $('bSound').click();
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
-window.addEventListener('resize', layout);
 if (window.ResizeObserver) new ResizeObserver(layout).observe(document.body);
+else window.addEventListener('resize', layout);
 
 // ---- loop ----
+// ---- optional performance readout: add ?perf to the link ----
+const PERF = /[?&]perf\b/.test(location.search);
+const perfAcc = { n: 0, sim: 0, draw: 0, worst: 0, t0: 0 };
+if (PERF) $('perf').hidden = false;
+function perfTick(nowMs, simMs, drawMs) {
+  const a = perfAcc; a.n++; a.sim += simMs; a.draw += drawMs; a.worst = Math.max(a.worst, simMs + drawMs);
+  if (nowMs - a.t0 < 500) return;
+  const fps = 1000 * a.n / (nowMs - a.t0 || 1);
+  window.__perf = { fps, sim: a.sim / a.n, draw: a.draw / a.n, worst: a.worst, troops: G ? G.troops.length : 0, sparks: parts.length, dpr, quality };
+  if (PERF) $('perf').textContent = `${Math.round(fps)} fps  sim ${(a.sim / a.n).toFixed(2)}ms  draw ${(a.draw / a.n).toFixed(2)}ms  worst ${a.worst.toFixed(1)}ms\n` +
+    `${window.__perf.troops} troops  ${parts.length} sparks  dpr ${dpr.toFixed(2)}`;
+  Object.assign(a, { n: 0, sim: 0, draw: 0, worst: 0, t0: nowMs });
+}
 function frame(nowMs) {
   const dt = Math.min(0.1, (nowMs - last) / 1000); last = nowMs;
+  const tSim = performance.now();
   const running = (mode === 'play') || (mode === 'demo' && !reduceMotion);
   if (G && running && !G.over) {
     acc += dt * (mode === 'demo' ? 0.85 : speedMul);
@@ -1953,14 +3073,21 @@ function frame(nowMs) {
       else setTimeout(() => { if (mode === 'demo') startDemo(); }, 1800);
     }
   }
+  const tDraw = performance.now();
+  stepFling(dt);
+  if (mode === 'play' || mode === 'paused') drawMinimap();
   if (G) playSfx(nowMs, dt);
-  if (AC) { ambTick(); feltClock(); }
+  if (AC) { ambTick(); feltClock(); odTick(); }
   draw(nowMs / 1000);
+  perfTick(nowMs, tDraw - tSim, performance.now() - tDraw);
+  watchFrameRate(dt * 1000, nowMs);
   if (mode === 'play' && nowMs - lastHud > 100) { lastHud = nowMs; hud(); }
   requestAnimationFrame(frame);
 }
 
 syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
+if (PERF) window.__audio = () => ({ AC, master });   // lets the ?perf mode measure output levels
+if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$('mm').hidden });
 requestAnimationFrame(frame);
 })();
 </script>
