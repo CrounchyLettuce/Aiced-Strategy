@@ -137,6 +137,7 @@ body { position: relative; }
 .ghost { border: 1px solid var(--faint); }
 .how { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; line-height: 1.4; color: var(--dim); max-width: 46ch; }
 .how b { color: var(--ink); font-weight: 500; }
+.rec .build { float: right; opacity: .7; }
 .rec { font-size: 13px; color: var(--dim); min-height: 1em; }
 #end .card { text-align: left; }
 #end h2 { margin: 0; font-size: 34px; line-height: 1.05; font-weight: 700; letter-spacing: .02em; }
@@ -268,7 +269,7 @@ body { position: relative; }
         </div>
       </div>
       <div class="btns"><button id="bResume" class="ghost" hidden>Resume</button><button id="bPlay" class="primary">Play</button><button id="bWatch" class="ghost">AI vs AI</button></div>
-      <div class="rec" id="rec"></div>
+      <div class="rec"><span id="rec"></span><span class="build">Build 14</span></div>
     </div>
   </div>
 </div>
