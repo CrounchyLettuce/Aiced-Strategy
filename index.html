@@ -157,12 +157,12 @@ body { position: relative; }
 }
 .sndrow { display: flex; align-items: center; gap: 12px; }
 .selwrap { position: relative; flex: 0 0 auto; }
-#tone {
+.selwrap select {
   -webkit-appearance: none; appearance: none; font: inherit; font-size: 14px; font-weight: 500; color: var(--ink);
   height: 42px; min-width: 132px; padding: 0 34px 0 12px; border: 1px solid var(--faint); border-radius: 3px; background: rgba(0,0,0,.4);
 }
-#tone option { background: #121214; color: #ececee; }
-#tone:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.selwrap select option { background: #121214; color: #ececee; }
+.selwrap select:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 .selwrap::after {
   content: ''; position: absolute; right: 13px; top: 50%; width: 7px; height: 7px; pointer-events: none;
   border-right: 1.6px solid var(--dim); border-bottom: 1.6px solid var(--dim); transform: translateY(-70%) rotate(45deg);
@@ -253,6 +253,11 @@ body { position: relative; }
       </div>
       <div class="opt"><span>Personalities</span>
         <div class="seg" data-key="persona"><button data-v="mixed">Mixed</button><button data-v="adaptive">All adaptive</button></div>
+      </div>
+      <div class="opt"><span>Visuals</span>
+        <div class="selwrap"><select id="visual" aria-label="Visual style">
+          <option value="classic">Classic</option><option value="spark">Spark</option>
+        </select></div>
       </div>
       <div class="opt"><span>Sound</span>
         <div class="sndrow">
@@ -440,7 +445,7 @@ function randomMap(rng, spec, keep) {
     if (starts) return { nodes: pts, edges, starts };
     if (!fallback) fallback = { nodes: pts, edges };
   }
-  if (!fallback) return keep.length ? randomMap(rng, spec, []) : null;   // HUD zones too greedy: ignore them
+  if (!fallback) { if (keep.length) { randomMap.fellBack = (randomMap.fellBack || 0) + 1; return randomMap(rng, spec, []); } return null; }
   const all = fallback.nodes.map((_, i) => i);
   return { ...fallback, starts: all.slice(0, 5) };
 }
@@ -566,7 +571,7 @@ function update(dt) {
             t.hitT = G.t;
             t.cd = C.atkEvery * (0.85 + G.rng() * 0.3);
             e.dmg += S.dp[ti] * C.atkEvery; e.lastHit = t.team;
-            if (G.sfx.length < 48) G.sfx.push({ x: t.x, y: t.y, team: t.team, base: false });
+            if (G.sfx.length < 48) G.sfx.push({ x: t.x, y: t.y, tx: e.x, ty: e.y, team: t.team, base: false });
           }
         } else if (dd > E2) { t.tgt = e = null; }
       }
@@ -688,7 +693,7 @@ function hitBase(n, team, dmg, x, y) {
   // a base can only soak up so much per second, so even a huge army needs a few seconds
   const d = Math.min(dmg, n.budget);
   n.budget -= d; n.hp -= d; n.lastHitT = G.t; n.heat += d; n.heatBy = team;
-  if (G.sfx.length < 48) G.sfx.push({ x, y, team, base: true });
+  if (G.sfx.length < 48) G.sfx.push({ x, y, tx: n.x, ty: n.y, team, base: true });
   if (n.hp <= 0) takeNode(n, team);
 }
 
@@ -1012,6 +1017,7 @@ const settings = load('ice-settings', { size: 'medium', diff: 'normal', persona:
 if (settings.persona !== 'adaptive') settings.persona = 'mixed';
 if (!(settings.volume >= 0 && settings.volume <= 100)) settings.volume = 75;
 if (!['bright', 'soft', 'felt', 'hum'].includes(settings.tone)) settings.tone = 'bright';
+if (settings.visual !== 'spark') settings.visual = 'classic';
 delete settings.map;
 if (!['small', 'medium', 'large'].includes(settings.size)) settings.size = 'medium';
 const record = load('ice-record', { wins: 0, games: 0 });
@@ -1099,6 +1105,98 @@ function hexA(hex, a) {
   const n = parseInt(hex.slice(1), 16);
   return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
 }
+// ---- "Spark" visuals: same squares, triangles and colors, with more life ----
+// glowing troops with short streaks, sparks where hits land, shards when troops fall, a shockwave and
+// pulses racing down the lines when a base changes hands, slowly turning base frames, and faint drifting ice dust.
+const isSpark = () => settings.visual === 'spark';
+const glowCache = new Map();
+function glow(color) {                               // a soft round glow, pre-drawn once per color
+  let g = glowCache.get(color);
+  if (!g) {
+    g = document.createElement('canvas'); g.width = g.height = 64;
+    const c = g.getContext('2d'), grd = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grd.addColorStop(0, hexA(color, 0.6)); grd.addColorStop(0.35, hexA(color, 0.22)); grd.addColorStop(1, hexA(color, 0));
+    c.fillStyle = grd; c.fillRect(0, 0, 64, 64); glowCache.set(color, g);
+  }
+  return g;
+}
+const parts = [], pulses = [], PMAX = 700;
+let motes = null, lastGT = 0;
+function emit(x, y, c, n, sp, life, size, shape, dx, dy, spread) {
+  for (let i = 0; i < n && parts.length < PMAX; i++) {
+    const a = dx === undefined ? Math.random() * 6.283 : Math.atan2(dy, dx) + (Math.random() - .5) * (spread || 1.2);
+    const v = sp * (0.5 + Math.random() * 0.7);
+    parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life, max: life, c, s: size * (0.7 + Math.random() * 0.6),
+      sh: shape, r: Math.random() * 6.283, vr: (Math.random() - .5) * 14 });
+  }
+}
+function vfxHits(ev) {                               // sparks where hits land, flying the way the blow went
+  if (!isSpark() || reduceMotion) return;
+  let budget = 10;
+  for (const e of ev) {
+    if (budget-- <= 0 || e.tx === undefined) break;
+    if (e.base) emit(e.tx, e.ty, colorOf(e.team), 2, 60, 0.35, 1.8, 0, e.tx - e.x, e.ty - e.y, 1.6);
+    else emit(e.tx, e.ty, colorOf(e.team), Math.random() < .5 ? 1 : 2, 70, 0.25, 1.4, 0, e.tx - e.x, e.ty - e.y, 1.1);
+  }
+}
+function vfxFx() {                                   // deaths and captures from the simulation, handled once each
+  for (const f of G.fx) {
+    if (f.sp) continue; f.sp = 1;
+    if (!isSpark() || reduceMotion) continue;
+    if (f.k === 'pop') emit(f.x, f.y, colorOf(f.c), 5, 70, 0.55, 2.4, 1);
+    else if (f.k === 'ring') {
+      emit(f.x, f.y, colorOf(f.c), 22, 110, 0.9, 2.2, 0);
+      const n = G.nodes.find(nd => nd.x === f.x && nd.y === f.y);
+      if (n) for (const v of n.adj) pulses.push({ a: n.id, b: v, t0: G.t, c: colorOf(f.c) });
+    }
+  }
+}
+function stepParts() {
+  let gdt = G.t - lastGT; lastGT = G.t;
+  if (!(gdt > 0) || gdt > 0.2) gdt = 0;
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i]; p.life -= gdt;
+    if (p.life <= 0) { parts[i] = parts[parts.length - 1]; parts.pop(); continue; }
+    const k = Math.exp(-gdt * 3.2); p.vx *= k; p.vy *= k; p.x += p.vx * gdt; p.y += p.vy * gdt; p.r += p.vr * gdt;
+  }
+  for (let i = pulses.length - 1; i >= 0; i--) if (G.t - pulses[i].t0 > 0.7 || G.t < pulses[i].t0) pulses.splice(i, 1);
+}
+function drawParts() {
+  ctx.globalCompositeOperation = 'lighter';
+  for (const p of parts) {
+    const a = p.life / p.max;
+    ctx.globalAlpha = a * (0.25 + 0.75 * a); ctx.fillStyle = p.c;
+    if (p.sh === 0) { ctx.fillRect(p.x - p.s / 2, p.y - p.s / 2, p.s, p.s); continue; }
+    const s = p.s * 1.4;                             // a tumbling triangle shard
+    ctx.beginPath();
+    ctx.moveTo(p.x + Math.cos(p.r) * s, p.y + Math.sin(p.r) * s);
+    ctx.lineTo(p.x + Math.cos(p.r + 2.4) * s * .8, p.y + Math.sin(p.r + 2.4) * s * .8);
+    ctx.lineTo(p.x + Math.cos(p.r - 2.4) * s * .8, p.y + Math.sin(p.r - 2.4) * s * .8);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.lineWidth = 2.4;
+  for (const u of pulses) {                          // light racing outward along each line from a base that just flipped
+    const age = (G.t - u.t0) / 0.7, A = G.nodes[u.a], B = G.nodes[u.b];
+    const h = Math.min(1, age * 1.15), tl = Math.max(0, h - 0.22);
+    ctx.globalAlpha = (1 - age) * 0.9; ctx.strokeStyle = u.c;
+    ctx.beginPath(); ctx.moveTo(A.x + (B.x - A.x) * tl, A.y + (B.y - A.y) * tl); ctx.lineTo(A.x + (B.x - A.x) * h, A.y + (B.y - A.y) * h); ctx.stroke();
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+}
+function drawMotes(now) {                            // faint ice dust drifting across the black
+  if (!motes || motes.w !== W || motes.h !== H) {
+    motes = { w: W, h: H, m: Array.from({ length: Math.round(W * H / 9000) }, () => ({
+      x: Math.random() * W, y: Math.random() * H, s: 0.6 + Math.random() * 1.2, ph: Math.random() * 6.283,
+      vx: (Math.random() - .5) * 3, vy: 1.5 + Math.random() * 3 })) };
+  }
+  ctx.fillStyle = '#a9c3ff';
+  for (const p of motes.m) {
+    const x = ((p.x + p.vx * now) % W + W) % W, y = ((p.y + p.vy * now) % H + H) % H;
+    ctx.globalAlpha = 0.07 + 0.12 * (0.5 + 0.5 * Math.sin(now * 1.3 + p.ph));
+    ctx.fillRect(x, y, p.s, p.s);
+  }
+  ctx.globalAlpha = 1;
+}
 function drawEdges(now) {
   const nodes = G.nodes, lw = Math.max(1.4, 1.1 / V.s);
   const slow = reduceMotion ? 0 : -now * 3, fast = reduceMotion ? 0 : -now * 9;
@@ -1130,6 +1228,16 @@ function drawEdges(now) {
         ctx.moveTo(P.x, P.y); ctx.lineTo(P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f);
       }
       ctx.stroke(); ctx.lineWidth = lw;
+      if (isSpark() && !reduceMotion) {             // a small light drifting outward along each way out
+        ctx.setLineDash([]); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = TEAM_COLORS[i];
+        for (let j = 0; j < O.length; j += 3) {
+          const P = O[j], Q = O[j + 1], f = O[j + 2], ph = (now * 0.4 + ((P.id * 7 + Q.id * 13) * 0.618) % 1) % 1;
+          ctx.globalAlpha = 0.75 * Math.sin(Math.PI * ph);
+          const x = P.x + (Q.x - P.x) * f * ph, y = P.y + (Q.y - P.y) * f * ph;
+          ctx.fillRect(x - 1.4, y - 1.4, 2.8, 2.8);
+        }
+        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([5, 7]);
+      }
     }
   }
   ctx.setLineDash([]); ctx.lineDashOffset = 0;
@@ -1163,8 +1271,10 @@ function draw(now) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.beginPath(); ctx.rect(F.x, F.y, F.w, F.h); ctx.clip();
   applyView();
-  const nodes = G.nodes;
+  const nodes = G.nodes, SP = isSpark();
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  vfxFx(); stepParts();
+  if (SP) drawMotes(reduceMotion ? 0 : now);
 
   drawEdges(now);
 
@@ -1195,7 +1305,19 @@ function draw(now) {
   }
   for (const n of nodes) {
     const c = colorOf(n.owner);
-    if (n.owner >= 0) {
+    if (SP) {                                        // Spark: soft glow, a slowly turning frame, a breathing core
+      const mv = reduceMotion ? 0 : 1, br = 1 + 0.07 * Math.sin(now * 2.2 + n.id) * mv, own = n.owner >= 0;
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = own ? 0.75 : 0.3;
+      const gs = 46 * br; ctx.drawImage(glow(c), n.x - gs / 2, n.y - gs / 2, gs, gs);
+      ctx.globalCompositeOperation = 'source-over';
+      if (own) {
+        ctx.save(); ctx.translate(n.x, n.y); ctx.rotate((now * 0.35 + n.id) * mv);
+        ctx.globalAlpha = 0.5; ctx.strokeStyle = c; ctx.lineWidth = 1.3; ctx.strokeRect(-11, -11, 22, 22); ctx.restore();
+      }
+      const s = (own ? 6.5 : 5.5) * br;
+      ctx.globalAlpha = 1; ctx.fillStyle = c; ctx.fillRect(n.x - s, n.y - s, 2 * s, 2 * s);
+      if (G.t - n.lastHitT < 0.07) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.fillRect(n.x - s, n.y - s, 2 * s, 2 * s); ctx.globalAlpha = 1; }
+    } else if (n.owner >= 0) {
       ctx.globalAlpha = 0.38; ctx.strokeStyle = c; ctx.lineWidth = 1.3;
       ctx.strokeRect(n.x - 11, n.y - 11, 22, 22); ctx.globalAlpha = 1;
       ctx.fillStyle = c; ctx.fillRect(n.x - 6.5, n.y - 6.5, 13, 13);
@@ -1234,6 +1356,25 @@ function draw(now) {
       }
     }
   }
+  if (SP) {                                          // Spark: short streaks behind moving troops, and a soft glow
+    for (let b = 0; b < 6; b++) {
+      const arr = buckets[b]; if (!arr.length) continue;
+      const col = b === 0 ? NEUTRAL_COLOR : TEAM_COLORS[b - 1];
+      if (!reduceMotion) {
+        ctx.strokeStyle = hexA(col, 0.35); ctx.lineWidth = 1.6; ctx.beginPath();
+        for (const t of arr) {
+          let hx = t.hx, hy = t.hy; const l = Math.hypot(hx, hy) || 1; hx /= l; hy /= l;
+          const L = t.path.length ? 10 : 4;
+          ctx.moveTo(t.x - hx * 2.5, t.y - hy * 2.5); ctx.lineTo(t.x - hx * L, t.y - hy * L);
+        }
+        ctx.stroke();
+      }
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = b === 0 ? 0.3 : 0.5;
+      const gi = glow(col);
+      for (const t of arr) ctx.drawImage(gi, t.x - 9, t.y - 9, 18, 18);
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    }
+  }
   for (let b = 0; b < 6; b++) {
     const arr = buckets[b]; if (!arr.length) continue;
     ctx.fillStyle = b === 0 ? NEUTRAL_COLOR : TEAM_COLORS[b - 1];
@@ -1260,10 +1401,17 @@ function draw(now) {
         const p = age / 0.9, s = 22 + p * 46;
         ctx.globalAlpha = (1 - p) * 0.85; ctx.strokeStyle = colorOf(f.c); ctx.lineWidth = 1.6;
         ctx.strokeRect(f.x - s / 2, f.y - s / 2, s, s); ctx.lineWidth = 1.1;
+        if (SP && age > 0.1) {                       // Spark: a second, turning shockwave just behind the first
+          const q = (age - 0.1) / 0.8, s2 = 16 + q * 70;
+          ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(Math.PI / 4 + q * 1.2);
+          ctx.globalAlpha = (1 - q) * 0.6; ctx.lineWidth = 2.2; ctx.strokeRect(-s2 / 2, -s2 / 2, s2, s2); ctx.restore();
+          ctx.lineWidth = 1.1;
+        }
       }
     }
     ctx.globalAlpha = 1;
   }
+  if (SP) drawParts();
   for (let i = uiFx.length - 1; i >= 0; i--) {
     const f = uiFx[i], age = now - f.b;
     if (age > 0.5) { uiFx.splice(i, 1); continue; }
@@ -1272,6 +1420,9 @@ function draw(now) {
     if (f.k === 'go') {
       ctx.rotate(Math.PI / 4); const s = 18 + p * 22;
       ctx.strokeStyle = TEAM_COLORS[PLAYER]; ctx.lineWidth = 1.8; ctx.strokeRect(-s / 2, -s / 2, s, s);
+    } else if (f.k === 'rip') {
+      ctx.strokeStyle = TEAM_COLORS[PLAYER]; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.arc(0, 0, 12 + p * 34, 0, Math.PI * 2); ctx.stroke();
     } else {
       ctx.strokeStyle = '#9a9aa0'; ctx.lineWidth = 2; const s = 7;
       ctx.beginPath(); ctx.moveTo(-s, -s); ctx.lineTo(s, s); ctx.moveTo(s, -s); ctx.lineTo(-s, s); ctx.stroke();
@@ -1289,7 +1440,7 @@ for (let i = 0; i < 5; i++) {
   const sw = document.createElement('i'); sw.className = 'sw'; sw.style.background = TEAM_COLORS[i];
   $('rivals').appendChild(sw);
   const row = [sw];
-  for (let k = 0; k < 4; k++) { const c = document.createElement('span'); $('rivals').appendChild(c); row.push(c); }
+  for (let k = 0; k < 4; k++) { const c = document.createElement('span'); c.textContent = '0'; $('rivals').appendChild(c); row.push(c); }
   rivalCells.push(row);
 }
 for (const b of upBtns) {
@@ -1302,6 +1453,10 @@ function buy(k) {
   if (upgrade(PLAYER, k)) {
     const b = upBtns.find(x => x.dataset.k === k);
     b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
+    if (isSpark() && !reduceMotion) {               // Spark: every one of your bases sends out a ring
+      const now = performance.now() / 1000;
+      for (const n of G.nodes) if (n.owner === PLAYER) uiFx.push({ k: 'rip', x: n.x, y: n.y, b: now });
+    }
   }
   hud();
 }
@@ -1381,6 +1536,7 @@ function tone(f1, f2, dur, peak, type, pan, atk) {
 }
 function playSfx(nowMs, dt) {
   const ev = G.sfx; G.sfx = [];
+  vfxHits(ev);
   // how much fighting is going on right now (hits per second, smoothed); "Low hum" swells with it
   shotRate += (ev.length / Math.max(dt, 1 / 120) - shotRate) * (1 - Math.exp(-dt / 1.2));
   if (!ev.length) return;
@@ -1589,6 +1745,7 @@ function renderRecord() {
   $('rec').textContent = record.games ? `${record.wins} ${record.wins === 1 ? 'win' : 'wins'} in ${record.games} ${record.games === 1 ? 'game' : 'games'}` : '';
 }
 function startDemo() {
+  parts.length = 0; pulses.length = 0; lastGT = 0;
   layout();
   newGame({ size: settings.size, diff: 'normal', ...worldPlan(false) });
   G.autoplay = true; mode = 'demo'; acc = 0; hl = []; uiFx = [];
@@ -1601,6 +1758,7 @@ function startGame(watch) {
   show('menu', false); show('end', false); hudEl.hidden = false;
   hudEl.classList.toggle('watch', watching);
   $('bAgain').textContent = watching ? 'Watch again' : 'Play again';
+  parts.length = 0; pulses.length = 0; lastGT = 0;
   syncCtrl(); syncRivals(); layout();                 // HUD in place first, so the map can be built around it
   newGame({ size: settings.size, diff: settings.diff, persona: settings.persona, ...worldPlan(true) });
   G.autoplay = watching;
@@ -1743,6 +1901,8 @@ $('statsBtn').addEventListener('click', () => {
   else { settings.rivals = !settings.rivals; save('ice-settings', settings); }
   syncRivals(); layout();
 });
+$('visual').value = settings.visual;
+$('visual').addEventListener('change', () => { settings.visual = $('visual').value; save('ice-settings', settings); });
 $('tone').addEventListener('change', () => {
   settings.tone = $('tone').value; save('ice-settings', settings);
   audioOn(); syncSound(); lastPreview = 0; setTimeout(previewSound, 30);
