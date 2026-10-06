@@ -9,7 +9,6 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -140,13 +139,7 @@ body { position: relative; }
 .mark h1 { margin: 0; font-size: 64px; line-height: .9; font-weight: 700; letter-spacing: .14em; }
 .homeL, .homeR { display: flex; flex-direction: column; gap: 10px; }
 .homeL { gap: 14px; }
-.homenav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 2px; }
-.homenav button {
-  min-height: 62px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-  border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.35); font-size: 12.5px; color: var(--dim);
-}
-.homenav svg { width: 20px; height: 20px; color: var(--ink); }
-.homenav button:active, .ghost:active, .back:active { background: rgba(40,40,44,.8); }
+.ghost:active, .back:active { background: rgba(40,40,44,.8); }
 .opts { display: flex; flex-direction: column; gap: 12px; }
 .opt { display: flex; align-items: center; gap: 12px; }
 .opt[hidden] { display: none; }
@@ -154,8 +147,7 @@ body { position: relative; }
 .seg.swatches button[aria-pressed="true"] { background: rgba(255,255,255,.08); box-shadow: inset 0 -2px 0 #fff; }
 .swatches button[aria-pressed="true"] i { outline: 2px solid #fff; outline-offset: 2px; }
 .opt > span { flex: 0 0 96px; font-size: 13px; color: var(--dim); }
-.opt > .seg, .opt > #vol, .opt > .selwrap { flex: 1; min-width: 0; }
-.opt > .selwrap select { width: 100%; }           /* the dropdown fills its row, so its arrow sits inside the box */
+.opt > .seg, .opt > #vol, .opt > .tr { flex: 1; min-width: 0; }
 .seg { display: flex; border: 1px solid var(--faint); border-radius: 3px; overflow: hidden; }
 .seg button { flex: 1; min-height: 44px; font-size: 14px; font-weight: 500; color: var(--dim); border-left: 1px solid var(--faint); }
 .seg button:first-child { border-left: 0; }
@@ -168,7 +160,7 @@ body { position: relative; }
 .how { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; line-height: 1.45; color: var(--dim); }
 .how b { color: var(--ink); font-weight: 500; }
 .rec { font-size: 13px; color: var(--dim); min-height: 1em; }
-.rec .build { float: right; opacity: .7; }
+.rec .build { float: right; opacity: .7; padding: 12px 8px; margin: -12px -8px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 
 #statsBody { display: flex; flex-direction: column; gap: 10px; }
 #statsBody h3 { margin: 6px 0 0; font-size: 13px; font-weight: 500; color: var(--dim); }
@@ -206,17 +198,6 @@ body { position: relative; }
   .endcard .tlbox { grid-area: chart; } .endcard .moments { grid-area: moments; }
 }
 @media (max-width: 340px) { .opt { flex-direction: column; align-items: stretch; } .opt > span { flex: none; } }
-.selwrap { position: relative; flex: 0 0 auto; }
-.selwrap select {
-  -webkit-appearance: none; appearance: none; font: inherit; font-size: 14px; font-weight: 500; color: var(--ink);
-  height: 42px; min-width: 132px; padding: 0 34px 0 12px; border: 1px solid var(--faint); border-radius: 3px; background: rgba(0,0,0,.4);
-}
-.selwrap select option { background: #121214; color: #ececee; }
-.selwrap select:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-.selwrap::after {
-  content: ''; position: absolute; right: 13px; top: 50%; width: 7px; height: 7px; pointer-events: none;
-  border-right: 1.6px solid var(--dim); border-bottom: 1.6px solid var(--dim); transform: translateY(-70%) rotate(45deg);
-}
 #vol { flex: 1; min-width: 0; height: 42px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; touch-action: none; --p: 75%; }
 #vol::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(to right, var(--blue) var(--p), var(--faint) var(--p)); }
 #vol::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6.5px; border: 0; border-radius: 2px; background: var(--blue); }
@@ -224,6 +205,14 @@ body { position: relative; }
 #vol::-moz-range-progress { height: 3px; background: var(--blue); }
 #vol::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 2px; background: var(--blue); }
 #vol:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.tr { flex: 1; min-width: 0; height: 42px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; touch-action: none; --p: 75%; }
+.tr::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(to right, var(--blue) var(--p), var(--faint) var(--p)); }
+.tr::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6.5px; border: 0; border-radius: 2px; background: var(--blue); }
+.tr::-moz-range-track { height: 3px; background: var(--faint); }
+.tr::-moz-range-progress { height: 3px; background: var(--blue); }
+.tr::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 2px; background: var(--blue); }
+.tr:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.tv { flex: 0 0 66px; text-align: right; font-size: 13px; font-style: normal; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 .modbtn { flex: 1; min-width: 0; min-height: 44px; border-radius: 3px; font-size: 14px; text-align: left; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; }
 .modbtn::after { content: ''; width: 7px; height: 7px; border-right: 1.6px solid var(--dim); border-top: 1.6px solid var(--dim); transform: rotate(45deg); }
@@ -290,9 +279,7 @@ body { position: relative; }
 .catrow::after { content: ''; width: 7px; height: 7px; border-right: 1.6px solid var(--dim); border-top: 1.6px solid var(--dim); transform: rotate(45deg); }
 .mode:active, .catrow:active { background: rgba(40,40,44,.8); }
 .blurb { margin: -5px 0 0 108px; font-size: 12px; line-height: 1.35; color: var(--dim); min-height: 1.35em; }
-.blurb.hint { margin-top: -6px; opacity: .8; min-height: 0; }
 .chcard .best { grid-column: 1; font-size: 11.5px; color: var(--dim); }
-#menu.lite { background: rgba(0,0,0,.12); }
 .screen.side { background: rgba(0,0,0,.74); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); border: 1px solid var(--hair); border-radius: 6px; padding: 12px 14px; }
 @media (orientation: portrait) { .screen.side { margin: auto 0 0 0; width: 100%; } }
 @media (orientation: landscape) {
@@ -300,7 +287,7 @@ body { position: relative; }
   .screen.side.cols { width: min(70%, 640px); }
   .screen.side.cols .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
   .screen.side.cols .opt { flex-direction: column; align-items: stretch; gap: 4px; }
-  .screen.side.cols .opt > .seg, .screen.side.cols .opt > .selwrap, .screen.side.cols .opt > .modbtn { flex: 0 0 auto; }
+  .screen.side.cols .opt > .seg, .screen.side.cols .opt > .modbtn { flex: 0 0 auto; }
   .screen.side.cols .opt > span { flex: 0 0 auto; font-size: 11.5px; }
   .screen.side.cols .seg button, .screen.side.cols .modbtn, .screen.side.cols select { min-height: 40px; height: 40px; }
   .screen.side.cols { padding: 8px 12px; gap: 8px; }
@@ -329,7 +316,6 @@ body { position: relative; }
   .screen.side.cols .opts { row-gap: 3px; }
   .screen.side.cols header { min-height: 30px; }
   .screen.side.cols .primary.big { min-height: 38px; }
-  #specSize { display: none; }
 }
 @media (orientation: landscape) and (max-height: 430px) {      /* Spectate has the most options: it tightens up a little earlier than the rest */
   .screen.side.cols { padding: 5px 10px; gap: 5px; }
@@ -338,7 +324,16 @@ body { position: relative; }
   .screen.side.cols .opts { row-gap: 3px; }
   .screen.side.cols header { min-height: 30px; }
   .screen.side.cols .primary.big { min-height: 40px; }
-  #specSize { display: none; }
+}
+/* short landscape phones: Settings goes two across so everything stays on screen; the tuning panel just tightens up */
+@media (orientation: landscape) and (max-height: 430px) {
+  #scrSettings, #scrTune { width: min(100%, 660px); gap: 4px; }
+  #scrSettings .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
+  #scrSettings .opt { flex-direction: column; align-items: stretch; gap: 0; }
+  #scrSettings .opt > span:first-child { flex: none; font-size: 11.5px; }
+  #scrSettings .seg button { min-height: 36px; height: 36px; }
+  #scrSettings #vol, #scrTune .tr { height: 34px; }
+  #scrTune .opts { gap: 2px; }
 }
 .hintline { grid-column: 1 / -1; margin: 2px 0 0; font-size: 12px; line-height: 1.35; color: var(--dim); min-height: 2.7em; }
 .seg.tight button { font-size: 12.5px; padding: 0 3px; white-space: nowrap; }
@@ -443,7 +438,7 @@ body { position: relative; }
         <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 42 43 24 33.5 6 43Z" fill="#3577ff"/></svg>
         <h1>ICE</h1>
       </div>
-      <div class="rec"><span id="rec"></span><span class="build">Build 31</span></div>
+      <div class="rec"><span id="rec"></span><span class="build" id="buildNo">Build 33.1</span></div>
     </div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
@@ -523,7 +518,7 @@ body { position: relative; }
 
   <section class="screen" id="scrSpecials" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Special bases</h2></header>
-    <p class="specintro">Prize bases are neutral until someone takes them, and whoever holds one gets its bonus. In a match, press and hold any base to see what it does.</p>
+    <p class="specintro">Special bases are neutral until someone takes them, and whoever holds one gets its bonus. In a match, press and hold any base to see what it does.</p>
     <div id="specList" class="speclist"></div>
   </section>
 
@@ -532,9 +527,22 @@ body { position: relative; }
     <div class="opts">
       <div class="opt"><span>Volume</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"></div>
       <div class="opt"><span>Sound style</span><div class="seg tight" data-glob="tone"><button data-v="bright">Bright</button><button data-v="soft">Soft</button><button data-v="overdrive">Overdrive</button><button data-v="drift">Drift</button></div></div>
+      <div class="opt"><span>Menu sound</span><div class="seg tight" data-glob="menuSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
       <div class="opt"><span>Visuals</span><div class="seg tight" data-glob="visual"><button data-v="classic">Classic</button><button data-v="spark">Spark</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button></div></div>
       <div class="opt"><span>Screen</span><div class="seg tight" data-glob="screen"><button data-v="auto">Auto</button><button data-v="landscape">Landscape</button><button data-v="portrait">Portrait</button></div></div>
       <p class="hintline" id="hintSettings"></p>
+    </div>
+  </section>
+
+  <!-- TUNING PANEL (hidden: long-press the build number). REMOVE BEFORE STORE PACKAGING: this section, its CSS (.tr, .tv), the tune* code and the long-press hook. -->
+  <section class="screen" id="scrTune" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Menu sound tuning</h2></header>
+    <div class="opts">
+      <div class="opt"><span>Volume</span><input type="range" class="tr" id="tVol" min="0" max="100" step="1" aria-label="Menu volume"><em class="tv" id="tVolV"></em></div>
+      <div class="opt"><span>Muffle</span><input type="range" class="tr" id="tCut" min="200" max="8000" step="50" aria-label="Muffle cutoff"><em class="tv" id="tCutV"></em></div>
+      <div class="opt"><span>Fade</span><input type="range" class="tr" id="tFade" min="0.1" max="2" step="0.1" aria-label="Fade time"><em class="tv" id="tFadeV"></em></div>
+      <p class="hintline" id="hintTune">Listen to the match behind this screen. Volume is how loud menus are against a real match, Muffle is how much of the top end is cut (lower is duller), Fade is how long it takes to change between the two.</p>
+      <button class="ghost small" id="tReset">Reset to defaults</button>
     </div>
   </section>
 
@@ -571,7 +579,7 @@ body { position: relative; }
       <li><b>Take a base.</b> Beat its defenders, then wear the base down. Deliver the final blow to claim it.</li>
       <li><b>Get stronger.</b> Eliminate troops to gain XP. A full bar earns 1 skill point to spend on Health, Speed or Damage. Claim bases to increase your army.</li>
       <li><b>Look around.</b> Pinch and drag. The map button shows a minimap, and a double-tap on it shows everything. Press and hold any base to see what it is.</li>
-      <li><b>Prize bases.</b> Fortress: more health. Forge: more troops. Beacon: more XP. Relay: faster troops.</li>
+      <li><b>Special bases.</b> Fortress: more health. Forge: more troops. Beacon: more XP. Relay: faster troops.</li>
     </ul>
   </section>
 
@@ -606,7 +614,7 @@ body { position: relative; }
 // ================= ICE core (no DOM) =================
 // Pure game simulation: no drawing, no sound, no page. Everything the screen shows is read from G.
 //   constants .......... team colors/palette, tuning numbers (C), difficulty (DIFF), AI personalities, map sizes
-//   maps ............... the original sketch (kept for reference) and the random map generator + start picking
+//   maps ............... the random map generator (shapes, bridges, fair placement) + start picking
 //   game state ......... newGame, spawning, per-team stats, target finding (grid), update() = one 1/60 s step
 //   bases .............. presence, health/regen, neutral respawns, captures, history for the end-screen timeline
 //   progression ........ kills -> XP -> upgrade points, AI spending (incl. Adaptive)
@@ -626,7 +634,7 @@ function applyPalette(first) {
 }
 const C = {
   hp: 10, dps: 4.2, spd: 46, hpPer: .15, dmgPer: .15, spdPer: .10,
-  range: 30, engage: 60, leash: 58, captureR: 44, presenceR: 60,
+  range: 30, engage: 60, leash: 58, presenceR: 60,
   orbitMin: 16, orbitMax: 32, spawnEvery: 2.0, capBase: 8, capPer: 12,
   startTroops: 6, peace: 20, maxLvl: 10, cell: 36, maxPoints: 30,
   atkEvery: 0.55,                       // seconds between shots
@@ -730,7 +738,6 @@ const UPG = ['hp', 'spd', 'dmg'];
 // colors play by default, and how much each base adds to an army limit (less on bigger maps to keep armies sane).
 // Classic is the original feel: fits the screen, five colors.
 const SIZES = {
-  classic: { n: [16, 20], area: 560000,  teams: 5, capPer: 12, fit: true },
   small:   { n: [18, 22], area: 640000,  teams: 3, capPer: 12 },
   medium:  { n: [28, 34], area: 960000,  teams: 4, capPer: 10 },
   large:   { n: [42, 50], area: 1420000, teams: 5, capPer: 8 },
@@ -747,23 +754,6 @@ function mulberry32(a) {
   };
 }
 const colorOf = t => t < 0 ? NEUTRAL_COLOR : TEAM_COLORS[t];
-
-// ---- maps: the hand-drawn reference map (not offered in the menu any more) ----
-const SKETCH_RAW = [[720,375],[930,490],[575,605],[765,685],[728,842],[1118,582],[1207,358],[1490,392],
-  [1280,708],[1067,763],[1210,875],[1437,808],[1578,625],[1723,435],[1905,342],[1693,795]];
-const SKETCH_EDGES = [[0,2],[0,1],[2,1],[1,3],[3,4],[1,5],[5,6],[6,7],[5,8],[5,9],[9,10],[10,11],
-  [8,11],[8,7],[8,12],[7,12],[12,13],[13,14],[13,15],[12,15],[11,12]];
-const SKETCH_STARTS = [15, 5, 0, 7, 4]; // blue, red, green, yellow, purple
-
-function sketchMap() {
-  const xs = SKETCH_RAW.map(p => p[0]), ys = SKETCH_RAW.map(p => p[1]);
-  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  return {
-    nodes: SKETCH_RAW.map(([x, y]) => [70 + (x - x0) / (x1 - x0) * (W - 140), 66 + (y - y0) / (y1 - y0) * (H - 132)]),
-    edges: SKETCH_EDGES.map(e => e.slice()),
-    starts: SKETCH_STARTS.slice()
-  };
-}
 
 function hopMatrix(N, adj) {
   const M = [];
@@ -917,7 +907,6 @@ function randomMap(rng, spec, keep, k, shapeName, fair) {
     const comp = () => { const id = new Array(n).fill(-1); let c = 0; const adj = pts.map(() => []); for (const [a, b] of edges) { adj[a].push(b); adj[b].push(a); }
       for (let s0 = 0; s0 < n; s0++) if (id[s0] < 0) { const st = [s0]; id[s0] = c; while (st.length) { const u = st.pop(); for (const v of adj[u]) if (id[v] < 0) { id[v] = c; st.push(v); } } c++; } return { id, c }; };
     let C = comp(), guard = 0;
-    const allPairs = shape === 'continent' ? [] : [];
     while (C.c > 1 && guard++ < 20) {
       let bestPair = null, bd = Infinity;
       for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
@@ -957,25 +946,22 @@ function newGame(opts) {
   if (opts.scenario) opts = Object.assign({}, scenarioOpts(opts.scenario), opts);
   const seed = opts.seed != null ? opts.seed : (Math.random() * 4294967296) >>> 0;
   const rng = mulberry32(seed);
-  const spec = SIZES[opts.size] || SIZES.classic;
+  const spec = SIZES[opts.size] || SIZES.medium;
   const mods = Object.assign({ blitz: false, glass: false, noup: false, koth: false, fog: false }, opts.mods || {});
   const baseHP = C.baseHP * (mods.glass ? 0.5 : 1);
   // which colors are in this match: you (team 0) plus a random pick of the others, or any colors when only AIs play
-  const nTeams = opts.map === 'sketch' ? 5 : Math.max(2, Math.min(5, opts.teams || spec.teams));
+  const nTeams = Math.max(2, Math.min(5, opts.teams || spec.teams));
   const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const active = opts.watch ? shuffled([0, 1, 2, 3, 4]).slice(0, nTeams).sort() : [0, ...shuffled([1, 2, 3, 4]).slice(0, nTeams - 1).sort()];
   let m;
-  if (opts.map === 'sketch') { W = 1000; H = 560; m = sketchMap(); }   // the original drawing, kept for reference
-  else {
-    // the world can be reshaped to match the screen; the base count per area stays the same
-    const shape = SHAPES.includes(opts.shape) ? opts.shape : 'continent';
-    if (opts.world) { W = opts.world.w; H = opts.world.h; }
-    else { const area = spec.area * SHAPE_AREA[shape]; H = Math.sqrt(area / 1.78); W = area / H; }
-    m = randomMap(rng, spec, opts.keep, nTeams, shape, opts.fair);
-    if (!m) {                                            // belt and braces: a world too small for the map falls back to a plain one rather than failing to start
-      const area = spec.area; H = Math.sqrt(area / 1.78); W = area / H;
-      m = randomMap(rng, spec, [], nTeams, 'continent');
-    }
+  // the world can be reshaped to match the screen; the base count per area stays the same
+  const shape = SHAPES.includes(opts.shape) ? opts.shape : 'continent';
+  if (opts.world) { W = opts.world.w; H = opts.world.h; }
+  else { const area = spec.area * SHAPE_AREA[shape]; H = Math.sqrt(area / 1.78); W = area / H; }
+  m = randomMap(rng, spec, opts.keep, nTeams, shape, opts.fair);
+  if (!m) {                                            // belt and braces: a world too small for the map falls back to a plain one rather than failing to start
+    const area = spec.area; H = Math.sqrt(area / 1.78); W = area / H;
+    m = randomMap(rng, spec, [], nTeams, 'continent');
   }
   if (opts.surround && m.edges) {                       // "Last stand": you start on a hub with the rivals on its doorstep
     const adjL = m.nodes.map(() => []);
@@ -1004,16 +990,16 @@ function newGame(opts) {
     scenarioId: opts.scenarioId || null, obj: opts.objective || { type: 'conquest' }, starGoals: opts.stars || null,
     os: { hold: 0, forges: 0, surv: 0 }, playerLosses: 0,
     bridges: new Set((m.bridges || []).map(([a, b]) => a < b ? a + '-' + b : b + '-' + a)),
-    diff: D, diffName: opts.diff || 'normal', sizeName: opts.size || 'classic', active,
-    capPer: opts.map === 'sketch' ? 12 : spec.capPer,
+    diff: D, diffName: opts.diff || 'normal', sizeName: opts.size || 'medium', active,
+    capPer: spec.capPer,
     teams: TEAM_COLORS.map((c, i) => ({ i, active: active.includes(i), alive: active.includes(i), xp: 0, points: 0, earned: 0,
       lv: { hp: 0, spd: 0, dmg: 0 }, kills: 0, bases: 0, count: 0, beacons: 0, forges: 0, hill: 0, mem: null,
       aiT: 1.2 + rng() * 2, target: null, sent: 0, avoid: -1, avoidUntil: 0,
-      diff: D, diffName: opts.diff || 'normal', style: styleFor(opts.persona, rng), diedAt: null })),
+      diff: D, diffName: opts.diff || 'normal', style: styleFor(opts.persona, rng) })),
     fx: [], sfx: [], lock: [null, null, null, null, null], over: false,
     // match history for the end-screen timeline: base counts once a second, plus notable moments
     hist: [], nextSample: 0, log: [], homes: [-1, -1, -1, -1, -1], lastTaker: [null, null, null, null, null],
-    leader: -1, leadCand: -1, leadSince: 0, playerCaps: 0, result: null, winner: null, peak: 1, lost: 0
+    leader: -1, leadCand: -1, leadSince: 0, playerCaps: 0, result: null, winner: null, peak: 1
   };
   m.starts.forEach((n, j) => {
     const team = active[j];
@@ -1051,7 +1037,7 @@ function newGame(opts) {
   return G;
 }
 
-// Never a starting base, never next to one (nobody opens beside a prize), and spread apart from each other.
+// Never a starting base, never next to one (nobody opens beside a special base), and spread apart from each other.
 // troops sitting at a Fortress their side holds take less damage
 function guardOf(e) {
   if (e.path.length || e.team < 0) return 1;
@@ -1075,12 +1061,6 @@ function fairOf(D, id) {
   let mn = Infinity, mx = 0, sum = 0;
   for (const row of D) { const v = row[id]; mn = Math.min(mn, v); mx = Math.max(mx, v); sum += v; }
   const mean = sum / D.length; return { spread: (mx - mn) / mean, mean };
-}
-function fairnessReport(g) {                           // for tests: how fair is each objective on this map?
-  const starts = g.homes.filter(h => h >= 0), D = starts.map(s => routeLens(g.nodes, s)), out = { crown: null, specials: [] };
-  if (g.crown >= 0) out.crown = fairOf(D, g.crown);
-  for (const n of g.nodes) if (n.kind) out.specials.push(Object.assign({ kind: n.kind }, fairOf(D, n.id)));
-  return out;
 }
 function placeCrown(nodes, starts, fair) {
   if (fair) {                                          // challenge maps: the crown sits as close to equidistant from every start as the map allows
@@ -1124,7 +1104,7 @@ function placeSpecials(nodes, starts, rng, noBeacon, forced, fair) {
       if (ds < 2) continue;
       const dp = placed.length ? Math.min(...placed.map(q => M[q][n.id])) : 9;
       let sc = Math.min(ds, 4) * 2 + Math.min(dp, 4) * 3 + rng() * 2.5;
-      if (fair) { const f = fairOf(D, n.id); sc = Math.min(dp, 4) * 1.2 - f.spread * 14 - (f.mean / maxMean) * 2 + rng() * 0.4; }   // challenges: prizes sit between the rivals, not beside one
+      if (fair) { const f = fairOf(D, n.id); sc = Math.min(dp, 4) * 1.2 - f.spread * 14 - (f.mean / maxMean) * 2 + rng() * 0.4; }   // challenges: special bases sit between the rivals, not beside one
       if (sc > bs) { bs = sc; best = n.id; }
     }
     if (best < 0) break;
@@ -1292,7 +1272,6 @@ function update(dt) {
     if (t.dmg >= S.hp[t.team + 1]) {
       t.dead = true; died++;
       if (t.lastHit !== null && t.lastHit >= 0) awardKill(t.lastHit);
-      if (t.team === PLAYER) G.lost++;
       if (!t.path.length) {
         const h = nodes[t.home];
         if (h.owner === t.team && (t.x - h.x) ** 2 + (t.y - h.y) ** 2 < C.presenceR ** 2) {
@@ -1415,7 +1394,7 @@ function recount() {
     const was = T.alive;
     T.alive = T.bases > 0 || T.count > 0;
     if (was && !T.alive) {
-      T.diedAt = G.t; G.fx.push({ k: 'elim', c: T.i, b: G.t });
+      G.fx.push({ k: 'elim', c: T.i, b: G.t });
       G.log.push({ t: G.t, k: 'out', b: T.i, a: G.lastTaker[T.i] });
     }
   }
@@ -1831,8 +1810,12 @@ let watching = false, watchRivals = true;   // watching: an AI-only match you sp
 let hover = null, uiFx = [], hl = [], lastHud = 0, toastTimer = 0, lastTap = { id: -1, t: 0 }, lockHinted = false;
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Saved data comes back from the phone's storage, so it is never trusted: whatever shape it has, it is checked on the way in.
+const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+const oneOf = (v, list, d) => list.includes(v) ? v : d;
+const count = v => Number.isFinite(+v) && +v >= 0 ? +v : 0;
 function load(k, d) {
-  try { const v = localStorage.getItem(k); return Object.assign({}, d, v ? JSON.parse(v) : {}); }
+  try { const v = JSON.parse(localStorage.getItem(k)); return Object.assign({}, d, isObj(v) ? v : {}); }
   catch (e) { return Object.assign({}, d); }
 }
 function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -1842,29 +1825,31 @@ const rnd32 = () => (Math.random() * 4294967296) >>> 0;
 const MODS_OFF = { blitz: false, glass: false, noup: false, koth: false, fog: false };
 // Classic, Custom and Spectate each keep their own settings, so nothing bleeds from one mode into another.
 // Saves from before the split seed all three once, then they go their own ways.
-(function initModes() {
-  const old = Object.assign({}, settings), size = v => (v && v !== 'classic' && SIZES[v]) ? v : 'medium';
-  const color = COLOR_KEYS.includes(old.color) ? old.color : 'blue', diff = ['easy', 'normal', 'hard', 'brutal'].includes(old.diff) ? old.diff : 'normal';
-  const shape = ['random', ...SHAPES].includes(old.shape) ? old.shape : 'random', special = old.special === 'off' ? 'off' : 'on';
-  const persona = old.persona === 'adaptive' ? 'adaptive' : 'mixed', mods = Object.assign({}, MODS_OFF, old.mods || {});
-  if (!settings.classic) settings.classic = { color, size: size(old.size), diff, seed: 0 };
-  if (!settings.custom) settings.custom = { color, size: size(old.size), shape, special, opp: ['1', '2', '3', '4'].includes(old.opp) ? old.opp : 'auto', diff, persona, mods: Object.assign({}, mods), seed: 0 };
-  if (!settings.spec) settings.spec = { size: size(old.size), shape, special, opp: 'auto', diff, persona, mods: Object.assign({}, mods, { fog: false }), seed: 0 };
-  for (const k of ['custom', 'spec']) if (typeof settings[k].overtime !== 'boolean') settings[k].overtime = true;   // Overtime: on unless you switch it off
-  for (const k of ['classic', 'custom', 'spec']) {                // make sure every field is something the menus understand
-    const c = settings[k];
-    if (!SIZES[c.size] || c.size === 'classic' || (k === 'classic' && c.size === 'huge')) c.size = 'medium';
-    if (!['easy', 'normal', 'hard', 'brutal'].includes(c.diff)) c.diff = 'normal';
-    if (k !== 'spec' && !COLOR_KEYS.includes(c.color)) c.color = 'blue';
-    if (k !== 'classic') {
-      if (!['random', ...SHAPES].includes(c.shape)) c.shape = 'random';
-      if (!['on', 'off'].includes(c.special)) c.special = 'on';
-      if (!(k === 'custom' ? ['auto', '1', '2', '3', '4'] : ['auto', '2', '3', '4', '5']).includes(c.opp)) c.opp = 'auto';
-      if (c.persona !== 'adaptive') c.persona = 'mixed';
-      c.mods = Object.assign({}, MODS_OFF, c.mods || {}); if (k === 'spec') c.mods.fog = false;
-    }
-    if (!(c.seed >= 0)) c.seed = 0;
+const DIFFS = ['easy', 'normal', 'hard', 'brutal'], PERSONAS = ['mixed', 'aggressive', 'sturdy', 'adaptive'], SHAPE_CHOICES = ['random', ...SHAPES];
+// One setup (Classic, Custom or Spectate) from whatever was saved: every field ends up as something the menus understand.
+// `old` is the pre-split save, where these settings sat at the top level; damaged saves simply fall back to defaults.
+function cleanProfile(kind, p, old) {
+  p = isObj(p) ? p : {};
+  const c = {
+    size: oneOf(p.size ?? old.size, kind === 'classic' ? ['small', 'medium', 'large'] : ['small', 'medium', 'large', 'huge'], 'medium'),
+    diff: oneOf(p.diff ?? old.diff, kind === 'classic' ? DIFFS : [...DIFFS, 'random'], 'normal'),
+    seed: Number.isInteger(p.seed) && p.seed > 0 ? p.seed : 0
+  };
+  if (kind !== 'spec') c.color = oneOf(p.color ?? old.color, COLOR_KEYS, 'blue');
+  if (kind !== 'classic') {
+    const mods = isObj(p.mods) ? p.mods : isObj(old.mods) ? old.mods : {};
+    c.shape = oneOf(p.shape ?? old.shape, SHAPE_CHOICES, 'random');
+    c.special = oneOf(p.special ?? old.special, ['on', 'off'], 'on');
+    c.opp = oneOf(String(p.opp ?? (kind === 'custom' ? old.opp : null) ?? 'auto'), kind === 'custom' ? ['auto', '1', '2', '3', '4'] : ['auto', '2', '3', '4', '5'], 'auto');
+    c.persona = oneOf(p.persona ?? old.persona, PERSONAS, 'mixed');
+    c.mods = Object.fromEntries(Object.keys(MODS_OFF).map(k => [k, mods[k] === true && !(kind === 'spec' && k === 'fog')]));   // fog needs a "you", so Spectate never has it
+    c.overtime = typeof p.overtime === 'boolean' ? p.overtime : true;                                                          // Overtime: on unless you switch it off
   }
+  return c;
+}
+(function () {
+  const legacy = Object.assign({}, settings);
+  for (const k of ['classic', 'custom', 'spec']) settings[k] = cleanProfile(k, settings[k], legacy);
   for (const k of ['size', 'diff', 'persona', 'opp', 'shape', 'special', 'mods', 'color', 'map']) delete settings[k];
 })();
 const seedOf = c => c.seed || (c.seed = rnd32());                  // every setup has a map seed: what the menu previews is what you play
@@ -1883,26 +1868,28 @@ function modsLabel(mode) {
   if (otActive(mode)) on.push('Overtime');
   return !on.length ? 'None' : on.length <= 2 ? on.join(', ') : on.length + ' on';
 }
-if (!(settings.volume >= 0 && settings.volume <= 100)) settings.volume = 75;
+settings.volume = Number.isFinite(+settings.volume) && settings.volume >= 0 && settings.volume <= 100 ? +settings.volume : 75;
+settings.sound = settings.sound !== false; settings.rivals = settings.rivals === true;
 if (settings.tone === 'felt') settings.tone = 'soft'; else if (settings.tone === 'hum') settings.tone = 'drift';     // retired profiles move to their closest relative
 if (!['bright', 'soft', 'overdrive', 'drift'].includes(settings.tone)) settings.tone = 'bright';
 if (!['auto', 'landscape', 'portrait'].includes(settings.screen)) settings.screen = 'auto';
+if (!['on', 'off'].includes(settings.menuSound)) settings.menuSound = 'on';
 if (!['classic', 'spark', 'overload', 'atlas'].includes(settings.visual)) settings.visual = 'classic';
-const stats = load('ice-stats', {
-  play: { games: 0, wins: 0, kills: 0, caps: 0, time: 0, most: 0, fastest: {} },
-  watch: { matches: 0, byColor: [0, 0, 0, 0, 0], byStyle: {}, appColor: [0, 0, 0, 0, 0], appStyle: {} }
-});
-// win *rates* need appearances; matches from before every color always played count as all five appearing
-if (!stats.watch.appColor) stats.watch.appColor = [0, 0, 0, 0, 0].map(() => stats.watch.matches);
-if (!stats.watch.appStyle) stats.watch.appStyle = {};
+const stats = (() => {
+  const raw = load('ice-stats', {}), play = isObj(raw.play) ? raw.play : {}, watch = isObj(raw.watch) ? raw.watch : {};
+  const five = a => [0, 1, 2, 3, 4].map(i => count(Array.isArray(a) ? a[i] : 0)), dict = o => isObj(o) ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, count(v)])) : {};
+  const matches = count(watch.matches), fastest = {};
+  if (isObj(play.fastest)) for (const k of Object.keys(play.fastest)) if (count(play.fastest[k]) > 0) fastest[k] = count(play.fastest[k]);
+  return {
+    play: { games: count(play.games), wins: count(play.wins), kills: count(play.kills), caps: count(play.caps), time: count(play.time), most: count(play.most), fastest },
+    // win *rates* need appearances; matches from before every color always played count as all five appearing
+    watch: { matches, byColor: five(watch.byColor), byStyle: dict(watch.byStyle), appColor: Array.isArray(watch.appColor) ? five(watch.appColor) : [0, 1, 2, 3, 4].map(() => matches), appStyle: dict(watch.appStyle) }
+  };
+})();
 {                                                     // eight old personalities became four: fold the old tallies into the new names
   const FOLD = { Rusher: 'Aggressive', 'Glass cannon': 'Aggressive', Skirmisher: 'Aggressive', Tank: 'Sturdy', Bruiser: 'Sturdy', Vanguard: 'Sturdy' };
   for (const key of ['byStyle', 'appStyle']) { const old = stats.watch[key], now = {}; for (const k of Object.keys(old)) now[FOLD[k] || k] = (now[FOLD[k] || k] || 0) + old[k]; stats.watch[key] = now; }
 }
-(() => {                                             // carry over the win record from before stats existed
-  const old = load('ice-record', { wins: 0, games: 0 });
-  if (!stats.play.games && old.games) { stats.play.games = old.games; stats.play.wins = old.wins; save('ice-stats', stats); }
-})();
 if (!SENDS.includes(settings.send)) settings.send = 1;
 
 // ---- view & camera ----
@@ -2024,7 +2011,10 @@ function placePreview() {
   pv.width = Math.round(tw * d); pv.height = Math.round(th * d); pv.style.width = tw + 'px'; pv.style.height = th + 'px';
   card.style.left = Math.round(bx0 + ((bx1 - bx0) - (tw + chrome)) / 2) + 'px'; card.style.top = Math.round(by0 + ((by1 - by0) - (th + chrome)) / 2) + 'px';
   pvCtx = pv.getContext('2d'); pvCtx.setTransform(d, 0, 0, d, mg * d, mg * d); pvCtx.clearRect(-mg, -mg, tw, th);
-  paintMap(pvCtx, w, h, false, Math.max(1, Math.min(2.4, w / 150)));
+  const now = G.nodes.map(n => n.owner);                               // the match behind keeps playing; the card always shows the starting layout
+  if (pvOwners && pvOwners.length === now.length) G.nodes.forEach((n, i) => { n.owner = pvOwners[i]; });
+  try { paintMap(pvCtx, w, h, false, Math.max(1, Math.min(2.4, w / 150))); }
+  finally { G.nodes.forEach((n, i) => { n.owner = now[i]; }); }
 }
 function mmJump(e) {
   const c = $('mm'), r = c.getBoundingClientRect(), [ww, wh] = viewSize(), k = Math.min(c._w / ww, c._h / wh);
@@ -2969,7 +2959,32 @@ function syncCtrl() {
 }
 
 // ---- sound: soft blips, only when someone actually lands a shot ----
-let AC = null, master = null, bus = null, lastBlip = 0, lastBloop = 0;
+let AC = null, master = null, bus = null, mlp = null, mg = null, pbus = null, lastBlip = 0, lastBloop = 0;
+// Everything in a match goes: voices -> bus (the sound style's own filter) -> mlp (menu muffle) -> mg (menu level) -> master.
+// Behind the menus the same match keeps playing, so mg drops and mlp closes; in a match both are wide open. Previews skip the
+// menu stage (pbus), so a style is always auditioned at full level. TUNING: vol/cut/fade can be changed from the hidden panel.
+const TUNE_DEF = { vol: 30, cut: 500, fade: 0.5 };
+const tune = Object.assign({}, TUNE_DEF);
+{
+  const t = load('ice-tune', {}), num = (v, lo, hi, d) => Number.isFinite(+v) && +v >= lo && +v <= hi ? +v : d;
+  if (isObj(t)) { tune.vol = num(t.vol, 0, 100, TUNE_DEF.vol); tune.cut = num(t.cut, 200, 8000, TUNE_DEF.cut); tune.fade = num(t.fade, 0.1, 2, TUNE_DEF.fade); }
+}
+let previewing = false, mixMenu = null;
+const outBus = () => previewing ? pbus : bus;
+const awatch = () => watching || mode === 'demo';                // the match behind the menus is AI vs AI: nobody's hits are "yours"
+const bgHidden = () => mode === 'demo' && pvOnly;               // setup screens run the match unseen, for the ears only
+const audible = () => mode === 'play' || (mode === 'demo' && settings.menuSound !== 'off');
+function applyMix(now, fast) {
+  if (!AC) return;
+  const t = AC.currentTime, tc = fast ? 0.04 : Math.max(0.02, tune.fade / 3), menu = mode !== 'play';
+  if (now) { mg.gain.value = menu ? tune.vol / 100 : 1; mlp.frequency.value = menu ? tune.cut : 20000; return; }
+  mg.gain.setTargetAtTime(menu ? tune.vol / 100 : 1, t, tc);
+  mlp.frequency.setTargetAtTime(menu ? tune.cut : 20000, t, tc);
+}
+function mixTick() {                                           // every frame: glide between the match mix and the menu mix when the mode changes
+  const menu = mode !== 'play';
+  if (menu !== mixMenu) { mixMenu = menu; applyMix(false); }
+}
 const PENTA = [0, 2, 4, 7, 9], ROOT = [79, 67, 71, 74, 64];
 const hz = m => 440 * Math.pow(2, (m - 69) / 12);
 const pick = a => a[(Math.random() * a.length) | 0];
@@ -2983,7 +2998,10 @@ function audioOn() {
       AC = new Ctor();
       master = AC.createGain(); master.gain.value = soundGain();
       bus = AC.createBiquadFilter(); bus.type = 'lowpass'; bus.frequency.value = cutoff(); bus.Q.value = 0.5;
-      bus.connect(master); master.connect(AC.destination);
+      pbus = AC.createBiquadFilter(); pbus.type = 'lowpass'; pbus.frequency.value = cutoff(); pbus.Q.value = 0.5;
+      mlp = AC.createBiquadFilter(); mlp.type = 'lowpass'; mlp.Q.value = 0.7; mg = AC.createGain();
+      bus.connect(mlp); mlp.connect(mg); mg.connect(master); pbus.connect(master); master.connect(AC.destination);
+      mixMenu = mode !== 'play'; applyMix(true);
     }
     if (AC.state === 'suspended') AC.resume();
   } catch (e) { AC = null; }
@@ -2999,8 +3017,9 @@ function tone(f1, f2, dur, peak, type, pan, atk) {
   g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(peak, t0 + (atk || 0.008));
   g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
   o.connect(g);
-  if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); p.connect(bus); }
-  else g.connect(bus);
+  const out = outBus();
+  if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); p.connect(out); }
+  else g.connect(out);
   o.start(t0); o.stop(t0 + dur + 0.03);
 }
 // One pass over this frame's hits: a random base hit and troop hit (reservoir sampling), and the same
@@ -3010,22 +3029,23 @@ function scanHits(ev) {
   let nb = 0, ns = 0, nm = 0;
   HITS.base = HITS.baseMine = HITS.shot = HITS.shotMine = null;
   for (const e of ev) {
-    const mine = e.team === PLAYER && !watching;
+    const mine = e.team === PLAYER && !awatch();
     if (e.base) { if (Math.random() * ++nb < 1) HITS.base = e; if (mine) HITS.baseMine = e; }
     else { if (Math.random() * ++ns < 1) HITS.shot = e; if (mine && Math.random() * ++nm < 1) HITS.shotMine = e; }
   }
   return HITS;
 }
 const pickShot = (h, mineChance) => h.shotMine && Math.random() < mineChance ? h.shotMine : h.shot;
-const isMine = e => e.team === PLAYER && !watching;
+const isMine = e => e.team === PLAYER && !awatch();
 function playSfx(nowMs, dt) {
   let ev = G.sfx; G.sfx = [];
   if (fogOn()) ev = ev.filter(e => seenXY(e.x, e.y));     // you can't hear fights you can't see
-  vfxHits(ev);
+  if (ev.length) G.heard = true;                             // the first fight has happened (the menu match skips ahead until then)
+  if (!bgHidden()) vfxHits(ev);                              // sparks only when the match can be seen
   // how much fighting is going on right now (hits per second, smoothed); "Low hum" swells with it
   shotRate += (ev.length / Math.max(dt, 1 / 120) - shotRate) * (1 - Math.exp(-dt / 1.2));
   if (!ev.length) return;
-  if (!AC || !settings.sound || mode !== 'play' || AC.state !== 'running') return;
+  if (!AC || !settings.sound || !audible() || AC.state !== 'running') return;
   const h = scanHits(ev);
   if (settings.tone === 'overdrive') { odHits(ev); return; }
   if (settings.tone === 'drift') { driftHits(ev); return; }
@@ -3035,7 +3055,7 @@ function playSfx(nowMs, dt) {
     if (e) {
       const mine = isMine(e);
       const f = hz(45 + pick(PENTA));
-      tone(f * (soft ? 1.4 : 1.7), f, soft ? 0.2 : 0.16, mine ? 0.11 : watching ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y), soft ? 0.02 : 0.008);
+      tone(f * (soft ? 1.4 : 1.7), f, soft ? 0.2 : 0.16, mine ? 0.11 : awatch() ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y), soft ? 0.02 : 0.008);
       lastBloop = nowMs;
     }
   }
@@ -3046,7 +3066,7 @@ function playSfx(nowMs, dt) {
       const f = soft
         ? hz((e.team < 0 ? 60 : ROOT[e.team]) - 12 + pick(PENTA))                                   // an octave down, no high jumps
         : hz((e.team < 0 ? 60 : ROOT[e.team]) + pick(PENTA) + (Math.random() < 0.25 ? 12 : 0));
-      tone(f, f * 0.94, soft ? 0.1 : (mine ? 0.075 : 0.06), mine ? 0.055 : watching ? 0.035 : 0.022,
+      tone(f, f * 0.94, soft ? 0.1 : (mine ? 0.075 : 0.06), mine ? 0.055 : awatch() ? 0.035 : 0.022,
         mine && !soft ? 'triangle' : 'sine', screenPan(e.x, e.y), soft ? 0.018 : 0.008);
       lastBlip = nowMs + Math.random() * 25;
     }
@@ -3083,7 +3103,7 @@ const OD_CHORDS = [                                   // bass root and pad voici
   { root: 36, pad: [55, 60, 64], arp: [55, 60, 64, 67, 72, 67, 64, 60] },   // C
   { root: 31, pad: [55, 59, 62], arp: [55, 59, 62, 67, 71, 67, 62, 59] }    // G
 ];
-const OD = { nodes: null, next: 0, step: 0, heat: 0, zaps: [], hits: [], boom: 0, preview: 0 };
+const OD = { nodes: null, next: 0, step: 0, heat: 0, zaps: [], hits: [], boom: 0 };
 function distCurve(k) {
   const n = 1024, c = new Float32Array(n);
   for (let i = 0; i < n; i++) { const x = i * 2 / n - 1; c[i] = (1 + k) * x / (1 + k * Math.abs(x)); }
@@ -3092,7 +3112,7 @@ function distCurve(k) {
 function odBuild(withPad) {                           // the mixing desk: drums, a ducked music bus, an echo, a distortion
   const t = AC.currentTime, N = {};
   N.comp = AC.createDynamicsCompressor(); N.comp.threshold.value = -14; N.comp.ratio.value = 4;
-  N.out = AC.createGain(); N.out.gain.value = 0.13; N.comp.connect(N.out); N.out.connect(bus);   // sits near the other profiles' level
+  N.out = AC.createGain(); N.out.gain.value = 0.13; N.comp.connect(N.out); N.out.connect(outBus());   // sits near the other profiles' level
   N.music = AC.createGain(); N.music.gain.value = 0.0001; N.music.gain.setTargetAtTime(1, t, 0.25); N.music.connect(N.comp);
   N.duck = AC.createGain(); N.duck.connect(N.music);                       // bass, pad and arp pump against the kick
   N.drums = AC.createGain(); N.drums.connect(N.music);
@@ -3181,12 +3201,12 @@ function odPlayStep(N, t, k, h, live) {
   if (!live) return;
   if (OD.zaps.length) {                               // hits since the last step, played in time
     let e = OD.zaps[OD.zaps.length - 1], mine = false;
-    if (!watching) for (let i = OD.zaps.length - 1; i >= 0; i--) if (OD.zaps[i].team === PLAYER) { e = OD.zaps[i]; mine = true; break; }
-    odZap(N, t, ch.arp[(k * 3) % 8] + 12, mine ? 0.07 : watching ? 0.045 : 0.025, screenPan(e.x, e.y));
+    if (!awatch()) for (let i = OD.zaps.length - 1; i >= 0; i--) if (OD.zaps[i].team === PLAYER) { e = OD.zaps[i]; mine = true; break; }
+    odZap(N, t, ch.arp[(k * 3) % 8] + 12, mine ? 0.07 : awatch() ? 0.045 : 0.025, screenPan(e.x, e.y));
     OD.zaps.length = 0;
   }
   if (s % 2 === 0 && OD.hits.length) {
-    const e = OD.hits.find(x => x.team === PLAYER && !watching) || OD.hits[0], mine = e.team === PLAYER && !watching;
+    const e = OD.hits.find(x => x.team === PLAYER && !awatch()) || OD.hits[0], mine = e.team === PLAYER && !awatch();
     odImpact(N, t, mine ? 0.32 : 0.16, screenPan(e.x, e.y), false);
     OD.hits.length = 0;
   }
@@ -3198,7 +3218,7 @@ function odHits(ev) {
   if (OD.hits.length > 16) OD.hits.splice(0, OD.hits.length - 16);
 }
 function odTick() {                                   // every frame: start, stop, or keep the sequencer fed
-  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'overdrive' && mode === 'play' && G && !G.over;
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'overdrive' && audible() && G && !G.over;
   if (!want) {
     if (OD.nodes) { const N = OD.nodes, t = AC.currentTime; OD.nodes = null; N.music.gain.cancelScheduledValues(t); N.music.gain.setTargetAtTime(0.0001, t, 0.35); for (const o of N.oscs) o.stop(t + 2); }
     OD.zaps.length = 0; OD.hits.length = 0; return;
@@ -3244,7 +3264,7 @@ const drMidi = d => 50 + 12 * Math.floor(d / 5) + DR_SCALE[((d % 5) + 5) % 5];
 const DR = { nodes: null, pool: [], bell: null, caps: [], deg: 8, next: 0, step: 0, ir: null, bedBuf: null };
 function drBuild(withBed) {
   const t = AC.currentTime, N = { oscs: [] };
-  N.out = AC.createGain(); N.out.gain.value = 0.72; N.out.connect(bus);          // sits level with Soft and Felt
+  N.out = AC.createGain(); N.out.gain.value = 0.72; N.out.connect(outBus());          // sits level with Soft and Felt
   N.dry = AC.createGain(); N.dry.gain.value = 0.8; N.dry.connect(N.out);
   if (!DR.ir) {                                       // the room: two seconds and a half of softly dulled, fading noise
     const sr = AC.sampleRate, len = Math.floor(sr * 2.6); DR.ir = AC.createBuffer(2, len, sr);
@@ -3299,7 +3319,7 @@ function driftHits(ev) {
   if (DR.pool.length > 40) DR.pool.splice(0, DR.pool.length - 40);
 }
 function drSlot(N, t, heat) {
-  const share = (watching ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length;
+  const share = (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length;
   const centre = 6 + Math.round(share * 7);           // the melody sits higher the more ground you hold
   const walk = () => {
     let st = [-2, -1, -1, 0, 1, 1, 2][(Math.random() * 7) | 0];
@@ -3316,16 +3336,16 @@ function drSlot(N, t, heat) {
   const n = DR.pool.length;
   if (n && (DR.step % 2 === 0 || heat > 0.25 || n > 3)) {   // calm fights only fill every other slot, busy ones every slot
     let e = DR.pool[n - 1], mine = false;
-    if (!watching) for (let i = n - 1; i >= 0; i--) if (DR.pool[i].team === PLAYER) { e = DR.pool[i]; mine = true; break; }
+    if (!awatch()) for (let i = n - 1; i >= 0; i--) if (DR.pool[i].team === PLAYER) { e = DR.pool[i]; mine = true; break; }
     walk();
-    const d = mine || watching ? DR.deg : DR.deg - 5, pan = screenPan(e.x, e.y);   // other colors' fights sit an octave below
-    drPluck(N, t, drMidi(d), mine ? 0.06 : watching ? 0.04 : 0.022, pan, mine ? 0.7 : 1.1);
+    const d = mine || awatch() ? DR.deg : DR.deg - 5, pan = screenPan(e.x, e.y);   // other colors' fights sit an octave below
+    drPluck(N, t, drMidi(d), mine ? 0.06 : awatch() ? 0.04 : 0.022, pan, mine ? 0.7 : 1.1);
     if (n >= 6) drPluck(N, t + 0.02, drMidi(d + 2), mine ? 0.035 : 0.018, pan, 1.0);   // a big fight thickens into two voices
     DR.pool.length = 0;
   }
 }
 function driftClock() {
-  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'drift' && mode === 'play' && G && !G.over;
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'drift' && audible() && G && !G.over;
   if (!want) {
     if (DR.nodes) { const N = DR.nodes, t = AC.currentTime; DR.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.4); for (const o of N.oscs) o.stop(t + 2.5); }
     DR.pool.length = 0; DR.caps.length = 0; DR.bell = null; return;
@@ -3336,7 +3356,7 @@ function driftClock() {
   for (const f of G.fx) {                             // captures and knockouts become notes
     if (f.dr) continue; f.dr = 1;
     if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
-    if (f.k === 'ring') DR.caps.push({ mine: !watching && f.c === PLAYER, pan: screenPan(f.x, f.y) });
+    if (f.k === 'ring') DR.caps.push({ mine: !awatch() && f.c === PLAYER, pan: screenPan(f.x, f.y) });
     else if (f.k === 'elim') drKnell(N, now + 0.02);
   }
   if (DR.next < now - 0.25) { const k = Math.ceil((now - DR.next) / DR_STEP); DR.next += k * DR_STEP; DR.step += k; }
@@ -3364,6 +3384,7 @@ function syncSound() {
   if (AC) {
     master.gain.setTargetAtTime(soundGain(), AC.currentTime, 0.02);
     bus.frequency.setTargetAtTime(cutoff(), AC.currentTime, 0.02);
+    pbus.frequency.setTargetAtTime(cutoff(), AC.currentTime, 0.02);
   }
 }
 let lastPreview = 0;
@@ -3372,15 +3393,34 @@ function previewSound() {                       // a sample bleep and bloop so y
   const gap = settings.tone === 'overdrive' ? 2400 : settings.tone === 'drift' ? 2500 : 140;
   if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < gap) return;
   lastPreview = now;
-  if (settings.tone === 'overdrive') { odPreview(); return; }
-  if (settings.tone === 'drift') { driftPreview(); return; }
-  const soft = settings.tone === 'soft', f = hz(ROOT[PLAYER] - (soft ? 12 : 0) + pick(PENTA));
-  tone(f, f * 0.94, soft ? 0.1 : 0.075, 0.055, soft ? 'sine' : 'triangle', 0, soft ? 0.018 : 0.008);
-  setTimeout(() => { if (AC) { const b = hz(45 + pick(PENTA)); tone(b * (soft ? 1.4 : 1.7), b, soft ? 0.2 : 0.16, 0.08, 'sine', 0, soft ? 0.02 : 0.008); } }, 120);
+  previewing = true;                                  // a preview is always heard at full level, not through the menu mix
+  try {
+    if (settings.tone === 'overdrive') { odPreview(); return; }
+    if (settings.tone === 'drift') { driftPreview(); return; }
+    const soft = settings.tone === 'soft', f = hz(ROOT[PLAYER] - (soft ? 12 : 0) + pick(PENTA));
+    tone(f, f * 0.94, soft ? 0.1 : 0.075, 0.055, soft ? 'sine' : 'triangle', 0, soft ? 0.018 : 0.008);
+  } finally { previewing = false; }
+  setTimeout(() => { if (AC) { previewing = true; try { const b = hz(45 + pick(PENTA)); tone(b * (settings.tone === 'soft' ? 1.4 : 1.7), b, settings.tone === 'soft' ? 0.2 : 0.16, 0.08, 'sine', 0, settings.tone === 'soft' ? 0.02 : 0.008); } finally { previewing = false; } } }, 120);
+}
+
+// ---- TUNING PANEL (hidden): long-press the build number. REMOVE BEFORE STORE PACKAGING (see the section in the markup) ----
+function renderTune() {
+  const f = (id, v, txt) => { $(id).value = v; $(id).style.setProperty('--p', ((v - $(id).min) / ($(id).max - $(id).min) * 100) + '%'); $(id + 'V').textContent = txt; };
+  f('tVol', tune.vol, tune.vol + '%'); f('tCut', tune.cut, tune.cut + ' Hz'); f('tFade', tune.fade, tune.fade.toFixed(1) + ' s');
+}
+for (const [id, k] of [['tVol', 'vol'], ['tCut', 'cut'], ['tFade', 'fade']]) $(id).addEventListener('input', () => {
+  tune[k] = +$(id).value; save('ice-tune', tune); renderTune(); applyMix(false, true);
+});
+$('tReset').addEventListener('click', () => { Object.assign(tune, TUNE_DEF); save('ice-tune', tune); renderTune(); applyMix(false, true); });
+{
+  let timer = 0; const b = $('buildNo');
+  b.addEventListener('pointerdown', () => { clearTimeout(timer); timer = setTimeout(() => { go('scrTune'); renderTune(); }, 700); });
+  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, () => clearTimeout(timer));
+  b.addEventListener('contextmenu', e => e.preventDefault());
 }
 
 // ---- screens ----
-const show = (id, on) => { $(id).hidden = !on; };
+const show = (id, on) => { $(id).hidden = !on; if (id === 'menu') { if (!on) pvOnly = false; placePreview(); } };   // the preview card belongs to the menu: it goes when the menu does
 const SIZE_BASES = { small: 'about 20 bases', medium: 'about 30 bases', large: 'about 45 bases', huge: 'about 70 bases' };
 const HUGE_NOTE = ' Matches will be long. Modifiers highly recommended.';
 const DIFF_INFO = { easy: 'Slow to react, cautious attackers.', normal: 'A steady pace and even odds.', hard: 'Quick, targets you, builds troops 12% faster.', brutal: 'Near-instant reactions, troops and upgrades 25% faster.',
@@ -3392,10 +3432,11 @@ const PERSONA_INFO = { mixed: 'Each rival is randomly Balanced, Aggressive, Stur
 const SHAPE_INFO = { random: 'A different shape each time you roll the map.', continent: 'One connected landmass, the classic layout.',
   islands: 'Separate landmasses joined by a few bridges. Bridges are chokepoints.', ring: 'Bases circle an empty middle, so every fight happens on the rim.',
   river: 'A river splits the map in two, with a few crossings to fight over.' };
-const SPECIAL_INFO = { on: 'Prize bases are scattered across the map: Fortress, Forge, Beacon and Relay. Tap the i to see what each does.', off: 'No prize bases. Every base is equal.' };
+const SPECIAL_INFO = { on: 'Special bases are scattered across the map: Fortress, Forge, Beacon and Relay. Tap the i to see what each does.', off: 'No special bases. Every base is equal.' };
 const SETTINGS_INFO = {
   tone: { bright: 'Crisp bleeps and bloops.', soft: 'The same sounds, rounder and quieter.', overdrive: 'A dark beat that builds with the fighting. Pairs with Overload.', drift: 'Gentle plucked notes in a big quiet room. Pairs with Atlas.' },
   visual: { classic: 'The original look: clean squares and triangles.', spark: 'Soft glows and light trails.', overload: 'Maximum chaos: beat-synced flashes, lightning and shakes. Team colors stay true.', atlas: 'A surveyor\'s chart: influence washes and plotted courses.' },
+  menuSound: { on: 'The match running behind the menus plays quietly and muffled, so the game is never silent.', off: 'The menus are silent.' },
   screen: { auto: 'Follows your phone\'s rotation lock.', landscape: 'Keeps the game sideways however you hold the phone. Installed app only.', portrait: 'Keeps the game upright. Installed app only.' } };
 const SPECIAL_SHORT = { fortress: 'More health', forge: 'More troops', beacon: 'More XP', relay: 'Faster troops' };
 const SPECIAL_ICON = {
@@ -3406,7 +3447,6 @@ const SPECIAL_ICON = {
 function renderSpecials() {
   $('specList').innerHTML = Object.keys(SPECIALS).map(k => `<div class="spec"><svg viewBox="0 0 28 28" aria-hidden="true">${SPECIAL_ICON[k]}</svg><div><b>${SPECIALS[k].name} <em>${SPECIAL_SHORT[k]}</em></b><span>${SPECIALS[k].text}</span></div></div>`).join('');
 }
-const SHAPE_LABEL = { random: 'Random shape', continent: 'Continent', islands: 'Islands', ring: 'Ring', river: 'River' };
 const SIZE_LABEL = { small: 'Small', medium: 'Medium', large: 'Large', huge: 'Huge' }, DIFF_LABEL = { easy: 'Easy', normal: 'Normal', hard: 'Hard', brutal: 'Brutal', random: 'Random' };
 function syncSeg() {
   document.querySelectorAll('.seg[data-mode]').forEach(seg => {
@@ -3458,7 +3498,7 @@ function syncText(m) {
 }
 const syncAllText = () => { for (const m of ['classic', 'custom', 'spec']) syncText(m); };
 // menu screens work like a little stack: each one you open goes on top, Back (or Android's back gesture) pops it
-let stack = ['scrHome'], previewMode = 'custom', pvOnly = false, pvCtx = null;
+let stack = ['scrHome'], previewMode = 'custom', pvOnly = false, pvCtx = null, pvOwners = null;
 const SCREEN_MODE = { scrClassic: 'classic', scrCustom: 'custom', scrEnemies: 'custom', scrMap: 'custom', scrSpectate: 'spec' };
 const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 'shape'], scrSpectate: ['hintSpec', 'diff'] };
 function showScreen(id) {
@@ -3478,7 +3518,16 @@ function back() { if (stack.length > 1) { stack.pop(); showScreen(stack[stack.le
 function resetStack(root) { stack = [root]; showScreen(root); }
 // ---- the challenge ladder ----
 let curScen = null, briefId = null, nextScen = null;
-const ladder = load('ice-ladder', {}), bests = load('ice-bests', {});
+const ladder = {}, bests = {};
+{                                                     // stars are three booleans per challenge, a best is a time or a base count; anything else is dropped
+  const rawL = load('ice-ladder', {}), rawB = load('ice-bests', {});
+  for (const c of SCENARIOS) {
+    const st = rawL[c.id]; if (Array.isArray(st)) ladder[c.id] = [0, 1, 2].map(i => st[i] === true);
+    const b = rawB[c.id]; if (!isObj(b)) continue;
+    const e = {}; if (Number(b.t) > 0) e.t = +b.t; if (b.bases != null && count(b.bases) >= 0 && Number.isFinite(+b.bases)) e.bases = count(b.bases);
+    if (Object.keys(e).length) bests[c.id] = e;
+  }
+}
 const TIERS = [{ need: 0 }, { need: 3 }, { need: 8 }];                     // stars needed to open each tier
 const starsOfId = id => ladder[id] || [false, false, false];
 const totalStars = () => SCENARIOS.reduce((a, c) => a + starsOfId(c.id).filter(Boolean).length, 0);
@@ -3613,6 +3662,7 @@ function buildPreview(key) {                         // the map behind the menu 
   applyColors(key === 'spec', settings[key].color);
   layout();
   newGame(optsFor(key));
+  pvOwners = G.nodes.map(n => n.owner);
   G.autoplay = true; acc = 0; hl = []; uiFx = [];
   resetCam(); layout(); placePreview();
 }
@@ -3643,7 +3693,7 @@ function startGame(watch, scen, modeKey) {
   if (!speeds().includes(speedMul)) speedMul = 1;
   mode = 'play'; acc = 0; hl = []; uiFx = []; hover = null; last = performance.now();
   syncCtrl(); resetCam(); layout();
-  if (!watching && !SIZES[G.sizeName].fit) {       // bigger maps start zoomed in on your home base
+  if (!watching) {                                 // you start zoomed in on your home base
     const home = G.nodes[G.homes[PLAYER]];
     cam.z = Math.max(1, Math.min(F.w, F.h) / 520 / s0); centerOn(home.x, home.y);
   }
@@ -3775,8 +3825,17 @@ function toMenu() {
 }
 
 // ---- Android back gesture: steps back through the menus, pauses a running game, never dumps you out mid-match ----
-let armed = false;
-function armBack() { if (!armed) { try { history.pushState({ ice: 1 }, ''); armed = true; } catch (e) {} } }
+// The page keeps a stack of spare history entries so a back gesture lands on one of ours instead of leaving. Chrome ignores
+// entries a page adds without a real tap behind them (and then skips the page's whole run of entries and closes the app), so
+// they are only ever added right after a tap or key press, once the browser has registered it, and never from the gesture itself.
+const BACK_DEPTH = 6;
+let backPos = (history.state && history.state.ice) | 0, draining = false;
+function armBack() {
+  try {
+    if (navigator.userActivation && !navigator.userActivation.isActive) return;
+    while (backPos < BACK_DEPTH) { history.pushState({ ice: backPos + 1 }, ''); backPos++; }
+  } catch (e) {}
+}
 function onBack() {
   if (!$('end').hidden) { leaveToMenu(); return true; }
   if (mode === 'play') { pause(); return true; }
@@ -3785,8 +3844,16 @@ function onBack() {
   toast('Press back again to exit', '#3a3a3e');
   return false;
 }
-window.addEventListener('popstate', () => { armed = false; if (onBack()) armBack(); });
-document.addEventListener('pointerdown', armBack, true);   // browsers only honor this after a real tap
+window.addEventListener('popstate', e => {
+  backPos = (e.state && e.state.ice) | 0;
+  if (draining) { draining = false; return; }
+  if (onBack()) return;
+  if (backPos > 0) {                                  // at Home with spare entries left: clear them, so the next back really leaves
+    draining = true; setTimeout(() => { draining = false; }, 800);
+    try { history.go(-backPos); } catch (e) { draining = false; }
+  }
+});
+for (const ev of ['pointerup', 'keydown']) document.addEventListener(ev, () => setTimeout(() => { armBack(); if (settings.sound && settings.menuSound !== 'off') audioOn(); }, 0), true);
 
 // ---- input ----
 let infoNode = null, infoTimer = 0;
@@ -3931,6 +3998,7 @@ document.querySelectorAll('.seg[data-glob]').forEach(seg => seg.addEventListener
   const key = seg.dataset.glob; settings[key] = b.dataset.v; save('ice-settings', settings);
   if (key === 'visual') { quality = 0; slowSince = 0; frameAvg = 16.7; layout(); }          // a new style gets a fresh shot at full resolution
   if (key === 'tone') { audioOn(); syncSound(); lastPreview = 0; setTimeout(previewSound, 30); }
+  if (key === 'menuSound' && b.dataset.v === 'on') audioOn();
   if (key === 'screen') applyScreenLock();
   settingsKey = key; syncGlobalSeg(); renderSettingsHint();
 }));
@@ -4022,9 +4090,9 @@ function perfTick(nowMs, simMs, drawMs) {
 function frame(nowMs) {
   const dt = Math.min(0.1, (nowMs - last) / 1000); last = nowMs;
   const tSim = performance.now();
-  const running = (mode === 'play') || (mode === 'demo' && !reduceMotion && !pvOnly);
+  const running = (mode === 'play') || (mode === 'demo' && !reduceMotion);   // behind setup screens it runs unseen, for the ears
   if (G && running && !G.over) {
-    acc += dt * (mode === 'demo' ? 0.85 : speedMul);
+    acc += dt * (mode === 'demo' ? (G.heard || G.t > 60 ? 0.85 : 5) : speedMul);   // behind the menus the opening skirmishes are skipped quickly, so there is something to hear
     let n = 0;
     while (acc >= STEP && n < 16) {
       update(STEP);
@@ -4041,7 +4109,7 @@ function frame(nowMs) {
   stepFling(dt);
   if (G && fogOn()) computeFog();
   if (G) playSfx(nowMs, dt);
-  if (AC) { odTick(); driftClock(); }
+  if (AC) { odTick(); driftClock(); mixTick(); }
   const fsw = G ? fogSwap() : null;                 // under fog, bases out of sight are drawn as last seen
   try { draw(nowMs / 1000); if (mode === 'play' || mode === 'paused') drawMinimap(); } finally { fogRestore(fsw); }
   perfTick(nowMs, tDraw - tSim, performance.now() - tDraw);
@@ -4051,7 +4119,8 @@ function frame(nowMs) {
 }
 
 syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
-if (PERF) window.__audio = () => ({ AC, master });   // lets the ?perf mode measure output levels
+if (PERF) window.__audio = () => ({ AC, master, mg, mlp, bus, pbus });   // lets the ?perf mode measure output levels
+if (PERF) window.__dbg = () => ({ mode, pvOnly, stack: stack.slice(), backPos, draining, t: G ? G.t : 0, over: G ? G.over : null, parts: parts.length, fx: G ? G.fx.length : 0, pvOwners: pvOwners ? pvOwners.length : 0, hasG: !!G });
 if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$('mm').hidden });
 if (PERF) window.__scr = (x, y) => toScreen(x, y);          // tests: where a world point lands on screen
 requestAnimationFrame(frame);

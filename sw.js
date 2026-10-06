@@ -1,5 +1,5 @@
 // ICE offline support: newest version when online, saved copy when offline
-const CACHE = 'ice-v2';
+const CACHE = 'ice-v4';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
