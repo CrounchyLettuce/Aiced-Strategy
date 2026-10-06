@@ -1,5 +1,5 @@
 // ICE offline support: newest version when online, saved copy when offline
-const CACHE = 'ice-v1';
+const CACHE = 'ice-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
@@ -16,6 +16,10 @@ self.addEventListener('fetch', e => {
     e.respondWith(fetch(req).then(r => {
       const copy = r.clone(); caches.open(CACHE).then(c => c.put('./index.html', copy)); return r;
     }).catch(() => caches.match('./index.html')));
+    return;
+  }
+  if (url.origin === location.origin && url.pathname.endsWith('.webmanifest')) {     // the manifest is always the newest one when online
+    e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); return r; }).catch(() => caches.match(req)));
     return;
   }
   const fonts = /(^|\.)(googleapis|gstatic)\.com$/.test(url.hostname);
