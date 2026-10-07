@@ -166,10 +166,13 @@ html:root[data-colors="contrast"] { --dim: #c0c0c8; --faint: rgba(255,255,255,.3
 html:root[data-colors="contrast"] .panel, html:root[data-colors="contrast"] .ctl, html:root[data-colors="contrast"] #bMap { background: rgba(0,0,0,.9); }
 html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color: rgba(255,255,255,.5); }
 .opt > span { flex: 0 0 96px; font-size: 13px; color: var(--dim); }
-.opt > .seg, .opt > #vol, .opt > .tr { flex: 1; min-width: 0; }
+.opt > .seg, .opt > #vol { flex: 1; min-width: 0; }
 .seg { display: flex; border: 1px solid var(--faint); border-radius: 3px; overflow: hidden; }
 .seg button { flex: 1; min-height: 44px; font-size: 14px; font-weight: 500; color: var(--dim); border-left: 1px solid var(--faint); }
 .seg button:first-child { border-left: 0; }
+.seg.five button { flex: 1 1 0; min-width: 0; padding: 0 2px; font-size: 13px; }
+.opt.stack { flex-direction: column; align-items: stretch; gap: 6px; } .opt.stack > span { flex: none; }
+@media (max-width: 340px) { #scrSettings .seg.five button { font-size: 11px; padding: 0 1px; } }
 .seg button[aria-pressed="true"] { color: var(--ink); background: var(--blue-soft); box-shadow: inset 0 -2px 0 var(--blue); }
 .btns { display: flex; gap: 8px; }
 .btns button { flex: 1; min-height: 50px; border-radius: 4px; font-size: 16px; font-weight: 600; }
@@ -179,7 +182,13 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .how { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; line-height: 1.45; color: var(--dim); }
 .how b { color: var(--ink); font-weight: 500; }
 .rec { font-size: 13px; color: var(--dim); min-height: 1em; }
-.rec .build { float: right; opacity: .7; padding: 12px 8px; margin: -12px -8px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.ver { position: fixed; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom, 0px) + 2px); text-align: center; font-size: 11px; line-height: 1; color: var(--dim); pointer-events: none; }
+.ver .build { display: inline-block; opacity: .55; padding: 8px 14px; pointer-events: auto; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.ibtn { position: relative; float: right; width: 26px; height: 26px; margin-top: -4px; padding: 0; border-radius: 50%; border: 1px solid var(--faint); background: rgba(0,0,0,.35); color: var(--dim); font: italic 600 14px/24px Georgia, serif; }
+.ibtn::after { content: ''; position: absolute; inset: -9px; }
+.ibtn[aria-expanded="true"] { color: var(--ink); border-color: var(--dim); }
+.aboutcard { margin: 0; padding: 10px 12px; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.45); }
+.aboutcard[hidden] { display: none; }
 
 .about { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--dim); }
 .about b { color: var(--ink); font-weight: 500; }
@@ -189,6 +198,20 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .screen h3.sub { margin: 4px 0 0; font-size: 13px; font-weight: 500; color: var(--dim); }
 #coach { top: calc(env(safe-area-inset-top, 0px) + 58px); left: 50%; transform: translateX(-50%); width: max-content; max-width: min(46vw, 380px); display: flex; gap: 10px; align-items: center; padding: 8px 10px; font-size: 13px; line-height: 1.35; z-index: 2; }
 #coach[hidden] { display: none; }
+#coachBox { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+#coachPh { font-style: normal; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+#coachRing, #coachArrow { position: fixed; left: 0; top: 0; z-index: 3; pointer-events: none; }
+#coachRing[hidden], #coachArrow[hidden] { display: none; }
+#coachRing i { display: block; width: 56px; height: 56px; border: 2px solid #ffcd30; border-radius: 50%; box-shadow: 0 0 12px rgba(255,205,48,.55); animation: coachPulse 1.3s ease-in-out infinite; }
+#coachArrow svg { display: block; width: 26px; height: 26px; fill: #ffcd30; filter: drop-shadow(0 0 5px rgba(255,205,48,.7)); animation: coachNudge 1s ease-in-out infinite; }
+.up.coachhl { border-color: #ffcd30; box-shadow: 0 0 0 2px rgba(255,205,48,.35); animation: coachGlow 1.3s ease-in-out infinite; }
+@keyframes coachPulse { 0%, 100% { transform: scale(.82); opacity: 1; } 50% { transform: scale(1.12); opacity: .55; } }
+@keyframes coachNudge { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+@keyframes coachGlow { 0%, 100% { box-shadow: 0 0 0 2px rgba(255,205,48,.15); } 50% { box-shadow: 0 0 0 4px rgba(255,205,48,.55); } }
+#coach.ok { border-color: #3ecf8e; }
+#coach.low { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); }
+@media (orientation: landscape) and (max-height: 520px) { #coach.low { bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); left: auto; right: 72px; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #coachRing i, #coachArrow svg, .up.coachhl { animation: none; } }
 #coach button { flex: none; min-height: 32px; padding: 0 10px; border: 1px solid var(--faint); border-radius: 3px; font-size: 12px; color: var(--dim); }
 @media (orientation: portrait) { #coach { top: calc(env(safe-area-inset-top, 0px) + 118px); max-width: calc(100vw - 20px); } }
 #statsBody { display: flex; flex-direction: column; gap: 10px; }
@@ -240,14 +263,6 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 #vol::-moz-range-progress { height: 3px; background: var(--blue); }
 #vol::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 2px; background: var(--blue); }
 #vol:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-.tr { flex: 1; min-width: 0; height: 42px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; touch-action: none; --p: 75%; }
-.tr::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(to right, var(--blue) var(--p), var(--faint) var(--p)); }
-.tr::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6.5px; border: 0; border-radius: 2px; background: var(--blue); }
-.tr::-moz-range-track { height: 3px; background: var(--faint); }
-.tr::-moz-range-progress { height: 3px; background: var(--blue); }
-.tr::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 2px; background: var(--blue); }
-.tr:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-.tv { flex: 0 0 66px; text-align: right; font-size: 13px; font-style: normal; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 .modbtn { flex: 1; min-width: 0; min-height: 44px; border-radius: 3px; font-size: 14px; text-align: left; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; }
 .modbtn::after { content: ''; width: 7px; height: 7px; border-right: 1.6px solid var(--dim); border-top: 1.6px solid var(--dim); transform: rotate(45deg); }
@@ -289,7 +304,9 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .chcard b { font-size: 15px; font-weight: 600; }
 .chcard .d { grid-column: 1; font-size: 12.5px; color: var(--dim); line-height: 1.35; }
 .chcard .stars { grid-row: 1 / span 3; grid-column: 2; display: flex; gap: 3px; }
-.chcard.locked { opacity: .4; pointer-events: none; }
+.chcard.locked { pointer-events: none; background: rgba(0,0,0,.2); border-color: #26262b; }
+.chcard.locked b, .chcard.locked .d, .chcard.locked .best { color: #4a4a50; }
+.chcard.locked .stars svg { stroke: #34343a; }
 .chcard:active { background: rgba(40,40,44,.8); }
 .stars svg, .goals svg { width: 15px; height: 15px; fill: none; stroke: #55555b; stroke-width: 1.2; }
 .stars svg.on, .goals svg.on { fill: #ffcd30; stroke: #ffcd30; }
@@ -362,19 +379,15 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 }
 /* short landscape phones: Settings goes two across so everything stays on screen; the tuning panel just tightens up */
 @media (orientation: landscape) and (max-height: 430px) {
-  #scrSettings, #scrTune { width: min(100%, 660px); gap: 4px; }
+  #scrSettings { width: min(100%, 660px); gap: 4px; }
   #scrSettings .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
   #scrSettings .opt { flex-direction: column; align-items: stretch; gap: 0; }
   #scrSettings .opt > span:first-child { flex: none; font-size: 11.5px; }
   #scrSettings .seg button { min-height: 36px; height: 36px; }
-  #scrSettings #vol, #scrTune .tr { height: 34px; }
-  #scrTune .opts { gap: 2px; }
+  #scrSettings #vol { height: 34px; }
 }
 .hintline { grid-column: 1 / -1; margin: 2px 0 0; font-size: 12px; line-height: 1.35; color: var(--dim); min-height: 2.7em; }
 .seg.tight button { font-size: 12.5px; padding: 0 3px; white-space: nowrap; }
-.seg.five button { font-size: 12px; padding: 0 2px; }   /* the two style rows: five pairs, sized by the longer name of each pair so the pairs line up */
-.seg.five button:nth-child(1) { flex: 47 1 0; } .seg.five button:nth-child(2) { flex: 61 1 0; } .seg.five button:nth-child(3) { flex: 36 1 0; }
-.seg.five button:nth-child(4) { flex: 34 1 0; } .seg.five button:nth-child(5) { flex: 52 1 0; }
 .opt.wide2 { grid-column: 1 / -1; }
 .info { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: 5px; padding: 0; border: 1px solid var(--dim); border-radius: 50%; font-size: 11px; font-weight: 600; color: var(--dim); background: transparent; vertical-align: middle; }
 .specintro { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--dim); }
@@ -461,7 +474,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path id="sndOn" d="M11 5.5c1 .7 1.5 1.6 1.5 2.5s-.5 1.8-1.5 2.5M12.6 3.6C14 4.7 14.8 6.3 14.8 8s-.8 3.3-2.2 4.4" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/><path id="sndOff" d="M11 6l4 4M15 6l-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="display:none"/></svg>
     </button>
   </div>
-  <div id="coach" class="rail panel" hidden><span id="coachTxt"></span><button id="coachSkip" class="ghost" aria-label="Skip this step">Skip</button></div>
+  <div id="coach" class="rail panel" hidden><span id="coachBox"><em id="coachPh"></em><span id="coachTxt"></span></span><button id="coachSkip" class="ghost" aria-label="Skip this step">Skip</button></div>
   <div id="upg" class="rail panel">
     <div class="xp" title="Kills fill this bar. Each full bar is one upgrade point."><div class="xpbar"><i id="xpfill"></i></div><span id="pts"></span></div>
     <button class="up" data-k="hp"><span class="nm">Health</span><span class="lv">0</span><span class="pips"></span></button>
@@ -470,6 +483,9 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
   </div>
 </div>
 
+<div id="coachRing" hidden><i></i></div>
+<div id="coachArrow" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4l17 8-17 8 4-8z"/></svg></div>
+
 <div id="menu" class="overlay">
   <section class="screen" id="scrHome">
     <div class="homeL">
@@ -477,9 +493,11 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
         <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 42 43 24 33.5 6 43Z" fill="#3577ff"/></svg>
         <div class="mt"><h1>Aiced</h1><span class="tag">Strategy</span></div>
       </div>
-      <div class="rec"><span id="rec"></span><span class="build" id="buildNo">Build 44</span></div>
+      <div class="rec"><span id="rec"></span><button class="ibtn" id="aboutBtn" aria-label="About this game" aria-expanded="false">i</button></div>
+      <p class="about aboutcard" id="aboutCard" hidden><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to play</b>.</p>
     </div>
+    <div class="ver"><span class="build" id="buildNo">Build 46.3</span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -568,25 +586,13 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <div class="opts">
       <div class="opt"><span>Volume</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"></div>
       <div class="opt"><span>Menu sound</span><div class="seg tight" data-glob="menuSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
-      <div class="opt"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="overdrive">Overdrive</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button></div></div>
-      <div class="opt"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button></div></div>
+      <div class="opt stack"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="overdrive">Overdrive</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button></div></div>
+      <div class="opt stack"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button></div></div>
       <div class="opt"><span>Colors</span><div class="seg tight wrap" data-glob="colors"><button data-v="standard">Standard</button><button data-v="safe">Color-safe</button><button data-v="contrast">High contrast</button></div></div>
       <div class="opt"><span>Team symbols</span><div class="seg tight" data-glob="symbols"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
       <div class="opt" id="rowHaptics"><span>Haptics</span><div class="seg tight" data-glob="haptics"><button data-v="off">Off</button><button data-v="light">Light</button><button data-v="normal">Normal</button></div></div>
       <div class="opt"><span>Screen</span><div class="seg tight" data-glob="screen"><button data-v="auto">Auto</button><button data-v="landscape">Landscape</button><button data-v="portrait">Portrait</button></div></div>
       <p class="hintline" id="hintSettings"></p>
-    </div>
-  </section>
-
-  <!-- TUNING PANEL (hidden: long-press the build number). REMOVE BEFORE STORE PACKAGING: this section, its CSS (.tr, .tv), the tune* code and the long-press hook. -->
-  <section class="screen" id="scrTune" hidden>
-    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Menu sound tuning</h2></header>
-    <div class="opts">
-      <div class="opt"><span>Volume</span><input type="range" class="tr" id="tVol" min="0" max="100" step="1" aria-label="Menu volume"><em class="tv" id="tVolV"></em></div>
-      <div class="opt"><span>Muffle</span><input type="range" class="tr" id="tCut" min="200" max="8000" step="50" aria-label="Muffle cutoff"><em class="tv" id="tCutV"></em></div>
-      <div class="opt"><span>Fade</span><input type="range" class="tr" id="tFade" min="0.1" max="2" step="0.1" aria-label="Fade time"><em class="tv" id="tFadeV"></em></div>
-      <p class="hintline" id="hintTune">Listen to the match behind this screen. Volume is how loud menus are against a real match, Muffle is how much of the top end is cut (lower is duller), Fade is how long it takes to change between the two.</p>
-      <button class="ghost small" id="tReset">Reset to defaults</button>
     </div>
   </section>
 
@@ -619,7 +625,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 
   <section class="screen wide" id="scrHelp" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>How to play</h2></header>
-    <p class="specintro" id="practiceHint">Four short lessons that teach the basics, about a minute each. You can skip any step.</p>
+    <p class="specintro" id="practiceHint">One guided match that teaches the basics: sending troops, upgrades, special bases and taking a rival base. You can skip any step.</p>
     <h3 class="sub">Practice</h3>
     <div id="practiceList" class="ladder"></div>
     <h3 class="sub">Rules</h3>
@@ -631,7 +637,6 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <li><b>Look around.</b> Pinch and drag. The map button shows a minimap, and a double-tap on it shows everything. Press and hold any base to see what it is.</li>
       <li><b>Special bases.</b> Fortress: more health. Forge: more troops. Beacon: more XP. Relay: faster troops.</li>
     </ul>
-    <p class="about" id="about"><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
   </section>
 
   <section class="screen" id="scrPause" hidden>
@@ -801,30 +806,27 @@ const SCENARIOS = [
 ];
 // ---- Practice lessons (How to play): tiny maps against a rival that never attacks. Steps are checked by the UI (coachTick). ----
 const PRACTICE = [
-  { id: 'p-send', name: 'Send troops', desc: 'Capture the base next door.',
-    size: 'small', teams: 2, seed: 5101, playerTroops: 12,
-    done: 'Tap a base within reach to send troops. Holding bases raises your army limit.',
-    steps: [{ t: 'Tap the gray base next to yours. Your troops march out.', k: 'sent' },
-      { t: 'They fight the defenders, then wear the base down. Wait until it turns your color.', k: 'bases', v: 2 },
-      { t: 'Nice. Take two more gray bases to grow your army.', k: 'bases', v: 4 }] },
-  { id: 'p-rival', name: 'Take a rival base', desc: 'Grow, then go after the other color.',
-    size: 'small', teams: 2, seed: 5202, playerTroops: 12,
-    done: 'Grow first, then send everything at one base. The last hit takes it.',
-    steps: [{ t: 'First grow: take the gray bases around you.', k: 'bases', v: 4 },
-      { t: "Now tap the other color's base. Double-tap it to lock on, so every new troop heads there.", k: 'hit' },
-      { t: 'Beat its defenders, then wear the base down. The final blow takes it.', k: 'win' }] },
-  { id: 'p-up', name: 'Upgrades', desc: 'Spend your first skill points.',
-    size: 'small', teams: 2, seed: 5303, startPoints: 2,
-    done: 'Kills fill the XP bar, and every full bar is a point for Health, Speed or Damage.',
-    steps: [{ t: 'You have 2 skill points. Tap Health, Speed or Damage (lower left) to spend one.', k: 'pts', v: 1 },
-      { t: 'Spend the other one too. Eliminating troops fills the XP bar for more.', k: 'pts', v: 0 },
-      { t: 'Health and Damage add 15% a level. Speed adds 10% movement and a little faster swings.', k: 'wait', v: 7 }] },
-  { id: 'p-spec', name: 'Special bases', desc: 'Find out what the symbols mean.',
-    size: 'small', teams: 2, seed: 5404, specials: true, specialKinds: ['forge', 'fortress'], playerTroops: 12,
-    done: 'Press and hold any base to see what it is. A Forge builds troops faster and lifts your army limit.',
-    steps: [{ t: 'Press and hold a base with a symbol on it to see what it is.', k: 'info' },
-      { t: 'Take the Forge (the arrow pointing up): it builds troops 70% faster and raises your army limit.', k: 'forge' }] }
+  { id: 'p-tour', name: 'Guided match', desc: 'One short match that teaches sending troops, upgrades, special bases and taking a rival base.',
+    size: 'small', teams: 2, seed: 5020, specials: true, specialKinds: ['forge', 'fortress'], playerTroops: 12,
+    done: 'Tap to send troops, spend points as you earn them, take special bases, and focus one base to capture it.',
+    steps: [
+      { ph: 0, t: 'Nothing here attacks you, so take your time. Pinch with two fingers to zoom in (or scroll with a mouse).', k: 'zoom', cam: true },
+      { ph: 0, t: 'Now drag the map with one finger to move around.', k: 'pan', cam: true },
+      { ph: 0, t: 'Tap the map button for a minimap. Tap or drag on the minimap to jump around.', k: 'mini', cam: true },
+      { ph: 0, t: 'Double-tap the map button to see the whole battlefield again.', k: 'whole', cam: true },
+      { ph: 1, t: 'Tap the highlighted gray base. Your troops march out.', k: 'sent', hl: 'near' },
+      { ph: 1, t: 'They fight the defenders, then wear the base down. Wait until it turns your color.', k: 'bases', v: 2, hl: 'near' },
+      { ph: 1, t: 'Take two more gray bases. More bases means a bigger army limit.', k: 'bases', v: 4, hl: 'near' },
+      { ph: 2, t: 'You have skill points to spend. Tap Health, Speed or Damage (lower left) to spend one.', k: 'buy', hl: 'ui', give: 2 },
+      { ph: 2, t: 'Spend another one too. Knocking out troops fills the XP bar for more.', k: 'buy', hl: 'ui' },
+      { ph: 2, t: 'Health and Damage add 15% a level. Speed adds 10% movement and a little faster swings.', k: 'wait', v: 7 },
+      { ph: 3, t: 'Some bases carry a symbol. Press and hold the highlighted one to see what it is.', k: 'info', hl: 'forge' },
+      { ph: 3, t: 'A Forge builds troops 70% faster and raises your army limit. Take it.', k: 'forge', hl: 'forge' },
+      { ph: 4, t: 'The other color is out of reach: you can only attack a base that touches one of yours. Take the highlighted base, and keep going until you border it.', k: 'reach', hl: 'toward' },
+      { ph: 4, t: "Now the other color. Tap its highlighted base to attack. Double-tap to lock on, so every new troop heads there.", k: 'hit', hl: 'rival' },
+      { ph: 4, t: 'Beat its defenders, then wear the base down. The final blow takes it.', k: 'taken', hl: 'rival' }] }
 ];
+const PRACTICE_PHASES = ['Look around', 'Send troops', 'Upgrades', 'Special bases', 'Take a rival base'];
 const PRACTICE_AI = { interval: [9999, 9999], margin: 99, spawn: 0.6 };      // the rival builds a little and never attacks
 function practiceOpts(id) {
   const c = PRACTICE.find(x => x.id === id); if (!c) return {};
@@ -1467,7 +1469,7 @@ function hitBase(n, team, dmg, x, y) {
   // a base can only soak up so much per second, so even a huge army needs a few seconds
   const d = Math.min(dmg, n.budget);
   n.budget -= d; n.hp -= d; n.lastHitT = G.t; n.heat += d; n.heatBy = team;
-  if (G.sfx.length < 48) G.sfx.push({ x, y, tx: n.x, ty: n.y, team, base: true });
+  if (G.sfx.length < 48) G.sfx.push({ x, y, tx: n.x, ty: n.y, team, base: true, ni: n.id, hf: Math.max(0, n.hp / n.maxHp) });
   if (n.hp <= 0) takeNode(n, team);
 }
 
@@ -3132,6 +3134,10 @@ function nebulaClouds() {
     const cx = rnd() * c.width, cy = rnd() * c.height, r = (0.08 + rnd() * 0.14) * c.width, gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
     gr.addColorStop(0, 'rgba(0,0,0,0.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, c.width, c.height);
   }
+  g.globalCompositeOperation = 'destination-in';       // fade the cloud out toward every edge, so it never ends in a straight line
+  const fe = (x0, y0, x1, y1) => { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,1)'); g.fillStyle = gr; g.fillRect(0, 0, c.width, c.height); };
+  const fw = c.width * 0.2, fh = c.height * 0.2;
+  fe(0, 0, fw, 0); fe(c.width, 0, c.width - fw, 0); fe(0, 0, 0, fh); fe(0, c.height, 0, c.height - fh);
   g.globalCompositeOperation = 'source-over';
   NEB.cg = G; return c;
 }
@@ -3668,13 +3674,8 @@ function syncCtrl() {
 let AC = null, master = null, lim = null, bus = null, mlp = null, mg = null, pbus = null, lastBlip = 0, lastBloop = 0;
 // Everything in a match goes: voices -> bus (the sound style's own filter) -> mlp (menu muffle) -> mg (menu level) -> master.
 // Behind the menus the same match keeps playing, so mg drops and mlp closes; in a match both are wide open. Previews skip the
-// menu stage (pbus), so a style is always auditioned at full level. TUNING: vol/cut/fade can be changed from the hidden panel.
-const TUNE_DEF = { vol: 30, cut: 500, fade: 0.5 };
-const tune = Object.assign({}, TUNE_DEF);
-{
-  const t = load('ice-tune', {}), num = (v, lo, hi, d) => Number.isFinite(+v) && +v >= lo && +v <= hi ? +v : d;
-  if (isObj(t)) { tune.vol = num(t.vol, 0, 100, TUNE_DEF.vol); tune.cut = num(t.cut, 200, 8000, TUNE_DEF.cut); tune.fade = num(t.fade, 0.1, 2, TUNE_DEF.fade); }
-}
+// menu stage (pbus), so a style is always auditioned at full level.
+const tune = { vol: 30, cut: 500, fade: 0.5 };         // menu volume against a match, muffle cutoff, fade time: fixed (they used to live in a hidden panel)
 let previewing = false, mixMenu = null;
 const outBus = () => previewing ? pbus : bus;
 const awatch = () => watching || mode === 'demo';                // the match behind the menus is AI vs AI: nobody's hits are "yours"
@@ -4104,6 +4105,17 @@ function driftPreview() {                             // a short phrase and a be
 // to land the notes together; with no drums or bass it is never heard as a beat.
 const CH_STEP = 60 / 132 / 4, CH_LEVEL = 0.19, CH_SCALE = [0, 2, 4, 7, 9];
 const chMidi = d => 60 + 12 * Math.floor(d / 5) + CH_SCALE[((d % 5) + 5) % 5];
+const CH2 = { hits: {}, v: 0 };
+function chCrunchDue(k, h) { return k % (h < 0.3 ? 4 : 2) === 0; }                       // a quiet battle crunches only every 4th step
+function chCrunchVar(c) {                              // three crunches (never the same twice running); a repeat on the same base fades; the thump is a milestone
+  const now = AC.currentTime, r = CH2.hits[c.ni] || (CH2.hits[c.ni] = { t: -9, n: 0, stage: -1 });
+  if (now - r.t >= 1.6) { r.n = 0; r.stage = -1; } else r.n++;
+  r.t = now;
+  const stage = Math.floor((1 - (c.hf === undefined ? 1 : c.hf)) * 4), thump = stage > r.stage; if (thump) r.stage = stage;
+  const g = Math.max(0.35, 1 - 0.18 * r.n), pick3 = [{ dur: 0.16, freq: 2400 }, { dur: 0.22, freq: 1500 }, { dur: 0.10, freq: 3300 }];
+  let i = (Math.random() * 3) | 0; if (i === CH2.v) i = (i + 1) % 3; CH2.v = i;
+  return Object.assign({ g, thump }, pick3[i]);
+}
 const CH = { nodes: null, next: 0, step: 0, heat: 0, blips: [], crunch: null, caps: [], deg: 5, waves: null, metal: null };
 function chWaves() {                                  // pulse waves at 12.5%, 25% and 50% duty: the old consoles' three tones
   if (CH.waves && CH.waves.ac === AC) return CH.waves;
@@ -4133,9 +4145,9 @@ function chNote(N, t, midi, dur, wave, peak, pan, slide) {   // one pulse note: 
   g.gain.setValueAtTime(peak * 0.7, t + dur * 0.4); g.gain.setValueAtTime(peak * 0.45, t + dur * 0.75); g.gain.linearRampToValueAtTime(0, t + dur);
   o.connect(g); chOut(N, g, pan); o.start(t); o.stop(t + dur + 0.02);
 }
-function chTri(N, t, midi, dur, peak, drop) {         // the triangle channel: bass notes, and (with a fast drop in pitch) the kick
+function chTri(N, t, midi, dur, peak, drop, f0) {         // the triangle channel: bass notes, and (with a fast drop in pitch) the kick
   const o = AC.createOscillator(), g = AC.createGain();
-  o.type = 'triangle'; o.frequency.setValueAtTime(drop ? 170 : hz(midi), t); if (drop) o.frequency.exponentialRampToValueAtTime(48, t + dur);
+  o.type = 'triangle'; o.frequency.setValueAtTime(drop ? (f0 || 170) : hz(midi), t); if (drop) o.frequency.exponentialRampToValueAtTime(f0 ? f0 * 0.3 : 48, t + dur);
   g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + 0.003); g.gain.setValueAtTime(peak, t + dur * 0.8); g.gain.linearRampToValueAtTime(0, t + dur);
   o.connect(g); g.connect(N.music); o.start(t); o.stop(t + dur + 0.02);
 }
@@ -4162,7 +4174,12 @@ function chPlayStep(N, t, k, h) {                    // one grid step: only what
     if (n >= 6 && h > 0.35) chNote(N, t + CH_STEP / 2, chMidi(d + 2), CH_STEP * 0.7, 'p12', pk * 0.55, -pan, 0.985);
     CH.blips.length = 0;
   }
-  if (k % 2 === 0 && CH.crunch) { chNoise(N, t, 0.16, CH.crunch.mine ? 0.2 : 0.11, 2400, true, CH.crunch.pan); chTri(N, t, 0, 0.12, CH.crunch.mine ? 0.3 : 0.16, true); CH.crunch = null; }
+  if (CH.crunch && chCrunchDue(k, h)) {                // a base hit: the thump sits on a scale note that climbs as the base weakens
+    const c = CH.crunch, d = Math.round((1 - (c.hf === undefined ? 1 : c.hf)) * 9), f0 = hz(chMidi(d) - 12), v = chCrunchVar(c);
+    chNoise(N, t + Math.random() * 0.03, v.dur, c.mine ? 0.2 * v.g : 0.11 * v.g, v.freq, true, c.pan);
+    if (v.thump) chTri(N, t, 0, 0.12, c.mine ? 0.1 : 0.055, true, f0);
+    CH.crunch = null;
+  }
 }
 function chFall(N, t) {                               // a color is out: a falling "game over" tune
   for (let i = 0; i < 7; i++) chNote(N, t + i * 0.09, 79 - i * 2 - (i > 4 ? 1 : 0), 0.085, 'p25', 0.045, 0);
@@ -4170,7 +4187,7 @@ function chFall(N, t) {                               // a color is out: a falli
 }
 function chipHits(ev) {
   for (const e of ev) {
-    if (e.base) { if (!CH.crunch || isMine(e)) CH.crunch = { mine: isMine(e), pan: screenPan(e.x, e.y) }; }
+    if (e.base) { if (!CH.crunch || isMine(e)) CH.crunch = { mine: isMine(e), pan: screenPan(e.x, e.y), hf: e.hf, ni: e.ni }; else if (e.hf < CH.crunch.hf) CH.crunch.hf = e.hf; }
     else CH.blips.push(e);
   }
   if (CH.blips.length > 24) CH.blips.splice(0, CH.blips.length - 24);
@@ -4384,20 +4401,9 @@ function previewSound() {                       // a sample bleep and bloop so y
   setTimeout(() => { if (AC) { previewing = true; try { const b = hz(45 + pick(PENTA)); tone(b * 1.4, b, 0.2, 0.08, 'sine', 0, 0.02); } finally { previewing = false; } } }, 120);
 }
 
-// ---- TUNING PANEL (hidden): long-press the build number. REMOVE BEFORE STORE PACKAGING (see the section in the markup) ----
-function renderTune() {
-  const f = (id, v, txt) => { $(id).value = v; $(id).style.setProperty('--p', ((v - $(id).min) / ($(id).max - $(id).min) * 100) + '%'); $(id + 'V').textContent = txt; };
-  f('tVol', tune.vol, tune.vol + '%'); f('tCut', tune.cut, tune.cut + ' Hz'); f('tFade', tune.fade, tune.fade.toFixed(1) + ' s');
-}
-for (const [id, k] of [['tVol', 'vol'], ['tCut', 'cut'], ['tFade', 'fade']]) $(id).addEventListener('input', () => {
-  tune[k] = +$(id).value; save('ice-tune', tune); renderTune(); applyMix(false, true);
-});
-$('tReset').addEventListener('click', () => { Object.assign(tune, TUNE_DEF); save('ice-tune', tune); renderTune(); applyMix(false, true); });
 {
-  let timer = 0; const b = $('buildNo');
-  b.addEventListener('pointerdown', () => { clearTimeout(timer); timer = setTimeout(() => { go('scrTune'); renderTune(); }, 700); });
-  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, () => clearTimeout(timer));
-  b.addEventListener('contextmenu', e => e.preventDefault());
+  $('aboutBtn').addEventListener('click', () => { const c = $('aboutCard'); c.hidden = !c.hidden; $('aboutBtn').setAttribute('aria-expanded', String(!c.hidden)); });
+document.addEventListener('click', e => { const c = $('aboutCard'); if (!c.hidden && !e.target.closest('#aboutBtn, #aboutCard')) { c.hidden = true; $('aboutBtn').setAttribute('aria-expanded', 'false'); } });
 }
 
 // ---- screens ----
@@ -4786,7 +4792,7 @@ function showEnd() {
   if (G.practice) {                                 // a lesson: a tick instead of stars or highlights
     const L = PRACTICE.find(x => x.id === G.practice);
     practiceDone[L.id] = true; save('ice-practice', practiceDone); renderPractice();
-    t.innerHTML = `<span class="sw" style="background:#ffcd30"></span>Lesson complete`;
+    t.innerHTML = `<span class="sw" style="background:#ffcd30"></span>Practice complete`;
     sub.textContent = `${L.name}, done in ${fmt(G.t)}.`;
     challengeMoments = `<li><time class="st">&#10003;</time><i style="background:#ffcd30"></i><span>${L.done}</span></li>`;
   }
@@ -4829,7 +4835,7 @@ function showEnd() {
   requestAnimationFrame(() => drawTimeline(moments));
 }
 function toMenu() {
-  coach = null; $('coach').hidden = true;
+  coachEnd();
   hideInfo(); watching = false; hudEl.classList.remove('watch');
   show('end', false); hudEl.hidden = true;
   startDemo(); resetCam(); layout(); renderRecord(); resetStack('scrHome'); show('menu', true);
@@ -5093,7 +5099,8 @@ else window.addEventListener('resize', layout);
 
 // ---- Practice: guided lessons with a coach banner. Own storage (ice-practice), no stars, never counted in your stats. ----
 const practiceDone = {};
-{ const raw = load('ice-practice', {}); if (isObj(raw)) for (const p of PRACTICE) if (raw[p.id] === true) practiceDone[p.id] = true; }
+{ const raw = load('ice-practice', {}); if (isObj(raw)) for (const p of PRACTICE) if (raw[p.id] === true) practiceDone[p.id] = true;
+  if (['p-send', 'p-rival', 'p-up', 'p-spec'].every(k => raw[k] === true)) practiceDone['p-tour'] = true; }       // the four old lessons were all done: the tour counts as done
 let helpSeen = false;
 { const raw = load('ice-seen', {}); helpSeen = isObj(raw) && raw.help === true; }
 function updateNewHere() {                          // first launch: nudge toward How to play until it has been opened (or you have played)
@@ -5105,31 +5112,96 @@ function renderPractice() {
   $('practiceHint').hidden = PRACTICE.some(p => practiceDone[p.id]);
   updateNewHere();
 }
+const lvSum = T => T.lv.hp + T.lv.spd + T.lv.dmg;
 const COACH_TESTS = {
+  zoom: () => cam.z >= Math.min(coach.z0 + 0.3, zmax() - 0.02),
+  pan: () => { const c = coach.c0, ww = viewSize()[0]; return !!c && Math.hypot(cam.cu - c.cu, cam.cv - c.cv) > ww * 0.06; },
+  mini: () => !$('mm').hidden,
+  whole: () => cam.z <= 1.02,
   sent: () => G.troops.some(t => t.team === PLAYER && t.path.length > 0),
   bases: st => G.teams[PLAYER].bases >= st.v,
+  buy: () => lvSum(G.teams[PLAYER]) >= coach.l0 + 1 || G.teams[PLAYER].points === 0,       // spent one point (or none left to spend)
+  reach: () => { const R = G.teams.find(T => T.active && T.i !== PLAYER); const n = R && G.nodes[G.homes[R.i]]; return !R || !n || R.bases < 1 || n.owner !== R.i || reachable(n); },
   hit: () => { const R = G.teams.find(T => T.active && T.i !== PLAYER); const n = R && G.nodes[G.homes[R.i]]; return !R || !n || R.bases < 1 || n.owner !== R.i || n.hp < n.maxHp * 0.95; },
-  win: () => false,                                 // the match ending ends the lesson
-  pts: st => G.teams[PLAYER].points <= st.v,
+  taken: () => { const R = G.teams.find(T => T.active && T.i !== PLAYER); return !R || G.nodes[G.homes[R.i]].owner === PLAYER; },
   wait: st => G.t - coach.g0 >= st.v,
   info: () => !!infoNode,
   forge: () => G.nodes.some(n => n.kind === 'forge' && n.owner === PLAYER)
 };
-function coachShow() { const st = coach.lesson.steps[coach.i]; setText($('coachTxt'), st.t); $('coach').hidden = false; }
-function startCoach() {
-  coach = curPrac ? { lesson: PRACTICE.find(x => x.id === curPrac), i: 0, g0: 0 } : null;
-  $('coach').hidden = !coach; if (coach) coachShow();
+// what the ring points at for the current step: the nearest gray base to your home, the Forge, or the rival's home
+function coachTarget(kind) {
+  if (kind === 'forge') { const n = G.nodes.find(x => x.kind === 'forge'); return n ? n.id : null; }
+  if (kind === 'rival') { const R = G.teams.find(T => T.active && T.i !== PLAYER); return R ? G.homes[R.i] : null; }
+  if (kind === 'toward') {                            // the gray base you can already reach that is closest to the rival
+    const R = G.teams.find(T => T.active && T.i !== PLAYER); if (!R) return null;
+    const goal = G.homes[R.i], dist = G.nodes.map(() => Infinity); dist[goal] = 0;
+    const q = [goal]; for (let a = 0; a < q.length; a++) for (const v of G.nodes[q[a]].adj) if (dist[v] === Infinity) { dist[v] = dist[q[a]] + 1; q.push(v); }
+    let best = null;
+    for (const n of G.nodes) if (n.owner < 0 && reachable(n) && (best == null || dist[n.id] < dist[best] || (dist[n.id] === dist[best] && n.id < best))) best = n.id;
+    return best;
+  }
+  if (kind !== 'near') return null;
+  const dist = G.nodes.map(() => Infinity), h = G.homes[PLAYER]; dist[h] = 0;
+  const q = [h]; for (let a = 0; a < q.length; a++) for (const v of G.nodes[q[a]].adj) if (dist[v] === Infinity) { dist[v] = dist[q[a]] + 1; q.push(v); }
+  let best = null;
+  for (const n of G.nodes) if (n.owner < 0 && !n.kind && (best == null || dist[n.id] < dist[best] || (dist[n.id] === dist[best] && n.id < best))) best = n.id;
+  return best;
 }
+function coachShow() {
+  const st = coach.lesson.steps[coach.i];
+  setText($('coachPh'), `${st.ph + 1} of ${PRACTICE_PHASES.length} \u00b7 ${PRACTICE_PHASES[st.ph]}`); setText($('coachTxt'), st.t); $('coach').hidden = false;
+  coach.l0 = lvSum(G.teams[PLAYER]); coach.c0 = { cu: cam.cu, cv: cam.cv }; coach.shownAt = performance.now(); coach.armed = false; coach.doneAt = 0; $('coach').classList.remove('ok');
+  if (st.give && !coach.gave[coach.i]) { coach.gave[coach.i] = true; G.teams[PLAYER].points += st.give; }
+  for (const b of upBtns) b.classList.toggle('coachhl', st.hl === 'ui');
+  coachAim();
+}
+function coachAim() { const st = coach && coach.lesson.steps[coach.i]; coach.hlId = st && st.hl ? coachTarget(st.hl) : null; }
+function startCoach() {
+  coach = curPrac ? { lesson: PRACTICE.find(x => x.id === curPrac), i: 0, g0: 0, l0: 0, hlId: null, gave: {} } : null;
+  $('coach').hidden = !coach; $('coach').classList.remove('low'); $('coachRing').hidden = $('coachArrow').hidden = true;
+  if (coach) coachShow(); else for (const b of upBtns) b.classList.remove('coachhl');
+}
+function coachEnd() { coach = null; $('coach').hidden = true; $('coach').classList.remove('low'); $('coachRing').hidden = $('coachArrow').hidden = true; for (const b of upBtns) b.classList.remove('coachhl'); }
 function coachNext() {
   if (!coach) return;
   coach.i++; coach.g0 = G.t;
-  if (coach.i >= coach.lesson.steps.length) { coach = null; $('coach').hidden = true; G.over = true; G.result = 'win'; G.endReason = 'practice'; showEnd(); return; }
+  if (coach.i >= coach.lesson.steps.length) { coachEnd(); G.over = true; G.result = 'win'; G.endReason = 'practice'; showEnd(); return; }
   coachShow();
 }
 function coachTick() {
   if (!coach || !G || mode !== 'play' || G.over) return;
-  const st = coach.lesson.steps[coach.i];
+  coachAim();
+  const st = coach.lesson.steps[coach.i], now = performance.now();
+  if (coach.doneAt) { if (now - coach.doneAt > 900) coachNext(); return; }       // "Got it." stays up for a moment before the next step
+  if (st.cam) {                                       // camera steps count only what you do after a pause, once your fingers are up and the map has stopped drifting
+    if (!coach.armed) { if (now - coach.shownAt > 1500 && ptrs.size === 0 && Math.hypot(fling.vx, fling.vy) < 0.02) { coach.armed = true; coach.c0 = { cu: cam.cu, cv: cam.cv }; coach.z0 = cam.z; } return; }
+    if (COACH_TESTS[st.k](st)) { coach.doneAt = now; setText($('coachTxt'), 'Got it.'); $('coach').classList.add('ok'); }
+    return;
+  }
   if (COACH_TESTS[st.k](st)) coachNext();
+}
+// the ring follows its base while you pan and zoom; off screen it becomes an arrow on the edge of the map pointing the way
+function coachRing() {
+  const r = $('coachRing'), a = $('coachArrow'), n = coach && G && mode === 'play' && coach.hlId != null ? G.nodes[coach.hlId] : null;
+  if (!n) { if (!r.hidden) r.hidden = true; if (!a.hidden) a.hidden = true; return; }
+  const p = toScreen(n.x, n.y), pad = 22;
+  if (p.x >= F.x + pad && p.x <= F.x + F.w - pad && p.y >= F.y + pad && p.y <= F.y + F.h - pad) {
+    if (r.hidden) r.hidden = false; if (!a.hidden) a.hidden = true;
+    r.style.transform = `translate(${p.x}px, ${p.y}px) translate(-50%, -50%)`;
+  } else {
+    if (!r.hidden) r.hidden = true; if (a.hidden) a.hidden = false;
+    const cx = F.x + F.w / 2, cy = F.y + F.h / 2, ang = Math.atan2(p.y - cy, p.x - cx);
+    const k = Math.min((F.w / 2 - 34) / (Math.abs(Math.cos(ang)) || 1e-6), (F.h / 2 - 34) / (Math.abs(Math.sin(ang)) || 1e-6));
+    a.style.transform = `translate(${cx + Math.cos(ang) * k}px, ${cy + Math.sin(ang) * k}px) translate(-50%, -50%) rotate(${ang}rad)`;
+  }
+  coachDodge(p);
+}
+// if the highlighted base is hiding under the instruction banner, the banner hops to the other side of the screen (checked a few times a second)
+let coachDodgeAt = 0;
+function coachDodge(p) {
+  const now = performance.now(); if (now - coachDodgeAt < 250) return; coachDodgeAt = now;
+  const el = $('coach'), b = el.getBoundingClientRect(), m = 34;
+  if (p.x > b.left - m && p.x < b.right + m && p.y > b.top - m && p.y < b.bottom + m && now - (coach.hopped || 0) > 1500) { el.classList.toggle('low'); coach.hopped = now; }
 }
 $('coachSkip').addEventListener('click', () => coachNext());
 $('practiceList').addEventListener('click', e => { const b = e.target.closest('.chcard'); if (b) startGame(false, null, null, b.dataset.p); });
@@ -5170,6 +5242,7 @@ function frame(nowMs) {
     }
   }
   const tDraw = performance.now();
+  if (coach) coachRing();
   stepFling(dt);
   if (G && fogOn()) computeFog();
   if (G) playSfx(nowMs, dt);
@@ -5185,9 +5258,10 @@ function frame(nowMs) {
 syncLook(); syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
 if (PERF) window.__audio = () => ({ AC, master, lim, mg, mlp, bus, pbus });   // lets the ?perf mode measure output levels
 if (PERF) window.__dbg = () => ({ mode, pvOnly, stack: stack.slice(), backPos, draining, t: G ? G.t : 0, over: G ? G.over : null, parts: parts.length, fx: G ? G.fx.length : 0, pvOwners: pvOwners ? pvOwners.length : 0, hasG: !!G });
-if (PERF) { window.__coach = () => coach ? { i: coach.i, n: coach.lesson.steps.length, id: coach.lesson.id } : null; window.__hud = hud; window.__info = showInfo; window.__txt = () => ({ DIFF_INFO, PERSONA_INFO, SHAPE_INFO, SETTINGS_INFO, SPECIAL_INFO }); window.__mods = () => MODS; }       // test hooks
+if (PERF) { window.__coach = () => coach ? { i: coach.i, n: coach.lesson.steps.length, id: coach.lesson.id } : null; window.__hud = hud; window.__info = showInfo; window.__coachAim = () => coach ? { hl: coach.hlId, ph: $('coachPh').textContent } : null; window.__txt = () => ({ DIFF_INFO, PERSONA_INFO, SHAPE_INFO, SETTINGS_INFO, SPECIAL_INFO }); window.__mods = () => MODS; window.__coachTo = n => { coach.i = n; coach.g0 = G.t; coachShow(); }; }       // test hooks
 if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$('mm').hidden });
-if (PERF) window.__scr = (x, y) => toScreen(x, y);          // tests: where a world point lands on screen
+if (PERF) window.__scr = (x, y) => toScreen(x, y);
+if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; };          // tests: where a world point lands on screen
 requestAnimationFrame(frame);
 })();
 </script>
