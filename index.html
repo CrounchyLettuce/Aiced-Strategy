@@ -146,6 +146,22 @@ body { position: relative; }
 .swatches button i { display: block; width: 18px; height: 18px; margin: auto; }
 .seg.swatches button[aria-pressed="true"] { background: rgba(255,255,255,.08); box-shadow: inset 0 -2px 0 #fff; }
 .swatches button[aria-pressed="true"] i { outline: 2px solid #fff; outline-offset: 2px; }
+/* Team symbols (Settings): every color swatch wears its team's shape. By palette slot: 0 triangle, 1 circle, 2 diamond, 3 square (as is), 4 cross. */
+html[data-sym="on"] [data-s="0"] { clip-path: polygon(50% 4%, 100% 96%, 0 96%); }
+html[data-sym="on"] [data-s="1"] { border-radius: 50%; }
+html[data-sym="on"] [data-s="2"] { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+html[data-sym="on"] [data-s="4"] { clip-path: polygon(33% 0, 67% 0, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0 67%, 0 33%, 33% 33%); }
+html[data-sym="on"] .rivals { grid-template-columns: 11px repeat(4, 1fr); }
+html[data-sym="on"] .rivals .sw, html[data-sym="on"] .koth .sw { width: 11px; height: 11px; }
+html[data-sym="on"] .koth { grid-template-columns: 14px 1fr 11px; }
+html[data-sym="on"] .bars { grid-template-columns: 12px 1fr auto; }
+html[data-sym="on"] .bars .sw { width: 12px; height: 12px; }
+html[data-sym="on"] .moments i { width: 12px; height: 12px; }
+.seg.tight.wrap button { white-space: normal; line-height: 1.1; }
+/* High contrast: brighter secondary text, stronger borders and more solid panels (the map's own lines and sizes change in the code) */
+html:root[data-colors="contrast"] { --dim: #c0c0c8; --faint: rgba(255,255,255,.36); --hair: rgba(255,255,255,.22); }
+html:root[data-colors="contrast"] .panel, html:root[data-colors="contrast"] .ctl, html:root[data-colors="contrast"] #bMap { background: rgba(0,0,0,.9); }
+html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color: rgba(255,255,255,.5); }
 .opt > span { flex: 0 0 96px; font-size: 13px; color: var(--dim); }
 .opt > .seg, .opt > #vol, .opt > .tr { flex: 1; min-width: 0; }
 .seg { display: flex; border: 1px solid var(--faint); border-radius: 3px; overflow: hidden; }
@@ -337,6 +353,9 @@ body { position: relative; }
 }
 .hintline { grid-column: 1 / -1; margin: 2px 0 0; font-size: 12px; line-height: 1.35; color: var(--dim); min-height: 2.7em; }
 .seg.tight button { font-size: 12.5px; padding: 0 3px; white-space: nowrap; }
+.seg.five button { font-size: 12px; padding: 0 2px; }   /* the two style rows: five pairs, sized by the longer name of each pair so the pairs line up */
+.seg.five button:nth-child(1) { flex: 47 1 0; } .seg.five button:nth-child(2) { flex: 61 1 0; } .seg.five button:nth-child(3) { flex: 36 1 0; }
+.seg.five button:nth-child(4) { flex: 34 1 0; } .seg.five button:nth-child(5) { flex: 52 1 0; }
 .opt.wide2 { grid-column: 1 / -1; }
 .info { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: 5px; padding: 0; border: 1px solid var(--dim); border-radius: 50%; font-size: 11px; font-weight: 600; color: var(--dim); background: transparent; vertical-align: middle; }
 .specintro { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--dim); }
@@ -438,7 +457,7 @@ body { position: relative; }
         <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 42 43 24 33.5 6 43Z" fill="#3577ff"/></svg>
         <h1>ICE</h1>
       </div>
-      <div class="rec"><span id="rec"></span><span class="build" id="buildNo">Build 33.1</span></div>
+      <div class="rec"><span id="rec"></span><span class="build" id="buildNo">Build 36</span></div>
     </div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
@@ -526,9 +545,11 @@ body { position: relative; }
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Settings</h2></header>
     <div class="opts">
       <div class="opt"><span>Volume</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"></div>
-      <div class="opt"><span>Sound style</span><div class="seg tight" data-glob="tone"><button data-v="bright">Bright</button><button data-v="soft">Soft</button><button data-v="overdrive">Overdrive</button><button data-v="drift">Drift</button></div></div>
       <div class="opt"><span>Menu sound</span><div class="seg tight" data-glob="menuSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
-      <div class="opt"><span>Visuals</span><div class="seg tight" data-glob="visual"><button data-v="classic">Classic</button><button data-v="spark">Spark</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button></div></div>
+      <div class="opt"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="overdrive">Overdrive</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button></div></div>
+      <div class="opt"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button></div></div>
+      <div class="opt"><span>Colors</span><div class="seg tight wrap" data-glob="colors"><button data-v="standard">Standard</button><button data-v="safe">Color-safe</button><button data-v="contrast">High contrast</button></div></div>
+      <div class="opt"><span>Team symbols</span><div class="seg tight" data-glob="symbols"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
       <div class="opt"><span>Screen</span><div class="seg tight" data-glob="screen"><button data-v="auto">Auto</button><button data-v="landscape">Landscape</button><button data-v="portrait">Portrait</button></div></div>
       <p class="hintline" id="hintSettings"></p>
     </div>
@@ -624,13 +645,29 @@ let W = 1000, H = 560;               // world size; changes with map size
 const NEUTRAL = -1, PLAYER = 0;
 const TEAM_COLORS = ['#3577ff', '#f2433c', '#2db857', '#ffcd30', '#a656ff'];
 const TEAM_NAMES = ['Blue', 'Red', 'Green', 'Yellow', 'Purple'];
-const NEUTRAL_COLOR = '#d9d9d9';
-// The player is always team 0; colors are just paint. applyPalette(k) dresses team 0 in palette color k
-// and hands the other four colors to the AI in the usual order.
-const PALETTE = TEAM_COLORS.map((c, i) => ({ c, name: TEAM_NAMES[i] }));
+let NEUTRAL_COLOR = '#d9d9d9';
+const TEAM_SLOT = [0, 1, 2, 3, 4];                    // which palette slot each team wears (a slot keeps its name and its symbol)
+// Palettes (Settings > Colors). A slot keeps its place across palettes (slot 0 blue, 1 the warm one, 2 the green-ish one, 3 yellow,
+// 4 the pink/purple one), so a saved "your color" carries over. Color-safe and High contrast were picked with tools/palette_check.py:
+// every pair of colors, and the neutral gray, stays clearly apart for normal vision and in simulated protan, deutan and tritan vision.
+const PALETTES = {
+  standard: { neutral: '#d9d9d9', slots: [['#3577ff', 'Blue'], ['#f2433c', 'Red'], ['#2db857', 'Green'], ['#ffcd30', 'Yellow'], ['#a656ff', 'Purple']] },
+  safe:     { neutral: '#d9d9d9', slots: [['#387fff', 'Blue'], ['#ffb259', 'Orange'], ['#16e6ac', 'Teal'], ['#f2f42e', 'Yellow'], ['#e00dac', 'Magenta']] },
+  contrast: { neutral: '#ffffff', slots: [['#808bff', 'Blue'], ['#f0b878', 'Orange'], ['#11f0d2', 'Teal'], ['#dfe631', 'Yellow'], ['#e666c5', 'Pink']] }
+};
+const PALETTE = PALETTES.standard.slots.map(([c, name]) => ({ c, name }));
+let paletteMode = 'standard';
+function setPaletteMode(m) {                          // re-skins the five slots (call applyPalette after, to dress the teams)
+  paletteMode = PALETTES[m] ? m : 'standard';
+  const P = PALETTES[paletteMode];
+  P.slots.forEach(([c, name], i) => { PALETTE[i].c = c; PALETTE[i].name = name; });
+  NEUTRAL_COLOR = P.neutral;
+}
+// The player is always team 0; colors are just paint. applyPalette(k) dresses team 0 in palette slot k
+// and hands the other four slots to the AI in the usual order.
 function applyPalette(first) {
   const order = [first, ...[0, 1, 2, 3, 4].filter(i => i !== first)];
-  order.forEach((k, i) => { TEAM_COLORS[i] = PALETTE[k].c; TEAM_NAMES[i] = PALETTE[k].name; });
+  order.forEach((k, i) => { TEAM_COLORS[i] = PALETTE[k].c; TEAM_NAMES[i] = PALETTE[k].name; TEAM_SLOT[i] = k; });
 }
 const C = {
   hp: 10, dps: 4.2, spd: 46, hpPer: .15, dmgPer: .15, spdPer: .10,
@@ -686,7 +723,7 @@ const SCENARIOS = [
   { id: 'first-blood', tier: 1, name: 'First blood', desc: 'A head-to-head on a small map. Take every base.',
     size: 'small', teams: 2, shape: 'continent', diff: 'easy', seed: 4101, fair: true, mods: {}, specials: false,
     objective: { type: 'conquest', text: 'Take every base' },
-    stars: [{ k: 'win', t: 'Take every base' }, { k: 'time', v: 180, t: 'Win in under 3:00' }, { k: 'noloss', t: 'Win without losing a base' }] },
+    stars: [{ k: 'win', t: 'Take every base' }, { k: 'time', v: 240, t: 'Win in under 4:00' }, { k: 'noloss', t: 'Win without losing a base' }] },
   { id: 'crown-rush', tier: 1, name: 'Crown rush', desc: 'Two colors race for a crown in the middle of a ring.',
     size: 'small', teams: 2, shape: 'ring', diff: 'normal', seed: 7134, fair: true, mods: { koth: true }, specials: false,
     objective: { type: 'crown', text: 'Hold the crown for 90 seconds' },
@@ -1788,9 +1825,9 @@ function aiThink(team) {
 // ================= UI =================
 // Everything you see and hear. Reads the simulation's state (G) every frame and draws it.
 //   view & camera ...... fitting the map to the screen, pinch/drag/zoom, screen <-> world conversion
-//   drawing ............ lines, bases, troops, attack lines, effects; Spark extras (glows, sparks, dust)
+//   drawing ............ lines, bases, troops, attack lines, effects; five visual styles: Classic, Overload, Atlas, Pixel, Nebula
 //   HUD ................ army count, territory bar, rival table, upgrades (only writes values that changed)
-//   sound .............. shared hit picking + four profiles: Bright, Soft, Felt, Low hum
+//   sound .............. shared hit picking + five sound styles: Simple, Overdrive, Drift, Chip, Cosmos (each pairs with a visual style)
 //   screens ............ menu stack (home, setup, settings, stats, how to play, pause), starting/ending games
 //   end screen ......... match timeline chart and key moments
 //   back gesture ....... Android back steps through menus and pauses matches
@@ -1809,6 +1846,46 @@ let mode = 'demo', speedMul = 1, last = performance.now(), acc = 0;
 let watching = false, watchRivals = true;   // watching: an AI-only match you spectate
 let hover = null, uiFx = [], hl = [], lastHud = 0, toastTimer = 0, lastTap = { id: -1, t: 0 }, lockHinted = false;
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Look settings: Colors picks the palette (High contrast also bolds the map's lines and sizes), Team symbols gives every color its own shape.
+let SYM = false, HC = false;
+const SYM_OF_SLOT = ['triangle', 'circle', 'diamond', 'square', 'cross'];   // by palette slot, so a color keeps its shape from match to match
+const symOf = team => SYM_OF_SLOT[TEAM_SLOT[team]];
+const slotOf = team => team != null && team >= 0 ? TEAM_SLOT[team] : -1;
+function symPath(x, kind, cx, cy, h) {                // adds one base-sized shape to the current path; h is half the side of the square it stands in for
+  switch (kind) {
+    case 'circle': x.moveTo(cx + h * 1.13, cy); x.arc(cx, cy, h * 1.13, 0, 6.2832); break;
+    case 'diamond': { const d = h * 1.4; x.moveTo(cx, cy - d); x.lineTo(cx + d, cy); x.lineTo(cx, cy + d); x.lineTo(cx - d, cy); x.closePath(); break; }
+    case 'triangle': x.moveTo(cx, cy - h * 1.5); x.lineTo(cx + h * 1.3, cy + h * .95); x.lineTo(cx - h * 1.3, cy + h * .95); x.closePath(); break;
+    case 'cross': { const a = h * 1.3, t = h * .48; x.rect(cx - a, cy - t, 2 * a, 2 * t); x.rect(cx - t, cy - a, 2 * t, 2 * a); break; }
+    default: x.rect(cx - h, cy - h, 2 * h, 2 * h);
+  }
+}
+// Special-base glyphs (unit coordinates, about +-1): drawn at the center of the base in place of the plain square.
+const GLYPHS = {
+  fortress: [[[-1, -1], [-.6, -1], [-.6, -.5], [-.2, -.5], [-.2, -1], [.2, -1], [.2, -.5], [.6, -.5], [.6, -1], [1, -1], [1, 1], [-1, 1]]],      // a battlement
+  forge:    [[[0, -1.15], [1, 0], [.45, 0], [.45, 1], [-.45, 1], [-.45, 0], [-1, 0]]],                                                          // an arrow up: output
+  beacon:   [[[0, -1.25], [.3, -.3], [1.25, 0], [.3, .3], [0, 1.25], [-.3, .3], [-1.25, 0], [-.3, -.3]]],                                       // a four-point star
+  relay:    [[[-1.25, 0], [-.35, -.75], [-.35, .75]], [[1.25, 0], [.35, -.75], [.35, .75]]]                                                     // twin arrows pointing away
+};
+function glyphPath(x, kind, cx, cy, g) {
+  for (const poly of GLYPHS[kind]) { poly.forEach(([px, py], i) => i ? x.lineTo(cx + px * g, cy + py * g) : x.moveTo(cx + px * g, cy + py * g)); x.closePath(); }
+}
+function glyphSvg(kind) {
+  return '<path fill="#e8e8ec" stroke="none" d="' + GLYPHS[kind].map(poly => poly.map(([px, py], i) => (i ? 'L' : 'M') + (14 + px * 10).toFixed(1) + ' ' + (14 + py * 10).toFixed(1)).join('') + 'Z').join('') + '"/>';
+}
+function troopShape(x, kind, px, py, hx, hy, k) {     // one troop: the triangle (the original, pointing where it heads) or a team symbol
+  switch (kind) {
+    case 'circle': x.moveTo(px + 3 * k, py); x.arc(px, py, 3 * k, 0, 6.2832); break;
+    case 'diamond': x.moveTo(px + hx * 4.8 * k, py + hy * 4.8 * k); x.lineTo(px - hy * 2.8 * k, py + hx * 2.8 * k); x.lineTo(px - hx * 3.6 * k, py - hy * 3.6 * k); x.lineTo(px + hy * 2.8 * k, py - hx * 2.8 * k); x.closePath(); break;
+    case 'square': x.rect(px - 2.6 * k, py - 2.6 * k, 5.2 * k, 5.2 * k); break;
+    case 'cross': x.rect(px - 3.6 * k, py - 1.1 * k, 7.2 * k, 2.2 * k); x.rect(px - 1.1 * k, py - 3.6 * k, 2.2 * k, 7.2 * k); break;
+    default:
+      x.moveTo(px + hx * 4.4 * k, py + hy * 4.4 * k);
+      x.lineTo(px + (-hx * 3 - hy * 2.8) * k, py + (-hy * 3 + hx * 2.8) * k);
+      x.lineTo(px + (-hx * 3 + hy * 2.8) * k, py + (-hy * 3 - hx * 2.8) * k);
+      x.closePath();
+  }
+}
 
 // Saved data comes back from the phone's storage, so it is never trusted: whatever shape it has, it is checked on the way in.
 const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -1820,7 +1897,7 @@ function load(k, d) {
 }
 function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 const COLOR_KEYS = ['blue', 'red', 'green', 'yellow', 'purple'];
-const settings = load('ice-settings', { send: 1, sound: true, rivals: false, volume: 75, tone: 'bright' });
+const settings = load('ice-settings', { send: 1, sound: true, rivals: false, volume: 75, tone: 'simple' });
 const rnd32 = () => (Math.random() * 4294967296) >>> 0;
 const MODS_OFF = { blitz: false, glass: false, noup: false, koth: false, fog: false };
 // Classic, Custom and Spectate each keep their own settings, so nothing bleeds from one mode into another.
@@ -1871,10 +1948,14 @@ function modsLabel(mode) {
 settings.volume = Number.isFinite(+settings.volume) && settings.volume >= 0 && settings.volume <= 100 ? +settings.volume : 75;
 settings.sound = settings.sound !== false; settings.rivals = settings.rivals === true;
 if (settings.tone === 'felt') settings.tone = 'soft'; else if (settings.tone === 'hum') settings.tone = 'drift';     // retired profiles move to their closest relative
-if (!['bright', 'soft', 'overdrive', 'drift'].includes(settings.tone)) settings.tone = 'bright';
+if (settings.tone === 'bright' || settings.tone === 'soft') settings.tone = 'simple';                                // Build 36: the two became Simple
+if (!['simple', 'overdrive', 'drift', 'chip', 'cosmos'].includes(settings.tone)) settings.tone = 'simple';
 if (!['auto', 'landscape', 'portrait'].includes(settings.screen)) settings.screen = 'auto';
 if (!['on', 'off'].includes(settings.menuSound)) settings.menuSound = 'on';
-if (!['classic', 'spark', 'overload', 'atlas'].includes(settings.visual)) settings.visual = 'classic';
+if (settings.visual === 'spark') settings.visual = 'classic';                                                        // Build 36: Spark was folded into Classic
+if (!['classic', 'overload', 'atlas', 'pixel', 'nebula'].includes(settings.visual)) settings.visual = 'classic';
+if (!['standard', 'safe', 'contrast'].includes(settings.colors)) settings.colors = 'standard';
+if (!['off', 'on'].includes(settings.symbols)) settings.symbols = 'off';
 const stats = (() => {
   const raw = load('ice-stats', {}), play = isObj(raw.play) ? raw.play : {}, watch = isObj(raw.watch) ? raw.watch : {};
   const five = a => [0, 1, 2, 3, 4].map(i => count(Array.isArray(a) ? a[i] : 0)), dict = o => isObj(o) ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, count(v)])) : {};
@@ -1977,7 +2058,10 @@ function paintMap(x, w, h, live, u) {                // the map as a diagram: te
   }
   for (const n of G.nodes) {
     const p = P(n.x, n.y), sz = (n.owner >= 0 ? 4 : 3) * u;
-    x.fillStyle = colorOf(n.owner); x.fillRect(p[0] - sz / 2, p[1] - sz / 2, sz, sz);
+    x.fillStyle = colorOf(n.owner);
+    if (n.kind) { x.beginPath(); glyphPath(x, n.kind, p[0], p[1], 3.2 * u); x.fill(); }
+    else if (SYM && n.owner >= 0) { x.beginPath(); symPath(x, symOf(n.owner), p[0], p[1], sz * 0.52); x.fill(); }
+    else x.fillRect(p[0] - sz / 2, p[1] - sz / 2, sz, sz);
     x.lineWidth = u;
     if (n.kind) { x.strokeStyle = '#fff'; x.beginPath(); x.arc(p[0], p[1], 4.6 * u, 0, Math.PI * 2); x.stroke(); }   // specials wear a ring
     if (n.crown) { x.strokeStyle = '#ffcd30'; x.lineWidth = 1.5 * u; x.beginPath(); x.arc(p[0], p[1], 5.4 * u, 0, Math.PI * 2); x.stroke(); }
@@ -2209,8 +2293,12 @@ function drawOverloadOverlay(now, dt) {              // screen-space layer: numb
 // ---- "Spark" visuals: same squares, triangles and colors, with more life ----
 // glowing troops with short streaks, sparks where hits land, shards when troops fall, a shockwave and
 // pulses racing down the lines when a base changes hands, slowly turning base frames, and faint drifting ice dust.
-const isSpark = () => settings.visual === 'spark' || settings.visual === 'overload';     // Overload builds on everything Spark does
+const isSpark = () => settings.visual === 'overload';        // Overload is built on the old Spark style's effects
+const isClassic = () => settings.visual === 'classic';       // Classic took in Spark's gentler half: glows, trails, sparks
 const isAtlas = () => settings.visual === 'atlas';
+const isPixel = () => settings.visual === 'pixel';
+const isNebula = () => settings.visual === 'nebula';
+const fxOn = () => !reduceMotion && (isSpark() || isClassic() || isNebula());   // the particle effects (Pixel draws its own, Atlas has none)
 const glowCache = new Map();
 function glow(color) {                               // a soft round glow, pre-drawn once per color
   let g = glowCache.get(color);
@@ -2304,13 +2392,14 @@ function drawClusterGlows(arr, img, strength) {
   }
 }
 function vfxHits(ev) {                               // sparks where hits land, flying the way the blow went
-  if (!isSpark() || reduceMotion) return;
-  const OV = isOver(), mult = OV ? 3 : 1;
-  let budget = OV ? 16 : 10, numbers = 0;
+  if (isPixel() && !reduceMotion) { pxHits(ev); return; }
+  if (!fxOn()) return;
+  const OV = isOver(), LT = isClassic(), NB = isNebula(), mult = OV ? 3 : 1;
+  let budget = OV ? 16 : LT ? 6 : 10, numbers = 0;
   for (const e of ev) {
     if (budget-- <= 0 || e.tx === undefined) break;
-    if (e.base) emit(e.tx, e.ty, colorOf(e.team), 2 * mult, 60 * (OV ? 1.6 : 1), 0.35, 1.8, 0, e.tx - e.x, e.ty - e.y, 1.6);
-    else emit(e.tx, e.ty, colorOf(e.team), (Math.random() < .5 ? 1 : 2) * mult, 70 * (OV ? 1.5 : 1), 0.25, 1.4, 0, e.tx - e.x, e.ty - e.y, 1.1);
+    if (e.base) emit(e.tx, e.ty, NB && Math.random() < .4 ? '#ffffff' : colorOf(e.team), (LT ? 1 : 2) * mult, 60 * (OV ? 1.6 : 1), 0.35, 1.8, 0, e.tx - e.x, e.ty - e.y, 1.6);
+    else if (!LT || Math.random() < 0.6) emit(e.tx, e.ty, colorOf(e.team), (LT ? 1 : Math.random() < .5 ? 1 : 2) * mult, 70 * (OV ? 1.5 : 1), NB ? 0.4 : 0.25, LT ? 1.2 : 1.4, 0, e.tx - e.x, e.ty - e.y, 1.1);
     if (OV && numbers < 4 && Math.random() < 0.5) {
       const S = statArrays(), d = (e.base ? S.bd : S.dp)[e.team + 1] * C.atkEvery;
       floatText(e.tx, e.ty, '-' + d.toFixed(1), colorOf(e.team), e.base ? 13 : 10, 0.7, true); numbers++;
@@ -2320,17 +2409,19 @@ function vfxHits(ev) {                               // sparks where hits land, 
 function vfxFx() {                                   // deaths and captures from the simulation, handled once each
   for (const f of G.fx) {
     if (f.sp) continue; f.sp = 1;
-    if (!isSpark() || reduceMotion) continue;
+    if (!fxOn()) continue;
     if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
-    const OV = isOver(), now = performance.now() / 1000;
+    const OV = isOver(), LT = isClassic(), NB = isNebula(), now = performance.now() / 1000;
     if (f.k === 'pop') {
-      emit(f.x, f.y, colorOf(f.c), OV ? 12 : 5, OV ? 110 : 70, OV ? 0.8 : 0.55, OV ? 2.8 : 2.4, 1);
+      if (NB) emit(f.x, f.y, Math.random() < .5 ? '#ffffff' : colorOf(f.c), 4, 50, 0.7, 1.4, 0);     // a puff of stardust
+      else emit(f.x, f.y, colorOf(f.c), OV ? 12 : LT ? 4 : 5, OV ? 110 : LT ? 60 : 70, OV ? 0.8 : LT ? 0.45 : 0.55, OV ? 2.8 : LT ? 2 : 2.4, 1);
       if (OV) {
         emit(f.x, f.y, '#ffffff', 8, 130, 0.6, 1.8, 0);
         if (f.by === PLAYER && !watching) { combo = now - comboT < 1.6 ? combo + 1 : 1; comboT = now; }
       }
     } else if (f.k === 'ring') {
-      emit(f.x, f.y, colorOf(f.c), OV ? 40 : 22, OV ? 170 : 110, 0.9, 2.2, 0);
+      if (NB) { emit(f.x, f.y, colorOf(f.c), 30, 150, 1.4, 1.8, 0); emit(f.x, f.y, '#ffffff', 12, 90, 1.1, 1.4, 0); }   // a supernova throws out its stardust
+      else emit(f.x, f.y, colorOf(f.c), OV ? 40 : LT ? 14 : 22, OV ? 170 : LT ? 95 : 110, LT ? 0.75 : 0.9, LT ? 1.9 : 2.2, 0);
       const n = G.nodes.find(nd => nd.x === f.x && nd.y === f.y);
       if (n) for (const v of n.adj) pulses.push({ a: n.id, b: v, t0: G.t, c: colorOf(f.c) });
       if (OV) {                                      // confetti in every color, falling under gravity
@@ -2350,6 +2441,15 @@ function stepParts() {
     const k = Math.exp(-gdt * 3.2); p.vx *= k; p.vy = p.vy * k + p.g * gdt; p.x += p.vx * gdt; p.y += p.vy * gdt; p.r += p.vr * gdt;
   }
   for (let i = pulses.length - 1; i >= 0; i--) if (G.t - pulses[i].t0 > 0.7 || G.t < pulses[i].t0) pulses.splice(i, 1);
+}
+function trailPath(arr, len, w) {                   // a thin wedge behind every moving troop: wide at the troop, a point at the tail
+  ctx.beginPath();
+  for (const t of arr) {
+    if (!t.path.length) continue;
+    const bx = t.x - t.nx * 2.2, by = t.y - t.ny * 2.2, px = -t.ny * w, py = t.nx * w;
+    ctx.moveTo(bx + px, by + py); ctx.lineTo(t.x - t.nx * len, t.y - t.ny * len); ctx.lineTo(bx - px, by - py); ctx.closePath();
+  }
+  ctx.fill();
 }
 const PB = [];                                        // reusable particle batches: [color][brightness step]
 function drawParts() {
@@ -2427,22 +2527,20 @@ function islandHulls() {                             // a soft outline around ea
   return (G.deco._hulls = hulls);
 }
 // Special-base marks: white on neutral bases, the owner's color once held. Four silhouettes you can tell apart at a glance.
-function drawSpecialMark(n, now) {
-  const own = n.owner >= 0, col = own ? colorOf(n.owner) : '#e8e8ec';
-  ctx.save(); ctx.translate(n.x, n.y);
-  ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = Math.max(1.5, 1.3 / V.s); ctx.globalAlpha = 0.92; ctx.setLineDash([]);
-  if (n.kind === 'fortress') {                       // corner brackets: a walled square
-    const a = 15, b = 7; ctx.beginPath();
-    for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { ctx.moveTo(sx * a, sy * (a - b)); ctx.lineTo(sx * a, sy * a); ctx.lineTo(sx * (a - b), sy * a); }
+function drawSpecialMark(n, now, struck) {
+  const own = n.owner >= 0, col = own ? colorOf(n.owner) : NEUTRAL_COLOR, g = HC ? 8.2 : 7.4;
+  ctx.save(); ctx.translate(n.x, n.y); ctx.setLineDash([]);
+  if (SYM && own) {                                  // with team symbols on, the holder's shape rings the glyph so both read
+    const h = HC ? 11.5 : 10.5; ctx.strokeStyle = col; ctx.lineWidth = HC ? 2.2 : 1.8; ctx.globalAlpha = 0.9; ctx.beginPath();
+    if (symOf(n.owner) === 'cross') { const a = h * 1.3, t = h * .48; [[-t, -a], [t, -a], [t, -t], [a, -t], [a, t], [t, t], [t, a], [-t, a], [-t, t], [-a, t], [-a, -t], [-t, -t]].forEach(([px, py], i) => i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.closePath(); }
+    else symPath(ctx, symOf(n.owner), 0, 0, h);
     ctx.stroke();
-  } else if (n.kind === 'forge') {                   // a triangle: output
-    ctx.beginPath(); ctx.moveTo(0, -18); ctx.lineTo(16, 10); ctx.lineTo(-16, 10); ctx.closePath(); ctx.stroke();
-  } else if (n.kind === 'beacon') {                  // a diamond that sends out slow pulses
-    ctx.beginPath(); ctx.moveTo(0, -18); ctx.lineTo(18, 0); ctx.lineTo(0, 18); ctx.lineTo(-18, 0); ctx.closePath(); ctx.stroke();
-    const ph = reduceMotion ? 0.3 : (now * 0.6 + n.id * 0.37) % 1;
-    ctx.globalAlpha = 0.6 * (1 - ph); ctx.beginPath(); ctx.arc(0, 0, 18 + ph * 14, 0, Math.PI * 2); ctx.stroke();
-  } else if (n.kind === 'relay') {                   // twin arrows pointing away: movement
-    for (const sx of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sx * 24, 0); ctx.lineTo(sx * 15, -6); ctx.lineTo(sx * 15, 6); ctx.closePath(); ctx.fill(); }
+  }
+  ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.beginPath(); glyphPath(ctx, n.kind, 0, 0, g); ctx.fill();
+  if (struck) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.fill(); }
+  if (n.kind === 'beacon' && !reduceMotion) {        // a beacon keeps sending out slow pulses
+    const ph = (now * 0.6 + n.id * 0.37) % 1;
+    ctx.globalAlpha = 0.5 * (1 - ph); ctx.strokeStyle = col; ctx.lineWidth = Math.max(1.4, 1.2 / V.s); ctx.beginPath(); ctx.arc(0, 0, 14 + ph * 14, 0, Math.PI * 2); ctx.stroke();
   }
   ctx.restore();
 }
@@ -2507,6 +2605,7 @@ function drawCrown(n, now) {                         // a gold crown over the ba
 }
 function drawDeco(now) {
   const D = G.deco; if (!D) return;
+  if (isNebula()) { drawNebulaDeco(D); return; }
   if (D.kind === 'river') {
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.strokeStyle = 'rgba(70,120,200,0.07)'; ctx.lineWidth = D.hw * 1.7; ctx.beginPath();
@@ -2522,8 +2621,7 @@ function drawDeco(now) {
     ctx.beginPath(); ctx.ellipse(D.cx, D.cy, D.rx, D.ry, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
   }
 }
-function drawBridges() {                             // crossties along every bridge, so chokepoints read at a glance
-  if (!G.bridges.size) return;
+function bridgeTies() {                              // crossties along every bridge (x0, y0, x1, y1 each), worked out once per map
   if (!G._ties) {
     G._ties = [];
     for (const key of G.bridges) {
@@ -2532,18 +2630,22 @@ function drawBridges() {                             // crossties along every br
       for (let t = 22; t < l - 22; t += 15) { const x = A.x + dx / l * t, y = A.y + dy / l * t; G._ties.push(x - px, y - py, x + px, y + py); }
     }
   }
+  return G._ties;
+}
+function drawBridges() {                             // crossties along every bridge, so chokepoints read at a glance
+  if (!G.bridges.size) return;
   ctx.strokeStyle = 'rgba(255,255,255,0.34)'; ctx.lineWidth = 1.5; ctx.beginPath();
-  const T = G._ties;
+  const T = bridgeTies();
   for (let i = 0; i < T.length; i += 4) { if (!inV(T[i], T[i + 1])) continue; ctx.moveTo(T[i], T[i + 1]); ctx.lineTo(T[i + 2], T[i + 3]); }
   ctx.stroke();
 }
 function drawEdges(now) {
-  const nodes = G.nodes, lw = Math.max(1.4, 1.1 / V.s);
+  const nodes = G.nodes, lw = Math.max(1.4, 1.1 / V.s) * (HC ? 1.35 : 1);
   const slow = reduceMotion ? 0 : -now * 3, fast = reduceMotion ? 0 : -now * 9;
-  const inner = EDGE_IN, out = EDGE_OUT;
+  const inner = EDGE_IN, out = EDGE_OUT, NB = isNebula(), DASH = NB ? [] : [5, 7];
   for (let i = 0; i < 5; i++) { inner[i].length = 0; out[i].length = 0; }
-  ctx.setLineDash([5, 7]); ctx.lineDashOffset = slow; ctx.lineWidth = lw;
-  ctx.strokeStyle = 'rgba(255,255,255,0.17)';
+  ctx.setLineDash(DASH); ctx.lineDashOffset = slow; ctx.lineWidth = NB ? lw * 0.8 : lw;
+  ctx.strokeStyle = HC ? 'rgba(255,255,255,0.4)' : NB ? 'rgba(190,200,255,0.11)' : 'rgba(255,255,255,0.17)';
   ctx.beginPath();
   for (const [a, b] of G.edges) {
     const A = nodes[a], B = nodes[b], oa = A.owner, ob = B.owner;
@@ -2558,13 +2660,13 @@ function drawEdges(now) {
   for (let i = 0; i < 5; i++) {
     const L = inner[i];
     if (L.length) {
-      ctx.strokeStyle = hexA(TEAM_COLORS[i], 0.28); ctx.lineDashOffset = slow; ctx.beginPath();
+      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 0.6 : NB ? 0.2 : 0.28); ctx.lineDashOffset = slow; ctx.beginPath();
       for (let j = 0; j < L.length; j += 2) { ctx.moveTo(L[j].x, L[j].y); ctx.lineTo(L[j + 1].x, L[j + 1].y); }
       ctx.stroke();
     }
     const O = out[i];
     if (O.length) {   // drawn from the owner outward, so the dashes drift toward what they can attack
-      ctx.strokeStyle = hexA(TEAM_COLORS[i], 0.6); ctx.lineDashOffset = fast; ctx.lineWidth = lw * 1.25; ctx.beginPath();
+      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 1 : NB ? 0.42 : 0.6); ctx.lineDashOffset = fast; ctx.lineWidth = lw * (NB ? 1 : 1.25); ctx.beginPath();
       for (let j = 0; j < O.length; j += 3) {
         const P = O[j], Q = O[j + 1], f = O[j + 2];
         ctx.moveTo(P.x, P.y); ctx.lineTo(P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f);
@@ -2573,16 +2675,25 @@ function drawEdges(now) {
       if (isOver()) {                                // Overload: the same lines again, wide and glowing, on the beat
         ctx.setLineDash([]); ctx.globalCompositeOperation = 'lighter';
         ctx.strokeStyle = hexA(TEAM_COLORS[i], 0.1 + 0.14 * kick); ctx.lineWidth = lw * 5; ctx.stroke();
-        ctx.lineWidth = lw; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([5, 7]);
+        ctx.lineWidth = lw; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash(DASH);
       }
-      if (isSpark() && !reduceMotion) {             // a small light drifting outward along each way out (comets in Overload)
+      if (NB && !reduceMotion) {                     // Nebula: a glint of light running out along each filament
+        ctx.globalCompositeOperation = 'lighter'; const gi = glow(TEAM_COLORS[i]);
+        for (let j = 0; j < O.length; j += 3) {
+          const P = O[j], Q = O[j + 1], f = O[j + 2], ph = (now * 0.25 + ((P.id * 7 + Q.id * 13) * 0.618) % 1) % 1;
+          ctx.globalAlpha = 0.8 * Math.sin(Math.PI * ph);
+          ctx.drawImage(gi, P.x + (Q.x - P.x) * f * ph - 7, P.y + (Q.y - P.y) * f * ph - 7, 14, 14);
+        }
+        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+      }
+      if ((isSpark() || isClassic()) && !reduceMotion) {   // a small light drifting outward along each way out (comets in Overload)
         ctx.setLineDash([]); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = TEAM_COLORS[i];
-        const OV = isOver(), np = OV ? 3 : 1;
+        const OV = isOver(), np = OV ? 3 : 1, la = isClassic() ? 0.5 : 0.75;
         for (let j = 0; j < O.length; j += 3) {
           const P = O[j], Q = O[j + 1], f = O[j + 2];
           for (let q = 0; q < np; q++) {
             const ph = (now * (OV ? 0.7 : 0.4) + q / np + ((P.id * 7 + Q.id * 13) * 0.618) % 1) % 1;
-            ctx.globalAlpha = 0.75 * Math.sin(Math.PI * ph);
+            ctx.globalAlpha = la * Math.sin(Math.PI * ph);
             const x = P.x + (Q.x - P.x) * f * ph, y = P.y + (Q.y - P.y) * f * ph, sz = OV ? 3.6 : 2.8;
             ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz);
             if (OV) {
@@ -2592,7 +2703,7 @@ function drawEdges(now) {
             }
           }
         }
-        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([5, 7]);
+        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash(DASH);
       }
     }
   }
@@ -2634,10 +2745,16 @@ function draw(now) {
   const OV = isOver(), dtD = Math.min(0.1, Math.max(0, now - lastDrawT)); lastDrawT = now;
   kick = OV ? beatKick(now) : 0;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = OV ? 'rgba(0,0,0,0.45)' : isAtlas() ? '#04070d' : '#000';   // Overload never fully clears, so everything leaves a smear
+  ctx.fillStyle = OV ? 'rgba(0,0,0,0.45)' : isAtlas() ? '#04070d' : isNebula() ? '#01020a' : '#000';   // Overload never fully clears, so everything leaves a smear
   ctx.fillRect(0, 0, cv.width, cv.height);
   if (!G || (mode === 'demo' && pvOnly)) return;      // setup screens show their map in the preview card instead
   const fogD = fogOn();
+  if (isPixel()) {                                     // Pixel paints the whole battlefield on a coarse grid of its own, then blows it up
+    drawPixel(now);
+    if (fogD) drawFogOverlay();
+    drawArrows(now);
+    return;
+  }
   let sx = 0, sy = 0;
   if (OV && shakeAmp > 0.3) { sx = (Math.random() * 2 - 1) * shakeAmp; sy = (Math.random() * 2 - 1) * shakeAmp; shakeAmp *= Math.exp(-dtD * 8); }
   else shakeAmp = 0;
@@ -2646,11 +2763,12 @@ function draw(now) {
   ctx.beginPath(); ctx.rect(F.x, F.y, F.w, F.h); ctx.clip();
   applyView(sx, sy);
   updateVis();
-  const nodes = G.nodes, SP = isSpark();
+  const nodes = G.nodes, SP = isSpark(), CL = isClassic(), NB = isNebula();
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   vfxFx(); stepParts();
   if (OV) drawOverloadBg(now, dtD);
   else if (SP && quality < 3) drawMotes(reduceMotion ? 0 : now);
+  if (NB) { drawNebulaBack(now); applyView(sx, sy); }
 
   if (isAtlas()) drawAtlasBack(now);
   drawDeco(now);
@@ -2684,7 +2802,8 @@ function draw(now) {
   for (const n of nodes) {
     if (!inV(n.x, n.y)) continue;
     const c = colorOf(n.owner);
-    if (SP) {                                        // Spark: soft glow, a slowly turning frame, a breathing core
+    if (NB) drawSun(n, c, now);
+    else if (SP) {                                   // Overload's base: soft glow, a slowly turning frame, a breathing core
       const mv = reduceMotion ? 0 : 1, own = n.owner >= 0, cc = c;
       const br = (1 + 0.07 * Math.sin(now * 2.2 + n.id) * mv) * (OV ? 1 + 0.35 * kick : 1);
       ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = own ? 0.75 : (OV ? 0.38 : 0.3);
@@ -2700,22 +2819,41 @@ function draw(now) {
           for (let k = 0; k < 3; k++) { const a = now * 2.4 + n.id + k * 2.0944; ctx.fillRect(n.x + Math.cos(a) * 21 - 1.8, n.y + Math.sin(a) * 21 - 1.8, 3.6, 3.6); }
         }
       }
-      const s = (own ? 6.5 : 5.5) * br;
-      ctx.globalAlpha = 1; ctx.fillStyle = cc; ctx.fillRect(n.x - s, n.y - s, 2 * s, 2 * s);
-      if (G.t - n.lastHitT < 0.07) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.fillRect(n.x - s, n.y - s, 2 * s, 2 * s); ctx.globalAlpha = 1; }
+      const s = (own ? 6.5 : 5.5) * br * (HC ? 1.14 : 1), struck = G.t - n.lastHitT < 0.07;
+      ctx.globalAlpha = 1; ctx.fillStyle = cc;
+      if (n.kind) { /* a special's glyph is drawn below */ }
+      else if (SYM && own) {
+        ctx.beginPath(); symPath(ctx, symOf(n.owner), n.x, n.y, s); ctx.fill();
+        if (struck) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.fill(); ctx.globalAlpha = 1; }
+      } else if (SYM) { ctx.strokeStyle = cc; ctx.lineWidth = 2; ctx.strokeRect(n.x - s + 1, n.y - s + 1, 2 * s - 2, 2 * s - 2); }
+      else {
+        ctx.fillRect(n.x - s, n.y - s, 2 * s, 2 * s);
+        if (struck) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.fillRect(n.x - s, n.y - s, 2 * s, 2 * s); ctx.globalAlpha = 1; }
+      }
     } else if (n.owner >= 0) {
-      ctx.globalAlpha = 0.38; ctx.strokeStyle = c; ctx.lineWidth = 1.3;
+      if (CL) {                                      // Classic: a soft glow under every held base
+        ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.42;
+        ctx.drawImage(glow(c), n.x - 22, n.y - 22, 44, 44); ctx.globalCompositeOperation = 'source-over';
+      }
+      ctx.globalAlpha = HC ? 0.85 : 0.38; ctx.strokeStyle = c; ctx.lineWidth = HC ? 1.8 : 1.3;
       ctx.strokeRect(n.x - 11, n.y - 11, 22, 22); ctx.globalAlpha = 1;
-      ctx.fillStyle = c; ctx.fillRect(n.x - 6.5, n.y - 6.5, 13, 13);
+      ctx.fillStyle = c;
+      const h = HC ? 7.4 : 6.5, struck = CL && G.t - n.lastHitT < 0.07;
+      if (n.kind) { /* a special's glyph is drawn below */ }
+      else if (SYM) { ctx.beginPath(); symPath(ctx, symOf(n.owner), n.x, n.y, h); ctx.fill(); if (struck) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.fill(); ctx.globalAlpha = 1; } }
+      else { ctx.fillRect(n.x - h, n.y - h, 2 * h, 2 * h); if (struck) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.fillRect(n.x - h, n.y - h, 2 * h, 2 * h); ctx.globalAlpha = 1; } }
+    } else if (n.kind) {                             // an unclaimed special: just its glyph, below
+    } else if (SYM) {                                // symbols: an empty base is a hollow square
+      ctx.strokeStyle = NEUTRAL_COLOR; ctx.lineWidth = 2; ctx.strokeRect(n.x - 4.6, n.y - 4.6, 9.2, 9.2);
     } else {
       ctx.fillStyle = NEUTRAL_COLOR; ctx.fillRect(n.x - 5.5, n.y - 5.5, 11, 11);
     }
-    if (n.kind) drawSpecialMark(n, now);
+    if (n.kind) drawSpecialMark(n, now, (SP || CL || NB) && G.t - n.lastHitT < 0.07);
     if (n.crown) drawCrown(n, now);
     if (n.hp < n.maxHp - 0.5) {
       const f = Math.max(0, n.hp / n.maxHp), hit = G.t - n.lastHitT < 0.15;
       ctx.lineWidth = 2.2;
-      ctx.strokeStyle = hit ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)';
+      ctx.strokeStyle = hit ? 'rgba(255,255,255,0.3)' : HC ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)';
       ctx.beginPath(); ctx.arc(n.x, n.y, 17, 0, Math.PI * 2); ctx.stroke();
       ctx.strokeStyle = c;
       ctx.beginPath(); ctx.arc(n.x, n.y, 17, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * f); ctx.stroke();
@@ -2751,7 +2889,22 @@ function draw(now) {
       }
     }
   }
-  if (SP) {                                          // Spark: short streaks behind moving troops, and a soft glow
+  if (CL || NB) {                                    // Classic: short tapered trails that fade out. Nebula: longer comet tails.
+    for (let b = 0; b < 6; b++) {
+      const arr = buckets[b]; if (!arr.length) continue;
+      const col = b === 0 ? NEUTRAL_COLOR : TEAM_COLORS[b - 1];
+      if (NB) ctx.globalCompositeOperation = 'lighter';
+      if (!reduceMotion) {
+        ctx.fillStyle = col;
+        ctx.globalAlpha = NB ? 0.28 : 0.2; trailPath(arr, NB ? 16 : 9, NB ? 1.9 : 1.6);   // the whole trail, faint
+        ctx.globalAlpha = NB ? 0.32 : 0.24; trailPath(arr, NB ? 7 : 5, NB ? 1.6 : 1.3);    // its near half again, so it fades toward the tip
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      drawClusterGlows(arr, glow(col), NB ? (b === 0 ? 0.5 : 0.95) : (b === 0 ? 0.3 : 0.5));
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    }
+  }
+  if (SP) {                                          // Overload (Spark's old effects): short streaks behind moving troops, and a soft glow
     for (let b = 0; b < 6; b++) {
       const arr = buckets[b]; if (!arr.length) continue;
       const col = b === 0 ? NEUTRAL_COLOR : TEAM_COLORS[b - 1];
@@ -2774,32 +2927,27 @@ function draw(now) {
   }
   for (let b = 0; b < 6; b++) {
     const arr = buckets[b]; if (!arr.length) continue;
-    ctx.fillStyle = b === 0 ? NEUTRAL_COLOR : TEAM_COLORS[b - 1];
+    ctx.fillStyle = b === 0 ? (NB && !HC ? '#9097ad' : NEUTRAL_COLOR) : TEAM_COLORS[b - 1];   // Nebula: empty bases' guards a shade dimmer than the stars they guard
     ctx.beginPath();
-    const sc = OV ? 1 + 0.3 * kick : 1;
+    const sc = (OV ? 1 + 0.3 * kick : NB ? 0.8 : 1) * (HC ? 1.2 : 1), kind = SYM && b > 0 ? symOf(b - 1) : NB ? 'circle' : 'triangle';
     for (const t of arr) {
       let hx = t.nx, hy = t.ny;
       if (OV) { const a = now * 7 + t.id * 1.7; hx = Math.cos(a); hy = Math.sin(a); }   // spinning like shuriken
-      ctx.moveTo(t.x + hx * 4.4 * sc, t.y + hy * 4.4 * sc);
-      ctx.lineTo(t.x + (-hx * 3 - hy * 2.8) * sc, t.y + (-hy * 3 + hx * 2.8) * sc);
-      ctx.lineTo(t.x + (-hx * 3 + hy * 2.8) * sc, t.y + (-hy * 3 - hx * 2.8) * sc);
-      ctx.closePath();
+      troopShape(ctx, kind, t.x, t.y, hx, hy, sc);
     }
     ctx.fill();
     if (OV && !watching && b === PLAYER + 1) {         // your troops keep a bright white core, whatever else is happening on screen
       ctx.fillStyle = '#ffffff'; ctx.globalAlpha = 0.95; ctx.beginPath();
       for (const t of arr) {
-        const a = now * 7 + t.id * 1.7, hx = Math.cos(a), hy = Math.sin(a), k2 = 0.5 * sc;
-        ctx.moveTo(t.x + hx * 4.4 * k2, t.y + hy * 4.4 * k2);
-        ctx.lineTo(t.x + (-hx * 3 - hy * 2.8) * k2, t.y + (-hy * 3 + hx * 2.8) * k2);
-        ctx.lineTo(t.x + (-hx * 3 + hy * 2.8) * k2, t.y + (-hy * 3 - hx * 2.8) * k2);
-        ctx.closePath();
+        const a = now * 7 + t.id * 1.7;
+        troopShape(ctx, kind, t.x, t.y, Math.cos(a), Math.sin(a), 0.5 * sc);
       }
       ctx.fill(); ctx.globalAlpha = 1;
     }
   }
 
-  if (!reduceMotion) {
+  if (!reduceMotion && NB) drawNebulaFx();
+  else if (!reduceMotion) {
     ctx.lineWidth = 1.1;
     for (const f of G.fx) {
       const age = G.t - f.b;
@@ -2828,7 +2976,7 @@ function draw(now) {
     ctx.globalAlpha = 1;
   }
   if (isAtlas()) drawAtlasFront(now);
-  if (SP) drawParts();
+  if (SP || CL || NB) drawParts();
   for (let i = uiFx.length - 1; i >= 0; i--) {
     const f = uiFx[i], age = now - f.b;
     if (age > 0.5) { uiFx.splice(i, 1); continue; }
@@ -2852,6 +3000,435 @@ function draw(now) {
   drawArrows(now);
 }
 
+// ---- "Nebula": the battle out among the stars ----
+// A dim nebula is painted once per map and drifts with the ground; behind it three layers of stars slide at different speeds as
+// you pan and twinkle slowly. Held bases are suns: a wide corona, a white-hot middle and telescope-style diffraction spikes.
+// Empty bases are faint distant stars. Lines are thin filaments with glints of light running outward, troops are comets with
+// tails, and a capture goes supernova: a white flash and two shells of light, throwing out stardust.
+const NEB = { clouds: null, cg: null, stars: null, sw: 0, sh: 0, q: -1 };
+function nebulaClouds() {
+  if (NEB.cg === G && NEB.clouds) return NEB.clouds;
+  const c = NEB.clouds || (NEB.clouds = document.createElement('canvas'));
+  c.width = 256; c.height = Math.max(64, Math.round(256 * H / W));
+  const g = c.getContext('2d'); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, c.width, c.height);
+  let seed = ((G.seed || 7) * 2654435761) >>> 0;
+  const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const tints = ['104,64,200', '36,112,170', '160,52,132', '56,76,190', '30,140,150'];
+  for (let i = 0; i < 10; i++) {                       // soft clouds of violet, teal and rose, kept dark so team colors stay the brightest thing
+    const cx = rnd() * c.width, cy = rnd() * c.height, r = (0.16 + rnd() * 0.32) * c.width, t = tints[(rnd() * tints.length) | 0], a = 0.08 + rnd() * 0.1;
+    const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
+    gr.addColorStop(0, `rgba(${t},${a.toFixed(3)})`); gr.addColorStop(0.55, `rgba(${t},${(a * 0.4).toFixed(3)})`); gr.addColorStop(1, `rgba(${t},0)`);
+    g.fillStyle = gr; g.fillRect(0, 0, c.width, c.height);
+  }
+  g.globalCompositeOperation = 'destination-out';      // darker lanes of dust cut through it
+  for (let i = 0; i < 4; i++) {
+    const cx = rnd() * c.width, cy = rnd() * c.height, r = (0.08 + rnd() * 0.14) * c.width, gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
+    gr.addColorStop(0, 'rgba(0,0,0,0.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, c.width, c.height);
+  }
+  g.globalCompositeOperation = 'source-over';
+  NEB.cg = G; return c;
+}
+function nebulaStars() {
+  const w = Math.ceil(F.w) + 64, h = Math.ceil(F.h) + 64;
+  if (NEB.stars && NEB.sw === w && NEB.sh === h && NEB.q === quality) return NEB.stars;
+  const n = Math.round(w * h / 2000 * [1, 0.75, 0.5, 0.3][quality]), cols = ['#ffffff', '#cfe0ff', '#ffe6c4', '#b8ccff'], out = [];
+  for (let i = 0; i < n; i++) { const l = i % 3; out.push({ x: Math.random() * w, y: Math.random() * h, l, s: [0.7, 1, 1.5][l], ph: Math.random() * 6.283, c: cols[(Math.random() * 4) | 0], big: l === 2 && Math.random() < 0.12 }); }
+  out.sort((a, b) => a.c < b.c ? -1 : 1);
+  NEB.stars = out; NEB.sw = w; NEB.sh = h; NEB.q = quality; return out;
+}
+function drawNebulaBack(now) {                       // called with the world transform in place; leaves the screen transform behind
+  ctx.globalAlpha = 1; ctx.drawImage(nebulaClouds(), -W * 0.1, -H * 0.1, W * 1.2, H * 1.2);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const st = nebulaStars(), w = NEB.sw, h = NEB.sh, mv = reduceMotion ? 0 : 1, PAR = [0.05, 0.12, 0.24];
+  let col = null;
+  for (const s of st) {
+    const ox = V.ex * PAR[s.l] + now * (s.l + 1) * 1.2 * mv, oy = V.ey * PAR[s.l];
+    const x = F.x - 32 + ((s.x + ox) % w + w) % w, y = F.y - 32 + ((s.y + oy) % h + h) % h;
+    if (s.c !== col) { col = s.c; ctx.fillStyle = col; }
+    ctx.globalAlpha = Math.max(0.05, 0.22 + 0.18 * s.l + 0.22 * Math.sin(now * (0.7 + s.l * 0.45) + s.ph) * mv);
+    ctx.fillRect(x - s.s / 2, y - s.s / 2, s.s, s.s);
+    if (s.big) { ctx.globalAlpha *= 0.5; ctx.fillRect(x - 3, y - 0.3, 6, 0.6); ctx.fillRect(x - 0.3, y - 3, 0.6, 6); }
+  }
+  ctx.globalAlpha = 1;
+}
+function drawSun(n, c, now) {
+  const own = n.owner >= 0, mv = reduceMotion ? 0 : 1, struck = G.t - n.lastHitT < 0.07;
+  ctx.globalCompositeOperation = 'lighter';
+  if (own) {
+    const br = 1 + 0.06 * Math.sin(now * 1.7 + n.id) * mv, R = 42 * br;
+    ctx.globalAlpha = 0.3; ctx.drawImage(glow(c), n.x - R, n.y - R, 2 * R, 2 * R);          // corona
+    ctx.globalAlpha = 0.8; ctx.drawImage(glow(c), n.x - 17, n.y - 17, 34, 34);              // the bright glow close in
+    ctx.save(); ctx.translate(n.x, n.y); ctx.rotate((now * 0.04 + n.id * 0.7) * mv);         // diffraction spikes, turning very slowly
+    ctx.strokeStyle = hexA(c, 0.55); ctx.lineWidth = 1; ctx.beginPath();
+    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3, L = (k % 3 === 0 ? 25 : 17) * br; ctx.moveTo(Math.cos(a) * 6, Math.sin(a) * 6); ctx.lineTo(Math.cos(a) * L, Math.sin(a) * L); }
+    ctx.stroke(); ctx.restore();
+  } else { ctx.globalAlpha = 0.28; ctx.drawImage(glow('#9aa6d6'), n.x - 13, n.y - 13, 26, 26); }
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  if (n.kind) return;                                 // a special's glyph is drawn on top by drawSpecialMark
+  const disc = r => { ctx.beginPath(); ctx.moveTo(n.x + r, n.y); ctx.arc(n.x, n.y, r, 0, 6.2832); };
+  if (own) {
+    ctx.fillStyle = c; if (SYM) { ctx.beginPath(); symPath(ctx, symOf(n.owner), n.x, n.y, HC ? 7 : 6.2); } else disc(HC ? 7 : 6.2); ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.globalAlpha = struck ? 0.95 : 0.7;                        // the white-hot middle, flaring when struck
+    if (SYM) { ctx.beginPath(); symPath(ctx, symOf(n.owner), n.x, n.y, 2.6); } else disc(2.6); ctx.fill(); ctx.globalAlpha = 1;
+  } else if (SYM) { ctx.strokeStyle = NEUTRAL_COLOR; ctx.lineWidth = 2; ctx.strokeRect(n.x - 4.6, n.y - 4.6, 9.2, 9.2); }
+  else {                                              // a distant star: a disc with four short points, so it never reads as one of its guards
+    ctx.fillStyle = NEUTRAL_COLOR; disc(HC ? 4.6 : 4); ctx.fill();
+    ctx.strokeStyle = NEUTRAL_COLOR; ctx.globalAlpha = 0.6; ctx.lineWidth = 1; ctx.beginPath();
+    ctx.moveTo(n.x - 9, n.y); ctx.lineTo(n.x + 9, n.y); ctx.moveTo(n.x, n.y - 9); ctx.lineTo(n.x, n.y + 9); ctx.stroke(); ctx.globalAlpha = 1;
+  }
+}
+function drawNebulaFx() {
+  const fogD = fogOn();
+  for (const f of G.fx) {
+    const age = G.t - f.b;
+    if (f.x === undefined || (fogD && !seenXY(f.x, f.y))) continue;
+    if (f.k === 'pop' && age < 0.35) {                                 // a troop is lost: a little white flare
+      const p = age / 0.35, r = 4 + p * 8;
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - p) * 0.55; ctx.drawImage(glow('#ffffff'), f.x - r, f.y - r, 2 * r, 2 * r);
+    } else if (f.k === 'ring' && age < 1.4) {                          // a capture goes supernova
+      const p = age / 1.4, c = colorOf(f.c);
+      ctx.globalCompositeOperation = 'lighter';
+      if (age < 0.4) { const q = age / 0.4, r1 = 18 + q * 50, r2 = 30 + q * 80; ctx.globalAlpha = (1 - q) * (1 - q); ctx.drawImage(glow('#ffffff'), f.x - r1, f.y - r1, 2 * r1, 2 * r1); ctx.globalAlpha = (1 - q) * 0.8; ctx.drawImage(glow(c), f.x - r2, f.y - r2, 2 * r2, 2 * r2); }
+      ctx.globalCompositeOperation = 'source-over';
+      const e1 = 1 - (1 - p) * (1 - p), e2 = 1 - Math.pow(1 - p, 3);
+      ctx.strokeStyle = c; ctx.globalAlpha = (1 - p) * 0.85; ctx.lineWidth = Math.max(0.6, 3.2 * (1 - p));
+      ctx.beginPath(); ctx.arc(f.x, f.y, 12 + e1 * 95, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = '#ffffff'; ctx.globalAlpha = (1 - p) * 0.4; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(f.x, f.y, 8 + e2 * 52, 0, Math.PI * 2); ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+}
+function drawNebulaDeco(D) {                         // terrain as space: a river is a dust lane, islands are clouds, the ring is an accretion ring
+  if (D.kind === 'river') {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.setLineDash([]);
+    ctx.beginPath(); D.line.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+    ctx.strokeStyle = 'rgba(110,125,220,0.06)'; ctx.lineWidth = D.hw * 2.3; ctx.stroke();
+    ctx.strokeStyle = 'rgba(170,185,255,0.06)'; ctx.lineWidth = D.hw * 0.9; ctx.stroke();
+  } else if (D.kind === 'islands') {
+    ctx.fillStyle = 'rgba(130,110,240,0.045)'; ctx.strokeStyle = 'rgba(170,150,255,0.09)'; ctx.lineWidth = 2; ctx.setLineDash([]);
+    for (const h of islandHulls()) { ctx.beginPath(); h.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  } else if (D.kind === 'ring') {
+    ctx.setLineDash([]); ctx.beginPath(); ctx.ellipse(D.cx, D.cy, D.rx, D.ry, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(200,170,255,0.055)'; ctx.lineWidth = 26; ctx.stroke();
+    ctx.strokeStyle = 'rgba(225,205,255,0.13)'; ctx.lineWidth = 1.2; ctx.stroke();
+  }
+}
+
+// ---- "Pixel": the battlefield as an 8-bit console would have drawn it ----
+// The world is painted onto a coarse grid of its own (about three world units to a pixel, never finer than two screen pixels or
+// coarser than six), every shape lands on whole pixels, and the grid is then blown up without smoothing, with faint scanlines
+// over it. Bases are beveled blocks, troops are little four-way ships, lines are marching dots, captures burst in square rings,
+// and every animation steps at 12 frames a second the way old sprites did. Team colors and team symbols carry over unchanged.
+const PX = { cv: null, x: null, P: 4, k: 1, bw: 0, bh: 0, spr: new Map(), cells: new Map(), circ: new Map(), scan: null, scanP: 0, hits: [] };
+const PXM = {                                         // hand-drawn sprites: X is a pixel
+  core:     ['XXXXXXX', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX'],
+  square:   ['XXXXXXX', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX'],
+  triangle: ['...X...', '..XXX..', '..XXX..', '.XXXXX.', '.XXXXX.', 'XXXXXXX', 'XXXXXXX'],
+  circle:   ['..XXX..', '.XXXXX.', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX', '.XXXXX.', '..XXX..'],
+  diamond:  ['...X...', '..XXX..', '.XXXXX.', 'XXXXXXX', '.XXXXX.', '..XXX..', '...X...'],
+  cross:    ['..XXX..', '..XXX..', 'XXXXXXX', 'XXXXXXX', 'XXXXXXX', '..XXX..', '..XXX..'],
+  neutral:  ['XXXXX', 'XXXXX', 'XXXXX', 'XXXXX', 'XXXXX'],
+  hollow:   ['XXXXX', 'X...X', 'X...X', 'X...X', 'XXXXX'],
+  fortress: ['XX.XXX.XX', 'XX.XXX.XX', 'XXXXXXXXX', 'XXXXXXXXX', 'XXXXXXXXX', 'XXX...XXX', 'XXX...XXX', 'XXX...XXX'],
+  forge:    ['....X....', '...XXX...', '..XXXXX..', '.XXXXXXX.', 'XXXXXXXXX', '...XXX...', '...XXX...', '...XXX...', '...XXX...'],
+  beacon:   ['....X....', '....X....', '...XXX...', '..XXXXX..', 'XXXXXXXXX', '..XXXXX..', '...XXX...', '....X....', '....X....'],
+  relay:    ['..X...X..', '.XX...XX.', 'XXX...XXX', '.XX...XX.', '..X...X..'],
+  crown:    ['X...X...X', 'XX.XXX.XX', 'XXXXXXXXX', 'XXXXXXXXX', '.XXXXXXX.'],
+  no:       ['X...X', '.X.X.', '..X..', '.X.X.', 'X...X']
+};
+const PX_SHIP = {                                     // troops: little ships, in four directions like old top-down sprites
+  N: ['.X.', 'XXX', 'X.X'], E: ['XX.', '.XX', 'XX.'], S: ['X.X', 'XXX', '.X.'], W: ['.XX', 'XX.', '.XX']
+};
+const PX_TROOP = {                                    // troops with team symbols on: each shape at its own small size
+  square: ['XXX', 'XXX', 'XXX'], circle: ['.XX.', 'XXXX', 'XXXX', '.XX.'], diamond: ['..X..', '.XXX.', 'XXXXX', '.XXX.', '..X..'],
+  cross: ['..X..', '..X..', 'XXXXX', '..X..', '..X..'], triangle: ['..X..', '.XXX.', 'XXXXX']
+};
+let PXX = 0, PXY = 0;                                 // where the last pxp() landed, in grid pixels (no allocation per call)
+function pxp(x, y) { const u = V.rot ? H - y : x, v = V.rot ? x : y; PXX = Math.floor((V.ex + u * V.s) * PX.k); PXY = Math.floor((V.ey + v * V.s) * PX.k); }
+function pxShade(hex, k) {                            // toward white (k > 0) or black (k < 0)
+  const n = parseInt(hex.slice(1), 16), t = k > 0 ? 255 : 0, a = Math.abs(k), m = v => Math.round(v + (t - v) * a);
+  return 'rgb(' + m(n >> 16) + ',' + m((n >> 8) & 255) + ',' + m(n & 255) + ')';
+}
+function pxSprite(rows, color, bevel) {               // a sprite in one color, lit from the top left when beveled; made once, then reused
+  const key = rows.join('/') + color + (bevel ? 'b' : '');
+  let c = PX.spr.get(key); if (c) return c;
+  const h = rows.length, w = rows[0].length, on = (i, j) => j >= 0 && j < h && i >= 0 && i < w && rows[j][i] === 'X';
+  c = document.createElement('canvas'); c.width = w; c.height = h; c.w2 = w >> 1; c.h2 = h >> 1;
+  const g = c.getContext('2d'), hi = pxShade(color, 0.5), lo = pxShade(color, -0.42);
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (on(i, j)) {
+    g.fillStyle = !bevel ? color : (!on(i, j - 1) || !on(i - 1, j)) ? hi : (!on(i, j + 1) || !on(i + 1, j)) ? lo : color;
+    g.fillRect(i, j, 1, 1);
+  }
+  PX.spr.set(key, c); return c;
+}
+function pxCells(rows) {                              // a sprite as offsets from its centre, for drawing many at once in one color
+  let c = PX.cells.get(rows); if (c) return c;
+  const out = [], h = rows.length, w = rows[0].length;
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (rows[j][i] === 'X') out.push(i - (w >> 1), j - (h >> 1));
+  PX.cells.set(rows, out); return out;
+}
+function pxOutline(kind) {                            // the holder's symbol as a one-pixel outline, big enough to ring a special's glyph
+  const key = 'ring-' + kind; let r = PXM[key]; if (r) return r;
+  const n = 15, p = new Path2D(); symPath(p, kind, n / 2, n / 2, 4.9);
+  const sc = PX.test || (PX.test = document.createElement('canvas').getContext('2d'));   // a spare context with no transform on it
+  const ins = (i, j) => i >= 0 && j >= 0 && i < n && j < n && sc.isPointInPath(p, i + 0.5, j + 0.5);
+  r = [];
+  for (let j = 0; j < n; j++) { let row = ''; for (let i = 0; i < n; i++) row += ins(i, j) && (!ins(i - 1, j) || !ins(i + 1, j) || !ins(i, j - 1) || !ins(i, j + 1)) ? 'X' : '.'; r.push(row); }
+  return (PXM[key] = r);
+}
+function pxCircle(r) {                                // a pixel circle as offsets, clockwise from the top
+  let c = PX.circ.get(r); if (c) return c;
+  c = []; const seen = new Set(), n = Math.max(8, Math.round(r * 8));
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI / 2 + i / n * Math.PI * 2, x = Math.round(Math.cos(a) * r), y = Math.round(Math.sin(a) * r), k = x * 1000 + y;
+    if (!seen.has(k)) { seen.add(k); c.push(x, y); }
+  }
+  PX.circ.set(r, c); return c;
+}
+function pxDots(x0, y0, x1, y1, step, phase) {        // a line of single pixels into the current path, one every `step`, shifted by `phase`
+  const dx = x1 - x0, dy = y1 - y0, n = Math.max(Math.abs(dx), Math.abs(dy)); if (!n) return;
+  for (let i = ((phase % step) + step) % step; i <= n; i += step) PX.x.rect(x0 + Math.round(dx * i / n), y0 + Math.round(dy * i / n), 1, 1);
+}
+function pxWorldDots(ax, ay, bx, by, step, phase) { pxp(ax, ay); const x0 = PXX, y0 = PXY; pxp(bx, by); pxDots(x0, y0, PXX, PXY, step, phase); }
+function pxBox(cx, cy, r, step, phase) {              // a square outline (marching when phase moves)
+  pxDots(cx - r, cy - r, cx + r, cy - r, step, phase); pxDots(cx + r, cy - r, cx + r, cy + r, step, phase);
+  pxDots(cx + r, cy + r, cx - r, cy + r, step, phase); pxDots(cx - r, cy + r, cx - r, cy - r, step, phase);
+}
+function pxBrackets(cx, cy, r, arm) {                 // four corner brackets, like a selection box in an old strategy game
+  const x = PX.x;
+  for (const sx of [-1, 1]) for (const sy of [-1, 1]) {
+    const X = cx + sx * r, Y = cy + sy * r;
+    x.rect(sx > 0 ? X - arm + 1 : X, Y, arm, 1); x.rect(X, sy > 0 ? Y - arm + 1 : Y, 1, arm);
+  }
+}
+function pxRing(cx, cy, r, step, from, to) {          // part of a pixel circle into the current path (from/to: fractions of the way round)
+  const c = pxCircle(r), n = c.length / 2, a = Math.floor((from || 0) * n), b = Math.ceil((to === undefined ? 1 : to) * n);
+  for (let i = a; i < b; i += step) PX.x.rect(cx + c[i * 2], cy + c[i * 2 + 1], 1, 1);
+}
+function pxStamp(spr, cx, cy) { PX.x.drawImage(spr, cx - spr.w2, cy - spr.h2); }
+function pxHits(ev) {                                 // a pixel flashes where each hit lands
+  let budget = 14;
+  for (const e of ev) { if (budget-- <= 0) break; if (e.tx !== undefined) PX.hits.push({ x: e.tx, y: e.ty, c: colorOf(e.team), t: G.t, b: !!e.base }); }
+  if (PX.hits.length > 80) PX.hits.splice(0, PX.hits.length - 80);
+}
+function pxDither(color, sparse) {                  // a dither pattern on the grid: a checkerboard, or one pixel in nine
+  const key = 'dither' + color + sparse; let p = PX.spr.get(key); if (p) return p;
+  const c = document.createElement('canvas'); c.width = c.height = sparse ? 3 : 2; const g = c.getContext('2d'); g.fillStyle = color;
+  g.fillRect(0, 0, 1, 1); if (!sparse) g.fillRect(1, 1, 1, 1);
+  p = PX.x.createPattern(c, 'repeat'); PX.spr.set(key, p); return p;
+}
+function pxGround(tk) {                               // the ground changes only when the view does, so it's painted once and kept
+  const D = G.deco, key = [PX.bw, PX.bh, PX.P, V.ex.toFixed(2), V.ey.toFixed(2), V.s.toFixed(4), V.rot, G.seed, W, H, paletteMode].join();
+  if (!PX.gcv) PX.gcv = document.createElement('canvas');
+  if (PX.gkey !== key || PX.gG !== G) {
+    const g = PX.gcv; if (g.width !== PX.bw || g.height !== PX.bh) { g.width = PX.bw; g.height = PX.bh; }
+    const x = PX.x; PX.x = g.getContext('2d'); const y = PX.x, st = 24, pk = V.s * PX.k;
+    y.setTransform(1, 0, 0, 1, 0, 0); y.clearRect(0, 0, g.width, g.height);
+    const path = pts => { y.beginPath(); pts.forEach(([wx, wy], i) => { pxp(wx, wy); i ? y.lineTo(PXX + 0.5, PXY + 0.5) : y.moveTo(PXX + 0.5, PXY + 0.5); }); };
+    if (D && D.kind === 'river') {                                    // water: a dithered channel
+      y.lineCap = 'round'; y.lineJoin = 'round'; path(D.line); y.lineWidth = D.hw * 1.7 * pk; y.strokeStyle = pxDither('rgba(40,80,170,0.55)', false); y.stroke();
+    } else if (D && D.kind === 'islands') {                           // land: a sparse dither inside a dotted coast
+      for (const h of islandHulls()) { path(h); y.closePath(); y.fillStyle = pxDither('rgba(255,255,255,0.12)', true); y.fill(); }
+      y.fillStyle = 'rgba(255,255,255,0.22)'; y.beginPath();
+      for (const h of islandHulls()) for (let i = 0; i < h.length; i++) { const a = h[i], b = h[(i + 1) % h.length]; pxWorldDots(a[0], a[1], b[0], b[1], 2, 0); }
+      y.fill();
+    } else if (D && D.kind === 'ring') {
+      y.fillStyle = 'rgba(255,255,255,0.2)'; y.beginPath();
+      for (let i = 0; i < 160; i += 2) { const a = i / 160 * Math.PI * 2; pxp(D.cx + Math.cos(a) * D.rx, D.cy + Math.sin(a) * D.ry); y.rect(PXX, PXY, 1, 1); }
+      y.fill();
+    }
+    y.fillStyle = 'rgba(80,100,170,0.3)'; y.beginPath();              // a faint dot grid fixed to the ground, like the tiles of an old map
+    for (let wx = st; wx < W; wx += st) for (let wy = st; wy < H; wy += st) { pxp(wx, wy); if (PXX >= 0 && PXY >= 0 && PXX < g.width && PXY < g.height) y.rect(PXX, PXY, 1, 1); }
+    y.fill();
+    if (G.bridges.size) {                                             // bridges: solid crossties
+      const T = bridgeTies(); y.fillStyle = 'rgba(255,255,255,0.45)'; y.beginPath();
+      for (let i = 0; i < T.length; i += 4) pxWorldDots(T[i], T[i + 1], T[i + 2], T[i + 3], 1, 0);
+      y.fill();
+    }
+    PX.x = x; PX.gkey = key; PX.gG = G;
+  }
+  PX.x.drawImage(PX.gcv, 0, 0);
+  if (D && D.kind === 'river' && !reduceMotion) {                     // and the current, flowing downstream
+    const x = PX.x; x.fillStyle = 'rgba(110,165,245,0.75)'; x.beginPath();
+    for (let i = 1; i < D.line.length; i++) pxWorldDots(D.line[i - 1][0], D.line[i - 1][1], D.line[i][0], D.line[i][1], 5, tk >> 1);
+    x.fill();
+  }
+}
+function pxEdges(tk) {
+  const x = PX.x, nodes = G.nodes, inner = EDGE_IN, out = EDGE_OUT;
+  for (let i = 0; i < 5; i++) { inner[i].length = 0; out[i].length = 0; }
+  x.fillStyle = HC ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.28)'; x.beginPath();
+  for (const [a, b] of G.edges) {
+    const A = nodes[a], B = nodes[b], oa = A.owner, ob = B.owner;
+    if (Math.max(A.x, B.x) < VIS.x0 || Math.min(A.x, B.x) > VIS.x1 || Math.max(A.y, B.y) < VIS.y0 || Math.min(A.y, B.y) > VIS.y1) continue;
+    if (oa < 0 && ob < 0) pxWorldDots(A.x, A.y, B.x, B.y, 3, 0);
+    else if (oa === ob) inner[oa].push(A, B);
+    else if (ob < 0) out[oa].push(A, B, 1);
+    else if (oa < 0) out[ob].push(B, A, 1);
+    else { out[oa].push(A, B, 0.5); out[ob].push(B, A, 0.5); }
+  }
+  x.fill();
+  for (let i = 0; i < 5; i++) {
+    const L = inner[i], O = out[i];
+    if (L.length) {
+      x.fillStyle = hexA(TEAM_COLORS[i], HC ? 0.8 : 0.5); x.beginPath();
+      for (let j = 0; j < L.length; j += 2) pxWorldDots(L[j].x, L[j].y, L[j + 1].x, L[j + 1].y, 3, 0);
+      x.fill();
+    }
+    if (O.length) {                                                   // ways out march toward what they can attack
+      x.fillStyle = TEAM_COLORS[i]; x.beginPath();
+      for (let j = 0; j < O.length; j += 3) { const P = O[j], Q = O[j + 1], f = O[j + 2]; pxWorldDots(P.x, P.y, P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f, 3, tk); }
+      x.fill();
+    }
+  }
+}
+function pxMarkers(now, tk) {                         // send highlights, the base under your finger, lock-on boxes
+  const x = PX.x, nodes = G.nodes;
+  for (let i = hl.length - 1; i >= 0; i--) {
+    const h = hl[i], age = now - h.b;
+    if (age > 0.9) { hl.splice(i, 1); continue; }
+    x.globalAlpha = Math.ceil((1 - age / 0.9) * 4) / 4; x.fillStyle = TEAM_COLORS[PLAYER]; x.beginPath();
+    for (const [a, b] of h.edges) pxWorldDots(nodes[a].x, nodes[a].y, nodes[b].x, nodes[b].y, 1, 0);
+    x.fill();
+  }
+  x.globalAlpha = 1;
+  if (hover && mode === 'play') { pxp(hover.x, hover.y); x.fillStyle = TEAM_COLORS[PLAYER]; x.beginPath(); pxBrackets(PXX, PXY, 7 + (tk >> 2) % 2, 3); x.fill(); }
+  for (let i = 0; i < 5; i++) {
+    const L = G.lock[i];
+    if (L == null || !(mode === 'play' || mode === 'paused') || !G.teams[i].alive || (!watching && i !== PLAYER)) continue;
+    pxp(nodes[L].x, nodes[L].y); x.fillStyle = TEAM_COLORS[i]; x.beginPath(); pxBox(PXX, PXY, 9 + (i % 2), 2, tk >> 1); x.fill();
+  }
+}
+function pxBases(now, tk) {
+  const x = PX.x;
+  for (const n of G.nodes) {
+    if (!inV(n.x, n.y)) continue;
+    pxp(n.x, n.y); const cx = PXX, cy = PXY, own = n.owner >= 0, c = colorOf(n.owner), struck = G.t - n.lastHitT < 0.07;
+    const col = struck ? pxShade(c, 0.6) : c;
+    if (own) { x.globalAlpha = HC ? 0.95 : 0.65; x.fillStyle = c; x.beginPath(); pxBrackets(cx, cy, 5, 2); x.fill(); x.globalAlpha = 1; }
+    if (n.kind) {
+      if (own && SYM) pxStamp(pxSprite(pxOutline(symOf(n.owner)), c, false), cx, cy);
+      pxStamp(pxSprite(PXM[n.kind], col, true), cx, cy);
+      if (n.kind === 'beacon' && !reduceMotion) { const k = tk % 12; x.globalAlpha = k < 6 ? 0.7 : 0.35; x.fillStyle = c; x.beginPath(); pxRing(cx, cy, 8 + k, k < 6 ? 1 : 2); x.fill(); x.globalAlpha = 1; }
+    } else if (own) pxStamp(pxSprite(SYM ? PXM[symOf(n.owner)] : PXM.core, col, true), cx, cy);
+    else pxStamp(pxSprite(SYM ? PXM.hollow : PXM.neutral, col, !SYM), cx, cy);
+    if (n.crown) {
+      const holder = n.owner, frac = holder >= 0 ? Math.min(1, G.teams[holder].hill / G.kothTarget) : 0;
+      if (frac > 0) {
+        x.fillStyle = 'rgba(255,255,255,0.18)'; x.beginPath(); pxRing(cx, cy, 10, 1, frac, 1); x.fill();
+        x.fillStyle = colorOf(holder); x.beginPath(); pxRing(cx, cy, 10, 1, 0, frac); x.fill();
+      }
+      pxStamp(pxSprite(PXM.crown, '#ffcd30', true), cx, cy - 13 - (reduceMotion ? 0 : (tk >> 3) % 2));
+    }
+    if (n.hp < n.maxHp - 0.5) {                                       // health as a pixel ring that empties clockwise
+      const f = Math.max(0, n.hp / n.maxHp);
+      x.fillStyle = G.t - n.lastHitT < 0.15 ? 'rgba(255,255,255,0.45)' : HC ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.18)'; x.beginPath(); pxRing(cx, cy, 7, 1, f, 1); x.fill();
+      x.fillStyle = c; x.beginPath(); pxRing(cx, cy, 7, 1, 0, f); x.fill();
+    }
+  }
+}
+function pxTroops(fogD) {
+  const x = PX.x, buckets = BUCKETS, af = Math.min(1, Math.max(0, (cam.z - 1.15) / 0.85));
+  for (const bk of buckets) bk.length = 0;
+  for (const t of G.troops) {
+    if (!inV(t.x, t.y) || (fogD && t.team !== PLAYER && !seenXY(t.x, t.y))) continue;
+    const l = Math.hypot(t.hx, t.hy) || 1; t.nx = t.hx / l; t.ny = t.hy / l;
+    buckets[t.team + 1].push(t);
+  }
+  for (let b = 0; b < 6; b++) {
+    const arr = buckets[b]; if (!arr.length) continue;
+    const col = b === 0 ? (HC ? NEUTRAL_COLOR : pxShade(NEUTRAL_COLOR, -0.35)) : TEAM_COLORS[b - 1], sym = SYM && b > 0 ? pxCells(PX_TROOP[symOf(b - 1)]) : null;   // empty bases' guards a shade quieter
+    if (af > 0) {                                                     // zoomed in: dotted aim lines, solid for a moment when a hit lands
+      x.globalAlpha = 0.4 * af; x.fillStyle = col; x.beginPath();
+      for (const t of arr) if (t.aim && G.t - t.hitT >= 0.12) pxWorldDots(t.x, t.y, t.aim.x, t.aim.y, 2, 0);
+      x.fill(); x.globalAlpha = 0.9 * af; x.beginPath();
+      for (const t of arr) if (t.aim && G.t - t.hitT < 0.12) pxWorldDots(t.x, t.y, t.aim.x, t.aim.y, 1, 0);
+      x.fill(); x.globalAlpha = 1;
+    }
+    x.globalAlpha = 0.45; x.fillStyle = col; x.beginPath();           // a one-pixel wake behind each moving ship
+    for (const t of arr) {
+      if (!t.path.length) continue;
+      const sx = V.rot ? -t.ny : t.nx, sy = V.rot ? t.nx : t.ny; pxp(t.x, t.y);
+      if (Math.abs(sx) > Math.abs(sy)) x.rect(PXX - Math.sign(sx) * (sym ? 3 : 2), PXY, 1, 1); else x.rect(PXX, PXY - Math.sign(sy) * (sym ? 3 : 2), 1, 1);
+    }
+    x.fill(); x.globalAlpha = 1; x.beginPath();
+    for (const t of arr) {
+      pxp(t.x, t.y);
+      let cells = sym;
+      if (!cells) { const sx = V.rot ? -t.ny : t.nx, sy = V.rot ? t.nx : t.ny; cells = pxCells(PX_SHIP[Math.abs(sx) > Math.abs(sy) ? (sx > 0 ? 'E' : 'W') : (sy > 0 ? 'S' : 'N')]); }
+      for (let i = 0; i < cells.length; i += 2) x.rect(PXX + cells[i], PXY + cells[i + 1], 1, 1);
+    }
+    x.fill();
+  }
+}
+function pxFx(now, fogD) {
+  const x = PX.x;
+  for (let i = PX.hits.length - 1; i >= 0; i--) {                     // hits: a white pixel on troops, a small cross on bases
+    const h = PX.hits[i], age = G.t - h.t;
+    if (age > 0.1 || age < 0) { PX.hits.splice(i, 1); continue; }
+    if (fogD && !seenXY(h.x, h.y)) continue;
+    pxp(h.x, h.y); x.fillStyle = h.b ? h.c : '#ffffff'; x.beginPath();
+    x.rect(PXX, PXY, 1, 1); if (h.b) { x.rect(PXX - 1, PXY, 1, 1); x.rect(PXX + 1, PXY, 1, 1); x.rect(PXX, PXY - 1, 1, 1); x.rect(PXX, PXY + 1, 1, 1); }
+    x.fill();
+  }
+  if (!reduceMotion) for (const f of G.fx) {
+    const age = G.t - f.b;
+    if (f.x === undefined || (fogD && !seenXY(f.x, f.y))) continue;
+    if (f.k === 'pop' && age < 0.3) {                                 // a troop falls: four pixels fly off diagonally
+      const k = Math.floor(age * 20), d = 1 + k; pxp(f.x, f.y);
+      x.fillStyle = k < 2 ? '#ffffff' : colorOf(f.c); x.beginPath();
+      x.rect(PXX - d, PXY - d, 1, 1); x.rect(PXX + d, PXY - d, 1, 1); x.rect(PXX - d, PXY + d, 1, 1); x.rect(PXX + d, PXY + d, 1, 1);
+      if (k < 2) x.rect(PXX, PXY, 1, 1);
+      x.fill();
+    } else if (f.k === 'ring' && age < 0.9) {                         // a capture: square rings burst outward, the last ones dithered away
+      const k = Math.floor(age * 12); pxp(f.x, f.y); const cx = PXX, cy = PXY;
+      x.fillStyle = colorOf(f.c); x.beginPath(); pxBox(cx, cy, 5 + k * 2, k < 5 ? 1 : 2, 0); if (k > 1 && k < 8) pxBox(cx, cy, 3 + k, 2, 1); x.fill();
+      if (k < 9) {
+        x.fillStyle = k < 4 ? '#ffffff' : colorOf(f.c); x.beginPath();
+        const d = 6 + k * 3, e = Math.round(d * 0.7);
+        for (const [dx, dy] of [[d, 0], [-d, 0], [0, d], [0, -d], [e, e], [-e, e], [e, -e], [-e, -e]]) x.rect(cx + dx, cy + dy, 1, 1);
+        x.fill();
+      }
+    }
+  }
+  for (let i = uiFx.length - 1; i >= 0; i--) {                        // your taps: a send, an upgrade, a refusal
+    const f = uiFx[i], age = now - f.b;
+    if (age > 0.5) { uiFx.splice(i, 1); continue; }
+    const k = Math.floor(age * 16); pxp(f.x, f.y);
+    if (f.k === 'no') { if (k % 4 < 3) pxStamp(pxSprite(PXM.no, '#9a9aa0', false), PXX, PXY); continue; }
+    x.fillStyle = TEAM_COLORS[PLAYER]; x.beginPath();
+    if (f.k === 'go') { const r = 5 + k * 2; pxDots(PXX, PXY - r, PXX + r, PXY, 1, 0); pxDots(PXX + r, PXY, PXX, PXY + r, 1, 0); pxDots(PXX, PXY + r, PXX - r, PXY, 1, 0); pxDots(PXX - r, PXY, PXX, PXY - r, 1, 0); }
+    else pxRing(PXX, PXY, 4 + k * 2, k < 4 ? 1 : 2);
+    x.fill();
+  }
+}
+function drawPixel(now) {
+  const Pc = Math.min(6, Math.max(2, 3 * V.s)), P = Math.max(2, Math.round(Pc * dpr));   // screen pixels per grid pixel
+  const bw = Math.ceil(cv.width / P), bh = Math.ceil(cv.height / P);
+  if (!PX.cv) { PX.cv = document.createElement('canvas'); PX.x = PX.cv.getContext('2d'); }
+  if (PX.cv.width !== bw || PX.cv.height !== bh) { PX.cv.width = bw; PX.cv.height = bh; }
+  PX.P = P; PX.k = dpr / P; PX.bw = bw; PX.bh = bh;
+  const x = PX.x, tk = reduceMotion ? 0 : Math.floor(now * 12), fogD = fogOn();
+  x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.globalCompositeOperation = 'source-over';
+  x.fillStyle = '#000'; x.fillRect(0, 0, bw, bh);
+  vfxFx(); stepParts();                               // keeps the other styles' effect state in step, should you switch mid-match
+  updateVis();
+  pxGround(tk); pxEdges(tk); pxMarkers(now, tk); pxBases(now, tk); pxTroops(fogD); pxFx(now, fogD);
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.beginPath(); ctx.rect(F.x * dpr, F.y * dpr, F.w * dpr, F.h * dpr); ctx.clip();
+  ctx.imageSmoothingEnabled = false; ctx.drawImage(PX.cv, 0, 0, bw * P, bh * P); ctx.imageSmoothingEnabled = true;
+  if (P >= 3) {                                       // scanlines: the bottom row of every grid pixel a little darker
+    if (PX.scanP !== P) {
+      const c = document.createElement('canvas'); c.width = 1; c.height = P; const g = c.getContext('2d');
+      g.fillStyle = 'rgba(0,0,0,0.22)'; g.fillRect(0, P - 1, 1, 1); if (P >= 7) g.fillRect(0, P - 2, 1, 1);
+      PX.scan = ctx.createPattern(c, 'repeat'); PX.scanP = P;
+    }
+    ctx.fillStyle = PX.scan; ctx.fillRect(F.x * dpr, F.y * dpr, F.w * dpr, F.h * dpr);
+  }
+  ctx.restore();
+}
+
 // ---- HUD ----
 const upBtns = [...document.querySelectorAll('.up')];
 const rivalCells = [];
@@ -2872,7 +3449,7 @@ function buy(k) {
   if (upgrade(PLAYER, k)) {
     const b = upBtns.find(x => x.dataset.k === k);
     b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
-    if (isSpark() && !reduceMotion) {               // Spark: every one of your bases sends out a ring
+    if (!isAtlas() && !reduceMotion) {             // every one of your bases sends out a ring (Atlas stays still)
       const now = performance.now() / 1000;
       for (const n of G.nodes) if (n.owner === PLAYER) {
         uiFx.push({ k: 'rip', x: n.x, y: n.y, b: now });
@@ -2915,14 +3492,14 @@ function hud() {
     if (f.seen) continue;
     if (f.k === 'elim') {
       f.seen = true;
-      if (f.c !== PLAYER || watching) toast(TEAM_NAMES[f.c] + ' is out', TEAM_COLORS[f.c]);
+      if (f.c !== PLAYER || watching) toast(TEAM_NAMES[f.c] + ' is out', TEAM_COLORS[f.c], f.c);
       if (isOver()) { banner(TEAM_NAMES[f.c].toUpperCase() + ' IS OUT', TEAM_COLORS[f.c]); shake(10); }
     } else if (f.k === 'overtime') {
       f.seen = true; toast('Overtime: a crown has risen', '#ffcd30'); rulesCache = '';
     } else if (f.k === 'special') {                 // you took one, lost one, or (when watching) anyone took one
       f.seen = true;
       const you = !watching && f.c === PLAYER, lost = !watching && f.from === PLAYER;
-      if (you || lost || watching) toast(`${you ? 'You' : TEAM_NAMES[f.c]} took ${lost ? 'your' : 'the'} ${SPECIALS[f.kind].name}`, TEAM_COLORS[f.c]);
+      if (you || lost || watching) toast(`${you ? 'You' : TEAM_NAMES[f.c]} took ${lost ? 'your' : 'the'} ${SPECIALS[f.kind].name}`, TEAM_COLORS[f.c], f.c);
     }
   }
   if (G.scenarioId) {                               // the challenge's goal and how far along you are
@@ -2942,13 +3519,14 @@ function hud() {
     const col = lead.hill > 0 ? TEAM_COLORS[lead.i] : '#6a6a70', k = $('kothRow');
     setText($('kothTxt'), `${Math.floor(lead.hill)} / ${G.kothTarget}`);
     setStyle(k.querySelector('.sw'), 'background', col); setStyle($('kothFill'), 'background', col);
+    const ks = String(lead.hill > 0 ? TEAM_SLOT[lead.i] : -1), ksw = k.querySelector('.sw'); if (ksw.dataset.s !== ks) ksw.dataset.s = ks;
     setStyle($('kothFill'), 'width', Math.min(100, lead.hill / G.kothTarget * 100).toFixed(1) + '%');
   }
   renderRules();
   refreshInfo();
 }
-function toast(msg, color) {
-  $('toastT').textContent = msg; $('toastSw').style.background = color;
+function toast(msg, color, team) {                   // team (optional): which team's symbol the swatch wears
+  $('toastT').textContent = msg; $('toastSw').style.background = color; $('toastSw').dataset.s = slotOf(team);
   $('toast').classList.add('on'); clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $('toast').classList.remove('on'), 2200);
 }
@@ -2959,7 +3537,7 @@ function syncCtrl() {
 }
 
 // ---- sound: soft blips, only when someone actually lands a shot ----
-let AC = null, master = null, bus = null, mlp = null, mg = null, pbus = null, lastBlip = 0, lastBloop = 0;
+let AC = null, master = null, lim = null, bus = null, mlp = null, mg = null, pbus = null, lastBlip = 0, lastBloop = 0;
 // Everything in a match goes: voices -> bus (the sound style's own filter) -> mlp (menu muffle) -> mg (menu level) -> master.
 // Behind the menus the same match keeps playing, so mg drops and mlp closes; in a match both are wide open. Previews skip the
 // menu stage (pbus), so a style is always auditioned at full level. TUNING: vol/cut/fade can be changed from the hidden panel.
@@ -2988,9 +3566,10 @@ function mixTick() {                                           // every frame: g
 const PENTA = [0, 2, 4, 7, 9], ROOT = [79, 67, 71, 74, 64];
 const hz = m => 440 * Math.pow(2, (m - 69) / 12);
 const pick = a => a[(Math.random() * a.length) | 0];
-// volume slider is perceptual (squared); "Soft" drops pitch, rounds off each blip's start and filters the top end
-const soundGain = () => settings.sound ? Math.pow(settings.volume / 100, 2) : 0;
-const cutoff = () => ({ soft: 950, overdrive: 9000, drift: 6500 })[settings.tone] || 2800;
+// volume slider is perceptual (squared). "Simple" (the old Bright and Soft, folded together) sits an octave low, rounds off each blip's start and filters the top end
+const MASTER_BOOST = 2;                              // +6 dB: a 70% slider now sounds like the old 100%
+const soundGain = () => settings.sound ? MASTER_BOOST * Math.pow(settings.volume / 100, 2) : 0;
+const cutoff = () => ({ simple: 1500, overdrive: 9000, drift: 6500, chip: 7000, cosmos: 5200 })[settings.tone] || 1500;
 function audioOn() {
   try {
     if (!AC) {
@@ -3000,7 +3579,8 @@ function audioOn() {
       bus = AC.createBiquadFilter(); bus.type = 'lowpass'; bus.frequency.value = cutoff(); bus.Q.value = 0.5;
       pbus = AC.createBiquadFilter(); pbus.type = 'lowpass'; pbus.frequency.value = cutoff(); pbus.Q.value = 0.5;
       mlp = AC.createBiquadFilter(); mlp.type = 'lowpass'; mlp.Q.value = 0.7; mg = AC.createGain();
-      bus.connect(mlp); mlp.connect(mg); mg.connect(master); pbus.connect(master); master.connect(AC.destination);
+      bus.connect(mlp); mlp.connect(mg); mg.connect(master); pbus.connect(master); lim = AC.createDynamicsCompressor(); lim.threshold.value = -3; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.002; lim.release.value = 0.12;
+      master.connect(lim); lim.connect(AC.destination);
       mixMenu = mode !== 'play'; applyMix(true);
     }
     if (AC.state === 'suspended') AC.resume();
@@ -3049,35 +3629,53 @@ function playSfx(nowMs, dt) {
   const h = scanHits(ev);
   if (settings.tone === 'overdrive') { odHits(ev); return; }
   if (settings.tone === 'drift') { driftHits(ev); return; }
-  const soft = settings.tone === 'soft';
-  if (nowMs - lastBloop > 150) {              // base hits: a lower bloop that drops in pitch
+  if (settings.tone === 'chip') { chipHits(ev); return; }
+  if (settings.tone === 'cosmos') { cosmosHits(ev); return; }
+  if (nowMs - lastBloop > 150) {              // base hits: a low, round bloop that drops in pitch
     const e = h.baseMine || h.base;
     if (e) {
-      const mine = isMine(e);
-      const f = hz(45 + pick(PENTA));
-      tone(f * (soft ? 1.4 : 1.7), f, soft ? 0.2 : 0.16, mine ? 0.11 : awatch() ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y), soft ? 0.02 : 0.008);
+      const mine = isMine(e), f = hz(45 + pick(PENTA));
+      tone(f * 1.45, f, 0.19, mine ? 0.11 : awatch() ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y), 0.016);
       lastBloop = nowMs;
     }
   }
-  if (nowMs - lastBlip > 55) {                // troop hits: short bleeps, yours a bit brighter
+  if (nowMs - lastBlip > 55) {                // troop hits: soft bleeps an octave down, now and then one jumps up; yours keep a little edge
     const e = pickShot(h, 0.65);
     if (e) {
-      const mine = isMine(e);
-      const f = soft
-        ? hz((e.team < 0 ? 60 : ROOT[e.team]) - 12 + pick(PENTA))                                   // an octave down, no high jumps
-        : hz((e.team < 0 ? 60 : ROOT[e.team]) + pick(PENTA) + (Math.random() < 0.25 ? 12 : 0));
-      tone(f, f * 0.94, soft ? 0.1 : (mine ? 0.075 : 0.06), mine ? 0.055 : awatch() ? 0.035 : 0.022,
-        mine && !soft ? 'triangle' : 'sine', screenPan(e.x, e.y), soft ? 0.018 : 0.008);
+      const mine = isMine(e), f = hz((e.team < 0 ? 60 : ROOT[e.team]) - 12 + pick(PENTA) + (Math.random() < 0.15 ? 12 : 0));
+      tone(f, f * 0.94, mine ? 0.085 : 0.095, mine ? 0.055 : awatch() ? 0.035 : 0.022, mine ? 'triangle' : 'sine', screenPan(e.x, e.y), 0.014);
       lastBlip = nowMs + Math.random() * 25;
     }
   }
 }
+const TRI_PATH = ['M6 1 11 11H1Z', 'M1 6a5 5 0 1 0 10 0a5 5 0 1 0-10 0Z', 'M6 .6 11.4 6 6 11.4.6 6Z', 'M1.5 1.5h9v9h-9Z', 'M4.3 .8h3.4v3.5h3.5v3.4H7.7v3.5H4.3V7.7H.8V4.3h3.5Z'];
+function renderSwatches() {                           // the "Your color" pickers: this palette's colors and names, and each slot's shape when symbols are on
+  document.querySelectorAll('.seg.swatches button').forEach(b => {
+    const k = Math.max(0, COLOR_KEYS.indexOf(b.dataset.v)), i = b.querySelector('i');
+    i.style.background = PALETTE[k].c; i.dataset.s = k; b.setAttribute('aria-label', PALETTE[k].name); b.title = PALETTE[k].name;
+  });
+}
 function applyColors(watch, colorKey) {
+  setPaletteMode(settings.colors);
   applyPalette(watch ? 0 : Math.max(0, COLOR_KEYS.indexOf(colorKey)));   // AI vs AI always uses the standard lineup
   const me = TEAM_COLORS[PLAYER], segs = $('terr').children;
-  for (let i = 0; i < 5; i++) { segs[i].style.background = TEAM_COLORS[i]; rivalCells[i][0].style.background = TEAM_COLORS[i]; }
-  $('triPath').setAttribute('fill', me);
+  for (let i = 0; i < 5; i++) { segs[i].style.background = TEAM_COLORS[i]; rivalCells[i][0].style.background = TEAM_COLORS[i]; rivalCells[i][0].dataset.s = TEAM_SLOT[i]; }
+  $('triPath').setAttribute('fill', me); $('triPath').setAttribute('d', TRI_PATH[SYM ? TEAM_SLOT[PLAYER] : 0]);
   hudEl.style.setProperty('--blue', me); hudEl.style.setProperty('--blue-soft', hexA(me, 0.16));   // HUD accents follow you
+  renderSwatches();
+}
+function syncLook() {                                 // Colors and Team symbols -> the flags the drawing code reads, and two page attributes the CSS reads
+  SYM = settings.symbols === 'on'; HC = settings.colors === 'contrast';
+  document.documentElement.dataset.sym = SYM ? 'on' : 'off'; document.documentElement.dataset.colors = settings.colors;
+}
+function currentColorArgs() {                         // the color choice that is in force right now: the running match, or the setup behind the menu
+  const live = mode === 'play' || mode === 'paused' || mode === 'over';
+  const key = live ? curModeKey : previewMode, watch = live ? watching : key === 'spec';
+  return [watch, live && curScen ? settings.classic.color : key === 'spec' ? 'blue' : settings[key].color];
+}
+function applyLook() {                                // a Colors or Team symbols change takes effect at once, even in the middle of a match
+  syncLook(); const [w, k] = currentColorArgs(); applyColors(w, k);
+  if (mode === 'demo') placePreview();
 }
 // ---- shared by the sound profiles ----
 let shotRate = 0, noiseBuf = null;                   // shotRate: how much fighting is going on right now (hits a second, smoothed)
@@ -3264,7 +3862,7 @@ const drMidi = d => 50 + 12 * Math.floor(d / 5) + DR_SCALE[((d % 5) + 5) % 5];
 const DR = { nodes: null, pool: [], bell: null, caps: [], deg: 8, next: 0, step: 0, ir: null, bedBuf: null };
 function drBuild(withBed) {
   const t = AC.currentTime, N = { oscs: [] };
-  N.out = AC.createGain(); N.out.gain.value = 0.72; N.out.connect(outBus());          // sits level with Soft and Felt
+  N.out = AC.createGain(); N.out.gain.value = 0.72; N.out.connect(outBus());          // sits level with Simple
   N.dry = AC.createGain(); N.dry.gain.value = 0.8; N.dry.connect(N.out);
   if (!DR.ir) {                                       // the room: two seconds and a half of softly dulled, fading noise
     const sr = AC.sampleRate, len = Math.floor(sr * 2.6); DR.ir = AC.createBuffer(2, len, sr);
@@ -3368,6 +3966,272 @@ function driftPreview() {                             // a short phrase and a be
   drBell(N, t + 1.4, 0.08, 0);
   setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 5200);
 }
+// ---- "Chip": an 8-bit soundtrack for Pixel, built live from the battle ----
+// Four voices like an old console: two pulse waves, a triangle and noise. A 16th-note sequencer at 132 bpm runs C - Am - F - G
+// with the triangle bouncing in octaves underneath. Layers arrive as the fighting heats up:
+//   calm: the bouncing bass and a soft tick      warming up: kick and snare      heavy: hats and a fast pulse arpeggio
+// Troop hits become blips on the grid, picked from the chord and walking up and down like a melody that sits higher the more of
+// the map you hold. Base hits are a crunch of metallic noise, a capture plays a power-up run, a knockout a falling "game over".
+const CH_STEP = 60 / 132 / 4, CH_LEVEL = 0.14;
+const CH_CHORDS = [
+  { root: 36, tones: [60, 64, 67] },   // C
+  { root: 33, tones: [57, 60, 64] },   // Am
+  { root: 29, tones: [57, 60, 65] },   // F
+  { root: 31, tones: [55, 59, 62] }    // G
+];
+const CH = { nodes: null, next: 0, step: 0, heat: 0, blips: [], crunch: null, caps: [], deg: 4, waves: null, metal: null };
+function chWaves() {                                  // pulse waves at 12.5%, 25% and 50% duty: the old consoles' three tones
+  if (CH.waves && CH.waves.ac === AC) return CH.waves;
+  const make = d => { const n = 48, re = new Float32Array(n), im = new Float32Array(n); for (let k = 1; k < n; k++) re[k] = 2 / (k * Math.PI) * Math.sin(k * Math.PI * d); return AC.createPeriodicWave(re, im); };
+  CH.waves = { ac: AC, p12: make(0.125), p25: make(0.25), p50: make(0.5) }; return CH.waves;
+}
+function chMetal() {                                  // noise from a short repeating pattern: the console's buzzy "metal" noise mode
+  if (CH.metal && CH.metal.sampleRate === AC.sampleRate) return CH.metal;
+  const sr = AC.sampleRate, b = AC.createBuffer(1, Math.floor(sr * 0.5), sr), d = b.getChannelData(0), per = 93, pat = [], hold = Math.max(1, Math.round(sr / 22050));
+  for (let i = 0; i < per; i++) pat.push(Math.random() < 0.5 ? -1 : 1);
+  for (let i = 0; i < d.length; i++) d[i] = pat[Math.floor(i / hold) % per];
+  return (CH.metal = b);
+}
+function chBuild(fast) {
+  const t = AC.currentTime, N = {};
+  N.comp = AC.createDynamicsCompressor(); N.comp.threshold.value = -16; N.comp.ratio.value = 3;
+  N.out = AC.createGain(); N.out.gain.value = 0.0001; N.out.gain.setTargetAtTime(CH_LEVEL, t, fast ? 0.01 : 0.2);
+  N.comp.connect(N.out); N.out.connect(outBus());
+  N.music = AC.createGain(); N.music.connect(N.comp);
+  return N;
+}
+function chOut(N, g, pan) { if (pan && AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); p.connect(N.music); } else g.connect(N.music); }
+function chNote(N, t, midi, dur, wave, peak, pan, slide) {   // one pulse note: a hard start, a stepped fall in volume, a hard stop
+  const o = AC.createOscillator(), g = AC.createGain(), f = hz(midi);
+  o.setPeriodicWave(chWaves()[wave]); o.frequency.setValueAtTime(f, t); if (slide) o.frequency.linearRampToValueAtTime(f * slide, t + dur);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + 0.003);
+  g.gain.setValueAtTime(peak * 0.7, t + dur * 0.4); g.gain.setValueAtTime(peak * 0.45, t + dur * 0.75); g.gain.linearRampToValueAtTime(0, t + dur);
+  o.connect(g); chOut(N, g, pan); o.start(t); o.stop(t + dur + 0.02);
+}
+function chTri(N, t, midi, dur, peak, drop) {         // the triangle channel: bass notes, and (with a fast drop in pitch) the kick
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = 'triangle'; o.frequency.setValueAtTime(drop ? 170 : hz(midi), t); if (drop) o.frequency.exponentialRampToValueAtTime(48, t + dur);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + 0.003); g.gain.setValueAtTime(peak, t + dur * 0.8); g.gain.linearRampToValueAtTime(0, t + dur);
+  o.connect(g); g.connect(N.music); o.start(t); o.stop(t + dur + 0.02);
+}
+function chNoise(N, t, dur, peak, freq, metal, pan) { // the noise channel: ticks, hats, snare, and the metallic crunch of a base hit
+  const n = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  n.buffer = metal ? chMetal() : noise(); f.type = metal ? 'lowpass' : 'highpass'; f.frequency.value = freq;
+  g.gain.setValueAtTime(peak, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  n.connect(f); f.connect(g); chOut(N, g, pan); n.start(t, metal ? 0 : Math.random() * 0.3, dur + 0.02);
+}
+function chMelody(ch) {                               // the notes a blip can land on: the chord's tones over two and a half octaves
+  return [ch.tones[0], ch.tones[1], ch.tones[2], ch.tones[0] + 12, ch.tones[1] + 12, ch.tones[2] + 12, ch.tones[0] + 24, ch.tones[1] + 24, ch.tones[2] + 24];
+}
+function chPlayStep(N, t, k, h, live) {
+  const s = k % 16, bar = Math.floor(k / 16) % 4, ch = CH_CHORDS[bar];
+  if (s % 2 === 0) {                                  // the bass bounces between octaves; the G bar walks up into the next C
+    let m = ch.root + 12 + (s % 4 === 2 ? 12 : 0);
+    if (bar === 3 && s === 12) m = 45; else if (bar === 3 && s === 14) m = 47;
+    chTri(N, t, m, CH_STEP * 1.6, 0.2);
+  }
+  if (s % 4 === 2) chNoise(N, t, 0.03, 0.035, 7000);                                                  // a soft tick
+  if (h > 0.2) {
+    if (s === 0 || s === 8 || (h > 0.55 && (s === 6 || s === 10))) chTri(N, t, 0, 0.09, 0.42, true);  // kick
+    if (s === 4 || s === 12) { chNoise(N, t, 0.12, 0.16, 1400); chNoise(N, t, 0.06, 0.12, 300, true); } // snare
+  }
+  if (h > 0.45 && s % 2 === 1) chNoise(N, t, 0.02, 0.03, 9000);                                      // closed hats
+  if (h > 0.5) chNote(N, t, ch.tones[k % 3] + 12 + (h > 0.8 && bar % 2 ? 12 : 0), CH_STEP * 0.85, 'p25', 0.022, 0);   // the fast arpeggio
+  if (!live) return;
+  if (CH.caps.length && s % 2 === 0) {                // a capture: a power-up run up the chord
+    const c = CH.caps.shift(), m = chMelody(ch);
+    [m[3], m[4], m[5], m[6]].forEach((note, i) => chNote(N, t + i * CH_STEP / 2, note, CH_STEP * 0.55, 'p50', c.mine ? 0.07 : 0.035, c.pan));
+  } else if (CH.blips.length) {                       // hits since the last step, played in time as a wandering melody
+    let e = CH.blips[CH.blips.length - 1], mine = false;
+    if (!awatch()) for (let i = CH.blips.length - 1; i >= 0; i--) if (CH.blips[i].team === PLAYER) { e = CH.blips[i]; mine = true; break; }
+    const share = (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length, centre = 2 + Math.round(share * 5);
+    let st = [-2, -1, -1, 0, 1, 1, 2][(Math.random() * 7) | 0];
+    if (CH.deg > centre + 2 && st > 0) st = -1; if (CH.deg < centre - 2 && st < 0) st = 1;
+    CH.deg = Math.max(0, Math.min(8, CH.deg + st));
+    const m = chMelody(ch), note = m[mine || awatch() ? CH.deg : Math.max(0, CH.deg - 3)];
+    chNote(N, t, note, CH_STEP * 0.8, mine ? 'p50' : 'p12', mine ? 0.06 : awatch() ? 0.04 : 0.024, screenPan(e.x, e.y), 0.985);
+    CH.blips.length = 0;
+  }
+  if (s % 2 === 0 && CH.crunch) { chNoise(N, t, 0.16, CH.crunch.mine ? 0.2 : 0.11, 2400, true, CH.crunch.pan); chTri(N, t, 0, 0.12, CH.crunch.mine ? 0.3 : 0.16, true); CH.crunch = null; }
+}
+function chFall(N, t) {                               // a color is out: a falling "game over" tune
+  for (let i = 0; i < 7; i++) chNote(N, t + i * 0.09, 79 - i * 2 - (i > 4 ? 1 : 0), 0.085, 'p25', 0.045, 0);
+  chTri(N, t + 0.63, 36, 0.5, 0.22);
+}
+function chipHits(ev) {
+  for (const e of ev) {
+    if (e.base) { if (!CH.crunch || isMine(e)) CH.crunch = { mine: isMine(e), pan: screenPan(e.x, e.y) }; }
+    else CH.blips.push(e);
+  }
+  if (CH.blips.length > 24) CH.blips.splice(0, CH.blips.length - 24);
+}
+function chipTick() {
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'chip' && audible() && G && !G.over;
+  if (!want) {
+    if (CH.nodes) { const N = CH.nodes, t = AC.currentTime; CH.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.15); setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 1500); }
+    CH.blips.length = 0; CH.caps.length = 0; CH.crunch = null; return;
+  }
+  if (!CH.nodes) { CH.nodes = chBuild(false); CH.next = AC.currentTime + 0.05; CH.step = 0; }
+  const N = CH.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
+  for (const f of G.fx) {                             // captures and knockouts become little tunes
+    if (f.ch) continue; f.ch = 1;
+    if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
+    if (f.k === 'ring') CH.caps.push({ mine: !awatch() && f.c === PLAYER, pan: screenPan(f.x, f.y) });
+    else if (f.k === 'elim') chFall(N, now + 0.02);
+  }
+  if (CH.caps.length > 3) CH.caps.splice(0, CH.caps.length - 3);
+  if (CH.next < now - 0.25) { const k = Math.ceil((now - CH.next) / CH_STEP); CH.next += k * CH_STEP; CH.step += k; }
+  while (CH.next < now + 0.1) { CH.heat += (heat - CH.heat) * 0.05; chPlayStep(N, CH.next, CH.step, CH.heat, true); CH.next += CH_STEP; CH.step++; }
+}
+function chipPreview() {                              // one bar at full tilt, a couple of blips, a crunch and a power-up run
+  const N = chBuild(true), t0 = AC.currentTime + 0.05;
+  for (let k = 0; k < 16; k++) chPlayStep(N, t0 + k * CH_STEP, k, 0.85, false);
+  chNote(N, t0 + 2 * CH_STEP, 72, CH_STEP * 0.8, 'p50', 0.06, -0.3, 0.985); chNote(N, t0 + 6 * CH_STEP, 76, CH_STEP * 0.8, 'p50', 0.06, 0.3, 0.985);
+  chNoise(N, t0 + 9 * CH_STEP, 0.16, 0.2, 2400, true); chTri(N, t0 + 9 * CH_STEP, 0, 0.12, 0.3, true);
+  [72, 76, 79, 84].forEach((m, i) => chNote(N, t0 + 16 * CH_STEP + i * CH_STEP / 2, m, CH_STEP * 0.55, 'p50', 0.06, 0));
+  N.out.gain.setTargetAtTime(0.0001, t0 + 19 * CH_STEP, 0.08);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 3500);
+}
+
+// ---- "Cosmos": deep space for Nebula ----
+// Glassy pads glide through slow chords in E Lydian over a sub-bass drone that breathes, and the battle answers in sonar pings:
+// troop hits ping on a slow grid, echo back and forth and hang in a vast reverb, sitting higher the more ground you hold.
+// Base hits are a deep sonar pulse, a capture blooms into a bright chord, and a knockout sinks into a long low swell.
+const CS_STEP = 60 / 72 / 2, CS_LEVEL = 0.36, CS_SCALE = [0, 2, 4, 6, 7, 9, 11];
+const csMidi = d => 52 + 12 * Math.floor(d / 7) + CS_SCALE[((d % 7) + 7) % 7];
+const CS_CHORDS = [                                   // pad voicings (MIDI), one every 16 steps (about 6.7 s)
+  [52, 59, 63, 66, 68],                               // E maj9
+  [52, 58, 61, 66, 70],                               // F#/E: the Lydian chord
+  [49, 56, 59, 63, 64],                               // C#m9
+  [47, 56, 59, 63, 66]                                // G#m7/B
+];
+const CS = { nodes: null, pool: [], sonar: null, caps: [], deg: 9, next: 0, step: 0, ir: null };
+function csIR() {                                     // a vast space: five seconds, bright, slowly fading
+  if (CS.ir && CS.ir.sampleRate === AC.sampleRate) return CS.ir;
+  const sr = AC.sampleRate, len = Math.floor(sr * 5); CS.ir = AC.createBuffer(2, len, sr);
+  for (let c = 0; c < 2; c++) { const d = CS.ir.getChannelData(c); let lp = 0; for (let i = 0; i < len; i++) { lp += (Math.random() * 2 - 1 - lp) * 0.6; d[i] = lp * Math.exp(-i / sr * 1.3) * Math.min(1, i / (sr * 0.06)); } }
+  return CS.ir;
+}
+function csBuild(withBed) {
+  const t = AC.currentTime, N = { oscs: [] };
+  N.out = AC.createGain(); N.out.gain.value = 0.0001; N.out.gain.setTargetAtTime(CS_LEVEL, t, withBed ? 0.8 : 0.01); N.out.connect(outBus());
+  N.dry = AC.createGain(); N.dry.gain.value = 0.5; N.dry.connect(N.out);
+  N.rev = AC.createConvolver(); N.rev.buffer = csIR(); const rg = AC.createGain(); rg.gain.value = 0.6; N.rev.connect(rg); rg.connect(N.out);
+  N.dl = AC.createDelay(2); N.dl.delayTime.value = CS_STEP * 3;                                  // an echo that keeps coming back, duller each time
+  const fb = AC.createGain(), dlp = AC.createBiquadFilter(), dg = AC.createGain();
+  fb.gain.value = 0.42; dlp.type = 'lowpass'; dlp.frequency.value = 2400; dg.gain.value = 0.55;
+  N.dl.connect(dlp); dlp.connect(fb); fb.connect(N.dl); dlp.connect(dg); dg.connect(N.out); dg.connect(N.rev);
+  N.send = AC.createGain(); N.send.gain.value = 0.5; N.send.connect(N.dl);
+  N.wet = AC.createGain(); N.wet.gain.value = 0.9; N.wet.connect(N.rev);
+  if (withBed) {
+    for (const [f, a] of [[41.2, 0.09], [61.74, 0.04], [82.41, 0.02]]) {                       // the drone: E, B and E, breathing slowly
+      const o = AC.createOscillator(), g = AC.createGain(), l = AC.createOscillator(), d = AC.createGain();
+      o.frequency.value = f; g.gain.value = a; l.frequency.value = 0.045 + f / 4000; d.gain.value = a * 0.45;
+      l.connect(d); d.connect(g.gain); o.connect(g); g.connect(N.dry); g.connect(N.wet); o.start(t); l.start(t); N.oscs.push(o, l);
+    }
+    N.padLP = AC.createBiquadFilter(); N.padLP.type = 'lowpass'; N.padLP.frequency.value = 800; N.padLP.Q.value = 0.6;
+    N.padG = AC.createGain(); N.padG.gain.value = 0.0001; N.padG.gain.setTargetAtTime(0.05, t, 2.5);
+    N.padLP.connect(N.padG); N.padG.connect(N.dry); N.padG.connect(N.wet);
+    N.voices = [];
+    const vib = AC.createOscillator(), vd = AC.createGain(); vib.frequency.value = 0.21; vd.gain.value = 7; vib.connect(vd); vib.start(t); N.oscs.push(vib);
+    CS_CHORDS[0].forEach((m, i) => {                  // five voices, each a sine and a shimmering triangle an octave up
+      const a = AC.createOscillator(), b = AC.createOscillator(), ga = AC.createGain(), gb = AC.createGain();
+      a.frequency.value = hz(m); b.type = 'triangle'; b.frequency.value = hz(m) * 2; b.detune.value = (i % 2 ? 6 : -6); vd.connect(b.detune);
+      ga.gain.value = 0.16; gb.gain.value = 0.035; a.connect(ga); b.connect(gb); ga.connect(N.padLP); gb.connect(N.padLP);
+      a.start(t); b.start(t); N.voices.push([a, b]); N.oscs.push(a, b);
+    });
+  }
+  return N;
+}
+function csPan(N, g, pan) { if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); return p; } return g; }
+function csPing(N, t, midi, peak, pan, tail) {        // a sonar ping: a clean sine with a glassy overtone, echoing away
+  const f = hz(midi), o = AC.createOscillator(), o2 = AC.createOscillator(), g = AC.createGain(), g2 = AC.createGain(), L = tail || 1.8;
+  o.frequency.value = f; o2.frequency.value = f * 2.76;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + L);
+  g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime(peak * 0.2, t + 0.003); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+  o.connect(g); o2.connect(g2); g2.connect(g);
+  const out = csPan(N, g, pan); out.connect(N.dry); out.connect(N.send); out.connect(N.wet);
+  o.start(t); o2.start(t); o.stop(t + L + 0.05); o2.stop(t + L + 0.05);
+}
+function csSonar(N, t, peak, pan) {                   // a base under fire: a deep pulse sinking in pitch, with a breath of noise
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(88, t + 0.6);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.5);
+  o.connect(g); const out = csPan(N, g, pan * 0.6); out.connect(N.dry); out.connect(N.wet); o.start(t); o.stop(t + 1.6);
+  const n = AC.createBufferSource(), bp = AC.createBiquadFilter(), ng = AC.createGain();
+  n.buffer = noise(); bp.type = 'bandpass'; bp.frequency.value = 420; bp.Q.value = 2;
+  ng.gain.setValueAtTime(0.0001, t); ng.gain.exponentialRampToValueAtTime(peak * 0.35, t + 0.05); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+  n.connect(bp); bp.connect(ng); ng.connect(N.wet); n.start(t, Math.random() * 0.2, 0.4);
+}
+function csBloom(N, t, d0, peak, pan) {               // a capture: a bright chord swelling up out of the dark
+  [0, 2, 4, 7].forEach((st, i) => {
+    const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = hz(csMidi(d0 + st)) * (i === 3 ? 2 : 1);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak * (i === 3 ? 0.4 : 1), t + 0.08 + i * 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
+    o.connect(g); const out = csPan(N, g, pan); out.connect(N.dry); out.connect(N.wet); out.connect(N.send); o.start(t); o.stop(t + 2.7);
+  });
+}
+function csSink(N, t) {                               // a color is out: a long low swell, sinking
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.frequency.setValueAtTime(55, t); o.frequency.exponentialRampToValueAtTime(34, t + 3.5);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.13, t + 0.8); g.gain.exponentialRampToValueAtTime(0.0001, t + 3.8);
+  o.connect(g); g.connect(N.dry); g.connect(N.wet); o.start(t); o.stop(t + 3.9);
+}
+function cosmosHits(ev) {
+  for (const e of ev) {
+    if (e.base) { if (!CS.sonar || isMine(e)) CS.sonar = { mine: isMine(e), pan: screenPan(e.x, e.y) }; }
+    else CS.pool.push(e);
+  }
+  if (CS.pool.length > 40) CS.pool.splice(0, CS.pool.length - 40);
+}
+function csSlot(N, t, heat) {
+  if (CS.step % 16 === 0 && N.voices) {              // a new chord: the pad glides there slowly, and opens up with the fighting
+    const ch = CS_CHORDS[(CS.step / 16) % 4];
+    N.voices.forEach(([a, b], i) => { a.frequency.setTargetAtTime(hz(ch[i]), t, 1.2); b.frequency.setTargetAtTime(hz(ch[i]) * 2, t, 1.2); });
+    N.padLP.frequency.setTargetAtTime(700 + 2200 * heat, t, 2); N.padG.gain.setTargetAtTime(0.045 + 0.035 * heat, t, 2);
+  }
+  const share = (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length;
+  const centre = 7 + Math.round(share * 7);           // the pings sit higher the more ground you hold
+  if (CS.caps.length) { const c = CS.caps.shift(); csBloom(N, t, centre, c.mine ? 0.05 : 0.025, c.pan); }
+  if (CS.sonar && CS.step % 2 === 0) { csSonar(N, t, CS.sonar.mine ? 0.16 : 0.08, CS.sonar.pan); CS.sonar = null; }
+  const n = CS.pool.length;
+  if (n && (CS.step % 2 === 0 || heat > 0.3)) {
+    let e = CS.pool[n - 1], mine = false;
+    if (!awatch()) for (let i = n - 1; i >= 0; i--) if (CS.pool[i].team === PLAYER) { e = CS.pool[i]; mine = true; break; }
+    let st = [-2, -1, -1, 0, 1, 1, 2, 3][(Math.random() * 8) | 0];
+    if (CS.deg > centre + 3 && st > 0) st = -1; if (CS.deg < centre - 3 && st < 0) st = 1;
+    CS.deg = Math.max(2, Math.min(19, CS.deg + st));
+    const d = mine || awatch() ? CS.deg : CS.deg - 7, pan = screenPan(e.x, e.y);   // other colors' fights sound an octave below
+    csPing(N, t, csMidi(d), mine ? 0.06 : awatch() ? 0.04 : 0.022, pan);
+    if (n >= 8 && heat > 0.5) csPing(N, t + CS_STEP / 2, csMidi(d + 4), mine ? 0.03 : 0.015, -pan);   // a big fight answers itself
+    CS.pool.length = 0;
+  }
+}
+function cosmosTick() {
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'cosmos' && audible() && G && !G.over;
+  if (!want) {
+    if (CS.nodes) { const N = CS.nodes, t = AC.currentTime; CS.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.5); for (const o of N.oscs) o.stop(t + 3); setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 6000); }
+    CS.pool.length = 0; CS.caps.length = 0; CS.sonar = null; return;
+  }
+  if (!CS.nodes) { CS.nodes = csBuild(true); CS.next = AC.currentTime + 0.05; CS.step = 0; }
+  const N = CS.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
+  for (const f of G.fx) {
+    if (f.cs) continue; f.cs = 1;
+    if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
+    if (f.k === 'ring') CS.caps.push({ mine: !awatch() && f.c === PLAYER, pan: screenPan(f.x, f.y) });
+    else if (f.k === 'elim') csSink(N, now + 0.02);
+  }
+  if (CS.caps.length > 2) CS.caps.splice(0, CS.caps.length - 2);
+  if (CS.next < now - 0.25) { const k = Math.ceil((now - CS.next) / CS_STEP); CS.next += k * CS_STEP; CS.step += k; }
+  while (CS.next < now + 0.08) { csSlot(N, CS.next, heat); CS.next += CS_STEP; CS.step++; }
+}
+function cosmosPreview() {                            // a pad chord swelling, three pings echoing away, a sonar pulse
+  const N = csBuild(false), t = AC.currentTime + 0.05;
+  CS_CHORDS[0].forEach(m => { const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = hz(m); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.03, t + 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + 3); o.connect(g); g.connect(N.dry); g.connect(N.wet); o.start(t); o.stop(t + 3.1); });
+  [9, 11, 13].forEach((d, i) => csPing(N, t + 0.2 + i * CS_STEP, csMidi(d), 0.06, (i - 1) * 0.4));
+  csSonar(N, t + 1.6, 0.14, 0);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 7000);
+}
+
 function syncRivals() {
   const open = watching ? watchRivals : settings.rivals;
   $('rivals').hidden = !open;
@@ -3390,17 +4254,19 @@ function syncSound() {
 let lastPreview = 0;
 function previewSound() {                       // a sample bleep and bloop so you can hear the setting
   const now = performance.now();
-  const gap = settings.tone === 'overdrive' ? 2400 : settings.tone === 'drift' ? 2500 : 140;
+  const gap = ({ overdrive: 2400, drift: 2500, chip: 2200, cosmos: 3200 })[settings.tone] || 140;
   if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < gap) return;
   lastPreview = now;
   previewing = true;                                  // a preview is always heard at full level, not through the menu mix
   try {
     if (settings.tone === 'overdrive') { odPreview(); return; }
     if (settings.tone === 'drift') { driftPreview(); return; }
-    const soft = settings.tone === 'soft', f = hz(ROOT[PLAYER] - (soft ? 12 : 0) + pick(PENTA));
-    tone(f, f * 0.94, soft ? 0.1 : 0.075, 0.055, soft ? 'sine' : 'triangle', 0, soft ? 0.018 : 0.008);
+    if (settings.tone === 'chip') { chipPreview(); return; }
+    if (settings.tone === 'cosmos') { cosmosPreview(); return; }
+    const f = hz(ROOT[PLAYER] - 12 + pick(PENTA));
+    tone(f, f * 0.94, 0.085, 0.055, 'triangle', 0, 0.014);
   } finally { previewing = false; }
-  setTimeout(() => { if (AC) { previewing = true; try { const b = hz(45 + pick(PENTA)); tone(b * (settings.tone === 'soft' ? 1.4 : 1.7), b, settings.tone === 'soft' ? 0.2 : 0.16, 0.08, 'sine', 0, settings.tone === 'soft' ? 0.02 : 0.008); } finally { previewing = false; } } }, 120);
+  setTimeout(() => { if (AC) { previewing = true; try { const b = hz(45 + pick(PENTA)); tone(b * 1.45, b, 0.19, 0.08, 'sine', 0, 0.016); } finally { previewing = false; } } }, 120);
 }
 
 // ---- TUNING PANEL (hidden): long-press the build number. REMOVE BEFORE STORE PACKAGING (see the section in the markup) ----
@@ -3434,18 +4300,17 @@ const SHAPE_INFO = { random: 'A different shape each time you roll the map.', co
   river: 'A river splits the map in two, with a few crossings to fight over.' };
 const SPECIAL_INFO = { on: 'Special bases are scattered across the map: Fortress, Forge, Beacon and Relay. Tap the i to see what each does.', off: 'No special bases. Every base is equal.' };
 const SETTINGS_INFO = {
-  tone: { bright: 'Crisp bleeps and bloops.', soft: 'The same sounds, rounder and quieter.', overdrive: 'A dark beat that builds with the fighting. Pairs with Overload.', drift: 'Gentle plucked notes in a big quiet room. Pairs with Atlas.' },
-  visual: { classic: 'The original look: clean squares and triangles.', spark: 'Soft glows and light trails.', overload: 'Maximum chaos: beat-synced flashes, lightning and shakes. Team colors stay true.', atlas: 'A surveyor\'s chart: influence washes and plotted courses.' },
+  tone: { simple: 'Soft, rounded bleeps and bloops. Pairs with Classic.', overdrive: 'A dark beat that builds with the fighting. Pairs with Overload.', drift: 'Gentle plucked notes in a big quiet room. Pairs with Atlas.',
+    chip: 'An 8-bit soundtrack: square waves, noise drums and a bouncing bass. Pairs with Pixel.', cosmos: 'Glassy pads, a deep drone and sonar pings out in space. Pairs with Nebula.' },
+  visual: { classic: 'Clean squares and triangles, with soft glows, light trails and sparks.', overload: 'Maximum chaos: beat-synced flashes, lightning and shakes. Team colors stay true.', atlas: 'A surveyor\'s chart: influence washes and plotted courses.',
+    pixel: 'Chunky pixels and scanlines, like an old console. Pairs with Chip.', nebula: 'Deep space: suns, drifting stars and supernova captures. Pairs with Cosmos.' },
   menuSound: { on: 'The match running behind the menus plays quietly and muffled, so the game is never silent.', off: 'The menus are silent.' },
+  colors: { standard: 'The original blue, red, green, yellow and purple.', safe: 'Blue, orange, teal, yellow and magenta, picked to stay apart for color-blind players.', contrast: 'Brighter colors, bolder lines and stronger text.' },
+  symbols: { off: 'Teams are told apart by color alone.', on: 'Each color also gets its own shape. Empty bases are hollow squares.' },
   screen: { auto: 'Follows your phone\'s rotation lock.', landscape: 'Keeps the game sideways however you hold the phone. Installed app only.', portrait: 'Keeps the game upright. Installed app only.' } };
 const SPECIAL_SHORT = { fortress: 'More health', forge: 'More troops', beacon: 'More XP', relay: 'Faster troops' };
-const SPECIAL_ICON = {
-  fortress: '<path d="M3 10V3h7M18 3h7v7M25 18v7h-7M10 25H3v-7"/><rect x="11" y="11" width="6" height="6" fill="#e8e8ec" stroke="none"/>',
-  forge: '<path d="M14 3 26 23H2z"/><rect x="11" y="13" width="6" height="6" fill="#e8e8ec" stroke="none"/>',
-  beacon: '<path d="M14 2 26 14 14 26 2 14z"/><rect x="11" y="11" width="6" height="6" fill="#e8e8ec" stroke="none"/>',
-  relay: '<path d="M2 14 8 9v10zM26 14 20 9v10z" fill="#e8e8ec" stroke="none"/><rect x="11" y="11" width="6" height="6" fill="#e8e8ec" stroke="none"/>' };
 function renderSpecials() {
-  $('specList').innerHTML = Object.keys(SPECIALS).map(k => `<div class="spec"><svg viewBox="0 0 28 28" aria-hidden="true">${SPECIAL_ICON[k]}</svg><div><b>${SPECIALS[k].name} <em>${SPECIAL_SHORT[k]}</em></b><span>${SPECIALS[k].text}</span></div></div>`).join('');
+  $('specList').innerHTML = Object.keys(SPECIALS).map(k => `<div class="spec"><svg viewBox="0 0 28 28" aria-hidden="true">${glyphSvg(k)}</svg><div><b>${SPECIALS[k].name} <em>${SPECIAL_SHORT[k]}</em></b><span>${SPECIALS[k].text}</span></div></div>`).join('');
 }
 const SIZE_LABEL = { small: 'Small', medium: 'Medium', large: 'Large', huge: 'Huge' }, DIFF_LABEL = { easy: 'Easy', normal: 'Normal', hard: 'Hard', brutal: 'Brutal', random: 'Random' };
 function syncSeg() {
@@ -3489,7 +4354,7 @@ function syncText(m) {
     $('classicSize').textContent = `${t} colors: you and ${t - 1} rivals, ${SIZE_BASES[c.size]}.${c.size === 'large' ? ' Matches may be long.' : ''} Tap a size again for a new map.`;
     $('classicDiff').textContent = DIFF_INFO[c.diff];
   } else if (m === 'custom') {
-    const n = MODS.filter(x => c.mods[x.k]).length; $('sumRules').textContent = n ? n + ' on' : '';     // the one setting that can hide behind a tap
+    const n = MODS.filter(x => c.mods[x.k]).length + (otActive('custom') ? 1 : 0); $('sumRules').textContent = n ? n + ' on' : '';     // the one setting that can hide behind a tap
     renderHints('custom');
   } else {
     $('bSpecRules').textContent = modsLabel('spec');
@@ -3617,7 +4482,7 @@ function renderStats() {
     const rate = (wins, apps) => apps ? wins / apps : 0;
     h += `<div class="tiles">${tile(w.matches, 'Matches watched')}</div><h3>Win rate by color</h3><div class="bars">` +
       w.byColor.map((n, i) => { const r = rate(n, w.appColor[i]);
-        return `<i class="sw" style="background:${PALETTE[i].c}"></i><span class="bar"><i style="width:${100 * r}%;background:${PALETTE[i].c}"></i></span><b>${Math.round(100 * r)}%</b>`; }).join('') +
+        return `<i class="sw" data-s="${i}" style="background:${PALETTE[i].c}"></i><span class="bar"><i style="width:${100 * r}%;background:${PALETTE[i].c}"></i></span><b>${Math.round(100 * r)}%</b>`; }).join('') +
       `</div><h3>Win rate by personality</h3><div>` +
       Object.keys(Object.assign({}, w.byStyle, w.appStyle)).map(k => [k, w.byStyle[k] || 0, w.appStyle[k] || 0])
         .sort((a, b) => rate(b[1], b[2]) - rate(a[1], a[2]) || b[1] - a[1])
@@ -3734,7 +4599,8 @@ function momentText(e) {
   if (e.k === 'lead') return `${who(e.a)} took the lead`;
   return `${who(e.a)} pulled back from a losing fight`;
 }
-function momentColor(e) { if (e.k === 'overtime') return '#ffcd30'; const i = e.k === 'out' && (e.a == null || e.a < 0) ? e.b : e.a; return colorOf(i == null ? -1 : i); }
+function momentTeam(e) { if (e.k === 'overtime') return -1; const i = e.k === 'out' && (e.a == null || e.a < 0) ? e.b : e.a; return i == null ? -1 : i; }
+function momentColor(e) { return e.k === 'overtime' ? '#ffcd30' : colorOf(momentTeam(e)); }
 function drawTimeline(moments) {
   const c = $('tl'), r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 3);
   if (!r.width) return;
@@ -3763,7 +4629,7 @@ function showEnd() {
   const P = G.teams[PLAYER], N = G.nodes.length, t = $('endTitle'), sub = $('endSub');
   if (watching) {                                   // spectated matches go into the AI vs AI stats, not your record
     const w = G.winner, T = G.teams[w];
-    t.innerHTML = `<span class="sw" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`;
+    t.innerHTML = `<span class="sw" data-s="${TEAM_SLOT[w]}" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`;
     sub.textContent = `${TEAM_NAMES[w]} (${T.style.name}) took all ${N} bases in ${fmt(G.t)} and knocked out ${T.kills} troops along the way.`;
     const sw = stats.watch;
     sw.matches++; sw.byColor[w]++; sw.byStyle[T.style.name] = (sw.byStyle[T.style.name] || 0) + 1;
@@ -3776,20 +4642,20 @@ function showEnd() {
       if (win && (!p.fastest[G.sizeName] || G.t < p.fastest[G.sizeName])) p.fastest[G.sizeName] = Math.round(G.t);
     }
     if (win) {
-      t.innerHTML = `<span class="sw" style="background:${TEAM_COLORS[PLAYER]}"></span>The map is ${TEAM_NAMES[PLAYER].toLowerCase()}`;
+      t.innerHTML = `<span class="sw" data-s="${TEAM_SLOT[PLAYER]}" style="background:${TEAM_COLORS[PLAYER]}"></span>The map is ${TEAM_NAMES[PLAYER].toLowerCase()}`;
       sub.textContent = `You took all ${N} bases in ${fmt(G.t)} and knocked out ${P.kills} troops along the way.`;
     } else {
       const w = G.winner;
       t.innerHTML = w != null
-        ? `<span class="sw" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`
-        : `<span class="sw" style="background:${TEAM_COLORS[PLAYER]}"></span>${TEAM_NAMES[PLAYER]} is gone`;
+        ? `<span class="sw" data-s="${TEAM_SLOT[w]}" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`
+        : `<span class="sw" data-s="${TEAM_SLOT[PLAYER]}" style="background:${TEAM_COLORS[PLAYER]}"></span>${TEAM_NAMES[PLAYER]} is gone`;
       sub.textContent = `You lasted ${fmt(G.t)}, held up to ${G.peak} ${G.peak === 1 ? 'base' : 'bases'} at once and knocked out ${P.kills} troops.`;
     }
   }
   save('ice-stats', stats);
   if (G.endReason === 'crown') {                    // a King of the hill finish
     const w = G.winner, you = !watching && w === PLAYER;
-    t.innerHTML = `<span class="sw" style="background:${TEAM_COLORS[w]}"></span>${you ? 'You hold' : TEAM_NAMES[w] + ' holds'} the crown`;
+    t.innerHTML = `<span class="sw" data-s="${TEAM_SLOT[w]}" style="background:${TEAM_COLORS[w]}"></span>${you ? 'You hold' : TEAM_NAMES[w] + ' holds'} the crown`;
     sub.textContent = `${you ? 'You' : TEAM_NAMES[w]} held the crown for ${G.kothTarget} seconds, ending the match at ${fmt(G.t)} with ${G.teams[w].bases} of ${G.nodes.length} bases.`;
   }
   if (G.diffName === 'random' && !G.scenarioId) {   // the secret rolls, revealed
@@ -3806,7 +4672,7 @@ function showEnd() {
       save('ice-bests', bests);
     }
     const n = st.filter(Boolean).length, fresh = ladder[G.scenarioId].filter(Boolean).length - prev.filter(Boolean).length;
-    t.innerHTML = `<span class="sw" style="background:${st[0] ? '#ffcd30' : TEAM_COLORS[PLAYER]}"></span>${st[0] ? 'Challenge complete' : 'Challenge failed'}`;
+    t.innerHTML = `<span class="sw"${st[0] ? '' : ` data-s="${TEAM_SLOT[PLAYER]}"`} style="background:${st[0] ? '#ffcd30' : TEAM_COLORS[PLAYER]}"></span>${st[0] ? 'Challenge complete' : 'Challenge failed'}`;
     sub.textContent = st[0] ? `${sc.name}: ${n} of 3 stars in ${fmt(G.t)}${fresh > 0 ? `, ${fresh} new.` : '.'}` : `${sc.name}: you lasted ${fmt(G.t)}. Give it another go.`;
     challengeMoments = sc.stars.map((g, i) => `<li><time class="st">${st[i] ? '&#9733;' : '&#9734;'}</time><i style="background:${st[i] ? '#ffcd30' : '#3a3a3e'}"></i><span>${g.t}</span></li>`).join('');
     const nx = SCENARIOS[SCENARIOS.findIndex(x => x.id === G.scenarioId) + 1];
@@ -3814,7 +4680,7 @@ function showEnd() {
   }
   $('bNext').hidden = !nextScen;
   const moments = pickMoments();
-  $('moments').innerHTML = challengeMoments || moments.map(m => `<li><time>${fmt(m.t)}</time><i style="background:${momentColor(m)}"></i><span>${momentText(m)}</span></li>`).join('');
+  $('moments').innerHTML = challengeMoments || moments.map(m => `<li><time>${fmt(m.t)}</time><i data-s="${slotOf(momentTeam(m))}" style="background:${momentColor(m)}"></i><span>${momentText(m)}</span></li>`).join('');
   show('end', true); $('bAgain').focus({ preventScroll: true });
   requestAnimationFrame(() => drawTimeline(moments));
 }
@@ -3862,7 +4728,7 @@ function renderInfo() {
   const blind = fogOn() && !n.vis, ow = blind ? n.sOwner : n.owner;       // out of sight: only what you last saw
   const owner = ow >= 0 ? (ow === PLAYER && !watching ? 'You' : TEAM_NAMES[ow]) : 'Unclaimed', col = colorOf(ow);
   const def = ow >= 0 ? n.pres[ow + 1] : n.nCount;
-  el.innerHTML = `<div class="ih"><i class="sw" style="background:${col}"></i><b>${sp ? sp.name : n.crown ? 'The crown' : 'Base'}</b><span>${owner}</span></div>` +
+  el.innerHTML = `<div class="ih"><i class="sw" data-s="${slotOf(ow)}" style="background:${col}"></i><b>${sp ? sp.name : n.crown ? 'The crown' : 'Base'}</b><span>${owner}</span></div>` +
     (blind ? `<div class="il">Out of sight. This is what you last saw.</div>` :
       `<div class="ib"><i style="width:${Math.round(100 * n.hp / n.maxHp)}%;background:${col}"></i></div>` +
       `<div class="il">Health ${Math.round(n.hp)} / ${n.maxHp} &middot; Defenders ${def}</div>`) +
@@ -3902,7 +4768,7 @@ function handleTap(px, py) {
     if (r.edges.length) hl.push({ edges: r.edges, b: now });
     if (dbl) {
       setLock(PLAYER, n.id);
-      if (!lockHinted) { lockHinted = true; toast('Locked on. New troops will head there automatically.', TEAM_COLORS[PLAYER]); }
+      if (!lockHinted) { lockHinted = true; toast('Locked on. New troops will head there automatically.', TEAM_COLORS[PLAYER], PLAYER); }
     } else if (G.lock[PLAYER] != null && G.lock[PLAYER] !== n.id) setLock(PLAYER, null); // new orders cancel the lock
   } else uiFx.push({ k: 'no', x: n.x, y: n.y, b: now });
 }
@@ -4000,6 +4866,7 @@ document.querySelectorAll('.seg[data-glob]').forEach(seg => seg.addEventListener
   if (key === 'tone') { audioOn(); syncSound(); lastPreview = 0; setTimeout(previewSound, 30); }
   if (key === 'menuSound' && b.dataset.v === 'on') audioOn();
   if (key === 'screen') applyScreenLock();
+  if (key === 'colors' || key === 'symbols') applyLook();
   settingsKey = key; syncGlobalSeg(); renderSettingsHint();
 }));
 $('bResume').addEventListener('click', resume);
@@ -4109,7 +4976,7 @@ function frame(nowMs) {
   stepFling(dt);
   if (G && fogOn()) computeFog();
   if (G) playSfx(nowMs, dt);
-  if (AC) { odTick(); driftClock(); mixTick(); }
+  if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); mixTick(); }
   const fsw = G ? fogSwap() : null;                 // under fog, bases out of sight are drawn as last seen
   try { draw(nowMs / 1000); if (mode === 'play' || mode === 'paused') drawMinimap(); } finally { fogRestore(fsw); }
   perfTick(nowMs, tDraw - tSim, performance.now() - tDraw);
@@ -4118,8 +4985,8 @@ function frame(nowMs) {
   requestAnimationFrame(frame);
 }
 
-syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
-if (PERF) window.__audio = () => ({ AC, master, mg, mlp, bus, pbus });   // lets the ?perf mode measure output levels
+syncLook(); syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
+if (PERF) window.__audio = () => ({ AC, master, lim, mg, mlp, bus, pbus });   // lets the ?perf mode measure output levels
 if (PERF) window.__dbg = () => ({ mode, pvOnly, stack: stack.slice(), backPos, draining, t: G ? G.t : 0, over: G ? G.over : null, parts: parts.length, fx: G ? G.fx.length : 0, pvOwners: pvOwners ? pvOwners.length : 0, hasG: !!G });
 if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$('mm').hidden });
 if (PERF) window.__scr = (x, y) => toScreen(x, y);          // tests: where a world point lands on screen
