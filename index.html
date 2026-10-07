@@ -497,7 +497,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <p class="about aboutcard" id="aboutCard" hidden><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to play</b>.</p>
     </div>
-    <div class="ver"><span class="build" id="buildNo">Build 46.4</span></div>
+    <div class="ver"><span class="build" id="buildNo">Build 46.5</span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -4910,6 +4910,7 @@ function longPress(g) {                              // press and hold on a base
   g.kind = 'held'; hover = null; showInfo(n);
   buzz('press');
 }
+const atBase = (t, id) => { const b = G.nodes[id]; return t.team === PLAYER && (Math.hypot(t.x - b.x, t.y - b.y) < 60 || (t.home === id && !t.path.length)); };   // troops standing at (or just leaving) a base
 const selValid = () => selBase != null && G && selG === G && mode === 'play' && G.nodes[selBase].owner === PLAYER;
 function handleTap(px, py) {
   if (mode !== 'play' || !G || G.over) return;
@@ -4922,13 +4923,13 @@ function handleTap(px, py) {
   lastTap = { id: dbl ? -1 : n.id, t: nowMs };
   let from = null;
   if (selValid()) { if (n.id !== selBase) from = selBase; selBase = null; }                                  // a base was selected: this tap sends from it (or, on the same base, regroups)
-  else if (n.owner === PLAYER && !dbl && G.troops.some(t => t.team === PLAYER && t.home === n.id && !t.path.length)) {
+  else if (n.owner === PLAYER && !dbl && G.troops.some(t => atBase(t, n.id))) {
     selBase = n.id; selG = G; buzz('tap');                                                                    // select: the next tap says where
     if (!selHinted) { selHinted = true; toast('Selected. Tap where these troops should go. Tap here again to regroup.', TEAM_COLORS[PLAYER], PLAYER); }
     return;
   }
   if (dbl && lastFromSel === n.id) { lastFromSel = -1; setLock(PLAYER, n.id); return; }                         // double-tap after a send from a selection: just lock on
-  const r = command(PLAYER, n.id, settings.send, from == null ? undefined : t => t.home === from && !t.path.length);
+  const r = command(PLAYER, n.id, settings.send, from == null ? undefined : t => atBase(t, from));
   lastFromSel = r && from != null ? n.id : -1;
   if (r) {
     buzz('tap');
