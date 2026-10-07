@@ -497,7 +497,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <p class="about aboutcard" id="aboutCard" hidden><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to play</b>.</p>
     </div>
-    <div class="ver"><span class="build" id="buildNo">Build 46.3</span></div>
+    <div class="ver"><span class="build" id="buildNo">Build 46.4</span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -631,7 +631,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <h3 class="sub">Rules</h3>
     <ul class="how">
       <li><b>Goal.</b> Take every base.</li>
-      <li><b>Send troops.</b> Tap a base within your reach. Tap your own base to regroup. Double-tap to lock on: every new troop heads there until it's yours.</li>
+      <li><b>Send troops.</b> Tap a base within your reach. To send only one base's troops, tap that base first, then tap where they should go. Tap your own base again to regroup. Double-tap to lock on: every new troop heads there until it's yours.</li>
       <li><b>Take a base.</b> Beat its defenders, then wear the base down. Deliver the final blow to claim it.</li>
       <li><b>Get stronger.</b> Eliminate troops to gain XP. A full bar earns 1 skill point to spend on Health, Speed or Damage. Claim bases to increase your army.</li>
       <li><b>Look around.</b> Pinch and drag. The map button shows a minimap, and a double-tap on it shows everything. Press and hold any base to see what it is.</li>
@@ -1952,6 +1952,7 @@ let F = { x: 0, y: 0, w: 1, h: 1 }, s0 = 1, rot = false, cam = { z: 1, cu: W / 2
 const zmax = () => 3 * Math.max(1, W / 1000);
 let mode = 'demo', speedMul = 1, last = performance.now(), acc = 0;
 let watching = false, watchRivals = true;   // watching: an AI-only match you spectate
+let selBase = null, selG = null, lastFromSel = -1, selHinted = false;     // select-then-send: the base whose troops your next tap will send
 let hover = null, uiFx = [], hl = [], lastHud = 0, toastTimer = 0, lastTap = { id: -1, t: 0 }, lockHinted = false;
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Look settings: Colors picks the palette (High contrast also bolds the map's lines and sizes), Team symbols gives every color its own shape.
@@ -2892,6 +2893,10 @@ function draw(now) {
     ctx.stroke();
   }
 
+  if (selValid()) {
+    const sn = G.nodes[selBase]; ctx.save(); ctx.strokeStyle = hexA(TEAM_COLORS[PLAYER], .95); ctx.lineWidth = 2; ctx.setLineDash([5, 4]); ctx.lineDashOffset = -performance.now() / 60;
+    ctx.beginPath(); ctx.arc(sn.x, sn.y, 24, 0, 6.2832); ctx.stroke(); ctx.restore();
+  }
   if (hover && mode === 'play') {
     ctx.save(); ctx.translate(hover.x, hover.y); ctx.rotate(Math.PI / 4);
     ctx.strokeStyle = hexA(TEAM_COLORS[PLAYER], .8); ctx.lineWidth = 1.3; ctx.setLineDash([3, 3]);
@@ -3406,6 +3411,7 @@ function pxMarkers(now, tk) {                         // send highlights, the ba
     x.fill();
   }
   x.globalAlpha = 1;
+  if (selValid()) { const sn = G.nodes[selBase]; pxp(sn.x, sn.y); x.fillStyle = TEAM_COLORS[PLAYER]; x.beginPath(); pxBrackets(PXX, PXY, 10 + (tk >> 2) % 2, 3); x.fill(); }
   if (hover && mode === 'play') { pxp(hover.x, hover.y); x.fillStyle = TEAM_COLORS[PLAYER]; x.beginPath(); pxBrackets(PXX, PXY, 7 + (tk >> 2) % 2, 3); x.fill(); }
   for (let i = 0; i < 5; i++) {
     const L = G.lock[i];
@@ -4682,7 +4688,7 @@ function startGame(watch, scen, modeKey, prac) {
   peekUntil = G.scenarioId ? performance.now() + 7000 : 0;       // a challenge opens its rules for a few seconds, so you see the goals
   syncRivals();
   if (!speeds().includes(speedMul)) speedMul = 1;
-  mode = 'play'; acc = 0; hl = []; uiFx = []; hover = null; last = performance.now();
+  mode = 'play'; acc = 0; hl = []; uiFx = []; hover = null; selBase = null; last = performance.now();
   syncCtrl(); resetCam(); layout();
   if (!watching) {                                 // you start zoomed in on your home base
     const home = G.nodes[G.homes[PLAYER]];
@@ -4692,7 +4698,7 @@ function startGame(watch, scen, modeKey, prac) {
 }
 function pause() {
   if (mode !== 'play') return;
-  mode = 'paused'; hover = null; hideInfo();
+  mode = 'paused'; hover = null; selBase = null; hideInfo();
   resetStack('scrPause'); show('menu', true);
 }
 function resume() {
@@ -4904,16 +4910,26 @@ function longPress(g) {                              // press and hold on a base
   g.kind = 'held'; hover = null; showInfo(n);
   buzz('press');
 }
+const selValid = () => selBase != null && G && selG === G && mode === 'play' && G.nodes[selBase].owner === PLAYER;
 function handleTap(px, py) {
   if (mode !== 'play' || !G || G.over) return;
   audioOn();
   if (watching) return;                             // spectating: look around, no orders
   for (const a of arrowHits) if ((a.x - px) ** 2 + (a.y - py) ** 2 < 30 * 30) { centerOn(a.n.x, a.n.y); return; }
-  const n = pickNode(px, py); if (!n) return;
+  const n = pickNode(px, py); if (!n) { selBase = null; lastTap = { id: -1, t: 0 }; return; }
   const nowMs = performance.now(), now = nowMs / 1000;
   const dbl = lastTap.id === n.id && nowMs - lastTap.t < 380;
   lastTap = { id: dbl ? -1 : n.id, t: nowMs };
-  const r = command(PLAYER, n.id, settings.send);
+  let from = null;
+  if (selValid()) { if (n.id !== selBase) from = selBase; selBase = null; }                                  // a base was selected: this tap sends from it (or, on the same base, regroups)
+  else if (n.owner === PLAYER && !dbl && G.troops.some(t => t.team === PLAYER && t.home === n.id && !t.path.length)) {
+    selBase = n.id; selG = G; buzz('tap');                                                                    // select: the next tap says where
+    if (!selHinted) { selHinted = true; toast('Selected. Tap where these troops should go. Tap here again to regroup.', TEAM_COLORS[PLAYER], PLAYER); }
+    return;
+  }
+  if (dbl && lastFromSel === n.id) { lastFromSel = -1; setLock(PLAYER, n.id); return; }                         // double-tap after a send from a selection: just lock on
+  const r = command(PLAYER, n.id, settings.send, from == null ? undefined : t => t.home === from && !t.path.length);
+  lastFromSel = r && from != null ? n.id : -1;
   if (r) {
     buzz('tap');
     uiFx.push({ k: 'go', x: n.x, y: n.y, b: now });
@@ -5258,7 +5274,7 @@ function frame(nowMs) {
 syncLook(); syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
 if (PERF) window.__audio = () => ({ AC, master, lim, mg, mlp, bus, pbus });   // lets the ?perf mode measure output levels
 if (PERF) window.__dbg = () => ({ mode, pvOnly, stack: stack.slice(), backPos, draining, t: G ? G.t : 0, over: G ? G.over : null, parts: parts.length, fx: G ? G.fx.length : 0, pvOwners: pvOwners ? pvOwners.length : 0, hasG: !!G });
-if (PERF) { window.__coach = () => coach ? { i: coach.i, n: coach.lesson.steps.length, id: coach.lesson.id } : null; window.__hud = hud; window.__info = showInfo; window.__coachAim = () => coach ? { hl: coach.hlId, ph: $('coachPh').textContent } : null; window.__txt = () => ({ DIFF_INFO, PERSONA_INFO, SHAPE_INFO, SETTINGS_INFO, SPECIAL_INFO }); window.__mods = () => MODS; window.__coachTo = n => { coach.i = n; coach.g0 = G.t; coachShow(); }; }       // test hooks
+if (PERF) { window.__coach = () => coach ? { i: coach.i, n: coach.lesson.steps.length, id: coach.lesson.id } : null; window.__hud = hud; window.__info = showInfo; window.__coachAim = () => coach ? { hl: coach.hlId, ph: $('coachPh').textContent } : null; window.__txt = () => ({ DIFF_INFO, PERSONA_INFO, SHAPE_INFO, SETTINGS_INFO, SPECIAL_INFO }); window.__mods = () => MODS; window.__sel = () => selBase; window.__coachTo = n => { coach.i = n; coach.g0 = G.t; coachShow(); }; }       // test hooks
 if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$('mm').hidden });
 if (PERF) window.__scr = (x, y) => toScreen(x, y);
 if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; };          // tests: where a world point lands on screen
