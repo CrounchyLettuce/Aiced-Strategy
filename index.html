@@ -178,6 +178,8 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .btns button { flex: 1; min-height: 50px; border-radius: 4px; font-size: 16px; font-weight: 600; }
 .primary { background: var(--blue); color: #fff; }
 .primary:active { filter: brightness(.9); }
+.rollbtn { margin-left: auto; display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid var(--faint); border-radius: 3px; background: rgba(0,0,0,.35); font-size: 13px; color: var(--dim); }
+.rollbtn svg { width: 16px; height: 16px; }
 .ghost { border: 1px solid var(--faint); background: rgba(0,0,0,.35); }
 .how { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; line-height: 1.45; color: var(--dim); }
 .how b { color: var(--ink); font-weight: 500; }
@@ -497,7 +499,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <p class="about aboutcard" id="aboutCard" hidden><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to play</b>.</p>
     </div>
-    <div class="ver"><span class="build" id="buildNo">Build 46.5</span></div>
+    <div class="ver"><span class="build" id="buildNo">Build 46.6</span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -529,7 +531,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
   </section>
 
   <section class="screen side" id="scrCustom" hidden>
-    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Custom</h2></header>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Custom</h2><button id="bRoll" class="rollbtn" aria-label="Randomize every option"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="2.5"/><circle cx="5.5" cy="5.5" r=".9" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r=".9" fill="currentColor" stroke="none"/><circle cx="10.5" cy="10.5" r=".9" fill="currentColor" stroke="none"/></svg>Randomize</button></header>
     <div class="opts">
       <div class="opt"><span>Your team</span><div class="seg swatches" data-mode="custom" data-key="color"><button data-v="blue" aria-label="Blue"><i style="background:#3577ff"></i></button><button data-v="red" aria-label="Red"><i style="background:#f2433c"></i></button><button data-v="green" aria-label="Green"><i style="background:#2db857"></i></button><button data-v="yellow" aria-label="Yellow"><i style="background:#ffcd30"></i></button><button data-v="purple" aria-label="Purple"><i style="background:#a656ff"></i></button></div></div>
       <button class="catrow" id="catEnemies" data-go="scrEnemies"><span>Enemies</span><b></b></button>
@@ -5040,6 +5042,23 @@ document.querySelectorAll('.seg[data-glob]').forEach(seg => seg.addEventListener
   if (key === 'colors' || key === 'symbols') applyLook();
   settingsKey = key; syncGlobalSeg(); renderSettingsHint();
 }));
+// Randomize (Custom): every option rolled at once, weighted away from the miserable combinations; your team color is not touched
+function rollCustom() {
+  const c = settings.custom, vals = k => [...document.querySelectorAll(`.seg[data-mode=custom][data-key=${k}] button`)].map(b => b.dataset.v);
+  const pickW = (items, w) => { let r = Math.random() * w.reduce((a, b) => a + b, 0); for (let i = 0; i < items.length; i++) if ((r -= w[i]) < 0) return items[i]; return items[items.length - 1]; };
+  const uni = k => { const v = vals(k); return v[(Math.random() * v.length) | 0]; };
+  c.size = uni('size'); c.shape = uni('shape'); c.persona = uni('persona'); c.seed = rnd32();
+  c.diff = pickW(DIFFS, [0.2, 0.35, 0.3, 0.15]);
+  c.opp = c.size === 'small' ? pickW(['auto', '1', '2'], [0.3, 0.3, 0.4]) : pickW(['auto', '1', '2', '3', '4'], [0.25, 0.2, 0.25, 0.2, 0.1]);
+  c.special = Math.random() < 0.7 ? 'on' : 'off';
+  c.mods = Object.assign({}, MODS_OFF); let on = 0;
+  for (const m of [...MODS].sort(() => Math.random() - 0.5)) if (on < 2 && Math.random() < 0.25) { c.mods[m.k] = true; on++; }
+  c.ot = c.size === 'large' || c.size === 'huge' ? Math.random() < 0.85 : Math.random() < 0.12;
+  save('ice-settings', settings); syncSeg(); syncText('custom'); buildPreview('custom');
+  const t = teamsFor('custom'), mn = MODS.filter(m => c.mods[m.k]).map(m => m.n.toLowerCase()); if (otActive('custom')) mn.push('overtime');
+  $('hintCustom').textContent = `Rolled: ${SIZE_LABEL[c.size]} ${c.shape === 'random' ? 'map' : c.shape}, ${t - 1} ${t === 2 ? 'rival' : 'rivals'}, ${c.diff}${c.special === 'on' ? ', special bases' : ''}${mn.length ? ', ' + mn.join(', ') : ''}.`;
+}
+$('bRoll').addEventListener('click', rollCustom);
 $('bResume').addEventListener('click', resume);
 // Screen lock: Auto leaves it to the phone's own rotation lock. Landscape and Portrait lock the game (the installed app; a browser tab refuses).
 function applyScreenLock() {
