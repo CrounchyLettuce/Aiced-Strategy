@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>ICE</title>
+<title>Aiced Strategy</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -69,6 +69,7 @@ body { position: relative; }
 .statbtn { display: flex; flex-direction: column; gap: 7px; width: 100%; text-align: left; }
 .statbtn .chev { margin-left: auto; width: 12px; height: 12px; align-self: center; color: var(--dim); transition: transform .2s; }
 .statbtn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.statbtn.noexp .chev { display: none; }
 .rivals[hidden] { display: none; }
 .rivals .hd svg { width: 8px; height: 8px; }
 .rivals { display: grid; grid-template-columns: 8px repeat(4, 1fr); column-gap: 4px; row-gap: 3px; align-items: center; font-size: 12px; font-weight: 500; margin-top: 2px; }
@@ -136,7 +137,9 @@ body { position: relative; }
 .small { min-height: 44px; border-radius: 4px; font-size: 14px; color: var(--dim); }
 .mark { display: flex; align-items: center; gap: 14px; }
 .mark svg { width: 44px; height: 44px; flex: none; }
-.mark h1 { margin: 0; font-size: 64px; line-height: .9; font-weight: 700; letter-spacing: .14em; }
+.mark h1 { margin: 0; font-size: 64px; line-height: .9; font-weight: 700; letter-spacing: .06em; }
+.mark .mt { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.mark .tag { font-size: 14px; letter-spacing: .32em; text-transform: uppercase; color: var(--dim); padding-left: 3px; }
 .homeL, .homeR { display: flex; flex-direction: column; gap: 10px; }
 .homeL { gap: 14px; }
 .ghost:active, .back:active { background: rgba(40,40,44,.8); }
@@ -178,6 +181,16 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .rec { font-size: 13px; color: var(--dim); min-height: 1em; }
 .rec .build { float: right; opacity: .7; padding: 12px 8px; margin: -12px -8px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 
+.about { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--dim); }
+.about b { color: var(--ink); font-weight: 500; }
+.newhere { margin: 0; padding: 8px 0; font-size: 13px; color: var(--ink); cursor: pointer; }
+.newhere b { color: var(--blue); font-weight: 600; }
+.ghost.nudge { border-color: var(--blue); }
+.screen h3.sub { margin: 4px 0 0; font-size: 13px; font-weight: 500; color: var(--dim); }
+#coach { top: calc(env(safe-area-inset-top, 0px) + 58px); left: 50%; transform: translateX(-50%); width: max-content; max-width: min(46vw, 380px); display: flex; gap: 10px; align-items: center; padding: 8px 10px; font-size: 13px; line-height: 1.35; z-index: 2; }
+#coach[hidden] { display: none; }
+#coach button { flex: none; min-height: 32px; padding: 0 10px; border: 1px solid var(--faint); border-radius: 3px; font-size: 12px; color: var(--dim); }
+@media (orientation: portrait) { #coach { top: calc(env(safe-area-inset-top, 0px) + 118px); max-width: calc(100vw - 20px); } }
 #statsBody { display: flex; flex-direction: column; gap: 10px; }
 #statsBody h3 { margin: 6px 0 0; font-size: 13px; font-weight: 500; color: var(--dim); }
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
@@ -195,6 +208,11 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .endcard { width: min(100%, 440px); gap: 12px; }
 .endcard h2 { margin: 0; font-size: 30px; line-height: 1.05; font-weight: 700; letter-spacing: .02em; }
 .endcard p { margin: 0; font-size: 15px; line-height: 1.45; color: var(--dim); max-width: 42ch; }
+.endriv h3 { margin: 0 0 6px; font-size: 12px; font-weight: 500; color: var(--dim); letter-spacing: .04em; }
+.endriv .rr { display: grid; grid-template-columns: 1fr auto; gap: 8px; font-size: 13px; padding: 3px 0; }
+.endriv .rr em { font-style: normal; color: var(--dim); }
+.endline { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+.endline b { color: var(--ink); font-weight: 600; letter-spacing: .06em; }
 .endcard .sw { display: inline-block; width: 12px; height: 12px; margin-right: 10px; vertical-align: 2px; }
 .tlbox canvas { display: block; width: 100%; height: 118px; }
 .tlx { display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--dim); }
@@ -205,11 +223,12 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 
 @media (orientation: landscape) and (max-height: 520px) {
   #scrHome { width: min(100%, 720px); display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; align-items: center; }
-  .mark h1 { font-size: 56px; }
+  .mark h1 { font-size: 52px; }
   .endcard {
     width: min(100%, 780px); display: grid; grid-template-columns: 1fr 1.25fr; column-gap: 28px; row-gap: 10px; align-items: start;
-    grid-template-areas: "title chart" "sub chart" "btns moments";
+    grid-template-areas: "line chart" "title chart" "sub chart" "btns moments" "riv riv";
   }
+  .endline { grid-area: line; } .endriv { grid-area: riv; }
   .endcard h2 { grid-area: title; } .endcard p { grid-area: sub; } .endcard .btns { grid-area: btns; }
   .endcard .tlbox { grid-area: chart; } .endcard .moments { grid-area: moments; }
 }
@@ -406,7 +425,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 
 <div id="hud" hidden>
   <div id="stats" class="rail panel">
-    <button class="statbtn" id="statsBtn" aria-expanded="false" aria-controls="rivals" title="Show every color's bases and upgrades">
+    <button class="statbtn" id="statsBtn" aria-expanded="false" aria-controls="rivals" title="Show the rules of this match">
       <span class="army">
         <svg class="tri" viewBox="0 0 12 12" aria-hidden="true"><path id="triPath" d="M6 1 11 11H1Z" fill="#3577ff"/></svg>
         <span id="army">0</span><span id="cap" class="dim">/20</span>
@@ -442,6 +461,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path id="sndOn" d="M11 5.5c1 .7 1.5 1.6 1.5 2.5s-.5 1.8-1.5 2.5M12.6 3.6C14 4.7 14.8 6.3 14.8 8s-.8 3.3-2.2 4.4" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/><path id="sndOff" d="M11 6l4 4M15 6l-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="display:none"/></svg>
     </button>
   </div>
+  <div id="coach" class="rail panel" hidden><span id="coachTxt"></span><button id="coachSkip" class="ghost" aria-label="Skip this step">Skip</button></div>
   <div id="upg" class="rail panel">
     <div class="xp" title="Kills fill this bar. Each full bar is one upgrade point."><div class="xpbar"><i id="xpfill"></i></div><span id="pts"></span></div>
     <button class="up" data-k="hp"><span class="nm">Health</span><span class="lv">0</span><span class="pips"></span></button>
@@ -455,9 +475,10 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <div class="homeL">
       <div class="mark">
         <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 42 43 24 33.5 6 43Z" fill="#3577ff"/></svg>
-        <h1>ICE</h1>
+        <div class="mt"><h1>Aiced</h1><span class="tag">Strategy</span></div>
       </div>
-      <div class="rec"><span id="rec"></span><span class="build" id="buildNo">Build 36</span></div>
+      <div class="rec"><span id="rec"></span><span class="build" id="buildNo">Build 44</span></div>
+      <p class="newhere" id="newHere" hidden>New here? Check <b>How to play</b>.</p>
     </div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
@@ -470,17 +491,17 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
   <section class="screen" id="scrPlay" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Play</h2></header>
     <div class="modes">
-      <button class="mode" id="mClassic" data-go="scrClassic"><b>Classic</b><span>The pure game. Pick your color, a map size and how tough the AI is.</span></button>
-      <button class="mode" id="mCustom" data-go="scrCustom"><b>Custom</b><span>Build your own match: enemies, map shape, special bases and rule changes.</span></button>
-      <button class="mode" id="mSpec" data-go="scrSpectate"><b>Spectate</b><span>Watch the AI fight itself. Set it up and see who wins.</span></button>
-      <button class="mode" id="mLadder"><b>Challenge Maps</b><span id="ladderBlurb">Hand-built scenarios with goals and stars to earn.</span></button>
+      <button class="mode" id="mClassic" data-go="scrClassic"><b>Classic</b><span>The standard match. Choose your team, the map size and how strong the AI is.</span></button>
+      <button class="mode" id="mCustom" data-go="scrCustom"><b>Custom</b><span>Set up your own match: rivals, map, special bases and rule modifiers.</span></button>
+      <button class="mode" id="mSpec" data-go="scrSpectate"><b>Spectate</b><span>Watch the AI play against itself on a map you choose.</span></button>
+      <button class="mode" id="mLadder"><b>Challenge Maps</b><span id="ladderBlurb">Fixed maps with special goals. Earn up to three stars on each.</span></button>
     </div>
   </section>
 
   <section class="screen side" id="scrClassic" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Classic</h2></header>
     <div class="opts">
-      <div class="opt"><span>Your color</span><div class="seg swatches" data-mode="classic" data-key="color"><button data-v="blue" aria-label="Blue"><i style="background:#3577ff"></i></button><button data-v="red" aria-label="Red"><i style="background:#f2433c"></i></button><button data-v="green" aria-label="Green"><i style="background:#2db857"></i></button><button data-v="yellow" aria-label="Yellow"><i style="background:#ffcd30"></i></button><button data-v="purple" aria-label="Purple"><i style="background:#a656ff"></i></button></div></div>
+      <div class="opt"><span>Your team</span><div class="seg swatches" data-mode="classic" data-key="color"><button data-v="blue" aria-label="Blue"><i style="background:#3577ff"></i></button><button data-v="red" aria-label="Red"><i style="background:#f2433c"></i></button><button data-v="green" aria-label="Green"><i style="background:#2db857"></i></button><button data-v="yellow" aria-label="Yellow"><i style="background:#ffcd30"></i></button><button data-v="purple" aria-label="Purple"><i style="background:#a656ff"></i></button></div></div>
       <div class="opt"><span>Map size</span><div class="seg" data-mode="classic" data-key="size"><button data-v="small">Small</button><button data-v="medium">Medium</button><button data-v="large">Large</button></div></div>
       <p class="blurb" id="classicSize"></p>
       <div class="opt"><span>AI strength</span><div class="seg" data-mode="classic" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button></div></div>
@@ -492,10 +513,11 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
   <section class="screen side" id="scrCustom" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Custom</h2></header>
     <div class="opts">
-      <div class="opt"><span>Your color</span><div class="seg swatches" data-mode="custom" data-key="color"><button data-v="blue" aria-label="Blue"><i style="background:#3577ff"></i></button><button data-v="red" aria-label="Red"><i style="background:#f2433c"></i></button><button data-v="green" aria-label="Green"><i style="background:#2db857"></i></button><button data-v="yellow" aria-label="Yellow"><i style="background:#ffcd30"></i></button><button data-v="purple" aria-label="Purple"><i style="background:#a656ff"></i></button></div></div>
+      <div class="opt"><span>Your team</span><div class="seg swatches" data-mode="custom" data-key="color"><button data-v="blue" aria-label="Blue"><i style="background:#3577ff"></i></button><button data-v="red" aria-label="Red"><i style="background:#f2433c"></i></button><button data-v="green" aria-label="Green"><i style="background:#2db857"></i></button><button data-v="yellow" aria-label="Yellow"><i style="background:#ffcd30"></i></button><button data-v="purple" aria-label="Purple"><i style="background:#a656ff"></i></button></div></div>
       <button class="catrow" id="catEnemies" data-go="scrEnemies"><span>Enemies</span><b></b></button>
       <button class="catrow" id="catMap" data-go="scrMap"><span>Map</span><b></b></button>
       <button class="catrow" id="catRules"><span>Modifiers</span><b id="sumRules"></b></button>
+      <p class="hintline" id="hintCustom">Enemies: rival count, strength and personality. Map: shape, size and special bases. Modifiers: rule changes like fog or no upgrades.</p>
     </div>
     <button id="startCustom" class="primary big" data-start="custom">Start</button>
   </section>
@@ -550,6 +572,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <div class="opt"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button></div></div>
       <div class="opt"><span>Colors</span><div class="seg tight wrap" data-glob="colors"><button data-v="standard">Standard</button><button data-v="safe">Color-safe</button><button data-v="contrast">High contrast</button></div></div>
       <div class="opt"><span>Team symbols</span><div class="seg tight" data-glob="symbols"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
+      <div class="opt" id="rowHaptics"><span>Haptics</span><div class="seg tight" data-glob="haptics"><button data-v="off">Off</button><button data-v="light">Light</button><button data-v="normal">Normal</button></div></div>
       <div class="opt"><span>Screen</span><div class="seg tight" data-glob="screen"><button data-v="auto">Auto</button><button data-v="landscape">Landscape</button><button data-v="portrait">Portrait</button></div></div>
       <p class="hintline" id="hintSettings"></p>
     </div>
@@ -569,6 +592,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 
   <section class="screen wide" id="scrLadder" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Challenges</h2></header>
+    <p class="specintro" id="ladderIntro">Every map has three star goals: the first is the objective, the other two are bonuses. Earn stars to unlock new tiers.</p>
     <div id="ladder" class="ladder"></div>
     <button id="bResetCh" class="ghost small">Reset challenges</button>
   </section>
@@ -588,12 +612,17 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 
   <section class="screen wide" id="scrStats" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Stats</h2></header>
+    <p class="specintro" id="statsIntro">Your results from matches you play. Challenges, lessons and spectated matches are tracked separately.</p>
     <div id="statsBody"></div>
     <button id="bReset" class="ghost small">Reset stats</button>
   </section>
 
-  <section class="screen" id="scrHelp" hidden>
+  <section class="screen wide" id="scrHelp" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>How to play</h2></header>
+    <p class="specintro" id="practiceHint">Four short lessons that teach the basics, about a minute each. You can skip any step.</p>
+    <h3 class="sub">Practice</h3>
+    <div id="practiceList" class="ladder"></div>
+    <h3 class="sub">Rules</h3>
     <ul class="how">
       <li><b>Goal.</b> Take every base.</li>
       <li><b>Send troops.</b> Tap a base within your reach. Tap your own base to regroup. Double-tap to lock on: every new troop heads there until it's yours.</li>
@@ -602,6 +631,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <li><b>Look around.</b> Pinch and drag. The map button shows a minimap, and a double-tap on it shows everything. Press and hold any base to see what it is.</li>
       <li><b>Special bases.</b> Fortress: more health. Forge: more troops. Beacon: more XP. Relay: faster troops.</li>
     </ul>
+    <p class="about" id="about"><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
   </section>
 
   <section class="screen" id="scrPause" hidden>
@@ -614,6 +644,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 
 <div id="end" class="overlay" hidden>
   <section class="endcard">
+    <div class="endline" id="endLine"></div>
     <h2 id="endTitle"></h2>
     <p id="endSub"></p>
     <div class="tlbox">
@@ -622,6 +653,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     </div>
     <ol id="moments" class="moments"></ol>
     <div class="btns"><button id="bAgain" class="primary">Play again</button><button id="bNext" class="ghost" hidden>Next</button><button id="bMenu" class="ghost">Menu</button></div>
+    <div id="endRivals" class="endriv" hidden></div>
   </section>
 </div>
 
@@ -679,16 +711,18 @@ const C = {
   neutralHP: 1.1, neutralDmg: 1.0, neutralRespawn: 7,
   blockSlow: 0.25,                      // speed while an enemy is in your way
   baseDmgFactor: 0.5,                   // bases only feel half of the damage upgrade
-  spdAtk: 0.04,                         // each speed level also makes troops swing 4% faster
+  spdAtk: 0.02,                         // each speed level also makes troops swing 2% faster
   heatTau: 5, assaultHeat: 100, garrisonHeat: 25  // how a base "notices" it's under attack
 };
 const DIFF = {
   // interval: how often the AI rethinks (s) · margin: how much stronger it wants to be before attacking
   // frac: share of its army it commits · spawn: troop production speed · xp: how fast it earns upgrades
-  easy:   { interval: [3.4, 5.2], margin: 1.8,  frac: .6,  spawn: .85,  playerBias: 0,   xp: 1 },
-  normal: { interval: [2.2, 3.4], margin: 1.4,  frac: .75, spawn: 1,    playerBias: .15, xp: 1 },
-  hard:   { interval: [1.3, 2.1], margin: 1.18, frac: .85, spawn: 1.12, playerBias: .45, xp: 1 },
-  brutal: { interval: [0.7, 1.1], margin: 1.05, frac: .9,  spawn: 1.25, playerBias: .6,  xp: 1.25 }
+  // Build 38 numbers: tuned with tools/sim (headless matches against a human-style player) to win rates of about
+  // Easy 77%, Normal 54%, Hard 22%, Brutal 10% for that player on Medium with three rivals.
+  easy:   { interval: [4.2, 6.4], margin: 2.1,  frac: .5,  spawn: .75, playerBias: 0,   xp: 1 },
+  normal: { interval: [3.3, 5.0], margin: 1.75, frac: .6,  spawn: .86, playerBias: .05, xp: 1 },
+  hard:   { interval: [1.5, 2.4], margin: 1.25, frac: .82, spawn: 1.08, playerBias: .35, xp: 1 },
+  brutal: { interval: [0.8, 1.2], margin: 1.1,  frac: .88, spawn: 1.18, playerBias: .5,  xp: 1.2 }
 };
 // AI personalities. hp/spd/dmg: how strongly it pulls toward each upgrade. pref: how much extra it wants each kind of special base.
 // margin: how much stronger than the defenders it wants to be before it attacks (lower = bolder).
@@ -729,26 +763,79 @@ const SCENARIOS = [
     objective: { type: 'crown', text: 'Hold the crown for 90 seconds' },
     stars: [{ k: 'win', t: 'Hold the crown for 90 seconds' }, { k: 'time', v: 180, t: 'Win in under 3:00' }, { k: 'bases', v: 8, t: 'Finish with 8 or more bases' }] },
   { id: 'iron-wall', tier: 2, name: 'Iron wall', desc: 'Islands, bridges and two rivals. Build a territory and hold it.',
-    size: 'medium', teams: 3, shape: 'islands', diff: 'hard', seed: 7065, fair: true, mods: {}, specials: true,
+    size: 'medium', teams: 3, shape: 'islands', diff: 'hard', seed: 7065, fair: true, mods: {}, specials: true, aiTune: { margin: 1.4, spawn: 1.02, playerBias: 0.25 },
     objective: { type: 'hold', n: 12, secs: 120, text: 'Hold 12 bases for 2 minutes' },
     stars: [{ k: 'win', t: 'Hold 12 bases for 2 minutes' }, { k: 'time', v: 480, t: 'Win in under 8:00' }, { k: 'bases', v: 16, t: 'Finish with 16 or more bases' }] },
-  { id: 'glass-cannon', tier: 2, name: 'Glass cannon', desc: 'Everything has half health and the rivals are sharp.',
-    size: 'small', teams: 3, shape: 'continent', diff: 'hard', seed: 4404, fair: true, mods: { glass: true }, specials: false,
+  { id: 'glass-cannon', tier: 2, name: 'Glass cannon', desc: 'Troops and bases have half health, and the rivals are skilled.',
+    size: 'small', teams: 3, shape: 'continent', diff: 'hard', seed: 4404, fair: true, mods: { glass: true }, specials: false, aiTune: { spawn: 0.96, margin: 1.45 },
     objective: { type: 'conquest', text: 'Take every base' },
     stars: [{ k: 'win', t: 'Take every base' }, { k: 'nostat', v: 'hp', t: 'Win without buying Health' }, { k: 'time', v: 150, t: 'Win in under 2:30' }] },
-  { id: 'forge-wars', tier: 3, name: 'Forge wars', desc: 'Three Forges and three Hard rivals. Hold every Forge at once.',
-    size: 'medium', teams: 4, shape: 'river', diff: 'hard', seed: 7234, fair: true, mods: {}, specials: true, specialKinds: ['forge', 'forge', 'forge'],
+  { id: 'forge-wars', tier: 3, name: 'Forge wars', desc: 'Three Forges and three skilled rivals. Hold every Forge at once.',
+    size: 'medium', teams: 4, shape: 'river', diff: 'hard', seed: 7234, fair: true, mods: {}, specials: true, specialKinds: ['forge', 'forge', 'forge'], aiTune: { spawn: 0.93, margin: 1.45, playerBias: 0.15 },
     objective: { type: 'forges', secs: 15, text: 'Hold every Forge for 15 seconds' },
     stars: [{ k: 'win', t: 'Hold every Forge for 15 seconds' }, { k: 'time', v: 420, t: 'Win in under 7:00' }, { k: 'bases', v: 12, t: 'Finish with 12 or more bases' }] },
-  { id: 'last-stand', tier: 3, name: 'Last stand', desc: 'You start in the middle with two Hard rivals right beside you. Survive.',
-    size: 'medium', teams: 3, shape: 'continent', diff: 'hard', seed: 4606, mods: {}, specials: false, surround: true, playerTroops: 12,
+  { id: 'last-stand', tier: 3, name: 'Last stand', desc: 'You start in the middle of the map with two skilled rivals right beside you. Survive.',
+    size: 'medium', teams: 3, shape: 'continent', diff: 'hard', seed: 4606, mods: {}, specials: false, surround: true, playerTroops: 12, aiTune: { spawn: 1.0, margin: 1.4, playerBias: 0.28 },
     objective: { type: 'survive', secs: 300, text: 'Survive for 5 minutes' },
-    stars: [{ k: 'win', t: 'Survive for 5 minutes' }, { k: 'bases', v: 5, t: 'Hold 5 or more bases at the end' }, { k: 'ko', t: 'Knock out a rival' }] }
+    stars: [{ k: 'win', t: 'Survive for 5 minutes' }, { k: 'bases', v: 5, t: 'Hold 5 or more bases at the end' }, { k: 'ko', t: 'Knock out a rival' }] },
+  { id: 'blackout', tier: 4, name: 'Blackout', desc: 'Three colors on islands, fog of war, and you can barely see past your own bases.',
+    rule: 'Sight is cut to just over half.',
+    size: 'medium', teams: 3, shape: 'islands', diff: 'normal', seed: 8101, fair: true, mods: { fog: true }, fogScale: 0.55, specials: false, aiTune: { spawn: 0.89 },
+    objective: { type: 'conquest', text: 'Take every base' },
+    stars: [{ k: 'win', t: 'Take every base' }, { k: 'time', v: 600, t: 'Win in under 10:00' }, { k: 'bases', v: 14, t: 'Finish with 14 or more bases' }] },
+  { id: 'double-crown', tier: 4, name: 'Double crown', desc: 'Two crowns, far apart. Time only counts while one color holds both.',
+    rule: 'Hold both crowns for 60 seconds in total.',
+    size: 'medium', teams: 3, shape: 'continent', diff: 'normal', seed: 8202, fair: true, mods: { koth: true }, crowns: 2, kothTarget: 60, specials: false,
+    objective: { type: 'crown', text: 'Hold both crowns for 60 seconds' },
+    stars: [{ k: 'win', t: 'Hold both crowns for 60 seconds' }, { k: 'time', v: 360, t: 'Win in under 6:00' }, { k: 'bases', v: 10, t: 'Finish with 10 or more bases' }] },
+  { id: 'fortress-ring', tier: 4, name: 'Fortress ring', desc: 'A ring of bases with double health. Nothing falls quickly, so every attack has to count.',
+    rule: 'Every base has twice the health.',
+    size: 'medium', teams: 4, shape: 'ring', diff: 'hard', seed: 8307, fair: true, mods: {}, hpMul: 2, specials: false, aiTune: { spawn: 0.95, margin: 1.5, playerBias: 0.2 },
+    objective: { type: 'conquest', text: 'Take every base' },
+    stars: [{ k: 'win', t: 'Take every base' }, { k: 'time', v: 720, t: 'Win in under 12:00' }, { k: 'time', v: 540, t: 'Win in under 9:00' }] },
+  { id: 'aftershock', tier: 4, name: 'Aftershock', desc: 'The ground shakes under whoever is winning. Hold a big territory while it keeps cracking.',
+    rule: 'Every 40 seconds the biggest color has its strongest base cracked open.',
+    size: 'medium', teams: 4, shape: 'continent', diff: 'hard', seed: 8401, fair: true, mods: {}, quake: 40, specials: false, aiTune: { spawn: 0.9, margin: 1.6, playerBias: 0.15 },
+    objective: { type: 'hold', n: 12, secs: 90, text: 'Hold 12 bases for 90 seconds' },
+    stars: [{ k: 'win', t: 'Hold 12 bases for 90 seconds' }, { k: 'time', v: 420, t: 'Win in under 7:00' }, { k: 'bases', v: 16, t: 'Finish with 16 or more bases' }] }
 ];
+// ---- Practice lessons (How to play): tiny maps against a rival that never attacks. Steps are checked by the UI (coachTick). ----
+const PRACTICE = [
+  { id: 'p-send', name: 'Send troops', desc: 'Capture the base next door.',
+    size: 'small', teams: 2, seed: 5101, playerTroops: 12,
+    done: 'Tap a base within reach to send troops. Holding bases raises your army limit.',
+    steps: [{ t: 'Tap the gray base next to yours. Your troops march out.', k: 'sent' },
+      { t: 'They fight the defenders, then wear the base down. Wait until it turns your color.', k: 'bases', v: 2 },
+      { t: 'Nice. Take two more gray bases to grow your army.', k: 'bases', v: 4 }] },
+  { id: 'p-rival', name: 'Take a rival base', desc: 'Grow, then go after the other color.',
+    size: 'small', teams: 2, seed: 5202, playerTroops: 12,
+    done: 'Grow first, then send everything at one base. The last hit takes it.',
+    steps: [{ t: 'First grow: take the gray bases around you.', k: 'bases', v: 4 },
+      { t: "Now tap the other color's base. Double-tap it to lock on, so every new troop heads there.", k: 'hit' },
+      { t: 'Beat its defenders, then wear the base down. The final blow takes it.', k: 'win' }] },
+  { id: 'p-up', name: 'Upgrades', desc: 'Spend your first skill points.',
+    size: 'small', teams: 2, seed: 5303, startPoints: 2,
+    done: 'Kills fill the XP bar, and every full bar is a point for Health, Speed or Damage.',
+    steps: [{ t: 'You have 2 skill points. Tap Health, Speed or Damage (lower left) to spend one.', k: 'pts', v: 1 },
+      { t: 'Spend the other one too. Eliminating troops fills the XP bar for more.', k: 'pts', v: 0 },
+      { t: 'Health and Damage add 15% a level. Speed adds 10% movement and a little faster swings.', k: 'wait', v: 7 }] },
+  { id: 'p-spec', name: 'Special bases', desc: 'Find out what the symbols mean.',
+    size: 'small', teams: 2, seed: 5404, specials: true, specialKinds: ['forge', 'fortress'], playerTroops: 12,
+    done: 'Press and hold any base to see what it is. A Forge builds troops faster and lifts your army limit.',
+    steps: [{ t: 'Press and hold a base with a symbol on it to see what it is.', k: 'info' },
+      { t: 'Take the Forge (the arrow pointing up): it builds troops 70% faster and raises your army limit.', k: 'forge' }] }
+];
+const PRACTICE_AI = { interval: [9999, 9999], margin: 99, spawn: 0.6 };      // the rival builds a little and never attacks
+function practiceOpts(id) {
+  const c = PRACTICE.find(x => x.id === id); if (!c) return {};
+  return { practice: c.id, size: c.size, teams: c.teams, shape: 'continent', diff: 'easy', seed: c.seed, fair: true, mods: {}, specials: !!c.specials,
+    specialKinds: c.specialKinds, playerTroops: c.playerTroops, startPoints: c.startPoints, aiTune: PRACTICE_AI };
+}
 function scenarioOpts(id) {
   const c = SCENARIOS.find(x => x.id === id); if (!c) return {};
   return { scenarioId: c.id, size: c.size, teams: c.teams, shape: c.shape, diff: c.diff, seed: c.seed, mods: c.mods, specials: c.specials,
-    specialKinds: c.specialKinds, surround: c.surround, playerTroops: c.playerTroops, fair: c.fair, persona: c.persona, objective: c.objective, stars: c.stars };
+    specialKinds: c.specialKinds, surround: c.surround, playerTroops: c.playerTroops, fair: c.fair, persona: c.persona, objective: c.objective, stars: c.stars,
+    aiTune: c.aiTune, hpMul: c.hpMul, fogScale: c.fogScale, quake: c.quake, crowns: c.crowns, kothTarget: c.kothTarget };
 }
 function starMet(g) {
   const P = G.teams[PLAYER];
@@ -985,7 +1072,7 @@ function newGame(opts) {
   const rng = mulberry32(seed);
   const spec = SIZES[opts.size] || SIZES.medium;
   const mods = Object.assign({ blitz: false, glass: false, noup: false, koth: false, fog: false }, opts.mods || {});
-  const baseHP = C.baseHP * (mods.glass ? 0.5 : 1);
+  const baseHP = C.baseHP * (mods.glass ? 0.5 : 1) * (opts.hpMul || 1);
   // which colors are in this match: you (team 0) plus a random pick of the others, or any colors when only AIs play
   const nTeams = Math.max(2, Math.min(5, opts.teams || spec.teams));
   const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -1018,18 +1105,18 @@ function newGame(opts) {
     heat: 0, heatBy: null,
     spawnT: rng() * C.spawnEvery, pres: new Int32Array(6) }));
   for (const [a, b] of m.edges) { nodes[a].adj.push(b); nodes[b].adj.push(a); }
-  const D = DIFF[opts.diff] || DIFF.normal;
+  const D = Object.assign({}, DIFF[opts.diff] || DIFF.normal, opts.aiTune || {});     // aiTune: a challenge can nudge its rivals' numbers
   G = {
     t: 0, step: 0, nodes, edges: m.edges, troops: [], nextId: 1, rng, seed,
     shape: m.shape || 'continent', deco: m.deco || null,
-    mods, baseHP, crown: -1, kothTarget: KOTH_TARGET, endReason: null,
+    mods, baseHP, crown: -1, crown2: -1, kothTarget: opts.kothTarget || KOTH_TARGET, fogScale: opts.fogScale || 1, quake: opts.quake || 0, nextQuake: opts.quake || 0, endReason: null,
     overtimeOn: !!opts.overtime && !opts.scenarioId, maxedT: null, otCrown: false,
-    scenarioId: opts.scenarioId || null, obj: opts.objective || { type: 'conquest' }, starGoals: opts.stars || null,
+    scenarioId: opts.scenarioId || null, practice: opts.practice || null, obj: opts.objective || { type: 'conquest' }, starGoals: opts.stars || null,
     os: { hold: 0, forges: 0, surv: 0 }, playerLosses: 0,
     bridges: new Set((m.bridges || []).map(([a, b]) => a < b ? a + '-' + b : b + '-' + a)),
     diff: D, diffName: opts.diff || 'normal', sizeName: opts.size || 'medium', active,
     capPer: spec.capPer,
-    teams: TEAM_COLORS.map((c, i) => ({ i, active: active.includes(i), alive: active.includes(i), xp: 0, points: 0, earned: 0,
+    teams: TEAM_COLORS.map((c, i) => ({ i, active: active.includes(i), alive: active.includes(i), xp: 0, points: (i === PLAYER && opts.startPoints) || 0, earned: 0,
       lv: { hp: 0, spd: 0, dmg: 0 }, kills: 0, bases: 0, count: 0, beacons: 0, forges: 0, hill: 0, mem: null,
       aiT: 1.2 + rng() * 2, target: null, sent: 0, avoid: -1, avoidUntil: 0,
       diff: D, diffName: opts.diff || 'normal', style: styleFor(opts.persona, rng) })),
@@ -1058,6 +1145,10 @@ function newGame(opts) {
   if (mods.koth) {
     G.crown = placeCrown(nodes, m.starts, opts.fair);
     if (G.crown < 0) mods.koth = false;                   // no room for one: play a normal match
+    else if (opts.crowns === 2) {                         // Double crown: a second one, well away from the first
+      G.crown2 = placeCrown(nodes, m.starts, opts.fair, G.crown, 3);
+      if (G.crown2 < 0) G.crown2 = placeCrown(nodes, m.starts, opts.fair, G.crown, 2);
+    }
   }
   const opening = new Set();
   for (const st of m.starts) for (const v of nodes[st].adj) opening.add(v);
@@ -1099,10 +1190,10 @@ function fairOf(D, id) {
   for (const row of D) { const v = row[id]; mn = Math.min(mn, v); mx = Math.max(mx, v); sum += v; }
   const mean = sum / D.length; return { spread: (mx - mn) / mean, mean };
 }
-function placeCrown(nodes, starts, fair) {
+function placeCrown(nodes, starts, fair, avoid = -1, minHop = 3) {
   if (fair) {                                          // challenge maps: the crown sits as close to equidistant from every start as the map allows
     const M = hopMatrix(nodes.length, nodes.map(n => n.adj)), D = starts.map(st => routeLens(nodes, st)), cand = [];
-    for (const n of nodes) if (n.owner === NEUTRAL) cand.push(Object.assign({ id: n.id, gap: Math.min(...starts.map(st => M[st][n.id])), kind: n.kind }, fairOf(D, n.id)));
+    for (const n of nodes) if (n.owner === NEUTRAL && !n.crown && (avoid < 0 || M[avoid][n.id] >= minHop)) cand.push(Object.assign({ id: n.id, gap: Math.min(...starts.map(st => M[st][n.id])), kind: n.kind }, fairOf(D, n.id)));
     const maxMean = Math.max(...cand.map(c => c.mean)); let best = -1, bs = Infinity;
     for (const c of cand) {
       const sc = c.spread * 10 + (c.mean / maxMean) * 2 + (c.gap < 2 ? 3 : 0) + (c.kind ? 3 : 0);
@@ -1114,7 +1205,7 @@ function placeCrown(nodes, starts, fair) {
   const M = hopMatrix(nodes.length, nodes.map(n => n.adj)), cx = W / 2, cy = H / 2, d2max = cx * cx + cy * cy;
   let best = -1, bs = Infinity;
   for (const n of nodes) {
-    if (n.owner !== NEUTRAL) continue;
+    if (n.owner !== NEUTRAL || n.crown || (avoid >= 0 && M[avoid][n.id] < minHop)) continue;
     const gap = Math.min(...starts.map(st => M[st][n.id]));
     // mostly: how central it is. A mild penalty for sitting right beside a start, a slightly bigger one for a special base.
     const sc = ((n.x - cx) ** 2 + (n.y - cy) ** 2) / d2max + (gap < 2 ? 0.2 : 0) + (n.kind ? 0.3 : 0);
@@ -1163,7 +1254,7 @@ function spawnTroop(team, nodeId, spread) {
 
 const lvOf = (team, k) => team < 0 ? 0 : G.teams[team].lv[k];
 const capOf = team => C.capBase + G.capPer * G.teams[team].bases + Math.round(SPECIALS.forge.cap * G.capPer) * G.teams[team].forges;
-const needXP = T => 5 + 2 * T.earned;
+const needXP = T => Math.round(5 + 2 * T.earned + 0.11 * T.earned * T.earned);   // 5, 7, 9 ... 63 at the 30th was the old curve; now the 30th costs 156
 
 function statArrays() {
   if (G._S && G._S.step === G.step) return G._S;
@@ -1330,6 +1421,7 @@ function update(dt) {
   kothStep(dt);
   objStep(dt);
   overtimeStep();
+  quakeStep();
   for (let i = G.autoplay ? 0 : 1; i < G.teams.length; i++) {   // autoplay: the AI drives blue as well
     const T = G.teams[i];
     if (!T.alive) continue;
@@ -1455,7 +1547,7 @@ function sampleHistory(force) {
 // Once some color is fully upgraded and 90 more seconds have gone by (or, with upgrades switched off, once a fixed clock runs out)
 // a crown appears on the base that is most evenly reachable from every living color, and the usual King of the hill rules take over:
 // hold it for 90 seconds in total to win. Matches that finish on their own never see it.
-const OT_GRACE = 90, OT_CLOCK = { large: 900, huge: 1200 };
+const OT_GRACE = 90, OT_CLOCK = { small: 600, medium: 780, large: 900, huge: 1200 };
 function overtimeSpot() {
   const nodes = G.nodes, alive = G.teams.filter(T => T.alive && T.bases > 0);
   if (alive.length < 2) return -1;
@@ -1482,7 +1574,20 @@ function overtimeStep() {
 }
 function kothStep(dt) {                               // whoever holds the crown banks the seconds
   if (!G.mods.koth || G.crown < 0) return;
-  const o = G.nodes[G.crown].owner; if (o >= 0) G.teams[o].hill += dt;
+  const o = G.nodes[G.crown].owner, o2 = G.crown2 >= 0 ? G.nodes[G.crown2].owner : o;
+  if (o >= 0 && o2 === o) G.teams[o].hill += dt;       // with two crowns you only bank time while you hold both
+}
+function quakeStep() {                                // Aftershock: every so often the biggest color's sturdiest base is cracked open
+  if (!G.quake || G.t < G.nextQuake) return;
+  G.nextQuake += G.quake;
+  let lead = null, tie = false;
+  for (const T of G.teams) if (T.alive) { if (!lead || T.bases > lead.bases) { lead = T; tie = false; } else if (T.bases === lead.bases) tie = true; }
+  if (!lead || tie || lead.bases < 3) return;
+  let pick = null;
+  for (const n of G.nodes) if (n.owner === lead.i && (!pick || n.hp > pick.hp)) pick = n;
+  if (!pick) return;
+  pick.hp = Math.min(pick.hp, pick.maxHp * 0.35); pick.lastHitT = G.t + 8;      // cracked, and slow to mend
+  G.fx.push({ k: 'quake', x: pick.x, y: pick.y, c: lead.i, b: G.t });
 }
 function objStep(dt) {                                // progress toward a challenge's goal
   const o = G.obj, P = G.teams[PLAYER]; if (!o || !P.alive) return;
@@ -1661,10 +1766,10 @@ function aiThink(team) {
   if (G.mods.fog) {
     seen = new Uint8Array(N);
     const srcs = [], cellsSeen = new Set();
-    for (const n of nodes) if (n.owner === team) srcs.push(n.x, n.y, FOG_BASE_R * FOG_BASE_R);
+    for (const n of nodes) if (n.owner === team) srcs.push(n.x, n.y, (FOG_BASE_R * G.fogScale) ** 2);
     for (const t of G.troops) if (t.team === team) {
       const k = ((t.x / 45) | 0) * 4096 + ((t.y / 45) | 0);
-      if (!cellsSeen.has(k)) { cellsSeen.add(k); srcs.push(t.x, t.y, FOG_TROOP_R * FOG_TROOP_R); }
+      if (!cellsSeen.has(k)) { cellsSeen.add(k); srcs.push(t.x, t.y, (FOG_TROOP_R * G.fogScale) ** 2); }
     }
     for (let v = 0; v < N; v++) for (let i = 0; i < srcs.length; i += 3) {
       const dx = nodes[v].x - srcs[i], dy = nodes[v].y - srcs[i + 1];
@@ -1692,8 +1797,9 @@ function aiThink(team) {
   };
   const DEF_R = 420, ATK_R = 900;                     // defense is local; attacks gather from at most this far
   let hopCrown = null;                                // King of the hill: how many steps every base is from the crown
-  if (G.mods.koth && G.crown >= 0 && nodes[G.crown].owner !== team) {
-    hopCrown = new Int32Array(N).fill(-1); hopCrown[G.crown] = 0; const q = [G.crown];
+  const crownGoals = G.mods.koth ? [G.crown, G.crown2].filter(c => c >= 0 && nodes[c].owner !== team) : [];
+  if (crownGoals.length) {
+    hopCrown = new Int32Array(N).fill(-1); for (const c of crownGoals) hopCrown[c] = 0; const q = crownGoals.slice();
     for (let i = 0; i < q.length; i++) for (const v of nodes[q[i]].adj) if (hopCrown[v] < 0) { hopCrown[v] = hopCrown[q[i]] + 1; q.push(v); }
   }
 
@@ -1920,7 +2026,7 @@ function cleanProfile(kind, p, old) {
     c.opp = oneOf(String(p.opp ?? (kind === 'custom' ? old.opp : null) ?? 'auto'), kind === 'custom' ? ['auto', '1', '2', '3', '4'] : ['auto', '2', '3', '4', '5'], 'auto');
     c.persona = oneOf(p.persona ?? old.persona, PERSONAS, 'mixed');
     c.mods = Object.fromEntries(Object.keys(MODS_OFF).map(k => [k, mods[k] === true && !(kind === 'spec' && k === 'fog')]));   // fog needs a "you", so Spectate never has it
-    c.overtime = typeof p.overtime === 'boolean' ? p.overtime : true;                                                          // Overtime: on unless you switch it off
+    c.ot = typeof p.ot === 'boolean' ? p.ot : (c.size === 'large' || c.size === 'huge');                                                          // Overtime: starts on for Large and Huge, off otherwise, and you can flip it either way
   }
   return c;
 }
@@ -1933,13 +2039,13 @@ const seedOf = c => c.seed || (c.seed = rnd32());                  // every setu
 const shapeFor = c => c.shape === 'random' ? SHAPES[seedOf(c) % SHAPES.length] : c.shape;
 const teamsFor = m => { const c = settings[m]; return m === 'classic' ? SIZES[c.size].teams : c.opp === 'auto' ? SIZES[c.size].teams : m === 'custom' ? +c.opp + 1 : +c.opp; };
 const MODS = [
-  { k: 'blitz', n: 'Blitz', d: 'Bases spawn troops twice as fast, troops move 30% faster and sieges are quicker. Fast and frantic.' },
-  { k: 'glass', n: 'Glass', d: 'Troops and bases have half health. Fights are short and deadly.' },
-  { k: 'noup', n: 'No upgrades', d: 'No XP and no upgrade points. Pure positioning and timing.' },
-  { k: 'koth', n: 'King of the hill', d: 'A crown sits on a base near the middle. Hold it for 90 seconds in total to win outright.' },
-  { k: 'fog', n: 'Fog of war', d: 'You only see near your own bases and troops, and the AI plays blind too. Not used in AI vs AI.' }
+  { k: 'blitz', n: 'Blitz', d: 'Bases spawn troops twice as fast, troops move 30% faster and sieges are quicker.' },
+  { k: 'glass', n: 'Glass', d: 'Troops and bases have half health, so fights end quickly.' },
+  { k: 'noup', n: 'No upgrades', d: 'No XP and no upgrade points.' },
+  { k: 'koth', n: 'King of the hill', d: 'A crown sits on a base near the middle. Hold it for 90 seconds in total to win.' },
+  { k: 'fog', n: 'Fog of war', d: 'You only see near your own bases and troops, and the AI does too. Not available in Spectate.' }
 ];
-function otActive(mode) { const c = settings[mode]; return mode !== 'classic' && c.overtime !== false && (c.size === 'large' || c.size === 'huge'); }
+function otActive(mode) { const c = settings[mode]; return mode !== 'classic' && c.ot === true; }
 function modsLabel(mode) {
   const on = MODS.filter(m => settings[mode].mods[m.k] && !(mode === 'spec' && m.k === 'fog')).map(m => m.n);
   if (otActive(mode)) on.push('Overtime');
@@ -1956,6 +2062,7 @@ if (settings.visual === 'spark') settings.visual = 'classic';                   
 if (!['classic', 'overload', 'atlas', 'pixel', 'nebula'].includes(settings.visual)) settings.visual = 'classic';
 if (!['standard', 'safe', 'contrast'].includes(settings.colors)) settings.colors = 'standard';
 if (!['off', 'on'].includes(settings.symbols)) settings.symbols = 'off';
+if (!['off', 'light', 'normal'].includes(settings.haptics)) settings.haptics = 'normal';
 const stats = (() => {
   const raw = load('ice-stats', {}), play = isObj(raw.play) ? raw.play : {}, watch = isObj(raw.watch) ? raw.watch : {};
   const five = a => [0, 1, 2, 3, 4].map(i => count(Array.isArray(a) ? a[i] : 0)), dict = o => isObj(o) ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, count(v)])) : {};
@@ -2329,10 +2436,10 @@ function computeFog() {
   const need = (G.nodes.length + G.troops.length) * 3 + 6;
   if (fogSrc.length < need) fogSrc = new Float32Array(need * 2);
   let n = 0; FOGCELLS.clear();
-  for (const b of G.nodes) if (b.owner === PLAYER) { fogSrc[n++] = b.x; fogSrc[n++] = b.y; fogSrc[n++] = FOG_BASE_R; }
+  for (const b of G.nodes) if (b.owner === PLAYER) { fogSrc[n++] = b.x; fogSrc[n++] = b.y; fogSrc[n++] = FOG_BASE_R * G.fogScale; }
   for (const t of G.troops) if (t.team === PLAYER) {
     const k = ((t.x / 45) | 0) * 4096 + ((t.y / 45) | 0);
-    if (!FOGCELLS.has(k)) { FOGCELLS.add(k); fogSrc[n++] = t.x; fogSrc[n++] = t.y; fogSrc[n++] = FOG_TROOP_R; }
+    if (!FOGCELLS.has(k)) { FOGCELLS.add(k); fogSrc[n++] = t.x; fogSrc[n++] = t.y; fogSrc[n++] = FOG_TROOP_R * G.fogScale; }
   }
   fogN = n;
   for (const b of G.nodes) { b.vis = seenXY(b.x, b.y); if (b.vis) { b.sOwner = b.owner; b.sHp = b.hp; } }
@@ -3447,6 +3554,7 @@ for (const b of upBtns) {
 function buy(k) {
   if (mode !== 'play' || !G || watching) return;
   if (upgrade(PLAYER, k)) {
+    buzz('buy');
     const b = upBtns.find(x => x.dataset.k === k);
     b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
     if (!isAtlas() && !reduceMotion) {             // every one of your bases sends out a ring (Atlas stays still)
@@ -3460,13 +3568,30 @@ function buy(k) {
   }
   hud();
 }
+// Haptics. Light = the moments that matter; Normal adds a tick for every order and upgrade. Phones without vibration never see the setting.
+const CAN_BUZZ = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+const BUZZ = { tap: [6, 0], buy: [10, 0], press: [12, 1], cap: [16, 1], loss: [[30, 50, 30], 1], win: [[20, 60, 20, 60, 50], 1], lose: [[70, 70, 70], 1] };
+let lastBuzz = 0;
+function buzz(kind) {
+  if (!CAN_BUZZ || settings.haptics === 'off') return;
+  const b = BUZZ[kind]; if (!b) return;
+  if (b[1] === 0 && settings.haptics !== 'normal') return;
+  const now = performance.now(); if (now - lastBuzz < 70 && kind !== 'win' && kind !== 'lose') return;
+  lastBuzz = now;
+  try { navigator.vibrate(b[0]); } catch (_) {}
+}
 // write-if-changed helpers: the HUD refreshes 10x a second, but the page is only touched when a value differs
 function setText(el, v) { v = String(v); if (el._t !== v) { el._t = v; el.textContent = v; } }
 function setStyle(el, prop, v) { const k = '_s' + prop; if (el[k] !== v) { el[k] = v; el.style[prop] = v; } }
 function setClass(el, cls, on) { const k = '_c' + cls; if (el[k] !== on) { el[k] = on; el.classList.toggle(cls, on); } }
 function hud() {
+  coachTick();
   if (!G) return;
   const P = G.teams[PLAYER];
+  if (!watching && !G.over) {                       // your base count going up or down is a capture or a loss
+    if (G._hb != null && P.bases !== G._hb) buzz(P.bases > G._hb ? 'cap' : 'loss');
+    G._hb = P.bases;
+  }
   if (watching) { setText($('army'), fmt(G.t)); setText($('cap'), ''); }   // match clock instead of your army
   else { setText($('army'), P.count); setText($('cap'), '/' + capOf(PLAYER)); }
   const segs = $('terr').children; let neu = G.nodes.length;
@@ -3494,6 +3619,9 @@ function hud() {
       f.seen = true;
       if (f.c !== PLAYER || watching) toast(TEAM_NAMES[f.c] + ' is out', TEAM_COLORS[f.c], f.c);
       if (isOver()) { banner(TEAM_NAMES[f.c].toUpperCase() + ' IS OUT', TEAM_COLORS[f.c]); shake(10); }
+    } else if (f.k === 'quake') {                   // Aftershock: the biggest color's strongest base cracks
+      f.seen = true;
+      if (!fogOn() || seenXY(f.x, f.y)) { toast(`Aftershock: ${f.c === PLAYER && !watching ? 'your' : TEAM_NAMES[f.c] + "'s"} strongest base cracked`, TEAM_COLORS[f.c], f.c); shake(4); }
     } else if (f.k === 'overtime') {
       f.seen = true; toast('Overtime: a crown has risen', '#ffcd30'); rulesCache = '';
     } else if (f.k === 'special') {                 // you took one, lost one, or (when watching) anyone took one
@@ -3635,21 +3763,23 @@ function playSfx(nowMs, dt) {
     const e = h.baseMine || h.base;
     if (e) {
       const mine = isMine(e), f = hz(45 + pick(PENTA));
-      tone(f * 1.45, f, 0.19, mine ? 0.11 : awatch() ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y), 0.016);
+      tone(f * 1.4, f, 0.2, mine ? 0.11 : awatch() ? 0.07 : 0.045, 'sine', screenPan(e.x, e.y), 0.02);
       lastBloop = nowMs;
     }
   }
   if (nowMs - lastBlip > 55) {                // troop hits: soft bleeps an octave down, now and then one jumps up; yours keep a little edge
     const e = pickShot(h, 0.65);
     if (e) {
-      const mine = isMine(e), f = hz((e.team < 0 ? 60 : ROOT[e.team]) - 12 + pick(PENTA) + (Math.random() < 0.15 ? 12 : 0));
-      tone(f, f * 0.94, mine ? 0.085 : 0.095, mine ? 0.055 : awatch() ? 0.035 : 0.022, mine ? 'triangle' : 'sine', screenPan(e.x, e.y), 0.014);
+      const mine = isMine(e), f = hz((e.team < 0 ? 60 : ROOT[e.team]) - 12 + pick(PENTA) + (Math.random() < 0.05 ? 12 : 0));
+      const pk = mine ? 0.055 : awatch() ? 0.035 : 0.022, pn = screenPan(e.x, e.y);
+      tone(f, f * 0.94, 0.1, pk, 'sine', pn, 0.018);
+      if (mine) tone(f * 2, f * 1.88, 0.07, pk * 0.16, 'sine', pn, 0.012);       // your bleeps carry a faint upper note: the only trace of Bright
       lastBlip = nowMs + Math.random() * 25;
     }
   }
 }
 const TRI_PATH = ['M6 1 11 11H1Z', 'M1 6a5 5 0 1 0 10 0a5 5 0 1 0-10 0Z', 'M6 .6 11.4 6 6 11.4.6 6Z', 'M1.5 1.5h9v9h-9Z', 'M4.3 .8h3.4v3.5h3.5v3.4H7.7v3.5H4.3V7.7H.8V4.3h3.5Z'];
-function renderSwatches() {                           // the "Your color" pickers: this palette's colors and names, and each slot's shape when symbols are on
+function renderSwatches() {                           // the "Your team" pickers: this palette's colors and names, and each slot's shape when symbols are on
   document.querySelectorAll('.seg.swatches button').forEach(b => {
     const k = Math.max(0, COLOR_KEYS.indexOf(b.dataset.v)), i = b.querySelector('i');
     i.style.background = PALETTE[k].c; i.dataset.s = k; b.setAttribute('aria-label', PALETTE[k].name); b.title = PALETTE[k].name;
@@ -3671,7 +3801,7 @@ function syncLook() {                                 // Colors and Team symbols
 function currentColorArgs() {                         // the color choice that is in force right now: the running match, or the setup behind the menu
   const live = mode === 'play' || mode === 'paused' || mode === 'over';
   const key = live ? curModeKey : previewMode, watch = live ? watching : key === 'spec';
-  return [watch, live && curScen ? settings.classic.color : key === 'spec' ? 'blue' : settings[key].color];
+  return [watch, live && (curScen || curPrac) ? settings.classic.color : key === 'spec' ? 'blue' : settings[key].color];
 }
 function applyLook() {                                // a Colors or Team symbols change takes effect at once, even in the middle of a match
   syncLook(); const [w, k] = currentColorArgs(); applyColors(w, k);
@@ -3966,20 +4096,15 @@ function driftPreview() {                             // a short phrase and a be
   drBell(N, t + 1.4, 0.08, 0);
   setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 5200);
 }
-// ---- "Chip": an 8-bit soundtrack for Pixel, built live from the battle ----
-// Four voices like an old console: two pulse waves, a triangle and noise. A 16th-note sequencer at 132 bpm runs C - Am - F - G
-// with the triangle bouncing in octaves underneath. Layers arrive as the fighting heats up:
-//   calm: the bouncing bass and a soft tick      warming up: kick and snare      heavy: hats and a fast pulse arpeggio
-// Troop hits become blips on the grid, picked from the chord and walking up and down like a melody that sits higher the more of
-// the map you hold. Base hits are a crunch of metallic noise, a capture plays a power-up run, a knockout a falling "game over".
-const CH_STEP = 60 / 132 / 4, CH_LEVEL = 0.14;
-const CH_CHORDS = [
-  { root: 36, tones: [60, 64, 67] },   // C
-  { root: 33, tones: [57, 60, 64] },   // Am
-  { root: 29, tones: [57, 60, 65] },   // F
-  { root: 31, tones: [55, 59, 62] }    // G
-];
-const CH = { nodes: null, next: 0, step: 0, heat: 0, blips: [], crunch: null, caps: [], deg: 4, waves: null, metal: null };
+// ---- "Chip": 8-bit voices played by the battle, with no beat of their own ----
+// Four voices like an old console: two pulse waves, a triangle and noise. Nothing plays until something happens. A troop hit is a
+// blip, picked from a pentatonic scale and walking up and down like a melody that sits higher the more of the map you hold
+// (yours on a round half-wave, the others an octave lower and thinner). Bigger fights add a second voice a third above. Base hits
+// are a crunch of metallic noise, a capture plays a power-up run, a knockout a falling "game over". The 132 bpm grid is only there
+// to land the notes together; with no drums or bass it is never heard as a beat.
+const CH_STEP = 60 / 132 / 4, CH_LEVEL = 0.19, CH_SCALE = [0, 2, 4, 7, 9];
+const chMidi = d => 60 + 12 * Math.floor(d / 5) + CH_SCALE[((d % 5) + 5) % 5];
+const CH = { nodes: null, next: 0, step: 0, heat: 0, blips: [], crunch: null, caps: [], deg: 5, waves: null, metal: null };
 function chWaves() {                                  // pulse waves at 12.5%, 25% and 50% duty: the old consoles' three tones
   if (CH.waves && CH.waves.ac === AC) return CH.waves;
   const make = d => { const n = 48, re = new Float32Array(n), im = new Float32Array(n); for (let k = 1; k < n; k++) re[k] = 2 / (k * Math.PI) * Math.sin(k * Math.PI * d); return AC.createPeriodicWave(re, im); };
@@ -4020,39 +4145,24 @@ function chNoise(N, t, dur, peak, freq, metal, pan) { // the noise channel: tick
   g.gain.setValueAtTime(peak, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   n.connect(f); f.connect(g); chOut(N, g, pan); n.start(t, metal ? 0 : Math.random() * 0.3, dur + 0.02);
 }
-function chMelody(ch) {                               // the notes a blip can land on: the chord's tones over two and a half octaves
-  return [ch.tones[0], ch.tones[1], ch.tones[2], ch.tones[0] + 12, ch.tones[1] + 12, ch.tones[2] + 12, ch.tones[0] + 24, ch.tones[1] + 24, ch.tones[2] + 24];
-}
-function chPlayStep(N, t, k, h, live) {
-  const s = k % 16, bar = Math.floor(k / 16) % 4, ch = CH_CHORDS[bar];
-  if (s % 2 === 0) {                                  // the bass bounces between octaves; the G bar walks up into the next C
-    let m = ch.root + 12 + (s % 4 === 2 ? 12 : 0);
-    if (bar === 3 && s === 12) m = 45; else if (bar === 3 && s === 14) m = 47;
-    chTri(N, t, m, CH_STEP * 1.6, 0.2);
-  }
-  if (s % 4 === 2) chNoise(N, t, 0.03, 0.035, 7000);                                                  // a soft tick
-  if (h > 0.2) {
-    if (s === 0 || s === 8 || (h > 0.55 && (s === 6 || s === 10))) chTri(N, t, 0, 0.09, 0.42, true);  // kick
-    if (s === 4 || s === 12) { chNoise(N, t, 0.12, 0.16, 1400); chNoise(N, t, 0.06, 0.12, 300, true); } // snare
-  }
-  if (h > 0.45 && s % 2 === 1) chNoise(N, t, 0.02, 0.03, 9000);                                      // closed hats
-  if (h > 0.5) chNote(N, t, ch.tones[k % 3] + 12 + (h > 0.8 && bar % 2 ? 12 : 0), CH_STEP * 0.85, 'p25', 0.022, 0);   // the fast arpeggio
-  if (!live) return;
-  if (CH.caps.length && s % 2 === 0) {                // a capture: a power-up run up the chord
-    const c = CH.caps.shift(), m = chMelody(ch);
-    [m[3], m[4], m[5], m[6]].forEach((note, i) => chNote(N, t + i * CH_STEP / 2, note, CH_STEP * 0.55, 'p50', c.mine ? 0.07 : 0.035, c.pan));
-  } else if (CH.blips.length) {                       // hits since the last step, played in time as a wandering melody
-    let e = CH.blips[CH.blips.length - 1], mine = false;
-    if (!awatch()) for (let i = CH.blips.length - 1; i >= 0; i--) if (CH.blips[i].team === PLAYER) { e = CH.blips[i]; mine = true; break; }
-    const share = (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length, centre = 2 + Math.round(share * 5);
+function chPlayStep(N, t, k, h) {                    // one grid step: only what the battle asked for since the last one
+  const share = (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length, centre = 3 + Math.round(share * 6);
+  if (CH.caps.length && k % 2 === 0) {                // a capture: a power-up run up the scale
+    const c = CH.caps.shift();
+    [0, 2, 3, 5].forEach((st, i) => chNote(N, t + i * CH_STEP / 2, chMidi(centre + 2 + st), CH_STEP * 0.55, 'p50', c.mine ? 0.07 : 0.035, c.pan));
+  } else if (CH.blips.length && (k % 2 === 0 || h > 0.3)) {   // hits since the last step: one blip, and a second voice in a big fight
+    const n = CH.blips.length;
+    let e = CH.blips[n - 1], mine = false;
+    if (!awatch()) for (let i = n - 1; i >= 0; i--) if (CH.blips[i].team === PLAYER) { e = CH.blips[i]; mine = true; break; }
     let st = [-2, -1, -1, 0, 1, 1, 2][(Math.random() * 7) | 0];
     if (CH.deg > centre + 2 && st > 0) st = -1; if (CH.deg < centre - 2 && st < 0) st = 1;
-    CH.deg = Math.max(0, Math.min(8, CH.deg + st));
-    const m = chMelody(ch), note = m[mine || awatch() ? CH.deg : Math.max(0, CH.deg - 3)];
-    chNote(N, t, note, CH_STEP * 0.8, mine ? 'p50' : 'p12', mine ? 0.06 : awatch() ? 0.04 : 0.024, screenPan(e.x, e.y), 0.985);
+    CH.deg = Math.max(0, Math.min(12, CH.deg + st));
+    const d = mine || awatch() ? CH.deg : Math.max(0, CH.deg - 5), pan = screenPan(e.x, e.y), pk = mine ? 0.06 : awatch() ? 0.04 : 0.024;
+    chNote(N, t, chMidi(d), CH_STEP * 0.8, mine ? 'p50' : 'p12', pk, pan, 0.985);
+    if (n >= 6 && h > 0.35) chNote(N, t + CH_STEP / 2, chMidi(d + 2), CH_STEP * 0.7, 'p12', pk * 0.55, -pan, 0.985);
     CH.blips.length = 0;
   }
-  if (s % 2 === 0 && CH.crunch) { chNoise(N, t, 0.16, CH.crunch.mine ? 0.2 : 0.11, 2400, true, CH.crunch.pan); chTri(N, t, 0, 0.12, CH.crunch.mine ? 0.3 : 0.16, true); CH.crunch = null; }
+  if (k % 2 === 0 && CH.crunch) { chNoise(N, t, 0.16, CH.crunch.mine ? 0.2 : 0.11, 2400, true, CH.crunch.pan); chTri(N, t, 0, 0.12, CH.crunch.mine ? 0.3 : 0.16, true); CH.crunch = null; }
 }
 function chFall(N, t) {                               // a color is out: a falling "game over" tune
   for (let i = 0; i < 7; i++) chNote(N, t + i * 0.09, 79 - i * 2 - (i > 4 ? 1 : 0), 0.085, 'p25', 0.045, 0);
@@ -4081,23 +4191,23 @@ function chipTick() {
   }
   if (CH.caps.length > 3) CH.caps.splice(0, CH.caps.length - 3);
   if (CH.next < now - 0.25) { const k = Math.ceil((now - CH.next) / CH_STEP); CH.next += k * CH_STEP; CH.step += k; }
-  while (CH.next < now + 0.1) { CH.heat += (heat - CH.heat) * 0.05; chPlayStep(N, CH.next, CH.step, CH.heat, true); CH.next += CH_STEP; CH.step++; }
+  while (CH.next < now + 0.1) { CH.heat += (heat - CH.heat) * 0.05; chPlayStep(N, CH.next, CH.step, CH.heat); CH.next += CH_STEP; CH.step++; }
 }
-function chipPreview() {                              // one bar at full tilt, a couple of blips, a crunch and a power-up run
+function chipPreview() {                              // a few blips walking up, a crunch, and a power-up run
   const N = chBuild(true), t0 = AC.currentTime + 0.05;
-  for (let k = 0; k < 16; k++) chPlayStep(N, t0 + k * CH_STEP, k, 0.85, false);
-  chNote(N, t0 + 2 * CH_STEP, 72, CH_STEP * 0.8, 'p50', 0.06, -0.3, 0.985); chNote(N, t0 + 6 * CH_STEP, 76, CH_STEP * 0.8, 'p50', 0.06, 0.3, 0.985);
-  chNoise(N, t0 + 9 * CH_STEP, 0.16, 0.2, 2400, true); chTri(N, t0 + 9 * CH_STEP, 0, 0.12, 0.3, true);
-  [72, 76, 79, 84].forEach((m, i) => chNote(N, t0 + 16 * CH_STEP + i * CH_STEP / 2, m, CH_STEP * 0.55, 'p50', 0.06, 0));
-  N.out.gain.setTargetAtTime(0.0001, t0 + 19 * CH_STEP, 0.08);
+  [5, 7, 6, 9].forEach((d, i) => chNote(N, t0 + i * CH_STEP * 2, chMidi(d), CH_STEP * 0.8, 'p50', 0.06, (i - 1.5) * 0.25, 0.985));
+  chNote(N, t0 + 3 * CH_STEP, chMidi(2), CH_STEP * 0.8, 'p12', 0.024, 0.4, 0.985);
+  chNoise(N, t0 + 10 * CH_STEP, 0.16, 0.2, 2400, true); chTri(N, t0 + 10 * CH_STEP, 0, 0.12, 0.3, true);
+  [7, 9, 10, 12].forEach((d, i) => chNote(N, t0 + 14 * CH_STEP + i * CH_STEP / 2, chMidi(d), CH_STEP * 0.55, 'p50', 0.07, 0));
+  N.out.gain.setTargetAtTime(0.0001, t0 + 18 * CH_STEP, 0.08);
   setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 3500);
 }
 
 // ---- "Cosmos": deep space for Nebula ----
-// Glassy pads glide through slow chords in E Lydian over a sub-bass drone that breathes, and the battle answers in sonar pings:
+// A sub-bass drone breathes in the dark. Glassy pads in E Lydian only swell up as the fighting does, and the battle answers in sonar pings:
 // troop hits ping on a slow grid, echo back and forth and hang in a vast reverb, sitting higher the more ground you hold.
 // Base hits are a deep sonar pulse, a capture blooms into a bright chord, and a knockout sinks into a long low swell.
-const CS_STEP = 60 / 72 / 2, CS_LEVEL = 0.36, CS_SCALE = [0, 2, 4, 6, 7, 9, 11];
+const CS_STEP = 60 / 72 / 2, CS_LEVEL = 0.29, CS_SCALE = [0, 2, 4, 6, 7, 9, 11];
 const csMidi = d => 52 + 12 * Math.floor(d / 7) + CS_SCALE[((d % 7) + 7) % 7];
 const CS_CHORDS = [                                   // pad voicings (MIDI), one every 16 steps (about 6.7 s)
   [52, 59, 63, 66, 68],                               // E maj9
@@ -4130,7 +4240,7 @@ function csBuild(withBed) {
       l.connect(d); d.connect(g.gain); o.connect(g); g.connect(N.dry); g.connect(N.wet); o.start(t); l.start(t); N.oscs.push(o, l);
     }
     N.padLP = AC.createBiquadFilter(); N.padLP.type = 'lowpass'; N.padLP.frequency.value = 800; N.padLP.Q.value = 0.6;
-    N.padG = AC.createGain(); N.padG.gain.value = 0.0001; N.padG.gain.setTargetAtTime(0.05, t, 2.5);
+    N.padG = AC.createGain(); N.padG.gain.value = 0.0001;
     N.padLP.connect(N.padG); N.padG.connect(N.dry); N.padG.connect(N.wet);
     N.voices = [];
     const vib = AC.createOscillator(), vd = AC.createGain(); vib.frequency.value = 0.21; vd.gain.value = 7; vib.connect(vd); vib.start(t); N.oscs.push(vib);
@@ -4187,7 +4297,10 @@ function csSlot(N, t, heat) {
   if (CS.step % 16 === 0 && N.voices) {              // a new chord: the pad glides there slowly, and opens up with the fighting
     const ch = CS_CHORDS[(CS.step / 16) % 4];
     N.voices.forEach(([a, b], i) => { a.frequency.setTargetAtTime(hz(ch[i]), t, 1.2); b.frequency.setTargetAtTime(hz(ch[i]) * 2, t, 1.2); });
-    N.padLP.frequency.setTargetAtTime(700 + 2200 * heat, t, 2); N.padG.gain.setTargetAtTime(0.045 + 0.035 * heat, t, 2);
+  }
+  if (N.voices) {                                     // the pads only swell with the fighting, and fade away when it stops
+    const lift = Math.min(1, heat * 1.8);
+    N.padG.gain.setTargetAtTime(0.0001 + 0.085 * lift * lift, t, 1.6); N.padLP.frequency.setTargetAtTime(600 + 2400 * lift, t, 1.6);
   }
   const share = (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length;
   const centre = 7 + Math.round(share * 7);           // the pings sit higher the more ground you hold
@@ -4234,8 +4347,10 @@ function cosmosPreview() {                            // a pad chord swelling, t
 
 function syncRivals() {
   const open = watching ? watchRivals : settings.rivals;
-  $('rivals').hidden = !open;
+  $('rivals').hidden = !(watching && open);                     // the table of every color's upgrades is for watching AI matches only
   $('statsBtn').setAttribute('aria-expanded', String(open));
+  $('statsBtn').classList.toggle('noexp', !watching && !hasRules);
+  $('statsBtn').title = watching ? "Show every color's bases and upgrades" : 'Show the rules of this match';
   renderRules();
 }
 function syncSound() {
@@ -4264,9 +4379,9 @@ function previewSound() {                       // a sample bleep and bloop so y
     if (settings.tone === 'chip') { chipPreview(); return; }
     if (settings.tone === 'cosmos') { cosmosPreview(); return; }
     const f = hz(ROOT[PLAYER] - 12 + pick(PENTA));
-    tone(f, f * 0.94, 0.085, 0.055, 'triangle', 0, 0.014);
+    tone(f, f * 0.94, 0.1, 0.055, 'sine', 0, 0.018); tone(f * 2, f * 1.88, 0.07, 0.009, 'sine', 0, 0.012);
   } finally { previewing = false; }
-  setTimeout(() => { if (AC) { previewing = true; try { const b = hz(45 + pick(PENTA)); tone(b * 1.45, b, 0.19, 0.08, 'sine', 0, 0.016); } finally { previewing = false; } } }, 120);
+  setTimeout(() => { if (AC) { previewing = true; try { const b = hz(45 + pick(PENTA)); tone(b * 1.4, b, 0.2, 0.08, 'sine', 0, 0.02); } finally { previewing = false; } } }, 120);
 }
 
 // ---- TUNING PANEL (hidden): long-press the build number. REMOVE BEFORE STORE PACKAGING (see the section in the markup) ----
@@ -4288,26 +4403,28 @@ $('tReset').addEventListener('click', () => { Object.assign(tune, TUNE_DEF); sav
 // ---- screens ----
 const show = (id, on) => { $(id).hidden = !on; if (id === 'menu') { if (!on) pvOnly = false; placePreview(); } };   // the preview card belongs to the menu: it goes when the menu does
 const SIZE_BASES = { small: 'about 20 bases', medium: 'about 30 bases', large: 'about 45 bases', huge: 'about 70 bases' };
-const HUGE_NOTE = ' Matches will be long. Modifiers highly recommended.';
-const DIFF_INFO = { easy: 'Slow to react, cautious attackers.', normal: 'A steady pace and even odds.', hard: 'Quick, targets you, builds troops 12% faster.', brutal: 'Near-instant reactions, troops and upgrades 25% faster.',
-  random: 'Each rival secretly rolls its own strength, so some may be pushovers and some terrors. You find out when the match ends.' };
+const HUGE_NOTE = ' Huge matches run long, and modifiers can help.';
+const DIFF_INFO = { easy: 'Rivals act slowly and cautiously. A good place to learn.', normal: 'Rivals play at a steady pace. An even match.', hard: 'Rivals react quickly, favor attacking you, and build troops 8% faster.', brutal: 'Rivals react almost instantly, focus on you, and build troops 18% and upgrades 20% faster.',
+  random: 'Each rival gets a random strength, revealed when the match ends.' };
 const PERSONA_INFO = { mixed: 'Each rival is randomly Balanced, Aggressive, Sturdy or Adaptive.',
-  aggressive: 'Fast and hard-hitting but fragile. Attacks early and defends late. Likes Relays and Beacons.',
-  sturdy: 'Tough and steady. Builds health, defends early and holds ground. Likes Fortresses and Forges.',
-  adaptive: 'Reads the board and counters whoever is winning.' };
-const SHAPE_INFO = { random: 'A different shape each time you roll the map.', continent: 'One connected landmass, the classic layout.',
-  islands: 'Separate landmasses joined by a few bridges. Bridges are chokepoints.', ring: 'Bases circle an empty middle, so every fight happens on the rim.',
+  aggressive: 'Fast and hard-hitting but fragile. Attacks early, defends late, and seeks Relays and Beacons.',
+  sturdy: 'Tough and steady. Builds Health, defends early, and seeks Fortresses and Forges.',
+  adaptive: 'Reads the board and goes after whichever color is winning.' };
+const SHAPE_INFO = { random: 'A random shape, different each time the map is rolled.', continent: 'One connected landmass.',
+  islands: 'Separate islands joined by a few bridges, which become chokepoints.', ring: 'Bases form a ring around an empty middle, so all the fighting happens on the rim.',
   river: 'A river splits the map in two, with a few crossings to fight over.' };
-const SPECIAL_INFO = { on: 'Special bases are scattered across the map: Fortress, Forge, Beacon and Relay. Tap the i to see what each does.', off: 'No special bases. Every base is equal.' };
+const SPECIAL_INFO = { on: 'Fortress, Forge, Beacon and Relay bases are scattered across the map. Tap the i to see what each does.', off: 'No special bases. Every base is the same.' };
 const SETTINGS_INFO = {
-  tone: { simple: 'Soft, rounded bleeps and bloops. Pairs with Classic.', overdrive: 'A dark beat that builds with the fighting. Pairs with Overload.', drift: 'Gentle plucked notes in a big quiet room. Pairs with Atlas.',
-    chip: 'An 8-bit soundtrack: square waves, noise drums and a bouncing bass. Pairs with Pixel.', cosmos: 'Glassy pads, a deep drone and sonar pings out in space. Pairs with Nebula.' },
+  tone: { simple: 'Soft, round tones, low and warm. Pairs with Classic.', overdrive: 'A dark beat that builds with the fighting. Pairs with Overload.', drift: 'Gentle plucked notes in a big quiet room. Pairs with Atlas.',
+    chip: 'Old console bleeps played by the battle: blips, crunches and power-up runs. Pairs with Pixel.', cosmos: 'A deep drone, sonar pings and pads that swell with the fighting. Pairs with Nebula.' },
   visual: { classic: 'Clean squares and triangles, with soft glows, light trails and sparks.', overload: 'Maximum chaos: beat-synced flashes, lightning and shakes. Team colors stay true.', atlas: 'A surveyor\'s chart: influence washes and plotted courses.',
     pixel: 'Chunky pixels and scanlines, like an old console. Pairs with Chip.', nebula: 'Deep space: suns, drifting stars and supernova captures. Pairs with Cosmos.' },
-  menuSound: { on: 'The match running behind the menus plays quietly and muffled, so the game is never silent.', off: 'The menus are silent.' },
-  colors: { standard: 'The original blue, red, green, yellow and purple.', safe: 'Blue, orange, teal, yellow and magenta, picked to stay apart for color-blind players.', contrast: 'Brighter colors, bolder lines and stronger text.' },
-  symbols: { off: 'Teams are told apart by color alone.', on: 'Each color also gets its own shape. Empty bases are hollow squares.' },
-  screen: { auto: 'Follows your phone\'s rotation lock.', landscape: 'Keeps the game sideways however you hold the phone. Installed app only.', portrait: 'Keeps the game upright. Installed app only.' } };
+  menuSound: { on: 'Plays the background match quietly behind the menus.', off: 'Menus stay silent.' },
+  colors: { standard: 'Blue, red, green, yellow and purple.', safe: 'Blue, orange, teal, yellow and magenta, chosen to stay distinct for color-blind players.', contrast: 'Brighter colors, bolder lines and stronger text.' },
+  symbols: { off: 'Teams are shown by color only.', on: 'Each color also gets its own shape. Empty bases are hollow squares.' },
+  volume: { v: 'Sets the overall volume. Your own actions are a little louder than the AI\'s.' },
+  haptics: { off: 'No vibration.', light: 'Short buzzes for captures, lost bases and the end of a match.', normal: 'Everything in Light, plus a tick when you send troops or buy an upgrade.' },
+  screen: { auto: 'Follows your device\'s rotation setting.', landscape: 'Locks the game to landscape. Works in the installed app.', portrait: 'Locks the game to portrait. Works in the installed app.' } };
 const SPECIAL_SHORT = { fortress: 'More health', forge: 'More troops', beacon: 'More XP', relay: 'Faster troops' };
 function renderSpecials() {
   $('specList').innerHTML = Object.keys(SPECIALS).map(k => `<div class="spec"><svg viewBox="0 0 28 28" aria-hidden="true">${glyphSvg(k)}</svg><div><b>${SPECIALS[k].name} <em>${SPECIAL_SHORT[k]}</em></b><span>${SPECIALS[k].text}</span></div></div>`).join('');
@@ -4319,14 +4436,15 @@ function syncSeg() {
     seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
   });
 }
-function syncGlobalSeg() {                            // sound style, visuals and screen lock live outside the three match setups
+function syncGlobalSeg() {
+  $('rowHaptics').hidden = !CAN_BUZZ;                            // sound style, visuals and screen lock live outside the three match setups
   document.querySelectorAll('.seg[data-glob]').forEach(seg => seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === settings[seg.dataset.glob]))));
 }
 // each setup screen has ONE description line that follows whatever you touched last
 function hintText(m, key) {
   const c = settings[m], t = teamsFor(m);
   switch (key) {
-    case 'opp': return c.opp === 'auto' ? (m === 'spec' ? `Auto: ${t} colors, the usual for this map size.` : `Auto: ${t - 1} ${t === 2 ? 'rival' : 'rivals'}, the usual for this map size.`)
+    case 'opp': return c.opp === 'auto' ? (m === 'spec' ? `Auto: ${t} colors, based on map size.` : `Auto: ${t - 1} ${t === 2 ? 'rival' : 'rivals'}, based on map size.`)
       : m === 'spec' ? `${t} colors fight it out.` : `${t - 1} ${t === 2 ? 'rival' : 'rivals'} against you.`;
     case 'diff': return DIFF_INFO[c.diff];
     case 'persona': return PERSONA_INFO[c.persona];
@@ -4347,11 +4465,11 @@ function touchHint(m, key) {
   hintKey[el] = key; renderHints(m);
 }
 let settingsKey = 'tone';
-function renderSettingsHint() { $('hintSettings').textContent = SETTINGS_INFO[settingsKey][settings[settingsKey]]; }
+function renderSettingsHint() { const I = SETTINGS_INFO[settingsKey]; $('hintSettings').textContent = settingsKey === 'volume' ? I.v : I[settings[settingsKey]]; }
 function syncText(m) {
   const c = settings[m], t = teamsFor(m);
   if (m === 'classic') {
-    $('classicSize').textContent = `${t} colors: you and ${t - 1} rivals, ${SIZE_BASES[c.size]}.${c.size === 'large' ? ' Matches may be long.' : ''} Tap a size again for a new map.`;
+    $('classicSize').textContent = `You and ${t - 1} ${t === 2 ? 'rival' : 'rivals'} on a map of ${SIZE_BASES[c.size]}.${c.size === 'large' ? ' Large matches can run long.' : ''} Tap a size again for a new map.`;
     $('classicDiff').textContent = DIFF_INFO[c.diff];
   } else if (m === 'custom') {
     const n = MODS.filter(x => c.mods[x.k]).length + (otActive('custom') ? 1 : 0); $('sumRules').textContent = n ? n + ' on' : '';     // the one setting that can hide behind a tap
@@ -4382,7 +4500,7 @@ function go(id) { stack.push(id); showScreen(id); armBack(); }
 function back() { if (stack.length > 1) { stack.pop(); showScreen(stack[stack.length - 1]); return true; } return false; }
 function resetStack(root) { stack = [root]; showScreen(root); }
 // ---- the challenge ladder ----
-let curScen = null, briefId = null, nextScen = null;
+let curScen = null, briefId = null, nextScen = null, curPrac = null, coach = null;
 const ladder = {}, bests = {};
 {                                                     // stars are three booleans per challenge, a best is a time or a base count; anything else is dropped
   const rawL = load('ice-ladder', {}), rawB = load('ice-bests', {});
@@ -4393,7 +4511,7 @@ const ladder = {}, bests = {};
     if (Object.keys(e).length) bests[c.id] = e;
   }
 }
-const TIERS = [{ need: 0 }, { need: 3 }, { need: 8 }];                     // stars needed to open each tier
+const TIERS = [{ need: 0 }, { need: 3 }, { need: 8 }, { need: 14 }];                     // stars needed to open each tier
 const starsOfId = id => ladder[id] || [false, false, false];
 const totalStars = () => SCENARIOS.reduce((a, c) => a + starsOfId(c.id).filter(Boolean).length, 0);
 const isOpen = c => totalStars() >= TIERS[c.tier - 1].need;
@@ -4404,7 +4522,7 @@ function bestText(c) {
 }
 function renderLadder() {
   let h = '';
-  for (let t = 1; t <= 3; t++) {
+  for (let t = 1; t <= TIERS.length; t++) {
     const need = TIERS[t - 1].need, open = totalStars() >= need, more = need - totalStars();
     h += `<div class="tier"><span>Tier ${t}</span><span>${open ? '' : `Earn ${more} more ${more === 1 ? 'star' : 'stars'} to unlock`}</span></div>`;
     for (const c of SCENARIOS.filter(x => x.tier === t))
@@ -4412,10 +4530,10 @@ function renderLadder() {
   }
   $('ladder').innerHTML = h;
 }
-function updateLadderBlurb() { $('ladderBlurb').textContent = `Hand-built scenarios with goals and stars to earn. ${totalStars()} of ${SCENARIOS.length * 3} stars.`; }
+function updateLadderBlurb() { $('ladderBlurb').textContent = `Fixed maps with special goals. Earn up to three stars on each. ${totalStars()} of ${SCENARIOS.length * 3} stars.`; }
 function openBrief(id) {
   const c = SCENARIOS.find(x => x.id === id); briefId = id;
-  $('briefTitle').textContent = c.name; $('briefDesc').textContent = c.desc;
+  $('briefTitle').textContent = c.name; $('briefDesc').textContent = c.desc + (c.rule ? ' ' + c.rule : '');
   const st = starsOfId(id);
   $('briefGoals').innerHTML = c.stars.map((g, i) => `<li>${starSvg(st[i])}<span>${g.t}</span></li>`).join('');
   go('scrBrief');
@@ -4443,7 +4561,7 @@ function rulesHtml() {
       h += `<div class="gr ${st.s}">${starSvg(st.s === 'ok')}<span>${g.t}${st.n ? ` <em>${st.n}</em>` : ''}</span></div>`;
     });
   } else h += `<div class="rt">Modifiers</div>`;
-  if (G.overtimeOn && !G.otCrown) h += `<div class="gr"><i class="dot"></i><span><b>Overtime</b> If the war stalls, a crown rises</span></div>`;
+  if (G.overtimeOn && !G.otCrown) h += `<div class="gr"><i class="dot"></i><span><b>Overtime</b> A crown appears if the match stalls</span></div>`;
   for (const m of MODS) if (G.mods[m.k] && !(G.scenarioId && m.k === 'koth')) h += `<div class="gr"><i class="dot"></i><span><b>${m.n}</b> ${MOD_SHORT[m.k]}</span></div>`;
   return h;
 }
@@ -4457,7 +4575,7 @@ let modsMode = 'custom';
 function renderMods() {
   $('modsList').innerHTML = MODS.filter(m => !(modsMode === 'spec' && m.k === 'fog')).map(m =>
     `<button class="modrow" data-m="${m.k}" aria-pressed="${!!settings[modsMode].mods[m.k]}"><b>${m.n}</b><span>${m.d}</span><i class="sw2"></i></button>`).join('') +
-    `<button class="modrow" data-m="overtime" aria-pressed="${settings[modsMode].overtime !== false}"><b>Overtime</b><span>On Large and Huge maps: if a long war stalls, a crown rises and the first to hold it for 90 seconds wins.</span><i class="sw2"></i></button>`;
+    `<button class="modrow" data-m="overtime" aria-pressed="${!!settings[modsMode].ot}"><b>Overtime</b><span>If a match stalls, a crown appears. The first color to hold it for 90 seconds wins.</span><i class="sw2"></i></button>`;
 }
 function renderRecord() {
   const p = stats.play;
@@ -4533,28 +4651,30 @@ function buildPreview(key) {                         // the map behind the menu 
 }
 function startDemo() { mode = 'demo'; buildPreview(previewMode); }
 let curModeKey = 'custom';
-function startGame(watch, scen, modeKey) {
-  curScen = scen || null; curModeKey = scen ? curModeKey : (modeKey || (watch ? 'spec' : 'custom'));
+function startGame(watch, scen, modeKey, prac) {
+  curPrac = prac || null; curScen = scen || null; curModeKey = scen ? curModeKey : (modeKey || (watch ? 'spec' : 'custom'));
   const cfg = settings[curModeKey];
   audioOn(); armBack(); hideInfo();
   watching = !!watch;
   if (watching) watchRivals = true;               // every AI vs AI match opens with the stats table showing
   show('menu', false); show('end', false); hudEl.hidden = false;
   hudEl.classList.toggle('watch', watching);
-  $('bAgain').textContent = watching ? 'Watch again' : curScen ? 'Retry' : 'Play again';
+  $('bAgain').textContent = watching ? 'Watch again' : (curScen || curPrac) ? 'Retry' : 'Play again';
   clearEffects();
-  applyColors(watching, scen ? settings.classic.color : cfg.color);
+  applyColors(watching, (scen || prac) ? settings.classic.color : cfg.color);
   syncCtrl(); syncRivals(); layout();
-  if (curScen) newGame({ scenario: curScen });          // fixed map and rules: the same every attempt
+  if (curPrac) newGame(practiceOpts(curPrac));          // a practice lesson: tiny map, a rival that never attacks
+  else if (curScen) newGame({ scenario: curScen });          // fixed map and rules: the same every attempt
   else { newGame(optsFor(curModeKey)); cfg.seed = rnd32(); save('ice-settings', settings); }   // play the previewed map, then roll the next one
   for (let i = 0; i < 5; i++) for (const c of rivalCells[i]) c.style.display = G.teams[i].active ? '' : 'none';   // only colors in play
   setMinimap(false); fling.vx = fling.vy = 0;
   G.autoplay = watching;
   hudEl.classList.toggle('noup', !!G.mods.noup); hudEl.classList.toggle('fog', !!G.mods.fog);
   $('kothRow').hidden = !G.mods.koth; $('objRow').hidden = !G.scenarioId; initFog();
+  startCoach();
   hasRules = !!G.scenarioId || G.overtimeOn || Object.values(G.mods).some(Boolean); rulesCache = '';
   peekUntil = G.scenarioId ? performance.now() + 7000 : 0;       // a challenge opens its rules for a few seconds, so you see the goals
-  renderRules();
+  syncRivals();
   if (!speeds().includes(speedMul)) speedMul = 1;
   mode = 'play'; acc = 0; hl = []; uiFx = []; hover = null; last = performance.now();
   syncCtrl(); resetCam(); layout();
@@ -4636,7 +4756,7 @@ function showEnd() {
     for (const A of G.teams) if (A.active) { sw.appColor[A.i]++; sw.appStyle[A.style.name] = (sw.appStyle[A.style.name] || 0) + 1; }
   } else {
     const p = stats.play, win = G.result === 'win';
-    if (!G.scenarioId) {                            // challenges keep their own record: the stars
+    if (!G.scenarioId && !G.practice) {             // challenges keep their own record (the stars), and lessons keep none
       p.games++; if (win) p.wins++;
       p.kills += P.kills; p.caps += G.playerCaps; p.time += G.t; p.most = Math.max(p.most, G.peak);
       if (win && (!p.fastest[G.sizeName] || G.t < p.fastest[G.sizeName])) p.fastest[G.sizeName] = Math.round(G.t);
@@ -4656,13 +4776,20 @@ function showEnd() {
   if (G.endReason === 'crown') {                    // a King of the hill finish
     const w = G.winner, you = !watching && w === PLAYER;
     t.innerHTML = `<span class="sw" data-s="${TEAM_SLOT[w]}" style="background:${TEAM_COLORS[w]}"></span>${you ? 'You hold' : TEAM_NAMES[w] + ' holds'} the crown`;
-    sub.textContent = `${you ? 'You' : TEAM_NAMES[w]} held the crown for ${G.kothTarget} seconds, ending the match at ${fmt(G.t)} with ${G.teams[w].bases} of ${G.nodes.length} bases.`;
+    sub.textContent = `${you ? 'You' : TEAM_NAMES[w]} held ${G.crown2 >= 0 ? 'both crowns' : 'the crown'} for ${G.kothTarget} seconds, ending the match at ${fmt(G.t)} with ${G.teams[w].bases} of ${G.nodes.length} bases.`;
   }
   if (G.diffName === 'random' && !G.scenarioId) {   // the secret rolls, revealed
     const list = G.teams.filter(T => T.active && (watching || T.i !== PLAYER)).map(T => `${TEAM_NAMES[T.i]} ${DIFF_LABEL[T.diffName]}`).join(', ');
     sub.textContent += ` Rival strengths: ${list}.`;
   }
   nextScen = null; let challengeMoments = null;
+  if (G.practice) {                                 // a lesson: a tick instead of stars or highlights
+    const L = PRACTICE.find(x => x.id === G.practice);
+    practiceDone[L.id] = true; save('ice-practice', practiceDone); renderPractice();
+    t.innerHTML = `<span class="sw" style="background:#ffcd30"></span>Lesson complete`;
+    sub.textContent = `${L.name}, done in ${fmt(G.t)}.`;
+    challengeMoments = `<li><time class="st">&#10003;</time><i style="background:#ffcd30"></i><span>${L.done}</span></li>`;
+  }
   if (G.scenarioId) {                               // a challenge: stars instead of highlights
     const sc = SCENARIOS.find(x => x.id === G.scenarioId), st = evalStars(), prev = starsOfId(G.scenarioId).slice();
     ladder[G.scenarioId] = st.map((v, i) => v || prev[i]); save('ice-ladder', ladder);
@@ -4679,12 +4806,30 @@ function showEnd() {
     if (st[0] && nx && isOpen(nx)) nextScen = nx.id;
   }
   $('bNext').hidden = !nextScen;
+  {                                                 // what each rival built, for when someone beat you and you want to know how
+    const rs = !watching && !G.practice ? G.teams.filter(T => T.active && T.i !== PLAYER) : [], box = $('endRivals');
+    box.hidden = !rs.length;
+    box.innerHTML = rs.length ? '<h3>What the rivals built</h3>' + rs.map(T => `<div class="rr"><span><i class="sw" data-s="${TEAM_SLOT[T.i]}" style="background:${TEAM_COLORS[T.i]}"></i>${TEAM_NAMES[T.i]} (${T.style.name})</span><em>Health ${T.lv.hp} &middot; Speed ${T.lv.spd} &middot; Damage ${T.lv.dmg}</em></div>`).join('') : '';
+  }
+  {                                                 // a title line, so a screenshot says what it is a screenshot of
+    const parts = [];
+    if (G.practice) parts.push('Practice', PRACTICE.find(x => x.id === G.practice).name);
+    else if (G.scenarioId) parts.push('Challenge', SCENARIOS.find(x => x.id === G.scenarioId).name);
+    else {
+      parts.push(watching ? 'Spectate' : (SIZE_LABEL[G.sizeName] || 'Match') + ' map');
+      if (!watching && G.diffName) parts.push(DIFF_LABEL[G.diffName] || G.diffName);
+      if (watching) parts.push(SIZE_LABEL[G.sizeName] || '');
+    }
+    $('endLine').innerHTML = '<b>Aiced</b> &middot; ' + parts.filter(Boolean).map(x => String(x).replace(/[<>&]/g, '')).join(' &middot; ');
+  }
+  if (!watching) buzz(G.result === 'win' ? 'win' : 'lose');
   const moments = pickMoments();
   $('moments').innerHTML = challengeMoments || moments.map(m => `<li><time>${fmt(m.t)}</time><i data-s="${slotOf(momentTeam(m))}" style="background:${momentColor(m)}"></i><span>${momentText(m)}</span></li>`).join('');
   show('end', true); $('bAgain').focus({ preventScroll: true });
   requestAnimationFrame(() => drawTimeline(moments));
 }
 function toMenu() {
+  coach = null; $('coach').hidden = true;
   hideInfo(); watching = false; hudEl.classList.remove('watch');
   show('end', false); hudEl.hidden = true;
   startDemo(); resetCam(); layout(); renderRecord(); resetStack('scrHome'); show('menu', true);
@@ -4729,10 +4874,10 @@ function renderInfo() {
   const owner = ow >= 0 ? (ow === PLAYER && !watching ? 'You' : TEAM_NAMES[ow]) : 'Unclaimed', col = colorOf(ow);
   const def = ow >= 0 ? n.pres[ow + 1] : n.nCount;
   el.innerHTML = `<div class="ih"><i class="sw" data-s="${slotOf(ow)}" style="background:${col}"></i><b>${sp ? sp.name : n.crown ? 'The crown' : 'Base'}</b><span>${owner}</span></div>` +
-    (blind ? `<div class="il">Out of sight. This is what you last saw.</div>` :
+    (blind ? `<div class="il">Out of sight. Showing what you last saw.</div>` :
       `<div class="ib"><i style="width:${Math.round(100 * n.hp / n.maxHp)}%;background:${col}"></i></div>` +
       `<div class="il">Health ${Math.round(n.hp)} / ${n.maxHp} &middot; Defenders ${def}</div>`) +
-    (sp ? `<div>${sp.text}</div>` : '') + (n.crown ? `<div>Hold the crown for ${G.kothTarget} seconds in total to win.</div>` : '');
+    (sp ? `<div>${sp.text}</div>` : '') + (n.crown ? `<div>${G.crown2 >= 0 ? 'Hold both crowns' : 'Hold the crown'} for ${G.kothTarget} seconds in total to win.</div>` : '');
 }
 function positionInfo() {
   const el = $('info'), p = toScreen(infoNode.x, infoNode.y), w = 232, h = el.offsetHeight || 90;
@@ -4751,7 +4896,7 @@ function longPress(g) {                              // press and hold on a base
   if (gest !== g || g.kind !== 'tap' || ptrs.size !== 1 || mode !== 'play' || !G) return;
   const n = pickNode(g.sx, g.sy); if (!n) return;
   g.kind = 'held'; hover = null; showInfo(n);
-  try { navigator.vibrate && navigator.vibrate(12); } catch (_) {}
+  buzz('press');
 }
 function handleTap(px, py) {
   if (mode !== 'play' || !G || G.over) return;
@@ -4764,6 +4909,7 @@ function handleTap(px, py) {
   lastTap = { id: dbl ? -1 : n.id, t: nowMs };
   const r = command(PLAYER, n.id, settings.send);
   if (r) {
+    buzz('tap');
     uiFx.push({ k: 'go', x: n.x, y: n.y, b: now });
     if (r.edges.length) hl.push({ edges: r.edges, b: now });
     if (dbl) {
@@ -4853,7 +4999,8 @@ cv.addEventListener('contextmenu', e => e.preventDefault());
 document.querySelectorAll('.seg[data-mode]').forEach(seg => seg.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   const m = seg.dataset.mode, key = seg.dataset.key, c = settings[m];
-  c[key] = b.dataset.v;
+  const was = c[key]; c[key] = b.dataset.v;
+  if (key === 'size' && m !== 'classic' && was !== c.size) c.ot = c.size === 'large' || c.size === 'huge';   // Overtime follows the size you pick, and stays yours to change
   if (key === 'size' || key === 'shape') c.seed = rnd32();   // tapping a size (even the one already chosen) or a new shape rolls a new map
   save('ice-settings', settings); syncSeg(); syncText(m);
   if (m !== 'classic') touchHint(m, key);
@@ -4866,6 +5013,7 @@ document.querySelectorAll('.seg[data-glob]').forEach(seg => seg.addEventListener
   if (key === 'tone') { audioOn(); syncSound(); lastPreview = 0; setTimeout(previewSound, 30); }
   if (key === 'menuSound' && b.dataset.v === 'on') audioOn();
   if (key === 'screen') applyScreenLock();
+  if (key === 'haptics') buzz('press');
   if (key === 'colors' || key === 'symbols') applyLook();
   settingsKey = key; syncGlobalSeg(); renderSettingsHint();
 }));
@@ -4878,13 +5026,14 @@ function applyScreenLock() {
 applyScreenLock();
 window.addEventListener('pointerdown', applyScreenLock, { once: true });   // some phones only allow the lock after a touch
 function leaveToMenu() {                            // back to where you set the match up, with Back leading up through the Play hub
-  const was = curScen, key = curModeKey; toMenu();
+  const was = curScen, key = curModeKey, prac = curPrac; toMenu();
+  if (prac) { renderPractice(); go('scrHelp'); return; }          // a lesson goes back to the lesson list
   go('scrPlay');
   if (was) { renderLadder(); go('scrLadder'); }
   else { const scr = { classic: 'scrClassic', custom: 'scrCustom', spec: 'scrSpectate' }[key]; if (scr) go(scr); }
 }
 $('bQuit').addEventListener('click', leaveToMenu);
-$('bAgain').addEventListener('click', () => startGame(watching, curScen, curModeKey));
+$('bAgain').addEventListener('click', () => startGame(watching, curScen, curModeKey, curPrac));
 $('bNext').addEventListener('click', () => startGame(false, nextScen));
 $('bMenu').addEventListener('click', leaveToMenu);
 $('bReset').addEventListener('click', () => confirmReset($('bReset'), 'Reset stats', doResetStats));
@@ -4894,6 +5043,7 @@ document.querySelectorAll('#menu .back').forEach(b => b.addEventListener('click'
 $('bPause').addEventListener('click', pause);
 $('bSpeed').addEventListener('click', () => { const sp = speeds(); speedMul = sp[(sp.indexOf(speedMul) + 1) % sp.length]; syncCtrl(); });
 $('statsBtn').addEventListener('click', () => {
+  if (!watching && !hasRules) return;
   if (watching) watchRivals = !watchRivals;
   else { settings.rivals = !settings.rivals; save('ice-settings', settings); }
   syncRivals(); layout();
@@ -4908,14 +5058,15 @@ $('bSpecRules').addEventListener('click', () => { modsMode = 'spec'; renderMods(
 $('modsList').addEventListener('click', e => {
   const b = e.target.closest('.modrow'); if (!b) return;
   const c = settings[modsMode], k = b.dataset.m;
-  if (k === 'overtime') c.overtime = c.overtime === false; else c.mods[k] = !c.mods[k];
+  if (k === 'overtime') c.ot = !c.ot; else c.mods[k] = !c.mods[k];
   save('ice-settings', settings);
-  b.setAttribute('aria-pressed', String(k === 'overtime' ? c.overtime !== false : c.mods[k])); syncText(modsMode); buildPreview(modsMode);
+  b.setAttribute('aria-pressed', String(k === 'overtime' ? !!c.ot : c.mods[k])); syncText(modsMode); buildPreview(modsMode);
 });
 $('vol').addEventListener('input', () => {
   settings.volume = +$('vol').value;
   if (settings.volume > 0) settings.sound = true;
   save('ice-settings', settings); audioOn(); syncSound(); previewSound();
+  settingsKey = 'volume'; renderSettingsHint();
 });
 $('bSound').addEventListener('click', () => { settings.sound = !settings.sound; save('ice-settings', settings); audioOn(); syncSound(); });
 $('bSend').addEventListener('click', () => { settings.send = SENDS[(SENDS.indexOf(settings.send) + 1) % SENDS.length]; save('ice-settings', settings); syncCtrl(); });
@@ -4939,6 +5090,52 @@ window.addEventListener('keydown', e => {
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 if (window.ResizeObserver) new ResizeObserver(layout).observe(document.body);
 else window.addEventListener('resize', layout);
+
+// ---- Practice: guided lessons with a coach banner. Own storage (ice-practice), no stars, never counted in your stats. ----
+const practiceDone = {};
+{ const raw = load('ice-practice', {}); if (isObj(raw)) for (const p of PRACTICE) if (raw[p.id] === true) practiceDone[p.id] = true; }
+let helpSeen = false;
+{ const raw = load('ice-seen', {}); helpSeen = isObj(raw) && raw.help === true; }
+function updateNewHere() {                          // first launch: nudge toward How to play until it has been opened (or you have played)
+  const show = !helpSeen && stats.play.games === 0;
+  $('newHere').hidden = !show; document.querySelector('#scrHome [data-go=scrHelp]').classList.toggle('nudge', show);
+}
+function renderPractice() {
+  $('practiceList').innerHTML = PRACTICE.map(p => `<button class="chcard" data-p="${p.id}"><b>${p.name}</b><span class="d">${p.desc}</span><span class="best">${practiceDone[p.id] ? '&#10003; Done' : 'Not tried yet'}</span></button>`).join('');
+  $('practiceHint').hidden = PRACTICE.some(p => practiceDone[p.id]);
+  updateNewHere();
+}
+const COACH_TESTS = {
+  sent: () => G.troops.some(t => t.team === PLAYER && t.path.length > 0),
+  bases: st => G.teams[PLAYER].bases >= st.v,
+  hit: () => { const R = G.teams.find(T => T.active && T.i !== PLAYER); const n = R && G.nodes[G.homes[R.i]]; return !R || !n || R.bases < 1 || n.owner !== R.i || n.hp < n.maxHp * 0.95; },
+  win: () => false,                                 // the match ending ends the lesson
+  pts: st => G.teams[PLAYER].points <= st.v,
+  wait: st => G.t - coach.g0 >= st.v,
+  info: () => !!infoNode,
+  forge: () => G.nodes.some(n => n.kind === 'forge' && n.owner === PLAYER)
+};
+function coachShow() { const st = coach.lesson.steps[coach.i]; setText($('coachTxt'), st.t); $('coach').hidden = false; }
+function startCoach() {
+  coach = curPrac ? { lesson: PRACTICE.find(x => x.id === curPrac), i: 0, g0: 0 } : null;
+  $('coach').hidden = !coach; if (coach) coachShow();
+}
+function coachNext() {
+  if (!coach) return;
+  coach.i++; coach.g0 = G.t;
+  if (coach.i >= coach.lesson.steps.length) { coach = null; $('coach').hidden = true; G.over = true; G.result = 'win'; G.endReason = 'practice'; showEnd(); return; }
+  coachShow();
+}
+function coachTick() {
+  if (!coach || !G || mode !== 'play' || G.over) return;
+  const st = coach.lesson.steps[coach.i];
+  if (COACH_TESTS[st.k](st)) coachNext();
+}
+$('coachSkip').addEventListener('click', () => coachNext());
+$('practiceList').addEventListener('click', e => { const b = e.target.closest('.chcard'); if (b) startGame(false, null, null, b.dataset.p); });
+document.querySelector('#scrHome [data-go=scrHelp]').addEventListener('click', () => { helpSeen = true; save('ice-seen', { help: true }); renderPractice(); });
+$('newHere').addEventListener('click', () => document.querySelector('#scrHome [data-go=scrHelp]').click());       // the line itself opens How to play
+renderPractice();
 
 // ---- loop ----
 // ---- optional performance readout: add ?perf to the link ----
@@ -4988,6 +5185,7 @@ function frame(nowMs) {
 syncLook(); syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
 if (PERF) window.__audio = () => ({ AC, master, lim, mg, mlp, bus, pbus });   // lets the ?perf mode measure output levels
 if (PERF) window.__dbg = () => ({ mode, pvOnly, stack: stack.slice(), backPos, draining, t: G ? G.t : 0, over: G ? G.over : null, parts: parts.length, fx: G ? G.fx.length : 0, pvOwners: pvOwners ? pvOwners.length : 0, hasG: !!G });
+if (PERF) { window.__coach = () => coach ? { i: coach.i, n: coach.lesson.steps.length, id: coach.lesson.id } : null; window.__hud = hud; window.__info = showInfo; window.__txt = () => ({ DIFF_INFO, PERSONA_INFO, SHAPE_INFO, SETTINGS_INFO, SPECIAL_INFO }); window.__mods = () => MODS; }       // test hooks
 if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$('mm').hidden });
 if (PERF) window.__scr = (x, y) => toScreen(x, y);          // tests: where a world point lands on screen
 requestAnimationFrame(frame);
