@@ -50,6 +50,8 @@ body { position: relative; }
 #ctrl { top: 8px; right: 10px; display: flex; gap: 6px; }
 #upg { left: 10px; bottom: 8px; width: 336px; padding: 7px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 #upg .xp { grid-column: 1 / -1; }
+#upg.ptsGlow { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue), 0 0 16px rgba(53,119,255,.55); transition: box-shadow .4s, border-color .4s; }
+#ptsFx { position: fixed; z-index: 2; pointer-events: none; }
 #mapWrap { position: absolute; right: 10px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; pointer-events: none; }
 #mapWrap > * { pointer-events: auto; }
 #mm { display: block; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.72); touch-action: none; }
@@ -253,6 +255,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .endcard { width: min(100%, 440px); gap: 12px; }
 .endcard h2 { margin: 0; font-size: 30px; line-height: 1.05; font-weight: 700; letter-spacing: .02em; }
 .endcard p { margin: 0; font-size: 15px; line-height: 1.45; color: var(--dim); max-width: 42ch; }
+.endriv .rr + h3 { margin-top: 10px; }
 .endriv h3 { margin: 0 0 6px; font-size: 12px; font-weight: 500; color: var(--dim); letter-spacing: .04em; }
 .endriv .rr { display: grid; grid-template-columns: 1fr auto; gap: 8px; font-size: 13px; padding: 3px 0; }
 .endriv .rr em { font-style: normal; color: var(--dim); }
@@ -521,7 +524,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.6</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.10</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -611,6 +614,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <div class="opt"><span>Volume</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"></div>
       <div class="opt"><span>Menu sound</span><div class="seg tight" data-glob="menuSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
       <div class="opt stack"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="overdrive">Overdrive</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button><button data-v="floe">Floe</button></div></div>
+      <div class="opt"><span>Upgrade chime</span><div class="seg tight" id="chimeRow"><button id="bChime" aria-label="Hear the chime for an earned upgrade point">Hear it</button></div></div>
       <div class="opt stack"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button><button data-v="rime">Rime</button></div></div>
       <div class="opt"><span>Colors</span><div class="seg tight wrap" data-glob="colors"><button data-v="standard">Standard</button><button data-v="safe">Color-safe</button><button data-v="contrast">High contrast</button></div></div>
       <div class="opt"><span>Team symbols</span><div class="seg tight" data-glob="symbols"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
@@ -656,9 +660,13 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 
   <section class="screen wide" id="scrQual" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Picture quality</h2></header>
-    <p class="specintro">Auto lowers the sharpness by itself if your phone struggles. Pick a level to hold it there, even if the game slows down.</p>
+    <p class="specintro">Auto lowers the picture quality by itself if your phone struggles. Lower levels make the picture less sharp and draw fewer particles, stars and snowflakes. Pick a level to hold it there, even if the game slows down.</p>
     <div class="seg tight five" id="qualRow"><button data-q="-1">Auto</button><button data-q="0">Full</button><button data-q="1">High</button><button data-q="2">Medium</button><button data-q="3">Low</button></div>
     <p class="specintro" id="qualNow" role="status" aria-live="polite"></p>
+    <p class="specintro">Selection ring (test): New is the style-shaped ring with a gauge for how much you send. Old is the dashed circle.</p>
+    <div class="seg tight" id="ringRow"><button data-r="new">New</button><button data-r="old">Old</button></div>
+    <p class="specintro">Chip sound speed (test): New plays fewer, slower notes in a fight (up to about 5 a second). Old is the earlier speed.</p>
+    <div class="seg tight" id="chipRow"><button data-c="new">New</button><button data-c="old">Old</button></div>
   </section>
 
   <section class="screen wide" id="scrHelp" hidden>
@@ -2025,7 +2033,7 @@ let F = { x: 0, y: 0, w: 1, h: 1 }, s0 = 1, rot = false, cam = { z: 1, cu: W / 2
 const zmax = () => 3 * Math.max(1, W / 1000);
 let mode = 'demo', speedMul = 1, last = performance.now(), acc = 0;
 let watching = false, watchRivals = true;   // watching: an AI-only match you spectate
-let selBase = null, selG = null, lastFromSel = -1, selHinted = false;     // select-then-send: the base whose troops your next tap will send
+let selBase = null, selG = null, lastFromSel = -1, selHinted = false, selT = 0, selAt = 0, selFlash = 0, selGhost = null;     // select-then-send: the base whose troops your next tap will send
 let hover = null, uiFx = [], hl = [], lastHud = 0, toastTimer = 0, lastTap = { id: -1, t: 0 }, lockHinted = false;
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Look settings: Colors picks the palette (High contrast also bolds the map's lines and sizes), Team symbols gives every color its own shape.
@@ -2307,10 +2315,9 @@ function updateView() {
   const [ww, wh] = viewSize();
   cam.z = Math.min(zmax(), Math.max(1, cam.z));
   const s = s0 * cam.z, hw = F.w / (2 * s), hh = F.h / (2 * s);
-  // At the full view the map stays put. Zoomed in, the camera may run past the edge of the map by up to half a screen,
-  // so a base on the edge can be brought to the middle of the view, clear of the HUD. The extra space is just black.
-  if (cam.z <= 1.001) { cam.cu = ww / 2; cam.cv = wh / 2; }
-  else {
+  // The camera may run past the edge of the map by up to half a screen (also at the full view), so a base on the edge can be brought to
+  // the middle of the view, clear of the HUD. The extra space is just black. Double-tapping the map button puts the whole map back in the middle.
+  {
     const exU = Math.max(0, ww / 2 - hw) + hw, exV = Math.max(0, wh / 2 - hh) + hh;
     cam.cu = Math.min(ww / 2 + exU, Math.max(ww / 2 - exU, cam.cu));
     cam.cv = Math.min(wh / 2 + exV, Math.max(wh / 2 - exV, cam.cv));
@@ -2977,6 +2984,7 @@ function draw(now) {
   else if (RM) { drawRimeBack(now); applyView(sx, sy); }
 
   if (isAtlas()) drawAtlasBack(now);
+  if (PERF && window.__bgOnly) { ctx.restore(); return; }          // test hook: only the background, so tests can measure it alone
   drawDeco(now);
   if (RM) drawRimeFrost(now);
   drawEdges(now);
@@ -2990,9 +2998,15 @@ function draw(now) {
     ctx.stroke();
   }
 
-  if (selValid()) {
-    const sn = G.nodes[selBase]; ctx.save(); ctx.strokeStyle = hexA(TEAM_COLORS[PLAYER], .95); ctx.lineWidth = 2; ctx.setLineDash([5, 4]); ctx.lineDashOffset = -performance.now() / 60;
-    ctx.beginPath(); ctx.arc(sn.x, sn.y, 24, 0, 6.2832); ctx.stroke(); ctx.restore();
+  if (selCheck() && selValid()) {
+    const sn = G.nodes[selBase];
+    if (ringNew) drawSelRing(sn, performance.now() / 1000);
+    else { ctx.save(); ctx.strokeStyle = hexA(TEAM_COLORS[PLAYER], .95); ctx.lineWidth = 2; ctx.setLineDash([5, 4]); ctx.lineDashOffset = -performance.now() / 60;
+      ctx.beginPath(); ctx.arc(sn.x, sn.y, 24, 0, 6.2832); ctx.stroke(); ctx.restore(); }
+  }
+  if (selGhost) {                                    // the ring of a selection that was just cleared: it shrinks and fades in a quarter of a second
+    const gt = (performance.now() - selGhost.t) / 260;
+    if (gt >= 1 || !ringNew) selGhost = null; else drawSelRing(G.nodes[selGhost.id], performance.now() / 1000, 1 - 0.55 * gt, 1 - gt);
   }
   if (hover && mode === 'play') {
     ctx.save(); ctx.translate(hover.x, hover.y); ctx.rotate(Math.PI / 4);
@@ -3218,6 +3232,50 @@ function draw(now) {
   drawArrows(now);
 }
 
+// ---- the selection ring: bigger, brighter, and a gauge that fills to show how much of your army a tap will send (100 / 50 / 25 %), in each style's own shape ----
+let ringNew = (() => { try { const v = JSON.parse(localStorage.getItem('ice-ringtest')); return !(v && v.v === 'old'); } catch (e) { return true; } })();   // temporary Old/New switch (hidden quality screen)
+function hexFrac(g, x, y, r, f) {                     // the first f of a hexagon's edges, from the top, clockwise
+  const p = []; for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + i * Math.PI / 3; p.push([x + Math.cos(a) * r, y + Math.sin(a) * r]); }
+  let left = Math.max(0, Math.min(1, f)) * 6; g.beginPath(); g.moveTo(p[0][0], p[0][1]);
+  for (let i = 0; i < 6 && left > 0; i++) { const a = p[i], b = p[(i + 1) % 6], t = Math.min(1, left); g.lineTo(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t); left -= 1; }
+  g.stroke();
+}
+function drawSelRing(sn, now, kk, al) {                       // called with the world transform in place; line widths are in screen pixels (k * u)
+  const g = ctx, u = 1 / V.s, f = settings.send, col = TEAM_COLORS[PLAYER], mv = reduceMotion ? 0 : 1, TAU = Math.PI * 2, T = -Math.PI / 2, E = T + f * TAU;
+  const flash = Math.max(0, 1 - (performance.now() - selFlash) / 380), cal = isAtlas(), br = cal ? 0 : Math.sin(now * (isOver() ? 8 : 5)) * mv;
+  const R = Math.max(26, 32 * u) * (1 + 0.05 * br) * (kk || 1), hx = sn.x, hy = sn.y;
+  const arc = (r, a0, a1) => { g.beginPath(); g.arc(hx, hy, r, a0, a1); g.stroke(); };
+  g.save(); g.setLineDash([]); g.lineCap = 'round'; g.lineJoin = 'round'; if (al != null) g.globalAlpha = al;
+  if (isRime()) {                                     // a hexagon of ice; the lit edges are the share you send
+    g.strokeStyle = hexA('#bfe6ff', 0.4 + 0.3 * flash); g.lineWidth = 1.3 * u; hexFrac(g, hx, hy, R, 1);
+    g.strokeStyle = hexA(col, 1); g.lineWidth = 3.2 * u; hexFrac(g, hx, hy, R, f);
+    g.fillStyle = hexA('#e8f6ff', 0.85); for (let i = 0; i < 6; i++) { const a = T + i * Math.PI / 3; g.beginPath(); g.arc(hx + Math.cos(a) * R, hy + Math.sin(a) * R, 1.8 * u, 0, TAU); g.fill(); }
+  } else if (isNebula()) {                            // a thin orbit with a bright body travelling round it, and spikes like a star
+    g.strokeStyle = hexA(col, 0.3); g.lineWidth = 5.5 * u; arc(R, 0, TAU);
+    g.strokeStyle = hexA('#cfe0ff', 0.35 + 0.3 * flash); g.lineWidth = 1 * u; arc(R, 0, TAU);
+    g.strokeStyle = hexA(col, 1); g.lineWidth = 2.2 * u; arc(R, T, E);
+    g.strokeStyle = hexA('#ffffff', 0.45); g.lineWidth = 1 * u; g.beginPath(); g.moveTo(hx - R * 1.35, hy); g.lineTo(hx + R * 1.35, hy); g.moveTo(hx, hy - R * 1.35); g.lineTo(hx, hy + R * 1.35); g.stroke();
+    const a = now * 1.4 * mv + T; g.fillStyle = '#ffffff'; g.beginPath(); g.arc(hx + Math.cos(a) * R, hy + Math.sin(a) * R, 2.3 * u, 0, TAU); g.fill();
+  } else if (cal) {                                   // Atlas: calm and exact, with four ticks
+    g.strokeStyle = hexA(col, 0.45); g.lineWidth = 1.4 * u; arc(R, 0, TAU);
+    g.strokeStyle = hexA(col, 1); g.lineWidth = 3 * u; arc(R, T, E);
+    g.strokeStyle = hexA(col, 0.9); g.lineWidth = 1.6 * u; g.beginPath();
+    for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2; g.moveTo(hx + Math.cos(a) * (R + 3 * u), hy + Math.sin(a) * (R + 3 * u)); g.lineTo(hx + Math.cos(a) * (R + 9 * u), hy + Math.sin(a) * (R + 9 * u)); }
+    g.stroke();
+  } else if (isOver()) {                              // Overload: louder, two rings, glowing
+    g.globalCompositeOperation = 'lighter';
+    g.strokeStyle = hexA(col, 0.2 + 0.4 * flash); g.lineWidth = 12 * u; arc(R, 0, TAU);
+    g.strokeStyle = hexA(col, 0.5); g.lineWidth = 2 * u; arc(R, 0, TAU);
+    g.strokeStyle = hexA('#ffffff', 0.95); g.lineWidth = 4.2 * u; arc(R, T, E);
+    g.strokeStyle = hexA(col, 0.5 + 0.3 * br); g.lineWidth = 1.5 * u; arc(R * 1.28, 0, TAU);
+  } else {                                            // Classic: a soft halo, a faint track and a bright gauge
+    g.strokeStyle = hexA(col, 0.22 + 0.4 * flash); g.lineWidth = 8 * u; arc(R, 0, TAU);
+    g.strokeStyle = hexA(col, 0.4); g.lineWidth = 1.6 * u; arc(R, 0, TAU);
+    g.strokeStyle = hexA(col, 1); g.lineWidth = 3.4 * u; arc(R, T, E);
+  }
+  if (flash > 0 && !cal) { g.strokeStyle = hexA(col, flash * 0.8); g.lineWidth = 2 * u; arc(R * (1 + 0.5 * (1 - flash)), 0, TAU); }
+  g.restore();
+}
 // ---- "Nebula": the battle out among the stars ----
 // A dim nebula is painted once per map and drifts with the ground; behind it three layers of stars slide at different speeds as
 // you pan and twinkle slowly. Held bases are suns: a wide corona, a white-hot middle and telescope-style diffraction spikes.
@@ -3350,35 +3408,55 @@ function rimeHex(x, y, r) {                          // a closed hexagon, point 
   for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + i * Math.PI / 3, px = x + Math.cos(a) * r, py = y + Math.sin(a) * r; if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }
   ctx.closePath();
 }
-function rimeBack() {                                // frost creeping in from the edges, painted once per map
+function rimeBack() {                                // frost creeping in from the edges: vector ferns in world space, built once per map
   if (RIME.g === G && RIME.back) return RIME.back;
-  const c = RIME.back || (RIME.back = document.createElement('canvas'));
-  c.width = 1024; c.height = Math.max(256, Math.round(1024 * H / W));
-  const g = c.getContext('2d'), cw = c.width, ch = c.height; g.clearRect(0, 0, cw, ch);
-  const rnd = rimeRng(((G.seed || 7) * 2654435761) >>> 0);
-  const gr = g.createRadialGradient(cw / 2, ch / 2, 0, cw / 2, ch / 2, cw * 0.6);      // the middle of the map a shade lighter, like moonlight on a frozen lake
-  gr.addColorStop(0, 'rgba(70,125,175,0.09)'); gr.addColorStop(1, 'rgba(20,50,90,0)'); g.fillStyle = gr; g.fillRect(0, 0, cw, ch);
-  g.lineCap = 'round';
-  const fern = (x, y, a, len, d) => {
-    if (len < 6 || d > 3) return;
-    const x2 = x + Math.cos(a) * len, y2 = y + Math.sin(a) * len;
-    g.strokeStyle = 'rgba(190,226,255,' + (0.17 - d * 0.035).toFixed(3) + ')'; g.lineWidth = Math.max(0.8, 1.7 - d * 0.35);
-    g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke();
-    for (const f of [0.38, 0.7]) {
-      const bx = x + (x2 - x) * f, by = y + (y2 - y) * f;
-      fern(bx, by, a + 1.0 + (rnd() - 0.5) * 0.25, len * 0.42, d + 1); fern(bx, by, a - 1.0 + (rnd() - 0.5) * 0.25, len * 0.42, d + 1);
-    }
-    if (d < 2) fern(x2, y2, a + (rnd() - 0.5) * 0.3, len * 0.5, d + 1);
-  };
-  for (let i = 0; i < 30; i++) {                     // each fern starts on an edge and grows inward
+  const cw = W * 1.1, ch = H * 1.1, ox = -W * 0.05, oy = -H * 0.05, k = cw / 1024, fade = cw * 0.07;
+  const rnd = rimeRng(((G.seed || 7) * 2654435761) >>> 0), list = [];
+  for (let i = 0; i < 30; i++) {                     // each fern starts on an edge and grows inward (same random order as before, so the same frost)
     const side = i % 4, t = rnd(), len = (0.07 + rnd() * 0.11) * cw;
-    const x = side === 0 ? t * cw : side === 1 ? cw : side === 2 ? t * cw : 0, y = side === 0 ? 0 : side === 1 ? t * ch : side === 2 ? ch : t * ch;
-    fern(x, y, (side === 0 ? Math.PI / 2 : side === 1 ? Math.PI : side === 2 ? -Math.PI / 2 : 0) + (rnd() - 0.5) * 0.9, len, 0);
+    const x = ox + (side === 0 ? t * cw : side === 1 ? cw : side === 2 ? t * cw : 0), y = oy + (side === 0 ? 0 : side === 1 ? t * ch : side === 2 ? ch : t * ch);
+    const a0 = (side === 0 ? Math.PI / 2 : side === 1 ? Math.PI : side === 2 ? -Math.PI / 2 : 0) + (rnd() - 0.5) * 0.9;
+    const fr = { paths: [new Path2D(), new Path2D(), new Path2D(), new Path2D()], st: null, x0: x, x1: x, y0: y, y1: y };
+    const fern = (px, py, an, ln, d) => {
+      if (ln < 6 * k || d > 3) return;
+      const x2 = px + Math.cos(an) * ln, y2 = py + Math.sin(an) * ln;
+      fr.paths[d].moveTo(px, py); fr.paths[d].lineTo(x2, y2);
+      fr.x0 = Math.min(fr.x0, x2); fr.x1 = Math.max(fr.x1, x2); fr.y0 = Math.min(fr.y0, y2); fr.y1 = Math.max(fr.y1, y2);
+      for (const f of [0.38, 0.7]) {
+        const bx = px + (x2 - px) * f, by = py + (y2 - py) * f;
+        fern(bx, by, an + 1.0 + (rnd() - 0.5) * 0.25, ln * 0.42, d + 1); fern(bx, by, an - 1.0 + (rnd() - 0.5) * 0.25, ln * 0.42, d + 1);
+      }
+      if (d < 2) fern(x2, y2, an + (rnd() - 0.5) * 0.3, ln * 0.5, d + 1);
+    };
+    fern(x, y, a0, len, 0);
+    fr.ax = x; fr.ay = y; fr.bx = x + Math.cos(a0) * fade; fr.by = y + Math.sin(a0) * fade;
+    list.push(fr);
   }
-  RIME.g = G; return c;
+  RIME.back = { list, k, ox, oy, cw, ch, mk: null }; RIME.g = G; return RIME.back;
+}
+function rimeFernStyles(R) {                         // per fern and branch depth: a line color that fades in from the map edge (made once, needs the canvas)
+  if (R.mk) return;
+  for (const fr of R.list) {
+    fr.st = [];
+    for (let d = 0; d < 4; d++) {
+      const gr = ctx.createLinearGradient(fr.ax, fr.ay, fr.bx, fr.by), al = 0.17 - d * 0.035;
+      gr.addColorStop(0, 'rgba(190,226,255,0)'); gr.addColorStop(1, 'rgba(190,226,255,' + al.toFixed(3) + ')'); fr.st.push(gr);
+    }
+  }
+  const r = R.cw * 0.6, gm = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, r);   // the middle of the map a shade lighter, like moonlight on a frozen lake; ends at zero, so no edge
+  gm.addColorStop(0, 'rgba(70,125,175,0.09)'); gm.addColorStop(1, 'rgba(20,50,90,0)'); R.mk = gm;
 }
 function drawRimeBack(now) {                         // called with the world transform in place; leaves the screen transform behind
-  ctx.globalAlpha = 1; ctx.drawImage(rimeBack(), -W * 0.05, -H * 0.05, W * 1.1, H * 1.1);
+  const R = rimeBack(); rimeFernStyles(R); ctx.globalAlpha = 1;
+  { const r = R.cw * 0.6, x0 = Math.max(W / 2 - r, VIS.x0), x1 = Math.min(W / 2 + r, VIS.x1), y0 = Math.max(H / 2 - r, VIS.y0), y1 = Math.min(H / 2 + r, VIS.y1);
+    if (x1 > x0 && y1 > y0) { ctx.fillStyle = R.mk; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); } }
+  const top = 3 - (quality >= 3 ? 2 : quality >= 1 ? 1 : 0);          // slower quality steps skip the finest branches
+  ctx.lineCap = 'round';
+  const lw = [0, 1, 2, 3].map(d => { const w = Math.max(0.8, 1.7 - d * 0.35); return Math.max(0.8, Math.min(w * R.k * V.s, w * 2.2)) / V.s; });   // thick as before at the usual zoom, but never fat bands when zoomed far in
+  for (const fr of R.list) {
+    if (fr.x1 < VIS.x0 || fr.x0 > VIS.x1 || fr.y1 < VIS.y0 || fr.y0 > VIS.y1) continue;
+    for (let d = 0; d <= top; d++) { ctx.strokeStyle = fr.st[d]; ctx.lineWidth = lw[d]; ctx.stroke(fr.paths[d]); }
+  }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const w = Math.ceil(F.w) + 40, h = Math.ceil(F.h) + 40, mv = reduceMotion ? 0 : 1, PAR = [0.04, 0.1, 0.2];
   if (!RIME.snow || RIME.sw !== w || RIME.sh !== h || RIME.sq !== quality) {
@@ -3724,7 +3802,19 @@ function pxMarkers(now, tk) {                         // send highlights, the ba
     x.fill();
   }
   x.globalAlpha = 1;
-  if (selValid()) { const sn = G.nodes[selBase]; pxp(sn.x, sn.y); x.fillStyle = TEAM_COLORS[PLAYER]; x.beginPath(); pxBrackets(PXX, PXY, 10 + (tk >> 2) % 2, 3); x.fill(); }
+  if (selCheck() && selValid()) {
+    const sn = G.nodes[selBase]; pxp(sn.x, sn.y); x.fillStyle = TEAM_COLORS[PLAYER]; x.beginPath(); pxBrackets(PXX, PXY, (ringNew ? 12 : 10) + (tk >> 2) % 2, ringNew ? 4 : 3); x.fill();
+    if (ringNew) {                                    // Pixel: four little squares under the base, as many lit as the share you send
+      const on = Math.round(settings.send * 4), py = PXY + 17;
+      x.beginPath(); for (let i = 0; i < on; i++) x.rect(PXX - 7 + i * 4, py, 3, 3); x.fill();
+      x.globalAlpha = 0.3; x.beginPath(); for (let i = on; i < 4; i++) x.rect(PXX - 7 + i * 4, py, 3, 3); x.fill(); x.globalAlpha = 1;
+    }
+  }
+  if (selGhost) {                                    // Pixel: the brackets close in over a quarter of a second
+    const gt = (performance.now() - selGhost.t) / 260;
+    if (gt >= 1 || !ringNew) selGhost = null;
+    else { const sn = G.nodes[selGhost.id]; pxp(sn.x, sn.y); x.fillStyle = TEAM_COLORS[PLAYER]; x.beginPath(); pxBrackets(PXX, PXY, Math.round(12 - 7 * gt), 3); x.fill(); }
+  }
   if (hover && mode === 'play') { pxp(hover.x, hover.y); x.fillStyle = TEAM_COLORS[PLAYER]; x.beginPath(); pxBrackets(PXX, PXY, 7 + (tk >> 2) % 2, 3); x.fill(); }
   for (let i = 0; i < 5; i++) {
     const L = G.lock[i];
@@ -3895,7 +3985,7 @@ function buy(k) {
 }
 // Haptics. Light = the moments that matter; Normal adds a tick for every order and upgrade. Phones without vibration never see the setting.
 const CAN_BUZZ = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
-const BUZZ = { tap: [6, 0], buy: [10, 0], press: [12, 1], cap: [16, 1], loss: [[30, 50, 30], 1], win: [[20, 60, 20, 60, 50], 1], lose: [[70, 70, 70], 1] };
+const BUZZ = { sel: [[10, 45, 10], 1], tap: [6, 0], buy: [10, 0], press: [12, 1], cap: [16, 1], loss: [[30, 50, 30], 1], win: [[20, 60, 20, 60, 50], 1], lose: [[70, 70, 70], 1] };
 let lastBuzz = 0;
 function buzz(kind) {
   if (!CAN_BUZZ || settings.haptics === 'off') return;
@@ -3909,6 +3999,169 @@ function buzz(kind) {
 function setText(el, v) { v = String(v); if (el._t !== v) { el._t = v; el.textContent = v; } }
 function setStyle(el, prop, v) { const k = '_s' + prop; if (el[k] !== v) { el[k] = v; el.style[prop] = v; } }
 function setClass(el, cls, on) { const k = '_c' + cls; if (el[k] !== on) { el[k] = on; el.classList.toggle(cls, on); } }
+// ---- the point-earned pulse: a burst around the upgrade panel, in the language of each visual style ----
+// Points that follow each other within 0.9 s join ONE burst (it gets stronger and lasts a little longer; nothing is queued and nothing repeats).
+const PF = { cv: null, g: null, ps: [], fx: [], raf: 0, t2: 0, lastPt: 0, strength: 0, starts: 0, glowT: 0, R: 1, w: 0, h: 0, M: 48, chimes: [] };
+const PF_CAP = 90, PF_Q = [1, 0.7, 0.45, 0.25];
+const PF_STYLE = {
+  classic:  { n: 26, kind: 'streak', cols: ['#3577ff', '#8fb3ff', '#ffffff'], w: 1.6, v: [70, 150], life: [0.45, 0.85], len: 0.07 },
+  overload: { n: 48, kind: 'streak', cols: ['#ffffff', '#ffd24a', '#ff7a3d', '#3577ff'], w: 2.6, v: [110, 230], life: [0.4, 0.8], len: 0.09, add: true, flash: true },
+  atlas:    { n: 0, rings: true },
+  pixel:    { n: 26, kind: 'pixel', cols: ['#3577ff', '#8fb3ff', '#ffffff'], v: [40, 100], life: [0.5, 0.9] },
+  nebula:   { n: 34, kind: 'dust', cols: ['#ffffff', '#cfe0ff', '#ffe6c4', '#b8ccff'], v: [10, 38], life: [1, 1.7], flare: true },
+  rime:     { n: 16, kind: 'shard', cols: ['#bfe6ff', '#e8f6ff', '#8fd0ff'], v: [45, 110], life: [0.8, 1.25], hex: true }
+};
+const pfRnd = (a, b) => a + Math.random() * (b - a);
+function pfCanvas() {
+  if (PF.cv) return PF.cv;
+  const c = document.createElement('canvas'); c.id = 'ptsFx'; c.setAttribute('aria-hidden', 'true'); c.style.display = 'none';
+  document.body.appendChild(c); PF.cv = c; PF.g = c.getContext('2d'); return c;
+}
+function ptsPulse(n) {
+  if (!(n >= 1)) return;
+  const now = performance.now(), merged = now - PF.lastPt < 900; PF.lastPt = now;
+  PF.strength = merged ? Math.min(5, PF.strength + n) : Math.min(5, n);
+  if (!merged) { PF.starts++; ptsSound(); }          // one chime per burst, when it starts
+  const u = $('upg'); u.classList.add('ptsGlow'); clearTimeout(PF.glowT);
+  PF.glowT = setTimeout(() => u.classList.remove('ptsGlow'), 1100 + 150 * PF.strength);
+  if (reduceMotion) return;                           // Remove animations: the soft glow above is all there is
+  pfSpawn(merged);
+}
+// ---- the upgrade chime ----
+// Two soft rising notes, built from each sound style's own voices so it belongs to it, in the key that style already plays in, at about the level of your own hits (about 0.05 where
+// your troop hits are 0.055 to 0.06). Overdrive: a short square blip (A minor, A then E). Drift: two plucks (D major pentatonic, D then A). Chip: a coin on pulse 1 that takes the channel
+// for a moment. Cosmos: two sonar pings (E Lydian, E then B). Floe: two glass notes a fifth apart. Simple: two sine bleeps in your color's pentatonic.
+function ptsOsc(f, t, dur, peak, atk, f2) {            // one sine note straight into the sound bus (Simple)
+  const o = AC.createOscillator(), g = AC.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + atk); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(outBus()); o.start(t); o.stop(t + dur + 0.03);
+}
+function ptsChime(N, t) {                              // N: the running (or preview) nodes of the current sound style; null for Simple
+  const share = G ? (G.teams[PLAYER].bases / G.nodes.length) : 0.4;
+  switch (settings.tone) {
+    case 'overdrive':
+      [[69, 0, 0.1], [76, 0.09, 0.22]].forEach(([m, d, len]) => {
+        const o = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain();
+        o.type = 'square'; o.frequency.setValueAtTime(hz(m) * 0.96, t + d); o.frequency.exponentialRampToValueAtTime(hz(m), t + d + 0.025);
+        f.type = 'lowpass'; f.frequency.value = 2600; f.Q.value = 2; env(g, t + d, 0.045, 0.003, len);
+        o.connect(f); f.connect(g); g.connect(N.music); g.connect(N.send); o.start(t + d); o.stop(t + d + len + 0.03);
+      });
+      break;
+    case 'drift': drPluck(N, t, drMidi(10), 0.06, 0, 0.8); drPluck(N, t + 0.11, drMidi(13), 0.06, 0, 0.8); break;
+    case 'chip': {
+      const fl = 3 + Math.round(share * 5), a = chClaim(N, 'p1', t, 0.3, 2, 0);
+      if (a) { a.list.push(chPulse(N, t, chMidi(fl - 1), 0.07, 'p50', 0.06, 0)); a.list.push(chPulse(N, t + 0.075, chMidi(fl + 2), 0.2, 'p50', 0.06, 0)); }
+      break;
+    }
+    case 'cosmos': csPing(N, t, csMidi(14), 0.05, 0, 1.5); csPing(N, t + 0.13, csMidi(18), 0.05, 0, 1.8); break;
+    case 'floe': { const b = 1150 * (0.9 + 0.45 * share); flTink(N, t, b, 0.055, 0, 0.9, 0, true); flTink(N, t + 0.12, b * 1.5, 0.055, 0, 0.9, 0, true); break; }
+    default: {
+      const m = ROOT[PLAYER] - 12 + 4;
+      ptsOsc(hz(m), t, 0.16, 0.05, 0.012, hz(m) * 0.99); ptsOsc(hz(m + 5), t + 0.1, 0.3, 0.05, 0.012, hz(m + 5) * 0.99); ptsOsc(hz(m + 17), t + 0.1, 0.2, 0.007, 0.012);
+    }
+  }
+}
+function ptsSound() {                                  // an upgrade point was earned in a match you are playing
+  if (!AC || !settings.sound || !audible() || awatch() || AC.state !== 'running') return;
+  const N = ({ overdrive: OD.nodes, drift: DR.nodes, chip: CH.nodes, cosmos: CS.nodes, floe: FL.nodes })[settings.tone];
+  if (settings.tone !== 'simple' && !N && ['overdrive', 'drift', 'chip', 'cosmos', 'floe'].includes(settings.tone)) return;     // that style's sound is not up yet
+  try { ptsChime(N || null, AC.currentTime + 0.01); PF.chimes.push({ tone: settings.tone, at: performance.now() }); if (PF.chimes.length > 40) PF.chimes.shift(); } catch (e) { /* a missing voice must never stop the game */ }
+}
+let lastChimePrev = 0;
+function ptsPreview() {                                // the "Hear it" button in Settings: the chime of the style you have picked, at full level
+  const now = performance.now();
+  if (!AC || AC.state !== 'running' || !soundGain() || now - lastChimePrev < 900) return;
+  lastChimePrev = now; previewing = true;
+  try {
+    const t = AC.currentTime + 0.05; let N = null, off = null;
+    switch (settings.tone) {
+      case 'overdrive': N = odBuild(false); off = () => N.music.gain.setTargetAtTime(0.0001, t + 1.2, 0.2); break;
+      case 'drift': N = drBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 4000); break;
+      case 'chip': N = chBuild(true); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 1500); break;
+      case 'cosmos': N = csBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 5000); break;
+      case 'floe': N = flBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 6000); break;
+    }
+    ptsChime(N, t); if (off) off();
+  } finally { previewing = false; }
+}
+function pfSpawn(merged) {
+  const st = PF_STYLE[settings.visual] || PF_STYLE.classic, u = $('upg'), r = u.getBoundingClientRect();
+  if (!r.width) return;
+  const c = pfCanvas(), M = PF.M, w = Math.ceil(r.width + 2 * M), h = Math.ceil(r.height + 2 * M), R = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  c.style.left = (r.left - M) + 'px'; c.style.top = (r.top - M) + 'px'; c.style.width = w + 'px'; c.style.height = h + 'px'; c.style.display = 'block';
+  if (c.width !== Math.round(w * R) || c.height !== Math.round(h * R)) { c.width = Math.round(w * R); c.height = Math.round(h * R); }
+  PF.R = R; PF.w = w; PF.h = h;
+  const pw = r.width, ph = r.height, q = PF_Q[quality], s = PF.strength, k = (merged ? 0.6 : 1) * (1 + 0.25 * (s - 1)) * q;
+  const per = 2 * (pw + ph), n = Math.min(Math.round(st.n * k), PF_CAP - PF.ps.length);
+  for (let i = 0; i < n; i++) {                       // each particle starts on the panel's edge and leaves it
+    let d = Math.random() * per, x, y, nx, ny;
+    if (d < pw) { x = d; y = 0; nx = 0; ny = -1; } else if ((d -= pw) < ph) { x = pw; y = d; nx = 1; ny = 0; }
+    else if ((d -= ph) < pw) { x = pw - d; y = ph; nx = 0; ny = 1; } else { d -= pw; x = 0; y = ph - d; nx = -1; ny = 0; }
+    const a = Math.atan2(ny, nx) + pfRnd(-0.55, 0.55), v = pfRnd(st.v[0], st.v[1]), life = pfRnd(st.life[0], st.life[1]);
+    PF.ps.push({ x: M + x, y: M + y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, age: 0, life, kind: st.kind, col: st.cols[(Math.random() * st.cols.length) | 0], rot: a, vr: pfRnd(-3, 3), ph: Math.random() * 6.28, st });
+  }
+  const pr = $('pts').getBoundingClientRect(), cx = pr.width ? pr.left + pr.width / 2 - (r.left - M) : M + pw - 20, cy = pr.width ? pr.top + pr.height / 2 - (r.top - M) : M + 10, gain = 1 + 0.15 * (s - 1);
+  const add = o => { if (PF.fx.length < 12) PF.fx.push(Object.assign({ t0: performance.now(), pw, ph, cx, cy, gain }, o)); };
+  if (merged && PF.fx.length) { for (const o of PF.fx) { o.gain = gain; o.t0 += 250; } }   // a later point only makes the same rings, flare or hexagon bigger and longer
+  else {
+    if (st.flash) add({ k: 'ring', dur: 0.55, grow: 22, w: 3.5, col: '#ffd24a', lite: true });
+    if (st.rings) { add({ k: 'ring', dur: 0.7, grow: 20, w: 1.5, col: '#3577ff' }); add({ k: 'ring', dur: 0.7, grow: 30, w: 1.2, col: '#ffffff', delay: 0.12 }); }
+    if (st.flare) add({ k: 'flare', dur: 0.9 });
+    if (st.hex) add({ k: 'hex', dur: 0.9 });
+  }
+  if (!PF.raf) { PF.t2 = 0; PF.raf = requestAnimationFrame(pfTick); }
+}
+function pfRing(g, o, t) {
+  const e = 1 - (1 - t) * (1 - t), grow = o.grow * o.gain * e;
+  g.globalAlpha = Math.max(0, 1 - t) * 0.85; g.strokeStyle = o.col; g.lineWidth = o.w; g.lineJoin = 'round';
+  g.strokeRect(PF.M - grow, PF.M - grow, o.pw + 2 * grow, o.ph + 2 * grow);
+}
+function pfTick(ts) {
+  PF.raf = 0; const g = PF.g; if (!g) return;
+  const dt = PF.t2 ? Math.min(0.05, (ts - PF.t2) / 1000) : 0.016; PF.t2 = ts;
+  g.setTransform(PF.R, 0, 0, PF.R, 0, 0); g.clearRect(0, 0, PF.w, PF.h);
+  const now = performance.now();
+  for (let i = PF.fx.length - 1; i >= 0; i--) {       // rings, flares and the hexagon
+    const o = PF.fx[i], t = (now - o.t0) / 1000 - (o.delay || 0);
+    if (t >= o.dur) { PF.fx.splice(i, 1); continue; }
+    if (t < 0) continue;
+    const f = t / o.dur; g.globalCompositeOperation = o.lite ? 'lighter' : 'source-over';
+    if (o.k === 'ring') pfRing(g, o, f);
+    else if (o.k === 'flare') {                       // Nebula: a small star that blooms on the counter, with diffraction spikes
+      const e = 1 - (1 - f) * (1 - f), a = Math.max(0, 1 - f), gr = g.createRadialGradient(o.cx, o.cy, 0, o.cx, o.cy, 24 * o.gain);
+      gr.addColorStop(0, 'rgba(207,224,255,' + (0.55 * a).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(207,224,255,0)');
+      g.globalAlpha = 1; g.fillStyle = gr; g.fillRect(o.cx - 30, o.cy - 30, 60, 60);
+      g.globalAlpha = a; g.strokeStyle = '#ffffff'; g.lineWidth = 1; const L = (8 + 24 * e) * o.gain;
+      g.beginPath(); g.moveTo(o.cx - L, o.cy); g.lineTo(o.cx + L, o.cy); g.moveTo(o.cx, o.cy - L); g.lineTo(o.cx, o.cy + L); g.stroke();
+    } else if (o.k === 'hex') {                       // Rime: a hexagon of ice racing outward from the counter
+      const e = 1 - (1 - f) * (1 - f), rad = (8 + 32 * e) * o.gain;
+      g.globalAlpha = Math.max(0, 1 - f) * 0.9; g.strokeStyle = '#bfe6ff'; g.lineWidth = 1.5; g.beginPath();
+      for (let j = 0; j < 6; j++) { const an = -Math.PI / 2 + j * Math.PI / 3; g[j ? 'lineTo' : 'moveTo'](o.cx + Math.cos(an) * rad, o.cy + Math.sin(an) * rad); }
+      g.closePath(); g.stroke();
+    }
+  }
+  for (let i = PF.ps.length - 1; i >= 0; i--) {
+    const p = PF.ps[i]; p.age += dt;
+    if (p.age >= p.life) { PF.ps.splice(i, 1); continue; }
+    const f = p.age / p.life, a = Math.pow(1 - f, 1.2), drag = Math.pow(p.kind === 'dust' ? 0.97 : 0.985, dt * 60);
+    p.vx *= drag; p.vy *= drag; p.x += p.vx * dt; p.y += p.vy * dt;
+    g.globalCompositeOperation = p.st.add ? 'lighter' : 'source-over'; g.fillStyle = g.strokeStyle = p.col;
+    if (p.kind === 'streak') {
+      g.globalAlpha = a; g.lineWidth = p.st.w; g.lineCap = 'round'; g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.vx * p.st.len, p.y - p.vy * p.st.len); g.stroke();
+    } else if (p.kind === 'pixel') {                  // square pixels on a 3 px grid, blinking out at the end
+      if (f > 0.75 && ((p.age * 16) | 0) % 2) continue;
+      g.globalAlpha = 1; g.fillRect(Math.round(p.x / 3) * 3, Math.round(p.y / 3) * 3, 3, 3);
+    } else if (p.kind === 'dust') {
+      g.globalAlpha = a * (0.6 + 0.4 * Math.sin(p.age * 14 + p.ph)); g.beginPath(); g.arc(p.x, p.y, 0.9 + (p.ph % 1) * 0.9, 0, 6.283); g.fill();
+    } else {                                          // shard: a long kite of ice, slowly turning
+      p.rot += p.vr * dt; g.globalAlpha = a; g.save(); g.translate(p.x, p.y); g.rotate(p.rot);
+      g.beginPath(); g.moveTo(7, 0); g.lineTo(-0.5, 2.6); g.lineTo(-5, 0); g.lineTo(-0.5, -2.6); g.closePath(); g.fill(); g.restore();
+    }
+  }
+  g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  if (PF.ps.length || PF.fx.length) PF.raf = requestAnimationFrame(pfTick);
+  else { PF.cv.style.display = 'none'; PF.t2 = 0; }
+}
 function hud() {
   coachTick();
   if (!G) return;
@@ -3916,6 +4169,7 @@ function hud() {
   if (!watching && !G.over) {                       // your base count going up or down is a capture or a loss
     if (G._hb != null && P.bases !== G._hb) buzz(P.bases > G._hb ? 'cap' : 'loss');
     G._hb = P.bases;
+    if (G._pe == null) G._pe = P.earned; else if (P.earned > G._pe) { ptsPulse(P.earned - G._pe); G._pe = P.earned; }   // a new upgrade point
   }
   if (watching) { setText($('army'), fmt(G.t)); setText($('cap'), ''); }   // match clock instead of your army
   else { setText($('army'), P.count); setText($('cap'), '/' + capOf(PLAYER)); }
@@ -4450,6 +4704,7 @@ function chCrunchVar(c) {                              // three crunches (never 
   let i = (Math.random() * 3) | 0; if (i === CH2.v) i = (i + 1) % 3; CH2.v = i;
   return Object.assign({ g, thump }, pick3[i]);
 }
+let chipNew = (() => { try { const v = JSON.parse(localStorage.getItem('ice-chiptest')); return !(v && v.v === 'old'); } catch (e) { return true; } })();   // temporary Old/New switch (hidden quality screen)
 const CH = { nodes: null, waves: null, metal: null, tri: null };
 function chWaves() {                                  // pulse waves at 12.5%, 25% and 50% duty: the old consoles' three tones
   if (CH.waves && CH.waves.ac === AC) return CH.waves;
@@ -4511,13 +4766,13 @@ function chNoise(N, t, dur, peak, freq, metal, pan) { // the noise channel: the 
 function chHit(N, t, e, mine, big) {                   // a troop hit: pulse 1 for yours (a climbing combo), pulse 2 for the others (thin, low, sparse)
   const share = chShare(), floor = 3 + Math.round(share * 5), heat = 1 - Math.exp(-shotRate / 30), pan = screenPan(e.x, e.y);
   if (mine) {
-    const c = N.ch.p1, n = t - c.t < 0.5 ? c.n + 1 : 0;
-    const c2 = chClaim(N, 'p1', t, 0.075, 1, 0.055); if (!c2) return;
-    c2.n = n; c2.list.push(chPulse(N, t, chMidi(floor + CH_SEQ[n % CH_SEQ.length]), 0.075, 'p50', big ? 0.05 : 0.06, pan, 0.985));
+    const c = N.ch.p1, n = t - c.t < (chipNew ? 0.8 : 0.5) ? c.n + 1 : 0, d1 = chipNew ? 0.12 : 0.075;      // new: at most about 5 notes a second (it was up to 18) and a slower climb
+    const c2 = chClaim(N, 'p1', t, d1, 1, chipNew ? 0.19 : 0.055); if (!c2) return;
+    c2.n = n; c2.list.push(chPulse(N, t, chMidi(floor + CH_SEQ[n % CH_SEQ.length]), d1, 'p50', big ? 0.05 : 0.06, pan, 0.985));
   } else {
-    const c = N.ch.p2, n = t - c.t < 0.7 ? c.n + 1 : 0;
-    const c2 = chClaim(N, 'p2', t, 0.085, 1, heat > 0.5 ? 0.14 : 0.09); if (!c2) return;
-    c2.n = n; c2.list.push(chPulse(N, t, chMidi(floor - 5 + CH_SEQ[(n * 2) % CH_SEQ.length]), 0.085, 'p12', 0.024, pan, 0.985));
+    const c = N.ch.p2, n = t - c.t < (chipNew ? 1.1 : 0.7) ? c.n + 1 : 0, d2 = chipNew ? 0.12 : 0.085;
+    const c2 = chClaim(N, 'p2', t, d2, 1, chipNew ? (heat > 0.5 ? 0.34 : 0.26) : (heat > 0.5 ? 0.14 : 0.09)); if (!c2) return;
+    c2.n = n; c2.list.push(chPulse(N, t, chMidi(floor - 5 + CH_SEQ[(n * 2) % CH_SEQ.length]), d2, 'p12', 0.024, pan, 0.985));
   }
 }
 function chCrunch(N, t, c) {                           // a base hit: buzzy noise, and a thump on the triangle each time another quarter of its health is gone
@@ -4920,6 +5175,7 @@ function syncSound() {
     pbus.frequency.setTargetAtTime(cutoff(), AC.currentTime, 0.02);
   }
 }
+$('bChime').addEventListener('click', () => { audioOn(); ptsPreview(); });
 let lastPreview = 0, lastPreviewTone = '';
 function previewSound() {                       // a sample bleep and bloop so you can hear the setting
   const now = performance.now();
@@ -4969,7 +5225,7 @@ const SETTINGS_INFO = {
   colors: { standard: 'Blue, red, green, yellow and purple.', safe: 'Blue, orange, teal, yellow and magenta, chosen to stay distinct for color-blind players.', contrast: 'Brighter colors, bolder lines and stronger text.' },
   symbols: { off: 'Teams are shown by color only.', on: 'Each color also gets its own shape. Empty bases are hollow squares.' },
   volume: { v: 'Sets the overall volume. Your own actions are a little louder than the AI\'s.' },
-  haptics: { off: 'No vibration.', light: 'Short buzzes for captures, lost bases and the end of a match.', normal: 'Everything in Light, plus a tick when you send troops or buy an upgrade.' },
+  haptics: { off: 'No vibration.', light: 'Short buzzes for captures, lost bases, the end of a match and when you select a base.', normal: 'Everything in Light, plus a tick when you send troops or buy an upgrade.' },
   screen: { auto: 'Follows your device\'s rotation setting.', landscape: 'Locks the game to landscape. Works in the installed app.', portrait: 'Locks the game to portrait. Works in the installed app.' } };
 const SPECIAL_SHORT = { fortress: 'More health', forge: 'More troops', beacon: 'More XP', relay: 'Faster troops' };
 function renderSpecials() {
@@ -5033,6 +5289,10 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '47.1.10', t: 'A sound for upgrade points, and a calmer Chip', b: ['Earning an upgrade point now plays a soft two-note chime in your sound style, in that style\'s own key. Settings has a Hear it button for it.', 'Chip plays fewer, slower notes in a fight, so the scale no longer rushes.'] },
+  { v: '47.1.9', t: 'Sharper Rime frost', b: ['The cracked-ice background in Rime is drawn as fine lines now, so it stays sharp when you zoom in.', 'The frost fades in from the edge of the map and the hard edge is gone.', 'Every new match now starts with the send share back at 100%, so a 50% or 25% setting from the last game cannot surprise you.', 'The end-of-match card shows the build number and how you finished (your Health, Speed and Damage, time played, troops knocked out, most bases held).'] },
+  { v: '47.1.8', t: 'A clearer selection ring', b: ['The ring around a selected base is bigger and brighter, in the shape of your visual style, and fills like a clock hand to show how much of your army a tap will send.', 'Selecting a base gives a short double buzz.', 'A tap on empty space clears your selection and you can see it go: the ring closes in with a small tick.', 'You can now slide the map around even when fully zoomed out.', 'The wins-in-games line is gone from the main menu. Stats still has it.'] },
+  { v: '47.1.7', t: 'A flash for upgrade points', b: ['When you earn an upgrade point, your upgrade panel now bursts with light that matches your visual style, so you remember to spend it. Points that come close together share one burst.', 'If your phone is set to remove animations, you get a short soft glow instead.'] },
   { v: '47.1.6', t: 'A small fix', b: ['In a match, the No upgrades line now says what the rule does: nobody earns XP and every skill stays at level 0.'] },
   { v: '47.1.5', t: 'Tester tools and small touches', b: ['New: this What\'s new page, opened from the icon beside the build number, with a dot when there is a build you have not read about yet.', 'New: a Check for update button below. It looks for a newer build and reloads into it.', 'How to Play has a capital P, and its Guided match card has a permanent blue border so it is easy to spot (it says Completed once you have beaten it).'] },
   { v: '47.1.1', t: 'Sound fix', b: ['Sound now comes back by itself if your phone pauses it (a text, another app). Before, it could stay silent until you tapped a base.', 'If it cannot come back, a short message tells you to tap the screen.'] },
@@ -5071,12 +5331,16 @@ const QNAMES = ['Full', 'High', 'Medium', 'Low'];
 function syncQual() {
   for (const b of $('qualRow').children) b.setAttribute('aria-pressed', String(+b.dataset.q === qualFix));
   $('qualNow').textContent = qualFix < 0 ? 'Auto: the game picks the level.' : 'Held at ' + QNAMES[qualFix] + ' (' + Math.round(QUALITY[qualFix] * 100) + '% sharpness).';
+  for (const b of $('ringRow').children) b.setAttribute('aria-pressed', String((b.dataset.r === 'new') === ringNew));
+  for (const b of $('chipRow').children) b.setAttribute('aria-pressed', String((b.dataset.c === 'new') === chipNew));
   $('qualNote').hidden = qualFix < 0; $('qualNote').textContent = qualFix < 0 ? '' : 'Picture quality held at ' + QNAMES[qualFix];
 }
 for (const b of $('qualRow').children) b.addEventListener('click', () => {
   qualFix = +b.dataset.q; save('ice-quality', { q: qualFix });
   quality = qualFix >= 0 ? qualFix : 0; slowSince = 0; frameAvg = 16.7; layout(); syncQual();
 });
+for (const b of $('chipRow').children) b.addEventListener('click', () => { chipNew = b.dataset.c === 'new'; save('ice-chiptest', { v: chipNew ? 'new' : 'old' }); syncQual(); });
+for (const b of $('ringRow').children) b.addEventListener('click', () => { ringNew = b.dataset.r === 'new'; save('ice-ringtest', { v: ringNew ? 'new' : 'old' }); syncQual(); });
 {                                                     // four taps on "Strategy" within two seconds open it
   let taps = [];
   $('stratTag').addEventListener('click', () => {
@@ -5182,7 +5446,7 @@ function renderMods() {
 }
 function renderRecord() {
   const p = stats.play;
-  $('rec').textContent = p.games ? `${p.wins} ${p.wins === 1 ? 'win' : 'wins'} in ${p.games} ${p.games === 1 ? 'game' : 'games'}` : '';
+  $('rec').textContent = '';                          // the small "wins in games" line was taken off the menu in 47.1.8 (Stats has the record)
 }
 function fmtLong(t) {
   const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60);
@@ -5265,6 +5529,7 @@ function startGame(watch, scen, modeKey, prac) {
   $('bAgain').textContent = watching ? 'Watch again' : (curScen || curPrac) ? 'Retry' : 'Play again';
   clearEffects();
   applyColors(watching, (scen || prac) ? settings.classic.color : cfg.color);
+  if (settings.send !== 1) { settings.send = 1; save('ice-settings', settings); }          // every match opens at 100% send
   syncCtrl(); syncRivals(); layout();
   if (curPrac) newGame(practiceOpts(curPrac));          // a practice lesson: tiny map, a rival that never attacks
   else if (curScen) newGame({ scenario: curScen });          // fixed map and rules: the same every attempt
@@ -5411,8 +5676,9 @@ function showEnd() {
   $('bNext').hidden = !nextScen;
   {                                                 // what each rival built, for when someone beat you and you want to know how
     const rs = !watching && !G.practice ? G.teams.filter(T => T.active && T.i !== PLAYER) : [], box = $('endRivals');
-    box.hidden = !rs.length;
-    box.innerHTML = rs.length ? '<h3>What the rivals built</h3>' + rs.map(T => `<div class="rr"><span><i class="sw" data-s="${TEAM_SLOT[T.i]}" style="background:${TEAM_COLORS[T.i]}"></i>${TEAM_NAMES[T.i]} (${T.style.name})</span><em>Health ${T.lv.hp} &middot; Speed ${T.lv.spd} &middot; Damage ${T.lv.dmg}</em></div>`).join('') : '';
+    const me = !watching && !G.practice ? '<h3>How you finished</h3><div class="rr"><span><i class="sw" data-s="' + TEAM_SLOT[PLAYER] + '" style="background:' + TEAM_COLORS[PLAYER] + '"></i>' + TEAM_NAMES[PLAYER] + '</span><em>Health ' + P.lv.hp + ' &middot; Speed ' + P.lv.spd + ' &middot; Damage ' + P.lv.dmg + '</em></div><div class="rr"><span>' + fmt(G.t) + ' played</span><em>' + P.kills + ' troops knocked out &middot; up to ' + G.peak + (G.peak === 1 ? ' base' : ' bases') + '</em></div>' : '';
+    box.hidden = !(rs.length || me);
+    box.innerHTML = me + (rs.length ? '<h3>What the rivals built</h3>' + rs.map(T => `<div class="rr"><span><i class="sw" data-s="${TEAM_SLOT[T.i]}" style="background:${TEAM_COLORS[T.i]}"></i>${TEAM_NAMES[T.i]} (${T.style.name})</span><em>Health ${T.lv.hp} &middot; Speed ${T.lv.spd} &middot; Damage ${T.lv.dmg}</em></div>`).join('') : '');
   }
   {                                                 // a title line, so a screenshot says what it is a screenshot of
     const parts = [];
@@ -5423,6 +5689,7 @@ function showEnd() {
       if (!watching && G.diffName) parts.push(DIFF_LABEL[G.diffName] || G.diffName);
       if (watching) parts.push(SIZE_LABEL[G.sizeName] || '');
     }
+    parts.push($('buildNo').textContent);           // which build the match was played on
     $('endLine').innerHTML = '<b>Aiced</b> &middot; ' + parts.filter(Boolean).map(x => String(x).replace(/[<>&]/g, '')).join(' &middot; ');
   }
   if (!watching) buzz(G.result === 'win' ? 'win' : 'lose');
@@ -5503,19 +5770,32 @@ function longPress(g) {                              // press and hold on a base
 }
 const atBase = (t, id) => { const b = G.nodes[id]; return t.team === PLAYER && (Math.hypot(t.x - b.x, t.y - b.y) < 60 || (t.home === id && !t.path.length)); };   // troops standing at (or just leaving) a base
 const selValid = () => selBase != null && G && selG === G && mode === 'play' && G.nodes[selBase].owner === PLAYER;
+function selCheck() {                              // a selection ends when its base is lost or after 12 s of game time, so it can never come back by surprise
+  if (selBase != null && G && selG === G && G.nodes[selBase].owner === PLAYER && G.t - selT < 12) return true;
+  if (selBase != null && mode === 'play') selBase = null;
+  return false;
+}
 function handleTap(px, py) {
   if (mode !== 'play' || !G || G.over) return;
   audioOn();
   if (watching) return;                             // spectating: look around, no orders
   for (const a of arrowHits) if ((a.x - px) ** 2 + (a.y - py) ** 2 < 30 * 30) { centerOn(a.n.x, a.n.y); return; }
-  const n = pickNode(px, py); if (!n) { selBase = null; lastTap = { id: -1, t: 0 }; return; }
+  selCheck();
+  const n = pickNode(px, py);
+  if (!n) {                                          // a tap on empty space clears the selection, and now you can see it: the ring collapses and the phone ticks
+    if (selValid()) { selGhost = { id: selBase, t: performance.now() }; buzz('tap'); }
+    selBase = null; lastTap = { id: -1, t: 0 }; return;
+  }
   const nowMs = performance.now(), now = nowMs / 1000;
   const dbl = lastTap.id === n.id && nowMs - lastTap.t < 380;
   lastTap = { id: dbl ? -1 : n.id, t: nowMs };
   let from = null;
-  if (selValid()) { if (n.id !== selBase) from = selBase; selBase = null; }                                  // a base was selected: this tap sends from it (or, on the same base, regroups)
+  if (selValid()) {
+    if (n.id === selBase && nowMs - selAt < 450) { selFlash = nowMs; return; }                              // a second tap right after selecting is a bounce, not a regroup
+    if (n.id !== selBase) from = selBase; selBase = null;
+  }                                  // a base was selected: this tap sends from it (or, on the same base, regroups)
   else if (n.owner === PLAYER && !dbl && G.troops.some(t => atBase(t, n.id))) {
-    selBase = n.id; selG = G; buzz('tap');                                                                    // select: the next tap says where
+    selBase = n.id; selG = G; selT = G.t; selAt = nowMs; selFlash = nowMs; buzz('sel');                                                                    // select: the next tap says where
     if (!selHinted) { selHinted = true; toast('Selected. Tap where these troops should go. Tap here again to regroup.', TEAM_COLORS[PLAYER], PLAYER); }
     return;
   }
@@ -5523,7 +5803,7 @@ function handleTap(px, py) {
   const r = command(PLAYER, n.id, settings.send, from == null ? undefined : t => atBase(t, from));
   lastFromSel = r && from != null ? n.id : -1;
   if (r) {
-    buzz('tap');
+    G._orders = (G._orders | 0) + 1; buzz('tap');
     uiFx.push({ k: 'go', x: n.x, y: n.y, b: now });
     if (r.edges.length) hl.push({ edges: r.edges, b: now });
     if (dbl) {
@@ -5883,12 +6163,14 @@ function frame(nowMs) {
 syncLook(); syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
 if (PERF) window.__audio = () => ({ AC, master, lim, mg, mlp, bus, pbus });   // lets the ?perf mode measure output levels
 if (PERF) window.__dbg = () => ({ mode, pvOnly, stack: stack.slice(), backPos, draining, t: G ? G.t : 0, over: G ? G.over : null, parts: parts.length, fx: G ? G.fx.length : 0, pvOwners: pvOwners ? pvOwners.length : 0, hasG: !!G });
+if (PERF) { window.__chimes = () => PF.chimes.slice(); window.__aud = () => ({ ac: AC, lim, master }); window.__chipnew = () => ({ chipNew }); window.__award = n => { const P = G.teams[PLAYER]; for (let i = 0; i < n; i++) { P.earned++; P.points++; } }; window.__pf = () => ({ starts: PF.starts, strength: PF.strength, parts: PF.ps.length, fx: PF.fx.length, glow: $('upg').classList.contains('ptsGlow'), shown: !!PF.cv && PF.cv.style.display !== 'none', style: settings.visual }); }
 if (PERF) { window.__coach = () => coach ? { i: coach.i, n: coach.lesson.steps.length, id: coach.lesson.id } : null; window.__hud = hud; window.__info = showInfo; window.__coachAim = () => coach ? { hl: coach.hlId, ph: $('coachPh').textContent } : null; window.__txt = () => ({ DIFF_INFO, PERSONA_INFO, SHAPE_INFO, SETTINGS_INFO, SPECIAL_INFO }); window.__mods = () => MODS; window.__sel = () => selBase; window.__coachTo = n => { coach.i = n; coach.g0 = G.t; coachShow(); }; }       // test hooks
 if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$('mm').hidden });
 if (PERF) window.__scr = (x, y) => toScreen(x, y);
+if (PERF) { window.__own = (id, o) => { G.nodes[id].owner = o; }; window.__tick = d => { G.t += d; }; window.__orders = () => (G ? G._orders | 0 : 0); window.__nodes = () => G.nodes.map(n => ({ id: n.id, x: n.x, y: n.y, o: n.owner })); window.__ring = () => ({ sel: selBase, valid: selValid(), ringNew, flashed: performance.now() - selFlash < 400, ghost: !!selGhost }); }
 if (PERF) window.__chip = () => ({ on: !!CH.nodes, busy: CH.nodes ? Object.values(CH.nodes.ch).filter(c => c.off > AC.currentTime).length : 0 });   // sound-test hook
 if (PERF) window.__floe = () => ({ on: !!FL.nodes, v: FL.v, gain: FL.nodes ? FL.nodes.out.gain.value : 0 });   // sound-test hook
-if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; };          // tests: where a world point lands on screen
+if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; updateView(); };          // tests: where a world point lands on screen
 requestAnimationFrame(frame);
 })();
 </script>
