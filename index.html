@@ -139,7 +139,7 @@ body { position: relative; }
 .mark svg { width: 44px; height: 44px; flex: none; }
 .mark h1 { margin: 0; font-size: 64px; line-height: .9; font-weight: 700; letter-spacing: .06em; }
 .mark .mt { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.mark .tag { font-size: 14px; letter-spacing: .32em; text-transform: uppercase; color: var(--dim); padding-left: 3px; }
+.mark .tag { font-size: 14px; letter-spacing: .32em; text-transform: uppercase; color: var(--dim); padding-left: 3px; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 .homeL, .homeR { display: flex; flex-direction: column; gap: 10px; }
 .homeL { gap: 14px; }
 .ghost:active, .back:active { background: rgba(40,40,44,.8); }
@@ -215,6 +215,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .about b { color: var(--ink); font-weight: 500; }
 .newhere { margin: 0; padding: 8px 0; font-size: 13px; color: var(--ink); cursor: pointer; }
 .newhere b { color: var(--blue); font-weight: 600; }
+.qualnote { margin: 0; padding: 4px 0; font-size: 12px; color: var(--dim); }
 .ghost.nudge { border-color: var(--blue); }
 .screen h3.sub { margin: 4px 0 0; font-size: 13px; font-weight: 500; color: var(--dim); }
 #coach { top: calc(env(safe-area-inset-top, 0px) + 58px); left: 50%; transform: translateX(-50%); width: max-content; max-width: min(46vw, 380px); display: flex; gap: 10px; align-items: center; padding: 8px 10px; font-size: 13px; line-height: 1.35; z-index: 2; }
@@ -513,13 +514,14 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <div class="homeL">
       <div class="mark">
         <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 42 43 24 33.5 6 43Z" fill="#3577ff"/></svg>
-        <div class="mt"><h1>Aiced</h1><span class="tag">Strategy</span></div>
+        <div class="mt"><h1>Aiced</h1><span class="tag" id="stratTag">Strategy</span></div>
       </div>
       <div class="rec"><span id="rec"></span><button class="ibtn" id="aboutBtn" aria-label="About this game" aria-expanded="false">i</button></div>
       <p class="about aboutcard" id="aboutCard" hidden><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
+      <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.5</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.6</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -650,6 +652,13 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <p class="specintro">What changed in the latest builds. This page is only in the test versions.</p>
     <div id="newsBody"></div>
     <div class="updrow"><button id="bUpd" class="ghost small">Check for update</button><span id="updMsg" class="specintro" role="status" aria-live="polite"></span></div>
+  </section>
+
+  <section class="screen wide" id="scrQual" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Picture quality</h2></header>
+    <p class="specintro">Auto lowers the sharpness by itself if your phone struggles. Pick a level to hold it there, even if the game slows down.</p>
+    <div class="seg tight five" id="qualRow"><button data-q="-1">Auto</button><button data-q="0">Full</button><button data-q="1">High</button><button data-q="2">Medium</button><button data-q="3">Low</button></div>
+    <p class="specintro" id="qualNow" role="status" aria-live="polite"></p>
   </section>
 
   <section class="screen wide" id="scrHelp" hidden>
@@ -2154,8 +2163,10 @@ const viewSize = () => rot ? [H, W] : [W, H];
 // Render resolution: capped at 2.5x (indistinguishable on a phone, about a third fewer pixels than 3x), and
 // stepped down automatically if the frame rate stays low, so a slower phone trades sharpness for smoothness.
 const DPR_MAX = Math.min(window.devicePixelRatio || 1, 2.5), QUALITY = [1, 0.8, 0.65, 0.5];
-let quality = 0, slowSince = 0, frameAvg = 16.7;
+let qualFix = (() => { try { const v = JSON.parse(localStorage.getItem('ice-quality')); return v && Number.isInteger(v.q) && v.q >= 0 && v.q < QUALITY.length ? v.q : -1; } catch (e) { return -1; } })();   // -1 = Auto
+let quality = qualFix >= 0 ? qualFix : 0, slowSince = 0, frameAvg = 16.7;
 function watchFrameRate(frameMs, nowMs) {
+  if (qualFix >= 0) { slowSince = 0; return; }                  // a held level never steps down by itself
   if (mode !== 'play' || document.hidden) { slowSince = 0; frameAvg = 16.7; return; }
   frameAvg += (Math.min(frameMs, 100) - frameAvg) * 0.05;
   if (frameAvg < 22) { slowSince = 0; return; }                 // ~45 fps or better: leave it alone
@@ -5022,6 +5033,7 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '47.1.6', t: 'A small fix', b: ['In a match, the No upgrades line now says what the rule does: nobody earns XP and every skill stays at level 0.'] },
   { v: '47.1.5', t: 'Tester tools and small touches', b: ['New: this What\'s new page, opened from the icon beside the build number, with a dot when there is a build you have not read about yet.', 'New: a Check for update button below. It looks for a newer build and reloads into it.', 'How to Play has a capital P, and its Guided match card has a permanent blue border so it is easy to spot (it says Completed once you have beaten it).'] },
   { v: '47.1.1', t: 'Sound fix', b: ['Sound now comes back by itself if your phone pauses it (a text, another app). Before, it could stay silent until you tapped a base.', 'If it cannot come back, a short message tells you to tap the screen.'] },
   { v: '47.1 and 47', t: 'Smarter rivals, tougher bases', b: ['Brutal rivals now keep troops home when you march at them, answer small raids, and strike any base you leave empty. Hard rivals do a lighter version. Easy and Normal play as before.', 'Health now also makes your bases tougher to break, and the rivals benefit too.', 'Hard rivals pick on you a little less.'] }
@@ -5055,6 +5067,24 @@ async function checkUpdate() {
 $('bUpd').addEventListener('click', checkUpdate);
 function syncNews() { $('newsBtn').hidden = !TESTER_NOTES; $('newsDot').hidden = !TESTER_NOTES || load('ice-seen-build', {}).v === NEWS[0].v; }
 syncNews();
+const QNAMES = ['Full', 'High', 'Medium', 'Low'];
+function syncQual() {
+  for (const b of $('qualRow').children) b.setAttribute('aria-pressed', String(+b.dataset.q === qualFix));
+  $('qualNow').textContent = qualFix < 0 ? 'Auto: the game picks the level.' : 'Held at ' + QNAMES[qualFix] + ' (' + Math.round(QUALITY[qualFix] * 100) + '% sharpness).';
+  $('qualNote').hidden = qualFix < 0; $('qualNote').textContent = qualFix < 0 ? '' : 'Picture quality held at ' + QNAMES[qualFix];
+}
+for (const b of $('qualRow').children) b.addEventListener('click', () => {
+  qualFix = +b.dataset.q; save('ice-quality', { q: qualFix });
+  quality = qualFix >= 0 ? qualFix : 0; slowSince = 0; frameAvg = 16.7; layout(); syncQual();
+});
+{                                                     // four taps on "Strategy" within two seconds open it
+  let taps = [];
+  $('stratTag').addEventListener('click', () => {
+    const t = performance.now(); taps = taps.filter(x => t - x < 2000); taps.push(t);
+    if (taps.length >= 4) { taps = []; go('scrQual'); }
+  });
+}
+syncQual();
 function showScreen(id) {
   for (const sc of document.querySelectorAll('#menu .screen')) sc.hidden = sc.id !== id;
   const m = SCREEN_MODE[id];
@@ -5065,6 +5095,7 @@ function showScreen(id) {
   if (id === 'scrPlay') updateLadderBlurb();
   if (id === 'scrStats') renderStats();
   if (id === 'scrNews') { renderNews(); $('updMsg').textContent = ''; }
+  if (id === 'scrQual') syncQual();
   placePreview();
   const f = $(id).querySelector('.primary, .back, button'); if (f) f.focus({ preventScroll: true });
 }
@@ -5111,7 +5142,7 @@ function openBrief(id) {
   go('scrBrief');
 }
 // ---- rules in the stats drop-down: the challenge's goals with live status, or whatever modifiers are on ----
-const MOD_SHORT = { blitz: 'Faster troops, spawns and sieges', glass: 'Half health for troops and bases', noup: 'No XP or upgrades', koth: 'Hold the crown 90 s in total to win', fog: 'You only see near your own units' };
+const MOD_SHORT = { blitz: 'Faster troops, spawns and sieges', glass: 'Half health for troops and bases', noup: 'Nobody earns XP. Every skill stays at level 0.', koth: 'Hold the crown 90 s in total to win', fog: 'You only see near your own units' };
 let hasRules = false, rulesCache = '', peekUntil = 0;
 function goalState(g, P) {
   switch (g.k) {
@@ -5592,7 +5623,7 @@ document.querySelectorAll('.seg[data-mode]').forEach(seg => seg.addEventListener
 document.querySelectorAll('.seg[data-glob]').forEach(seg => seg.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   const key = seg.dataset.glob; settings[key] = b.dataset.v; save('ice-settings', settings);
-  if (key === 'visual') { quality = 0; slowSince = 0; frameAvg = 16.7; layout(); }          // a new style gets a fresh shot at full resolution
+  if (key === 'visual') { quality = qualFix >= 0 ? qualFix : 0; slowSince = 0; frameAvg = 16.7; layout(); }          // a new style gets a fresh shot at full resolution
   if (key === 'tone') { audioOn(); syncSound(); lastPreview = 0; setTimeout(previewSound, 30); }
   if (key === 'menuSound' && b.dataset.v === 'on') audioOn();
   if (key === 'screen') applyScreenLock();
