@@ -173,6 +173,14 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .seg.five button { flex: 1 1 0; min-width: 0; padding: 0 2px; font-size: 13px; }
 .opt.stack { flex-direction: column; align-items: stretch; gap: 6px; } .opt.stack > span { flex: none; }
 @media (max-width: 340px) { #scrSettings .seg.five button { font-size: 11px; padding: 0 1px; } }
+/* six style chips: one row when there is room, otherwise a 3 x 2 block (both rows are laid out the same way, so each sound/visual pair stays lined up) */
+@media (max-width: 480px), (orientation: landscape) and (max-height: 430px) {
+  #scrSettings .seg.five { display: grid; grid-template-columns: repeat(3, 1fr); }
+  #scrSettings .seg.five button { border-left: 1px solid var(--faint); border-top: 1px solid var(--faint); font-size: 13px; padding: 0 2px; }
+  #scrSettings .seg.five button:nth-child(3n+1) { border-left: 0; }
+  #scrSettings .seg.five button:nth-child(-n+3) { border-top: 0; }
+}
+@media (orientation: landscape) and (max-height: 430px) { #scrSettings .seg.five button { min-height: 32px; height: 32px; } }
 .seg button[aria-pressed="true"] { color: var(--ink); background: var(--blue-soft); box-shadow: inset 0 -2px 0 var(--blue); }
 .btns { display: flex; gap: 8px; }
 .btns button { flex: 1; min-height: 50px; border-radius: 4px; font-size: 16px; font-weight: 600; }
@@ -189,6 +197,16 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .ibtn { position: relative; float: right; width: 26px; height: 26px; margin-top: -4px; padding: 0; border-radius: 50%; border: 1px solid var(--faint); background: rgba(0,0,0,.35); color: var(--dim); font: italic 600 14px/24px Georgia, serif; }
 .ibtn::after { content: ''; position: absolute; inset: -9px; }
 .ibtn[aria-expanded="true"] { color: var(--ink); border-color: var(--dim); }
+.newsBtn { position: relative; display: inline-block; vertical-align: middle; width: 22px; height: 22px; margin: 0 0 0 -6px; padding: 0; border-radius: 50%; border: 1px solid var(--faint); background: rgba(0,0,0,.35); color: var(--dim); pointer-events: auto; opacity: .85; }
+.newsBtn[hidden] { display: none; }
+.newsBtn::after { content: ''; position: absolute; inset: -12px; }
+.newsBtn svg { display: block; width: 12px; height: 12px; margin: auto; }
+.newsBtn i { position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; border-radius: 50%; background: #3577ff; box-shadow: 0 0 0 2px #000; }
+.updrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.updrow .ghost { flex: none; }
+#newsBody { display: flex; flex-direction: column; gap: 14px; }
+#newsBody h3 { margin: 0 0 6px; font-size: 14px; font-weight: 500; color: var(--ink); }
+#newsBody h3 span { color: var(--dim); font-weight: 400; }
 .aboutcard { margin: 0; padding: 10px 12px; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.45); }
 .aboutcard[hidden] { display: none; }
 
@@ -499,7 +517,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <p class="about aboutcard" id="aboutCard" hidden><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to play</b>.</p>
     </div>
-    <div class="ver"><span class="build" id="buildNo">Build 46.6</span></div>
+    <div class="ver"><span class="build" id="buildNo">Build 47.1.3</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -588,8 +606,8 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <div class="opts">
       <div class="opt"><span>Volume</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"></div>
       <div class="opt"><span>Menu sound</span><div class="seg tight" data-glob="menuSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
-      <div class="opt stack"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="overdrive">Overdrive</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button></div></div>
-      <div class="opt stack"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button></div></div>
+      <div class="opt stack"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="overdrive">Overdrive</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button><button data-v="floe">Floe</button></div></div>
+      <div class="opt stack"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button><button data-v="rime">Rime</button></div></div>
       <div class="opt"><span>Colors</span><div class="seg tight wrap" data-glob="colors"><button data-v="standard">Standard</button><button data-v="safe">Color-safe</button><button data-v="contrast">High contrast</button></div></div>
       <div class="opt"><span>Team symbols</span><div class="seg tight" data-glob="symbols"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
       <div class="opt" id="rowHaptics"><span>Haptics</span><div class="seg tight" data-glob="haptics"><button data-v="off">Off</button><button data-v="light">Light</button><button data-v="normal">Normal</button></div></div>
@@ -623,6 +641,13 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <p class="specintro" id="statsIntro">Your results from matches you play. Challenges, lessons and spectated matches are tracked separately.</p>
     <div id="statsBody"></div>
     <button id="bReset" class="ghost small">Reset stats</button>
+  </section>
+
+  <section class="screen wide" id="scrNews" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>What's new</h2></header>
+    <p class="specintro">What changed in the latest builds. This page is only in the test versions.</p>
+    <div id="newsBody"></div>
+    <div class="updrow"><button id="bUpd" class="ghost small">Check for update</button><span id="updMsg" class="specintro" role="status" aria-live="polite"></span></div>
   </section>
 
   <section class="screen wide" id="scrHelp" hidden>
@@ -718,18 +743,19 @@ const C = {
   neutralHP: 1.1, neutralDmg: 1.0, neutralRespawn: 7,
   blockSlow: 0.25,                      // speed while an enemy is in your way
   baseDmgFactor: 0.5,                   // bases only feel half of the damage upgrade
+  baseHpFactor: 0.5,                    // and half of the health upgrade: a base takes 1 / (1 + 0.15 x level x 0.5) of the damage
   spdAtk: 0.02,                         // each speed level also makes troops swing 2% faster
   heatTau: 5, assaultHeat: 100, garrisonHeat: 25  // how a base "notices" it's under attack
 };
 const DIFF = {
   // interval: how often the AI rethinks (s) · margin: how much stronger it wants to be before attacking
-  // frac: share of its army it commits · spawn: troop production speed · xp: how fast it earns upgrades
+  // frac: share of its army it commits · spawn: troop production speed · xp: how fast it earns upgrades · smart: 0-2, how well it guards, answers raids and punishes empty bases
   // Build 38 numbers: tuned with tools/sim (headless matches against a human-style player) to win rates of about
   // Easy 77%, Normal 54%, Hard 22%, Brutal 10% for that player on Medium with three rivals.
-  easy:   { interval: [4.2, 6.4], margin: 2.1,  frac: .5,  spawn: .75, playerBias: 0,   xp: 1 },
-  normal: { interval: [3.3, 5.0], margin: 1.75, frac: .6,  spawn: .86, playerBias: .05, xp: 1 },
-  hard:   { interval: [1.5, 2.4], margin: 1.25, frac: .82, spawn: 1.08, playerBias: .35, xp: 1 },
-  brutal: { interval: [0.8, 1.2], margin: 1.1,  frac: .88, spawn: 1.18, playerBias: .5,  xp: 1.2 }
+  easy:   { interval: [4.2, 6.4], margin: 2.1,  frac: .5,  spawn: .75, playerBias: 0,   xp: 1, smart: 0 },
+  normal: { interval: [3.3, 5.0], margin: 1.75, frac: .6,  spawn: .86, playerBias: .05, xp: 1, smart: 0 },
+  hard:   { interval: [1.5, 2.4], margin: 1.25, frac: .82, spawn: 1.08, playerBias: .30, xp: 1, smart: 1 },
+  brutal: { interval: [0.8, 1.2], margin: 1.1,  frac: .88, spawn: 1.18, playerBias: .5,  xp: 1.2, smart: 2 }
 };
 // AI personalities. hp/spd/dmg: how strongly it pulls toward each upgrade. pref: how much extra it wants each kind of special base.
 // margin: how much stronger than the defenders it wants to be before it attacks (lower = bolder).
@@ -821,7 +847,7 @@ const PRACTICE = [
       { ph: 1, t: 'Take two more gray bases. More bases means a bigger army limit.', k: 'bases', v: 4, hl: 'near' },
       { ph: 2, t: 'You have skill points to spend. Tap Health, Speed or Damage (lower left) to spend one.', k: 'buy', hl: 'ui', give: 2 },
       { ph: 2, t: 'Spend another one too. Knocking out troops fills the XP bar for more.', k: 'buy', hl: 'ui' },
-      { ph: 2, t: 'Health and Damage add 15% a level. Speed adds 10% movement and a little faster swings.', k: 'wait', v: 7 },
+      { ph: 2, t: 'Health and Damage add 15% a level (Health also toughens your bases). Speed adds 10% movement and a little faster swings.', k: 'wait', v: 7 },
       { ph: 3, t: 'Some bases carry a symbol. Press and hold the highlighted one to see what it is.', k: 'info', hl: 'forge' },
       { ph: 3, t: 'A Forge builds troops 70% faster and raises your army limit. Take it.', k: 'forge', hl: 'forge' },
       { ph: 4, t: 'The other color is out of reach: you can only attack a base that touches one of yours. Take the highlighted base, and keep going until you border it.', k: 'reach', hl: 'toward' },
@@ -1470,7 +1496,7 @@ function hitBase(n, team, dmg, x, y) {
   if (team < 0) return;                               // unclaimed troops guard their ground; they never take bases
   // a base can only soak up so much per second, so even a huge army needs a few seconds
   const d = Math.min(dmg, n.budget);
-  n.budget -= d; n.hp -= d; n.lastHitT = G.t; n.heat += d; n.heatBy = team;
+  n.budget -= d; n.hp -= d / (1 + C.hpPer * lvOf(n.owner, 'hp') * C.baseHpFactor); n.lastHitT = G.t; n.heat += d; n.heatBy = team;
   if (G.sfx.length < 48) G.sfx.push({ x, y, tx: n.x, ty: n.y, team, base: true, ni: n.id, hf: Math.max(0, n.hp / n.maxHp) });
   if (n.hp <= 0) takeNode(n, team);
 }
@@ -1745,7 +1771,7 @@ function aiThink(team) {
   const T = G.teams[team], D = T.diff, nodes = G.nodes, N = nodes.length, ti = team + 1;
   if (!T.alive || !T.count) return;
   aiSpend(team);
-  const S = statArrays();
+  const sm = D.smart || 0, S = statArrays();
   if (!G._ai || G._ai.N !== N) G._ai = { N, pres: new Float64Array(N * 6), mine: new Float64Array(N), committed: new Float64Array(N) };
   const P6 = G._ai.pres.fill(0), mine = G._ai.mine.fill(0), committed = G._ai.committed.fill(0);
   const pr2 = (C.presenceR * 1.2) ** 2;
@@ -1765,6 +1791,20 @@ function aiThink(team) {
     }
   }
   const enemyAt = v => { let s = 0; for (let k = 0; k < 6; k++) if (k !== ti) s += P6[v * 6 + k]; return s; };
+  // smart rivals keep a garrison at the base that enemy troops are walking up to, so an attack elsewhere does not strip it.
+  // Only moving enemy troops count, only against the nearest of our bases, and the reserve is picked once so every command agrees on it.
+  const held = sm ? new Set() : null;
+  if (sm) {
+    const R2 = 300 * 300, keepLeft = new Float64Array(N);
+    for (const t of G.troops) {
+      if (t.team === team || t.team < 0 || !t.path.length) continue;
+      let bn = -1, bd = R2;
+      for (const n of nodes) if (n.owner === team) { const dx = t.x - n.x, dy = t.y - n.y, d2 = dx * dx + dy * dy; if (d2 < bd) { bd = d2; bn = n.id; } }
+      if (bn >= 0) keepLeft[bn] += S.st[t.team + 1];
+    }
+    for (const t of G.troops) if (t.team === team && !t.path.length && keepLeft[t.home] > 0) { held.add(t); keepLeft[t.home] -= S.st[ti]; }
+  }
+  const holdFilter = sm ? (t => !held.has(t)) : null;
   // fog of war: the AI sees only near its own bases and troops. Elsewhere it remembers the last strength it saw there.
   let seen = null;
   if (G.mods.fog) {
@@ -1825,7 +1865,8 @@ function aiThink(team) {
   let best = null;
   // 2. defend, but only a base that's actually under assault (real damage or a garrison being cut down)
   for (const n of nodes) {
-    if (n.owner !== team || n.heat < (n.crown ? 25 : C.assaultHeat) * (T.style.guard || 1)) continue;   // the crown is defended at the first sign of trouble
+    if (n.owner !== team) continue;
+    if (n.heat < (n.crown ? 25 : C.assaultHeat) * (T.style.guard || 1) * (sm ? 0.3 : 1) && !(sm && enemyAt(n.id) >= 2)) continue;   // the crown is defended at the first sign of trouble; smart rivals answer a small raid too
     const en = enemyAt(n.id); if (en < 0.5) continue;
     const my = committed[n.id]; if (my >= en * 1.25) continue;
     const rt = routeTable(team, n.id), reach = reachFrom(rt, n.id, DEF_R);
@@ -1874,7 +1915,7 @@ function aiThink(team) {
   }
 
   if (best) {
-    const r = command(team, best.node, best.frac, null, best.R);
+    const r = command(team, best.node, best.frac, best.kind === 'atk' ? holdFilter : null, best.R);
     if (best.kind === 'atk') {
       if (r) {
         T.target = best.node; T.sent = 0; G.lock[team] = best.node;     // AI locks on too
@@ -1898,9 +1939,28 @@ function aiThink(team) {
   }
   } // end primary
 
+  // 5b. smart rivals punish a vacant or lightly held base next to them with just enough troops, without waiting for the main attack to finish
+  if (sm && G.t >= C.peace) {
+    const idleAt = new Float64Array(N);
+    for (const t of G.troops) if (t.team === team && !t.path.length) idleAt[t.home] += S.st[ti];
+    let shots = 0;
+    for (const nv of nodes) {
+      if (shots >= sm) break;
+      const v = nv.id; if (nv.owner === team) continue;
+      const def = enemyAt(v); if (def > 5) continue;
+      if (v === T.target || (v === T.avoid && G.t < T.avoidUntil)) continue;
+      const need = Math.max(5, def * D.margin + 3);
+      if (committed[v] >= need * 0.8) continue;
+      let src = -1, sb = 0;
+      for (const u of nv.adj) { if (nodes[u].owner !== team) continue; const av = idleAt[u]; if (av > sb) { sb = av; src = u; } }
+      if (src < 0 || sb < need) continue;
+      if (command(team, v, Math.min(1, need / sb * 1.2), t => !t.path.length && t.home === src && holdFilter(t))) { committed[v] += need; idleAt[src] -= need; shots++; }
+    }
+  }
+
   // 6. a second front: once the army is big, troops sitting idle at home raid the softest target elsewhere,
   //    so big maps don't grind down to one attack at a time. Raids retreat by the same rule as main attacks.
-  if (T.count < 60 || G.t < C.peace) { T.raid = null; return; }
+  if (T.count < (sm ? 30 : 60) || G.t < C.peace) { T.raid = null; return; }
   const idle = t => t.team === team && !t.path.length && nodes[t.home].owner === team && t.home !== T.target;
   if (T.raid != null) {
     const v = T.raid;
@@ -1914,7 +1974,7 @@ function aiThink(team) {
   }
   let idleStr = 0;
   for (const t of G.troops) if (idle(t)) idleStr += S.st[ti];
-  if (idleStr < 22) return;
+  if (idleStr < (sm ? 12 : 22)) return;
   let pick = null;
   for (const n of nodes) {
     if (n.owner !== team) continue;
@@ -1927,7 +1987,7 @@ function aiThink(team) {
       if (!pick || sc > pick.sc) pick = { sc, v };
     }
   }
-  if (pick && command(team, pick.v, 0.65, idle)) T.raid = pick.v;
+  if (pick && command(team, pick.v, 0.65, holdFilter ? (t => idle(t) && holdFilter(t)) : idle)) T.raid = pick.v;
 }
 
 
@@ -1935,9 +1995,9 @@ function aiThink(team) {
 // ================= UI =================
 // Everything you see and hear. Reads the simulation's state (G) every frame and draws it.
 //   view & camera ...... fitting the map to the screen, pinch/drag/zoom, screen <-> world conversion
-//   drawing ............ lines, bases, troops, attack lines, effects; five visual styles: Classic, Overload, Atlas, Pixel, Nebula
+//   drawing ............ lines, bases, troops, attack lines, effects; six visual styles: Classic, Overload, Atlas, Pixel, Nebula, Rime
 //   HUD ................ army count, territory bar, rival table, upgrades (only writes values that changed)
-//   sound .............. shared hit picking + five sound styles: Simple, Overdrive, Drift, Chip, Cosmos (each pairs with a visual style)
+//   sound .............. shared hit picking + six sound styles: Simple, Overdrive, Drift, Chip, Cosmos, Floe (each pairs with a visual style)
 //   screens ............ menu stack (home, setup, settings, stats, how to play, pause), starting/ending games
 //   end screen ......... match timeline chart and key moments
 //   back gesture ....... Android back steps through menus and pauses matches
@@ -1989,6 +2049,7 @@ function troopShape(x, kind, px, py, hx, hy, k) {     // one troop: the triangle
     case 'circle': x.moveTo(px + 3 * k, py); x.arc(px, py, 3 * k, 0, 6.2832); break;
     case 'diamond': x.moveTo(px + hx * 4.8 * k, py + hy * 4.8 * k); x.lineTo(px - hy * 2.8 * k, py + hx * 2.8 * k); x.lineTo(px - hx * 3.6 * k, py - hy * 3.6 * k); x.lineTo(px + hy * 2.8 * k, py - hx * 2.8 * k); x.closePath(); break;
     case 'square': x.rect(px - 2.6 * k, py - 2.6 * k, 5.2 * k, 5.2 * k); break;
+    case 'shard': x.moveTo(px + hx * 5.4 * k, py + hy * 5.4 * k); x.lineTo(px - hy * 2 * k - hx * 0.4 * k, py + hx * 2 * k - hy * 0.4 * k); x.lineTo(px - hx * 3.8 * k, py - hy * 3.8 * k); x.lineTo(px + hy * 2 * k - hx * 0.4 * k, py - hx * 2 * k - hy * 0.4 * k); x.closePath(); break;   // Rime: a long kite of ice
     case 'cross': x.rect(px - 3.6 * k, py - 1.1 * k, 7.2 * k, 2.2 * k); x.rect(px - 1.1 * k, py - 3.6 * k, 2.2 * k, 7.2 * k); break;
     default:
       x.moveTo(px + hx * 4.4 * k, py + hy * 4.4 * k);
@@ -2060,11 +2121,11 @@ settings.volume = Number.isFinite(+settings.volume) && settings.volume >= 0 && s
 settings.sound = settings.sound !== false; settings.rivals = settings.rivals === true;
 if (settings.tone === 'felt') settings.tone = 'soft'; else if (settings.tone === 'hum') settings.tone = 'drift';     // retired profiles move to their closest relative
 if (settings.tone === 'bright' || settings.tone === 'soft') settings.tone = 'simple';                                // Build 36: the two became Simple
-if (!['simple', 'overdrive', 'drift', 'chip', 'cosmos'].includes(settings.tone)) settings.tone = 'simple';
+if (!['simple', 'overdrive', 'drift', 'chip', 'cosmos', 'floe'].includes(settings.tone)) settings.tone = 'simple';
 if (!['auto', 'landscape', 'portrait'].includes(settings.screen)) settings.screen = 'auto';
 if (!['on', 'off'].includes(settings.menuSound)) settings.menuSound = 'on';
 if (settings.visual === 'spark') settings.visual = 'classic';                                                        // Build 36: Spark was folded into Classic
-if (!['classic', 'overload', 'atlas', 'pixel', 'nebula'].includes(settings.visual)) settings.visual = 'classic';
+if (!['classic', 'overload', 'atlas', 'pixel', 'nebula', 'rime'].includes(settings.visual)) settings.visual = 'classic';
 if (!['standard', 'safe', 'contrast'].includes(settings.colors)) settings.colors = 'standard';
 if (!['off', 'on'].includes(settings.symbols)) settings.symbols = 'off';
 if (!['off', 'light', 'normal'].includes(settings.haptics)) settings.haptics = 'normal';
@@ -2410,7 +2471,8 @@ const isClassic = () => settings.visual === 'classic';       // Classic took in 
 const isAtlas = () => settings.visual === 'atlas';
 const isPixel = () => settings.visual === 'pixel';
 const isNebula = () => settings.visual === 'nebula';
-const fxOn = () => !reduceMotion && (isSpark() || isClassic() || isNebula());   // the particle effects (Pixel draws its own, Atlas has none)
+const isRime = () => settings.visual === 'rime';
+const fxOn = () => !reduceMotion && (isSpark() || isClassic() || isNebula() || isRime());   // the particle effects (Pixel draws its own, Atlas has none)
 const glowCache = new Map();
 function glow(color) {                               // a soft round glow, pre-drawn once per color
   let g = glowCache.get(color);
@@ -2506,10 +2568,15 @@ function drawClusterGlows(arr, img, strength) {
 function vfxHits(ev) {                               // sparks where hits land, flying the way the blow went
   if (isPixel() && !reduceMotion) { pxHits(ev); return; }
   if (!fxOn()) return;
-  const OV = isOver(), LT = isClassic(), NB = isNebula(), mult = OV ? 3 : 1;
+  const OV = isOver(), LT = isClassic(), NB = isNebula(), RM = isRime(), mult = OV ? 3 : 1;
   let budget = OV ? 16 : LT ? 6 : 10, numbers = 0;
   for (const e of ev) {
     if (budget-- <= 0 || e.tx === undefined) break;
+    if (RM) {                                        // Rime: chips of ice where a blow lands
+      if (e.base) emit(e.tx, e.ty, Math.random() < .6 ? '#e6f6ff' : colorOf(e.team), 2, 62, 0.45, 1.9, 1, e.tx - e.x, e.ty - e.y, 1.8);
+      else if (Math.random() < 0.5) emit(e.tx, e.ty, '#d6eeff', 1, 55, 0.3, 1.2, 0, e.tx - e.x, e.ty - e.y, 1.2);
+      continue;
+    }
     if (e.base) emit(e.tx, e.ty, NB && Math.random() < .4 ? '#ffffff' : colorOf(e.team), (LT ? 1 : 2) * mult, 60 * (OV ? 1.6 : 1), 0.35, 1.8, 0, e.tx - e.x, e.ty - e.y, 1.6);
     else if (!LT || Math.random() < 0.6) emit(e.tx, e.ty, colorOf(e.team), (LT ? 1 : Math.random() < .5 ? 1 : 2) * mult, 70 * (OV ? 1.5 : 1), NB ? 0.4 : 0.25, LT ? 1.2 : 1.4, 0, e.tx - e.x, e.ty - e.y, 1.1);
     if (OV && numbers < 4 && Math.random() < 0.5) {
@@ -2523,16 +2590,18 @@ function vfxFx() {                                   // deaths and captures from
     if (f.sp) continue; f.sp = 1;
     if (!fxOn()) continue;
     if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
-    const OV = isOver(), LT = isClassic(), NB = isNebula(), now = performance.now() / 1000;
+    const OV = isOver(), LT = isClassic(), NB = isNebula(), RM = isRime(), now = performance.now() / 1000;
     if (f.k === 'pop') {
-      if (NB) emit(f.x, f.y, Math.random() < .5 ? '#ffffff' : colorOf(f.c), 4, 50, 0.7, 1.4, 0);     // a puff of stardust
+      if (RM) emit(f.x, f.y, Math.random() < .5 ? '#e6f6ff' : colorOf(f.c), 5, 65, 0.6, 2.2, 1);     // a troop shatters
+      else if (NB) emit(f.x, f.y, Math.random() < .5 ? '#ffffff' : colorOf(f.c), 4, 50, 0.7, 1.4, 0);     // a puff of stardust
       else emit(f.x, f.y, colorOf(f.c), OV ? 12 : LT ? 4 : 5, OV ? 110 : LT ? 60 : 70, OV ? 0.8 : LT ? 0.45 : 0.55, OV ? 2.8 : LT ? 2 : 2.4, 1);
       if (OV) {
         emit(f.x, f.y, '#ffffff', 8, 130, 0.6, 1.8, 0);
         if (f.by === PLAYER && !watching) { combo = now - comboT < 1.6 ? combo + 1 : 1; comboT = now; }
       }
     } else if (f.k === 'ring') {
-      if (NB) { emit(f.x, f.y, colorOf(f.c), 30, 150, 1.4, 1.8, 0); emit(f.x, f.y, '#ffffff', 12, 90, 1.1, 1.4, 0); }   // a supernova throws out its stardust
+      if (RM) { emit(f.x, f.y, colorOf(f.c), 16, 130, 1.0, 2.4, 1); emit(f.x, f.y, '#e6f6ff', 14, 105, 0.9, 2.0, 1); }   // the freeze throws out shards
+      else if (NB) { emit(f.x, f.y, colorOf(f.c), 30, 150, 1.4, 1.8, 0); emit(f.x, f.y, '#ffffff', 12, 90, 1.1, 1.4, 0); }   // a supernova throws out its stardust
       else emit(f.x, f.y, colorOf(f.c), OV ? 40 : LT ? 14 : 22, OV ? 170 : LT ? 95 : 110, LT ? 0.75 : 0.9, LT ? 1.9 : 2.2, 0);
       const n = G.nodes.find(nd => nd.x === f.x && nd.y === f.y);
       if (n) for (const v of n.adj) pulses.push({ a: n.id, b: v, t0: G.t, c: colorOf(f.c) });
@@ -2718,6 +2787,7 @@ function drawCrown(n, now) {                         // a gold crown over the ba
 function drawDeco(now) {
   const D = G.deco; if (!D) return;
   if (isNebula()) { drawNebulaDeco(D); return; }
+  if (isRime()) { drawRimeDeco(D); return; }
   if (D.kind === 'river') {
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.strokeStyle = 'rgba(70,120,200,0.07)'; ctx.lineWidth = D.hw * 1.7; ctx.beginPath();
@@ -2754,15 +2824,15 @@ function drawBridges() {                             // crossties along every br
 function drawEdges(now) {
   const nodes = G.nodes, lw = Math.max(1.4, 1.1 / V.s) * (HC ? 1.35 : 1);
   const slow = reduceMotion ? 0 : -now * 3, fast = reduceMotion ? 0 : -now * 9;
-  const inner = EDGE_IN, out = EDGE_OUT, NB = isNebula(), DASH = NB ? [] : [5, 7];
+  const inner = EDGE_IN, out = EDGE_OUT, NB = isNebula(), RM = isRime(), DASH = NB || RM ? [] : [5, 7];
   for (let i = 0; i < 5; i++) { inner[i].length = 0; out[i].length = 0; }
-  ctx.setLineDash(DASH); ctx.lineDashOffset = slow; ctx.lineWidth = NB ? lw * 0.8 : lw;
-  ctx.strokeStyle = HC ? 'rgba(255,255,255,0.4)' : NB ? 'rgba(190,200,255,0.11)' : 'rgba(255,255,255,0.17)';
+  ctx.setLineDash(DASH); ctx.lineDashOffset = slow; ctx.lineWidth = NB ? lw * 0.8 : RM ? lw * 0.85 : lw;
+  ctx.strokeStyle = HC ? 'rgba(255,255,255,0.4)' : NB ? 'rgba(190,200,255,0.11)' : RM ? 'rgba(175,215,245,0.18)' : 'rgba(255,255,255,0.17)';
   ctx.beginPath();
   for (const [a, b] of G.edges) {
     const A = nodes[a], B = nodes[b], oa = A.owner, ob = B.owner;
     if (Math.max(A.x, B.x) < VIS.x0 || Math.min(A.x, B.x) > VIS.x1 || Math.max(A.y, B.y) < VIS.y0 || Math.min(A.y, B.y) > VIS.y1) continue;
-    if (oa < 0 && ob < 0) { ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); }        // nobody's
+    if (oa < 0 && ob < 0) { if (RM) rimeSeg(A, B, 1); else { ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); } }        // nobody's
     else if (oa === ob) inner[oa].push(A, B);                                     // inside one color's territory
     else if (ob < 0) out[oa].push(A, B, 1);                                       // a way out: that color's to take
     else if (oa < 0) out[ob].push(B, A, 1);
@@ -2772,16 +2842,16 @@ function drawEdges(now) {
   for (let i = 0; i < 5; i++) {
     const L = inner[i];
     if (L.length) {
-      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 0.6 : NB ? 0.2 : 0.28); ctx.lineDashOffset = slow; ctx.beginPath();
-      for (let j = 0; j < L.length; j += 2) { ctx.moveTo(L[j].x, L[j].y); ctx.lineTo(L[j + 1].x, L[j + 1].y); }
+      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 0.6 : NB ? 0.2 : RM ? 0.36 : 0.28); ctx.lineDashOffset = slow; ctx.beginPath();
+      for (let j = 0; j < L.length; j += 2) { if (RM) rimeSeg(L[j], L[j + 1], 1); else { ctx.moveTo(L[j].x, L[j].y); ctx.lineTo(L[j + 1].x, L[j + 1].y); } }
       ctx.stroke();
     }
     const O = out[i];
     if (O.length) {   // drawn from the owner outward, so the dashes drift toward what they can attack
-      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 1 : NB ? 0.42 : 0.6); ctx.lineDashOffset = fast; ctx.lineWidth = lw * (NB ? 1 : 1.25); ctx.beginPath();
+      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 1 : NB ? 0.42 : RM ? 0.85 : 0.6); ctx.lineDashOffset = fast; ctx.lineWidth = lw * (NB ? 1 : RM ? 1.1 : 1.25); ctx.beginPath();
       for (let j = 0; j < O.length; j += 3) {
         const P = O[j], Q = O[j + 1], f = O[j + 2];
-        ctx.moveTo(P.x, P.y); ctx.lineTo(P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f);
+        if (RM) rimeSeg(P, Q, f); else { ctx.moveTo(P.x, P.y); ctx.lineTo(P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f); }
       }
       ctx.stroke(); ctx.lineWidth = lw;
       if (isOver()) {                                // Overload: the same lines again, wide and glowing, on the beat
@@ -2797,6 +2867,16 @@ function drawEdges(now) {
           ctx.drawImage(gi, P.x + (Q.x - P.x) * f * ph - 7, P.y + (Q.y - P.y) * f * ph - 7, 14, 14);
         }
         ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+      }
+      if (RM && !reduceMotion) {                     // Rime: a tiny shard of light slides out along each way out
+        ctx.setLineDash([]); ctx.fillStyle = '#eaf8ff';
+        for (let j = 0; j < O.length; j += 3) {
+          const P = O[j], Q = O[j + 1], f = O[j + 2], ph = (now * 0.3 + ((P.id * 7 + Q.id * 13) * 0.618) % 1) % 1;
+          ctx.globalAlpha = 0.85 * Math.sin(Math.PI * ph);
+          const x = P.x + (Q.x - P.x) * f * ph, y = P.y + (Q.y - P.y) * f * ph;
+          ctx.beginPath(); ctx.moveTo(x, y - 2.8); ctx.lineTo(x + 1.5, y); ctx.lineTo(x, y + 2.8); ctx.lineTo(x - 1.5, y); ctx.closePath(); ctx.fill();
+        }
+        ctx.globalAlpha = 1; ctx.setLineDash(DASH);
       }
       if ((isSpark() || isClassic()) && !reduceMotion) {   // a small light drifting outward along each way out (comets in Overload)
         ctx.setLineDash([]); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = TEAM_COLORS[i];
@@ -2857,7 +2937,7 @@ function draw(now) {
   const OV = isOver(), dtD = Math.min(0.1, Math.max(0, now - lastDrawT)); lastDrawT = now;
   kick = OV ? beatKick(now) : 0;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = OV ? 'rgba(0,0,0,0.45)' : isAtlas() ? '#04070d' : isNebula() ? '#01020a' : '#000';   // Overload never fully clears, so everything leaves a smear
+  ctx.fillStyle = OV ? 'rgba(0,0,0,0.45)' : isAtlas() ? '#04070d' : isNebula() ? '#01020a' : isRime() ? '#030a14' : '#000';   // Overload never fully clears, so everything leaves a smear
   ctx.fillRect(0, 0, cv.width, cv.height);
   if (!G || (mode === 'demo' && pvOnly)) return;      // setup screens show their map in the preview card instead
   const fogD = fogOn();
@@ -2875,15 +2955,17 @@ function draw(now) {
   ctx.beginPath(); ctx.rect(F.x, F.y, F.w, F.h); ctx.clip();
   applyView(sx, sy);
   updateVis();
-  const nodes = G.nodes, SP = isSpark(), CL = isClassic(), NB = isNebula();
+  const nodes = G.nodes, SP = isSpark(), CL = isClassic(), NB = isNebula(), RM = isRime();
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   vfxFx(); stepParts();
   if (OV) drawOverloadBg(now, dtD);
   else if (SP && quality < 3) drawMotes(reduceMotion ? 0 : now);
   if (NB) { drawNebulaBack(now); applyView(sx, sy); }
+  else if (RM) { drawRimeBack(now); applyView(sx, sy); }
 
   if (isAtlas()) drawAtlasBack(now);
   drawDeco(now);
+  if (RM) drawRimeFrost(now);
   drawEdges(now);
 
   for (let i = hl.length - 1; i >= 0; i--) {
@@ -2919,6 +3001,7 @@ function draw(now) {
     if (!inV(n.x, n.y)) continue;
     const c = colorOf(n.owner);
     if (NB) drawSun(n, c, now);
+    else if (RM) drawCrystal(n, c, now);
     else if (SP) {                                   // Overload's base: soft glow, a slowly turning frame, a breathing core
       const mv = reduceMotion ? 0 : 1, own = n.owner >= 0, cc = c;
       const br = (1 + 0.07 * Math.sin(now * 2.2 + n.id) * mv) * (OV ? 1 + 0.35 * kick : 1);
@@ -2964,7 +3047,7 @@ function draw(now) {
     } else {
       ctx.fillStyle = NEUTRAL_COLOR; ctx.fillRect(n.x - 5.5, n.y - 5.5, 11, 11);
     }
-    if (n.kind) drawSpecialMark(n, now, (SP || CL || NB) && G.t - n.lastHitT < 0.07);
+    if (n.kind) drawSpecialMark(n, now, (SP || CL || NB || RM) && G.t - n.lastHitT < 0.07);
     if (n.crown) drawCrown(n, now);
     if (n.hp < n.maxHp - 0.5) {
       const f = Math.max(0, n.hp / n.maxHp), hit = G.t - n.lastHitT < 0.15;
@@ -3004,6 +3087,11 @@ function draw(now) {
         ctx.stroke();
       }
     }
+  }
+  if (RM && !reduceMotion) {                         // Rime: a pale spray of ice behind every troop on the move
+    ctx.fillStyle = '#d4ecff';
+    for (let b = 0; b < 6; b++) { const arr = buckets[b]; if (!arr.length) continue; ctx.globalAlpha = 0.2; trailPath(arr, 10, 1.5); ctx.globalAlpha = 0.18; trailPath(arr, 5, 1.2); }
+    ctx.globalAlpha = 1;
   }
   if (CL || NB) {                                    // Classic: short tapered trails that fade out. Nebula: longer comet tails.
     for (let b = 0; b < 6; b++) {
@@ -3045,7 +3133,7 @@ function draw(now) {
     const arr = buckets[b]; if (!arr.length) continue;
     ctx.fillStyle = b === 0 ? (NB && !HC ? '#9097ad' : NEUTRAL_COLOR) : TEAM_COLORS[b - 1];   // Nebula: empty bases' guards a shade dimmer than the stars they guard
     ctx.beginPath();
-    const sc = (OV ? 1 + 0.3 * kick : NB ? 0.8 : 1) * (HC ? 1.2 : 1), kind = SYM && b > 0 ? symOf(b - 1) : NB ? 'circle' : 'triangle';
+    const sc = (OV ? 1 + 0.3 * kick : NB ? 0.8 : RM ? 0.95 : 1) * (HC ? 1.2 : 1), kind = SYM && b > 0 ? symOf(b - 1) : NB ? 'circle' : RM ? 'shard' : 'triangle';
     for (const t of arr) {
       let hx = t.nx, hy = t.ny;
       if (OV) { const a = now * 7 + t.id * 1.7; hx = Math.cos(a); hy = Math.sin(a); }   // spinning like shuriken
@@ -3063,6 +3151,7 @@ function draw(now) {
   }
 
   if (!reduceMotion && NB) drawNebulaFx();
+  else if (!reduceMotion && RM) drawRimeFx();
   else if (!reduceMotion) {
     ctx.lineWidth = 1.1;
     for (const f of G.fx) {
@@ -3092,7 +3181,7 @@ function draw(now) {
     ctx.globalAlpha = 1;
   }
   if (isAtlas()) drawAtlasFront(now);
-  if (SP || CL || NB) drawParts();
+  if (SP || CL || NB || RM) drawParts();
   for (let i = uiFx.length - 1; i >= 0; i--) {
     const f = uiFx[i], age = now - f.b;
     if (age > 0.5) { uiFx.splice(i, 1); continue; }
@@ -3232,6 +3321,215 @@ function drawNebulaDeco(D) {                         // terrain as space: a rive
     ctx.setLineDash([]); ctx.beginPath(); ctx.ellipse(D.cx, D.cy, D.rx, D.ry, 0, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(200,170,255,0.055)'; ctx.lineWidth = 26; ctx.stroke();
     ctx.strokeStyle = 'rgba(225,205,255,0.13)'; ctx.lineWidth = 1.2; ctx.stroke();
+  }
+}
+
+// ---- "Rime": a winter night, and frost grows over whatever you hold ----
+// A blue-black sky with frost ferns creeping in from the edges of the map and fine snow drifting down. Held bases are faceted hexagonal
+// crystals, each sitting in a six-armed snowflake of its holder's color that grows outward when the base is taken, so territory reads as
+// ground that has frozen over. Empty bases are open water: a dark ring. Lines are hairline cracks, troops are shards of ice with a pale
+// spray behind them, a base under siege cracks a little more with every blow, and a capture is a hexagon of ice racing outward.
+// Rivers are frozen over and islands are floes. Team colors, team symbols and High contrast carry over unchanged.
+const RIME = { g: null, back: null, snow: null, sw: 0, sh: 0, sq: -1, frost: new Map(), shade: new Map(), jag: new Map(), cracks: new Map(), own: new Map(), og: null };
+const rimeRng = seed => { let s = seed >>> 0; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; };
+function rimeReset() { if (RIME.og !== G) { RIME.og = G; RIME.jag.clear(); RIME.cracks.clear(); RIME.own.clear(); } }
+function rimeHex(x, y, r) {                          // a closed hexagon, point up, added to the current path
+  for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + i * Math.PI / 3, px = x + Math.cos(a) * r, py = y + Math.sin(a) * r; if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }
+  ctx.closePath();
+}
+function rimeBack() {                                // frost creeping in from the edges, painted once per map
+  if (RIME.g === G && RIME.back) return RIME.back;
+  const c = RIME.back || (RIME.back = document.createElement('canvas'));
+  c.width = 1024; c.height = Math.max(256, Math.round(1024 * H / W));
+  const g = c.getContext('2d'), cw = c.width, ch = c.height; g.clearRect(0, 0, cw, ch);
+  const rnd = rimeRng(((G.seed || 7) * 2654435761) >>> 0);
+  const gr = g.createRadialGradient(cw / 2, ch / 2, 0, cw / 2, ch / 2, cw * 0.6);      // the middle of the map a shade lighter, like moonlight on a frozen lake
+  gr.addColorStop(0, 'rgba(70,125,175,0.09)'); gr.addColorStop(1, 'rgba(20,50,90,0)'); g.fillStyle = gr; g.fillRect(0, 0, cw, ch);
+  g.lineCap = 'round';
+  const fern = (x, y, a, len, d) => {
+    if (len < 6 || d > 3) return;
+    const x2 = x + Math.cos(a) * len, y2 = y + Math.sin(a) * len;
+    g.strokeStyle = 'rgba(190,226,255,' + (0.17 - d * 0.035).toFixed(3) + ')'; g.lineWidth = Math.max(0.8, 1.7 - d * 0.35);
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke();
+    for (const f of [0.38, 0.7]) {
+      const bx = x + (x2 - x) * f, by = y + (y2 - y) * f;
+      fern(bx, by, a + 1.0 + (rnd() - 0.5) * 0.25, len * 0.42, d + 1); fern(bx, by, a - 1.0 + (rnd() - 0.5) * 0.25, len * 0.42, d + 1);
+    }
+    if (d < 2) fern(x2, y2, a + (rnd() - 0.5) * 0.3, len * 0.5, d + 1);
+  };
+  for (let i = 0; i < 30; i++) {                     // each fern starts on an edge and grows inward
+    const side = i % 4, t = rnd(), len = (0.07 + rnd() * 0.11) * cw;
+    const x = side === 0 ? t * cw : side === 1 ? cw : side === 2 ? t * cw : 0, y = side === 0 ? 0 : side === 1 ? t * ch : side === 2 ? ch : t * ch;
+    fern(x, y, (side === 0 ? Math.PI / 2 : side === 1 ? Math.PI : side === 2 ? -Math.PI / 2 : 0) + (rnd() - 0.5) * 0.9, len, 0);
+  }
+  RIME.g = G; return c;
+}
+function drawRimeBack(now) {                         // called with the world transform in place; leaves the screen transform behind
+  ctx.globalAlpha = 1; ctx.drawImage(rimeBack(), -W * 0.05, -H * 0.05, W * 1.1, H * 1.1);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const w = Math.ceil(F.w) + 40, h = Math.ceil(F.h) + 40, mv = reduceMotion ? 0 : 1, PAR = [0.04, 0.1, 0.2];
+  if (!RIME.snow || RIME.sw !== w || RIME.sh !== h || RIME.sq !== quality) {
+    const n = Math.round(w * h / 3600 * [1, 0.7, 0.45, 0.25][quality]), out = [];
+    for (let i = 0; i < n; i++) { const l = i % 3; out.push({ x: Math.random() * w, y: Math.random() * h, l, s: [0.8, 1.1, 1.6][l], v: [4, 7, 11][l] * (0.7 + Math.random() * 0.6), ph: Math.random() * 6.283, sw: 4 + Math.random() * 8 }); }
+    RIME.snow = out; RIME.sw = w; RIME.sh = h; RIME.sq = quality;
+  }
+  ctx.fillStyle = '#e2f3ff';
+  for (const p of RIME.snow) {
+    const x = F.x - 20 + ((p.x + Math.sin(now * 0.45 + p.ph) * p.sw * mv + V.ex * PAR[p.l]) % w + w) % w;
+    const y = F.y - 20 + ((p.y + now * p.v * mv + V.ey * PAR[p.l]) % h + h) % h;
+    ctx.globalAlpha = 0.12 + 0.12 * p.l; ctx.fillRect(x, y, p.s, p.s);
+  }
+  ctx.globalAlpha = 1;
+}
+function rimeFrostSprite(c) {                        // a soft glow and a six-armed snowflake in one team color, made once
+  let s = RIME.frost.get(c); if (s) return s;
+  const S = 192, u = S / 128;
+  s = document.createElement('canvas'); s.width = s.height = S; const g = s.getContext('2d');
+  const gr = g.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S * 0.48);
+  gr.addColorStop(0, hexA(c, 0.26)); gr.addColorStop(0.5, hexA(c, 0.09)); gr.addColorStop(1, hexA(c, 0));
+  g.fillStyle = gr; g.fillRect(0, 0, S, S);
+  g.translate(S / 2, S / 2); g.lineCap = 'round';
+  for (let k = 0; k < 6; k++) {
+    g.save(); g.rotate(k * Math.PI / 3);
+    g.strokeStyle = hexA(c, 0.5); g.lineWidth = 1.5 * u; g.beginPath(); g.moveTo(10 * u, 0); g.lineTo(56 * u, 0); g.stroke();
+    g.lineWidth = 1 * u; g.strokeStyle = hexA(c, 0.38);
+    for (const [at, len] of [[24, 13], [37, 16], [48, 9]]) {
+      g.beginPath(); g.moveTo(at * u, 0); g.lineTo((at + len * 0.72) * u, -len * 0.72 * u); g.moveTo(at * u, 0); g.lineTo((at + len * 0.72) * u, len * 0.72 * u); g.stroke();
+    }
+    g.restore();
+  }
+  RIME.frost.set(c, s); return s;
+}
+function drawRimeFrost(now) {                        // under the lines: the frost of every held base, growing outward for a second after a capture
+  rimeReset();
+  const mv = reduceMotion ? 0 : 1;
+  ctx.globalCompositeOperation = 'lighter';
+  for (const n of G.nodes) {
+    if (n.owner < 0 || !inV(n.x, n.y)) continue;
+    let rec = RIME.own.get(n.id);
+    if (!rec) { rec = { o: n.owner, t: -99 }; RIME.own.set(n.id, rec); }
+    else if (rec.o !== n.owner) { rec.o = n.owner; rec.t = mv ? now : -99; }
+    const k = Math.min(1, (now - rec.t) / 1.2), e = 1 - Math.pow(1 - k, 3), R = 54 * (0.3 + 0.7 * e);
+    ctx.globalAlpha = (HC ? 0.95 : 0.7) * (0.35 + 0.65 * e);
+    ctx.save(); ctx.translate(n.x, n.y); ctx.rotate(n.id * 0.5236);
+    ctx.drawImage(rimeFrostSprite(colorOf(n.owner)), -R, -R, 2 * R, 2 * R); ctx.restore();
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+}
+function rimeShades(c) {                             // six facet colors for a crystal, lit from the top left
+  let a = RIME.shade.get(c); if (a) return a;
+  a = []; for (let i = 0; i < 6; i++) a.push(pxShade(c, 0.36 * Math.cos(-Math.PI / 2 + (i + 0.5) * Math.PI / 3 + 2.356) - 0.04));
+  RIME.shade.set(c, a); return a;
+}
+function rimeCracks(n) {                             // seven fixed cracks per base; the more damage, the more of them show
+  let c = RIME.cracks.get(n.id); if (c) return c;
+  const rnd = rimeRng(n.id * 7919 + 13); c = [];
+  for (let i = 0; i < 7; i++) {
+    let a = i / 7 * 6.2832 + (rnd() - 0.5) * 0.7, x = 0, y = 0; const len = 9 + rnd() * 11, pts = [0, 0];
+    for (let q = 0; q < 3; q++) { a += (rnd() - 0.5) * 0.9; const l = len / 3 * (0.7 + rnd() * 0.6); x += Math.cos(a) * l; y += Math.sin(a) * l; pts.push(x, y); }
+    c.push(pts);
+  }
+  RIME.cracks.set(n.id, c); return c;
+}
+function drawRimeCracks(n) {
+  const d = 1 - n.hp / n.maxHp; if (d <= 0.01) return;
+  const set = rimeCracks(n), k = Math.min(set.length, Math.ceil(d * set.length));
+  ctx.globalAlpha = G.t - n.lastHitT < 0.15 ? 1 : 0.75; ctx.strokeStyle = '#f0faff'; ctx.lineWidth = 1; ctx.setLineDash([]);
+  ctx.beginPath();
+  for (let i = 0; i < k; i++) { const p = set[i]; ctx.moveTo(n.x + p[0], n.y + p[1]); for (let j = 2; j < p.length; j += 2) ctx.lineTo(n.x + p[j], n.y + p[j + 1]); }
+  ctx.stroke(); ctx.globalAlpha = 1;
+}
+function drawCrystal(n, c, now) {                    // one base: a faceted hexagon in its holder's color inside a thin frost ring; empty bases are open water
+  const own = n.owner >= 0, struck = G.t - n.lastHitT < 0.07, k = HC ? 1.13 : 1;
+  ctx.setLineDash([]); ctx.globalAlpha = 1;
+  if (own) {
+    ctx.globalAlpha = HC ? 0.9 : 0.55; ctx.strokeStyle = c; ctx.lineWidth = HC ? 1.8 : 1.2;
+    ctx.beginPath(); rimeHex(n.x, n.y, 12.5 * k); ctx.stroke(); ctx.globalAlpha = 1;
+    if (!n.kind) {
+      if (SYM) {
+        ctx.fillStyle = c; ctx.beginPath(); symPath(ctx, symOf(n.owner), n.x, n.y, 6.2 * k); ctx.fill();
+        if (struck) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.fill(); ctx.globalAlpha = 1; }
+      } else {
+        const sh = rimeShades(c), R = 7.4 * k;
+        for (let i = 0; i < 6; i++) {
+          const a0 = -Math.PI / 2 + i * Math.PI / 3, a1 = a0 + Math.PI / 3;
+          ctx.fillStyle = sh[i]; ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(n.x + Math.cos(a0) * R, n.y + Math.sin(a0) * R); ctx.lineTo(n.x + Math.cos(a1) * R, n.y + Math.sin(a1) * R); ctx.closePath(); ctx.fill();
+        }
+        ctx.strokeStyle = 'rgba(235,248,255,0.6)'; ctx.lineWidth = 0.9; ctx.beginPath(); rimeHex(n.x, n.y, R); ctx.stroke();
+        if (struck) { ctx.globalAlpha = 0.55; ctx.fillStyle = '#fff'; ctx.beginPath(); rimeHex(n.x, n.y, R); ctx.fill(); ctx.globalAlpha = 1; }
+        if (!reduceMotion) {                         // now and then a facet catches the light
+          const ph = (now * 0.35 + n.id * 0.37) % 3;
+          if (ph < 1) {
+            const gl = Math.sin(Math.PI * ph), x = n.x - R * 0.45, y = n.y - R * 0.6;
+            ctx.globalAlpha = gl * 0.9; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1; ctx.beginPath();
+            ctx.moveTo(x - 4.5 * gl, y); ctx.lineTo(x + 4.5 * gl, y); ctx.moveTo(x, y - 4.5 * gl); ctx.lineTo(x, y + 4.5 * gl); ctx.stroke(); ctx.globalAlpha = 1;
+          }
+        }
+      }
+    }
+  } else if (n.kind) {                               // an unclaimed special: just a faint frame round its glyph
+    ctx.globalAlpha = 0.4; ctx.strokeStyle = NEUTRAL_COLOR; ctx.lineWidth = 1.2; ctx.beginPath(); rimeHex(n.x, n.y, 12.5 * k); ctx.stroke(); ctx.globalAlpha = 1;
+  } else if (SYM) {                                  // symbols: an empty base is a hollow square, as everywhere else
+    ctx.strokeStyle = NEUTRAL_COLOR; ctx.lineWidth = 2; ctx.strokeRect(n.x - 4.6, n.y - 4.6, 9.2, 9.2);
+  } else {                                           // open water: a dark ring with a pale rim
+    ctx.fillStyle = 'rgba(120,170,215,0.14)'; ctx.strokeStyle = NEUTRAL_COLOR; ctx.lineWidth = HC ? 2 : 1.5;
+    ctx.beginPath(); rimeHex(n.x, n.y, (HC ? 6 : 5.4)); ctx.fill(); ctx.globalAlpha = 0.9; ctx.stroke(); ctx.globalAlpha = 1;
+  }
+  drawRimeCracks(n);
+}
+function rimeSeg(A, B, f) {                          // one line as a hairline crack with a few small kinks (the same every frame); f = how much of it, from A
+  const fw = A.id < B.id, a = fw ? A : B, b = fw ? B : A, key = a.id * 8192 + b.id;
+  let pts = RIME.jag.get(key);
+  if (!pts) {
+    const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len, n = Math.max(3, Math.round(len / 26)), amp = Math.min(2.6, len * 0.035), rnd = rimeRng(Math.imul(key, 2654435761) + 1);
+    pts = new Float32Array((n + 1) * 2);
+    for (let i = 0; i <= n; i++) { const t = i / n, o = i === 0 || i === n ? 0 : (rnd() - 0.5) * 2 * amp; pts[i * 2] = a.x + dx * t + nx * o; pts[i * 2 + 1] = a.y + dy * t + ny * o; }
+    RIME.jag.set(key, pts);
+  }
+  const n = pts.length / 2 - 1;
+  for (let i = 0; i <= n; i++) {
+    const j = fw ? i : n - i, t = i / n;
+    if (t > f) {                                     // the last piece stops part way along
+      const pj = fw ? i - 1 : n - i + 1, u = (f - (i - 1) / n) / (1 / n);
+      ctx.lineTo(pts[pj * 2] + (pts[j * 2] - pts[pj * 2]) * u, pts[pj * 2 + 1] + (pts[j * 2 + 1] - pts[pj * 2 + 1]) * u); return;
+    }
+    if (i) ctx.lineTo(pts[j * 2], pts[j * 2 + 1]); else ctx.moveTo(pts[j * 2], pts[j * 2 + 1]);
+  }
+}
+function drawRimeFx() {                              // a troop lost is a small glint; a capture is a hexagon of ice racing outward with six spikes
+  const fogD = fogOn();
+  for (const f of G.fx) {
+    const age = G.t - f.b;
+    if (f.x === undefined || (fogD && !seenXY(f.x, f.y))) continue;
+    if (f.k === 'pop' && age < 0.3) {
+      const p = age / 0.3, r = 3 + p * 6;
+      ctx.globalAlpha = (1 - p) * 0.8; ctx.strokeStyle = '#e9f7ff'; ctx.lineWidth = 1; ctx.beginPath();
+      ctx.moveTo(f.x - r, f.y); ctx.lineTo(f.x + r, f.y); ctx.moveTo(f.x, f.y - r); ctx.lineTo(f.x, f.y + r); ctx.stroke();
+    } else if (f.k === 'ring' && age < 1.3) {
+      const p = age / 1.3, e = 1 - Math.pow(1 - p, 3), c = colorOf(f.c);
+      if (age < 0.3) { const q = age / 0.3, r1 = 14 + q * 34; ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - q) * 0.7; ctx.drawImage(glow('#dff3ff'), f.x - r1, f.y - r1, 2 * r1, 2 * r1); ctx.globalCompositeOperation = 'source-over'; }
+      ctx.strokeStyle = c; ctx.globalAlpha = (1 - p) * 0.9; ctx.lineWidth = Math.max(0.8, 3 * (1 - p));
+      ctx.beginPath(); rimeHex(f.x, f.y, 10 + e * 74); ctx.stroke();
+      ctx.strokeStyle = '#eaf8ff'; ctx.globalAlpha = (1 - p) * 0.75; ctx.lineWidth = 1.2; ctx.beginPath();
+      for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 - Math.PI / 2, r0 = 6 + e * 22, r1 = 12 + e * 62; ctx.moveTo(f.x + Math.cos(a) * r0, f.y + Math.sin(a) * r0); ctx.lineTo(f.x + Math.cos(a) * r1, f.y + Math.sin(a) * r1); }
+      ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+}
+function drawRimeDeco(D) {                           // terrain as ice: a river is frozen over, islands are floes, the ring is a frozen shore
+  ctx.setLineDash([]);
+  if (D.kind === 'river') {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); D.line.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+    ctx.strokeStyle = 'rgba(150,200,240,0.06)'; ctx.lineWidth = D.hw * 2.1; ctx.stroke();
+    ctx.strokeStyle = 'rgba(205,235,255,0.11)'; ctx.lineWidth = 1.2; ctx.setLineDash([22, 9, 6, 11]); ctx.stroke(); ctx.setLineDash([]);   // hairline cracks along the ice
+  } else if (D.kind === 'islands') {
+    ctx.fillStyle = 'rgba(185,225,255,0.04)'; ctx.strokeStyle = 'rgba(205,235,255,0.14)'; ctx.lineWidth = 1.3;
+    for (const h of islandHulls()) { ctx.beginPath(); h.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  } else if (D.kind === 'ring') {
+    ctx.beginPath(); ctx.ellipse(D.cx, D.cy, D.rx, D.ry, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(170,210,245,0.05)'; ctx.lineWidth = 24; ctx.stroke();
+    ctx.strokeStyle = 'rgba(210,238,255,0.16)'; ctx.lineWidth = 1.2; ctx.stroke();
   }
 }
 
@@ -3697,6 +3995,13 @@ function applyMix(now, fast) {
   mlp.frequency.setTargetAtTime(menu ? tune.cut : 20000, t, tc);
 }
 function mixTick() {                                           // every frame: glide between the match mix and the menu mix when the mode changes
+  const nowK = performance.now();
+  if (AC.state === 'running' || !settings.sound || document.hidden) lostSince = 0;
+  else {                                                       // sound has been taken away: ask for it back once a second, and say so if it will not come back
+    if (!lostSince) lostSince = nowK;
+    if (nowK - kickT > 1000) { kickT = nowK; audioKick(); }
+    if (!lostToast && mode === 'play' && nowK - lostSince > 4000) { lostToast = true; toast('Sound was paused by your phone. Tap to bring it back.', TEAM_COLORS[PLAYER], PLAYER); }
+  }
   const menu = mode !== 'play';
   if (menu !== mixMenu) { mixMenu = menu; applyMix(false); }
 }
@@ -3706,12 +4011,18 @@ const pick = a => a[(Math.random() * a.length) | 0];
 // volume slider is perceptual (squared). "Simple" (the old Bright and Soft, folded together) sits an octave low, rounds off each blip's start and filters the top end
 const MASTER_BOOST = 2;                              // +6 dB: a 70% slider now sounds like the old 100%
 const soundGain = () => settings.sound ? MASTER_BOOST * Math.pow(settings.volume / 100, 2) : 0;
-const cutoff = () => ({ simple: 1500, overdrive: 9000, drift: 6500, chip: 7000, cosmos: 5200 })[settings.tone] || 1500;
+const cutoff = () => ({ simple: 1500, overdrive: 9000, drift: 6500, chip: 7000, cosmos: 5200, floe: 4800 })[settings.tone] || 1500;
+let kickT = 0, lostSince = 0, lostToast = false;
+function audioKick() {                                // the phone can pause or interrupt web audio (a text, another app, the screen): ask for the sound back
+  if (!AC || !settings.sound || document.hidden) return;
+  try { const p = AC.resume(); if (p && p.catch) p.catch(() => {}); } catch (_) {}
+}
 function audioOn() {
   try {
     if (!AC) {
       const Ctor = window.AudioContext || window.webkitAudioContext; if (!Ctor) return;
       AC = new Ctor();
+      AC.onstatechange = () => { if (AC && AC.state !== 'running') setTimeout(audioKick, 300); };
       master = AC.createGain(); master.gain.value = soundGain();
       bus = AC.createBiquadFilter(); bus.type = 'lowpass'; bus.frequency.value = cutoff(); bus.Q.value = 0.5;
       pbus = AC.createBiquadFilter(); pbus.type = 'lowpass'; pbus.frequency.value = cutoff(); pbus.Q.value = 0.5;
@@ -3720,7 +4031,7 @@ function audioOn() {
       master.connect(lim); lim.connect(AC.destination);
       mixMenu = mode !== 'play'; applyMix(true);
     }
-    if (AC.state === 'suspended') AC.resume();
+    if (AC.state !== 'running') audioKick();
   } catch (e) { AC = null; }
 }
 function screenPan(x, y) {
@@ -3768,6 +4079,7 @@ function playSfx(nowMs, dt) {
   if (settings.tone === 'drift') { driftHits(ev); return; }
   if (settings.tone === 'chip') { chipHits(ev); return; }
   if (settings.tone === 'cosmos') { cosmosHits(ev); return; }
+  if (isFloe()) { floeHits(ev); return; }
   if (nowMs - lastBloop > 150) {              // base hits: a low, round bloop that drops in pitch
     const e = h.baseMine || h.base;
     if (e) {
@@ -4105,16 +4417,17 @@ function driftPreview() {                             // a short phrase and a be
   drBell(N, t + 1.4, 0.08, 0);
   setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 5200);
 }
-// ---- "Chip": 8-bit voices played by the battle, with no beat of their own ----
-// Four voices like an old console: two pulse waves, a triangle and noise. Nothing plays until something happens. A troop hit is a
-// blip, picked from a pentatonic scale and walking up and down like a melody that sits higher the more of the map you hold
-// (yours on a round half-wave, the others an octave lower and thinner). Bigger fights add a second voice a third above. Base hits
-// are a crunch of metallic noise, a capture plays a power-up run, a knockout a falling "game over". The 132 bpm grid is only there
-// to land the notes together; with no drums or bass it is never heard as a beat.
-const CH_STEP = 60 / 132 / 4, CH_LEVEL = 0.19, CH_SCALE = [0, 2, 4, 7, 9];
+// ---- "Chip": a four-channel console, played by the battle ----
+// There is no clock and no beat. Every sound plays the moment it happens, on one of four channels like an old console: two pulse waves, a triangle and
+// noise. A channel plays one note at a time (a new note cuts the old one) and a bigger sound takes channels away from smaller ones while it plays, so the
+// voice count can never run away, and it sounds like the hardware. Your hits are a combo meter on pulse 1: hit again within half a second and the note
+// climbs the scale and comes back down, stop and it starts over; holding more of the map starts it higher. The other colors are thin pulses on
+// pulse 2, an octave lower. A base hit is the console's buzzy noise (a thump on the triangle at each quarter of its health lost), a capture is a short
+// fanfare, and a knockout is a falling game-over tune.
+const CH_LEVEL = 0.4, CH_SCALE = [0, 2, 4, 7, 9], CH_SEQ = [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
 const chMidi = d => 60 + 12 * Math.floor(d / 5) + CH_SCALE[((d % 5) + 5) % 5];
+const chShare = () => (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length;
 const CH2 = { hits: {}, v: 0 };
-function chCrunchDue(k, h) { return k % (h < 0.3 ? 4 : 2) === 0; }                       // a quiet battle crunches only every 4th step
 function chCrunchVar(c) {                              // three crunches (never the same twice running); a repeat on the same base fades; the thump is a milestone
   const now = AC.currentTime, r = CH2.hits[c.ni] || (CH2.hits[c.ni] = { t: -9, n: 0, stage: -1 });
   if (now - r.t >= 1.6) { r.n = 0; r.stage = -1; } else r.n++;
@@ -4124,11 +4437,18 @@ function chCrunchVar(c) {                              // three crunches (never 
   let i = (Math.random() * 3) | 0; if (i === CH2.v) i = (i + 1) % 3; CH2.v = i;
   return Object.assign({ g, thump }, pick3[i]);
 }
-const CH = { nodes: null, next: 0, step: 0, heat: 0, blips: [], crunch: null, caps: [], deg: 5, waves: null, metal: null };
+const CH = { nodes: null, waves: null, metal: null, tri: null };
 function chWaves() {                                  // pulse waves at 12.5%, 25% and 50% duty: the old consoles' three tones
   if (CH.waves && CH.waves.ac === AC) return CH.waves;
   const make = d => { const n = 48, re = new Float32Array(n), im = new Float32Array(n); for (let k = 1; k < n; k++) re[k] = 2 / (k * Math.PI) * Math.sin(k * Math.PI * d); return AC.createPeriodicWave(re, im); };
   CH.waves = { ac: AC, p12: make(0.125), p25: make(0.25), p50: make(0.5) }; return CH.waves;
+}
+function chTriWave() {                                // the triangle channel: 32 steps and 16 levels, so it has the faint grain of the real one
+  if (CH.tri && CH.tri.ac === AC) return CH.tri.w;
+  const n = 32, x = [], re = new Float32Array(16), im = new Float32Array(16);
+  for (let i = 0; i < n; i++) x.push(((i < 16 ? i : 31 - i) - 7.5) / 7.5);
+  for (let k = 1; k < 16; k++) { let a = 0, b = 0; for (let i = 0; i < n; i++) { a += x[i] * Math.cos(2 * Math.PI * k * i / n); b += x[i] * Math.sin(2 * Math.PI * k * i / n); } re[k] = 2 * a / n; im[k] = 2 * b / n; }
+  CH.tri = { ac: AC, w: AC.createPeriodicWave(re, im) }; return CH.tri.w;
 }
 function chMetal() {                                  // noise from a short repeating pattern: the console's buzzy "metal" noise mode
   if (CH.metal && CH.metal.sampleRate === AC.sampleRate) return CH.metal;
@@ -4143,89 +4463,112 @@ function chBuild(fast) {
   N.out = AC.createGain(); N.out.gain.value = 0.0001; N.out.gain.setTargetAtTime(CH_LEVEL, t, fast ? 0.01 : 0.2);
   N.comp.connect(N.out); N.out.connect(outBus());
   N.music = AC.createGain(); N.music.connect(N.comp);
+  const chan = () => ({ off: 0, pri: 0, t: -9, n: 0, list: [] });
+  N.ch = { p1: chan(), p2: chan(), tri: chan(), nz: chan() };      // each channel remembers what it is playing and how important that is
   return N;
 }
 function chOut(N, g, pan) { if (pan && AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); p.connect(N.music); } else g.connect(N.music); }
-function chNote(N, t, midi, dur, wave, peak, pan, slide) {   // one pulse note: a hard start, a stepped fall in volume, a hard stop
+function chClaim(N, name, t, dur, pri, gap) {          // ask a channel for the floor; null if something bigger holds it or it was used a moment ago
+  const c = N.ch[name];
+  if (t < c.off && pri < c.pri) return null;
+  if (t - c.t < gap && pri <= c.pri) return null;
+  if (t < c.off) for (const o of c.list) { try { o.stop(t); } catch (_) {} }     // cut what was playing, like a real channel
+  c.t = t; c.off = t + dur; c.pri = pri; c.list = [];
+  return c;
+}
+function chPulse(N, t, midi, dur, wave, peak, pan, slide) {  // one pulse note: a hard start, a stepped fall in volume, a hard stop
   const o = AC.createOscillator(), g = AC.createGain(), f = hz(midi);
   o.setPeriodicWave(chWaves()[wave]); o.frequency.setValueAtTime(f, t); if (slide) o.frequency.linearRampToValueAtTime(f * slide, t + dur);
   g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + 0.003);
   g.gain.setValueAtTime(peak * 0.7, t + dur * 0.4); g.gain.setValueAtTime(peak * 0.45, t + dur * 0.75); g.gain.linearRampToValueAtTime(0, t + dur);
-  o.connect(g); chOut(N, g, pan); o.start(t); o.stop(t + dur + 0.02);
+  o.connect(g); chOut(N, g, pan); o.start(t); o.stop(t + dur + 0.02); return o;
 }
-function chTri(N, t, midi, dur, peak, drop, f0) {         // the triangle channel: bass notes, and (with a fast drop in pitch) the kick
+function chTri(N, t, midi, dur, peak, drop, f0) {         // the triangle channel: bass notes, and (with a fast drop in pitch) the thump
   const o = AC.createOscillator(), g = AC.createGain();
-  o.type = 'triangle'; o.frequency.setValueAtTime(drop ? (f0 || 170) : hz(midi), t); if (drop) o.frequency.exponentialRampToValueAtTime(f0 ? f0 * 0.3 : 48, t + dur);
+  o.setPeriodicWave(chTriWave()); o.frequency.setValueAtTime(drop ? (f0 || 170) : hz(midi), t); if (drop) o.frequency.exponentialRampToValueAtTime(f0 ? f0 * 0.3 : 48, t + dur);
   g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + 0.003); g.gain.setValueAtTime(peak, t + dur * 0.8); g.gain.linearRampToValueAtTime(0, t + dur);
-  o.connect(g); g.connect(N.music); o.start(t); o.stop(t + dur + 0.02);
+  o.connect(g); g.connect(N.music); o.start(t); o.stop(t + dur + 0.02); return o;
 }
-function chNoise(N, t, dur, peak, freq, metal, pan) { // the noise channel: ticks, hats, snare, and the metallic crunch of a base hit
+function chNoise(N, t, dur, peak, freq, metal, pan) { // the noise channel: the buzzy crunch of a base hit
   const n = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
   n.buffer = metal ? chMetal() : noise(); f.type = metal ? 'lowpass' : 'highpass'; f.frequency.value = freq;
   g.gain.setValueAtTime(peak, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  n.connect(f); f.connect(g); chOut(N, g, pan); n.start(t, metal ? 0 : Math.random() * 0.3, dur + 0.02);
+  n.connect(f); f.connect(g); chOut(N, g, pan); n.start(t, metal ? 0 : Math.random() * 0.3, dur + 0.02); return n;
 }
-function chPlayStep(N, t, k, h) {                    // one grid step: only what the battle asked for since the last one
-  const share = (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length, centre = 3 + Math.round(share * 6);
-  if (CH.caps.length && k % 2 === 0) {                // a capture: a power-up run up the scale
-    const c = CH.caps.shift();
-    [0, 2, 3, 5].forEach((st, i) => chNote(N, t + i * CH_STEP / 2, chMidi(centre + 2 + st), CH_STEP * 0.55, 'p50', c.mine ? 0.07 : 0.035, c.pan));
-  } else if (CH.blips.length && (k % 2 === 0 || h > 0.3)) {   // hits since the last step: one blip, and a second voice in a big fight
-    const n = CH.blips.length;
-    let e = CH.blips[n - 1], mine = false;
-    if (!awatch()) for (let i = n - 1; i >= 0; i--) if (CH.blips[i].team === PLAYER) { e = CH.blips[i]; mine = true; break; }
-    let st = [-2, -1, -1, 0, 1, 1, 2][(Math.random() * 7) | 0];
-    if (CH.deg > centre + 2 && st > 0) st = -1; if (CH.deg < centre - 2 && st < 0) st = 1;
-    CH.deg = Math.max(0, Math.min(12, CH.deg + st));
-    const d = mine || awatch() ? CH.deg : Math.max(0, CH.deg - 5), pan = screenPan(e.x, e.y), pk = mine ? 0.06 : awatch() ? 0.04 : 0.024;
-    chNote(N, t, chMidi(d), CH_STEP * 0.8, mine ? 'p50' : 'p12', pk, pan, 0.985);
-    if (n >= 6 && h > 0.35) chNote(N, t + CH_STEP / 2, chMidi(d + 2), CH_STEP * 0.7, 'p12', pk * 0.55, -pan, 0.985);
-    CH.blips.length = 0;
-  }
-  if (CH.crunch && chCrunchDue(k, h)) {                // a base hit: the thump sits on a scale note that climbs as the base weakens
-    const c = CH.crunch, d = Math.round((1 - (c.hf === undefined ? 1 : c.hf)) * 9), f0 = hz(chMidi(d) - 12), v = chCrunchVar(c);
-    chNoise(N, t + Math.random() * 0.03, v.dur, c.mine ? 0.2 * v.g : 0.11 * v.g, v.freq, true, c.pan);
-    if (v.thump) chTri(N, t, 0, 0.12, c.mine ? 0.1 : 0.055, true, f0);
-    CH.crunch = null;
+function chHit(N, t, e, mine, big) {                   // a troop hit: pulse 1 for yours (a climbing combo), pulse 2 for the others (thin, low, sparse)
+  const share = chShare(), floor = 3 + Math.round(share * 5), heat = 1 - Math.exp(-shotRate / 30), pan = screenPan(e.x, e.y);
+  if (mine) {
+    const c = N.ch.p1, n = t - c.t < 0.5 ? c.n + 1 : 0;
+    const c2 = chClaim(N, 'p1', t, 0.075, 1, 0.055); if (!c2) return;
+    c2.n = n; c2.list.push(chPulse(N, t, chMidi(floor + CH_SEQ[n % CH_SEQ.length]), 0.075, 'p50', big ? 0.05 : 0.06, pan, 0.985));
+  } else {
+    const c = N.ch.p2, n = t - c.t < 0.7 ? c.n + 1 : 0;
+    const c2 = chClaim(N, 'p2', t, 0.085, 1, heat > 0.5 ? 0.14 : 0.09); if (!c2) return;
+    c2.n = n; c2.list.push(chPulse(N, t, chMidi(floor - 5 + CH_SEQ[(n * 2) % CH_SEQ.length]), 0.085, 'p12', 0.024, pan, 0.985));
   }
 }
-function chFall(N, t) {                               // a color is out: a falling "game over" tune
-  for (let i = 0; i < 7; i++) chNote(N, t + i * 0.09, 79 - i * 2 - (i > 4 ? 1 : 0), 0.085, 'p25', 0.045, 0);
-  chTri(N, t + 0.63, 36, 0.5, 0.22);
+function chCrunch(N, t, c) {                           // a base hit: buzzy noise, and a thump on the triangle each time another quarter of its health is gone
+  if (!chClaim(N, 'nz', t, 0.1, 1, 0.1)) return;
+  const v = chCrunchVar(c), d = Math.round((1 - (c.hf === undefined ? 1 : c.hf)) * 9), f0 = hz(chMidi(d) - 12);
+  N.ch.nz.list.push(chNoise(N, t, v.dur, c.mine ? 0.2 * v.g : 0.11 * v.g, v.freq, true, c.pan));
+  if (v.thump && chClaim(N, 'tri', t, 0.13, 2, 0)) N.ch.tri.list.push(chTri(N, t, 0, 0.12, c.mine ? 0.1 : 0.055, true, f0));
+}
+function chCapture(N, t, mine, pan, share) {           // a fanfare: five notes up the scale on pulse 1, a lower echo on pulse 2, a bass note under them
+  const c = 3 + Math.round(share * 5) + 2;
+  if (mine) {
+    const a = chClaim(N, 'p1', t, 0.55, 3, 0), b = chClaim(N, 'p2', t, 0.55, 3, 0), r = chClaim(N, 'tri', t, 0.45, 3, 0);
+    [0, 2, 3, 5, 7].forEach((st, i) => { const last = i === 4; if (a) a.list.push(chPulse(N, t + i * 0.062, chMidi(c + st), last ? 0.22 : 0.07, 'p50', 0.07, pan)); if (b) b.list.push(chPulse(N, t + 0.03 + i * 0.062, chMidi(c + st - 5), last ? 0.2 : 0.07, 'p25', 0.04, -pan)); });
+    if (r) r.list.push(chTri(N, t, chMidi(c) - 12, 0.4, 0.11));
+  } else {
+    const b = chClaim(N, 'p2', t, 0.35, 2, 0); if (!b) return;
+    [0, 2, 3].forEach((st, i) => b.list.push(chPulse(N, t + i * 0.07, chMidi(c + st - 5), i === 2 ? 0.15 : 0.065, 'p12', 0.034, pan)));
+  }
+}
+function chFall(N, t) {                               // a color is out: a falling "game over" tune that takes every channel
+  const a = chClaim(N, 'p1', t, 1.1, 4, 0), b = chClaim(N, 'p2', t, 1.1, 4, 0), r = chClaim(N, 'tri', t, 1.1, 4, 0), z = chClaim(N, 'nz', t, 1.1, 4, 0);
+  for (let i = 0; i < 7; i++) {
+    const m = 79 - i * 2 - (i > 4 ? 1 : 0);
+    if (a) a.list.push(chPulse(N, t + i * 0.09, m, 0.085, 'p25', 0.045, 0));
+    if (b) b.list.push(chPulse(N, t + 0.045 + i * 0.09, m - 12, 0.08, 'p12', 0.03, 0));
+  }
+  if (r) r.list.push(chTri(N, t + 0.63, 36, 0.5, 0.22));
+  if (z) z.list.push(chNoise(N, t + 0.63, 0.5, 0.08, 700, true, 0));
 }
 function chipHits(ev) {
+  const N = CH.nodes; if (!N) return;
+  const t = AC.currentTime + 0.003; let mine = null, other = null, base = null;
   for (const e of ev) {
-    if (e.base) { if (!CH.crunch || isMine(e)) CH.crunch = { mine: isMine(e), pan: screenPan(e.x, e.y), hf: e.hf, ni: e.ni }; else if (e.hf < CH.crunch.hf) CH.crunch.hf = e.hf; }
-    else CH.blips.push(e);
+    if (e.base) { if (!base || (isMine(e) && !isMine(base)) || (isMine(e) === isMine(base) && e.hf < base.hf)) base = e; }
+    else if (!awatch() && e.team === PLAYER) mine = mine || e;
+    else other = other || e;
   }
-  if (CH.blips.length > 24) CH.blips.splice(0, CH.blips.length - 24);
+  if (base) chCrunch(N, t, { mine: isMine(base), pan: screenPan(base.x, base.y), hf: base.hf, ni: base.ni });
+  if (awatch()) { if (other) chHit(N, t, other, true, true); }              // watching: every hit is "yours", and the second voice joins in
+  else { if (mine) chHit(N, t, mine, true, false); if (other) chHit(N, t, other, false, false); }
 }
 function chipTick() {
   const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'chip' && audible() && G && !G.over;
   if (!want) {
     if (CH.nodes) { const N = CH.nodes, t = AC.currentTime; CH.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.15); setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 1500); }
-    CH.blips.length = 0; CH.caps.length = 0; CH.crunch = null; return;
+    return;
   }
-  if (!CH.nodes) { CH.nodes = chBuild(false); CH.next = AC.currentTime + 0.05; CH.step = 0; }
-  const N = CH.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
+  if (!CH.nodes) CH.nodes = chBuild(false);
+  const N = CH.nodes, now = AC.currentTime;
   for (const f of G.fx) {                             // captures and knockouts become little tunes
     if (f.ch) continue; f.ch = 1;
     if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
-    if (f.k === 'ring') CH.caps.push({ mine: !awatch() && f.c === PLAYER, pan: screenPan(f.x, f.y) });
+    if (f.k === 'ring') chCapture(N, now + 0.02, !awatch() && f.c === PLAYER, screenPan(f.x, f.y), chShare());
     else if (f.k === 'elim') chFall(N, now + 0.02);
   }
-  if (CH.caps.length > 3) CH.caps.splice(0, CH.caps.length - 3);
-  if (CH.next < now - 0.25) { const k = Math.ceil((now - CH.next) / CH_STEP); CH.next += k * CH_STEP; CH.step += k; }
-  while (CH.next < now + 0.1) { CH.heat += (heat - CH.heat) * 0.05; chPlayStep(N, CH.next, CH.step, CH.heat); CH.next += CH_STEP; CH.step++; }
 }
-function chipPreview() {                              // a few blips walking up, a crunch, and a power-up run
-  const N = chBuild(true), t0 = AC.currentTime + 0.05;
-  [5, 7, 6, 9].forEach((d, i) => chNote(N, t0 + i * CH_STEP * 2, chMidi(d), CH_STEP * 0.8, 'p50', 0.06, (i - 1.5) * 0.25, 0.985));
-  chNote(N, t0 + 3 * CH_STEP, chMidi(2), CH_STEP * 0.8, 'p12', 0.024, 0.4, 0.985);
-  chNoise(N, t0 + 10 * CH_STEP, 0.16, 0.2, 2400, true); chTri(N, t0 + 10 * CH_STEP, 0, 0.12, 0.3, true);
-  [7, 9, 10, 12].forEach((d, i) => chNote(N, t0 + 14 * CH_STEP + i * CH_STEP / 2, chMidi(d), CH_STEP * 0.55, 'p50', 0.07, 0));
-  N.out.gain.setTargetAtTime(0.0001, t0 + 18 * CH_STEP, 0.08);
-  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 3500);
+function chipPreview() {                              // a combo climbing and falling, a few thin replies, a crunch with a thump, and a fanfare
+  const N = chBuild(true), t0 = AC.currentTime + 0.05, pan = i => (i - 3) * 0.12;
+  for (let i = 0; i < 9; i++) { const c = chClaim(N, 'p1', t0 + i * 0.08, 0.075, 1, 0.055); if (c) c.list.push(chPulse(N, t0 + i * 0.08, chMidi(5 + CH_SEQ[i]), 0.075, 'p50', 0.06, pan(i), 0.985)); }
+  [0.2, 0.42, 0.66].forEach((d, i) => { const c = chClaim(N, 'p2', t0 + d, 0.085, 1, 0.09); if (c) c.list.push(chPulse(N, t0 + d, chMidi(1 + CH_SEQ[i * 2]), 0.085, 'p12', 0.03, 0.4, 0.985)); });
+  chCrunch(N, t0 + 0.95, { mine: true, pan: 0, hf: 0.5, ni: -1 }); CH2.hits[-1] = null;
+  chCapture(N, t0 + 1.4, true, 0, 0.4);
+  N.out.gain.setTargetAtTime(0.0001, t0 + 2.3, 0.1);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 3800);
 }
 
 // ---- "Cosmos": deep space for Nebula ----
@@ -4370,6 +4713,179 @@ function cosmosPreview() {                            // a pad chord swelling, t
   setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 7000);
 }
 
+// ---- "Floe" and "Floe-1": ice for Rime ----
+// Nothing is on a grid, nothing plays by itself, and a faint wind is the only bed. A troop hit is a soft glass note (a few
+// inharmonic partials, a rounded start, a slow fade) on a calm minor ladder: yours higher, the others lower and duller. A base hit is the falling chirp
+// of lake ice, sharper as the base weakens, with a boom at each quarter of its health lost. A capture settles: a few notes stepping down under a low
+// hush. A knockout is the ice giving way: a long groan, chirps and a deep boom. Everything rings out into a long, dark echo, as if over an empty lake.
+// The booms, groans and hum keep real weight between 150 and 500 Hz, because a phone speaker cannot play what lies below that.
+const FL_LEVEL = 0.85;
+const FL_PARTS = [[1, 1, 1], [2.32, 0.42, 0.5], [4.25, 0.14, 0.28]];   // glass: partial ratio, level, share of the note's length
+const FL_LADDER = [1, 1.2, 1.333, 1.5, 1.8, 2, 2.4];                  // minor pentatonic over the base note
+const FLP = {                                                          // fs pitch scale; lp tone filter; att start (s); len note length (s); wet/dry; rev echo length (s); r0>r1 echo brightness at the start/end of the tail
+  floe:  { fs: 1,    lp: 3000, att: 0.006, len: 1.15, wet: 1.2, dry: 0.5, rev: 5,   r0: 0.42, r1: 0.05,  echo: 0.35, drone: 0, crk: 1,    bm: 1,   gr: 1,    lvl: 0.8 } };
+const flp = () => FLP[settings.tone] || FLP.floe;
+const isFloe = () => settings.tone === 'floe';
+const FL = { nodes: null, v: 0, tAt: 0, cAt: 0, st: {}, win: null, ir: {} };
+function flIR(P) {                                    // a long echo whose tail darkens as it fades, with one faint far-off bounce per side
+  const key = settings.tone, sr = AC.sampleRate;
+  if (FL.ir[key] && FL.ir[key].sampleRate === sr) return FL.ir[key];
+  const len = Math.floor(sr * P.rev), pre = Math.floor(sr * 0.03), buf = AC.createBuffer(2, len, sr), tau = P.rev / 7.5;
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c); let l1 = 0, l2 = 0;
+    for (let i = pre; i < len; i++) {
+      const t = (i - pre) / sr, a = P.r1 + (P.r0 - P.r1) * Math.exp(-t / 1.2);
+      l1 += (Math.random() * 2 - 1 - l1) * a; l2 += (l1 - l2) * a;
+      d[i] = l2 * Math.exp(-t / tau) * Math.min(1, t / 0.045);
+    }
+    const at = Math.floor(sr * (c ? 0.43 : 0.31)), w = Math.floor(sr * 0.05); let e1 = 0, e2 = 0, pk = 0;
+    for (let i = pre; i < pre + 4000; i++) pk = Math.max(pk, Math.abs(d[i]));
+    for (let i = 0; i < w && at + i < len; i++) { e1 += (Math.random() * 2 - 1 - e1) * 0.12; e2 += (e1 - e2) * 0.12; d[at + i] += e2 * 6 * pk * P.echo * Math.sin(Math.PI * i / w); }
+  }
+  return (FL.ir[key] = buf);
+}
+function flWind() {                                   // four seconds of soft noise that loops without a seam
+  if (FL.win && FL.win.sampleRate === AC.sampleRate) return FL.win;
+  const sr = AC.sampleRate, len = Math.floor(sr * 4), xf = Math.floor(sr * 0.08), raw = new Float32Array(len); let lp = 0;
+  for (let i = 0; i < len; i++) { lp += (Math.random() * 2 - 1 - lp) * 0.25; raw[i] = lp; }
+  const b = AC.createBuffer(1, len - xf, sr), d = b.getChannelData(0);
+  for (let i = 0; i < len - xf; i++) d[i] = i < xf ? raw[i] * (i / xf) + raw[len - xf + i] * (1 - i / xf) : raw[i];
+  return (FL.win = b);
+}
+function flBuild(withBed) {
+  const P = flp(), t = AC.currentTime, N = { srcs: [], key: settings.tone, P };
+  N.out = AC.createGain(); N.out.gain.value = 0.0001; N.out.gain.setTargetAtTime(FL_LEVEL * P.lvl, t, withBed ? 0.6 : 0.01); N.out.connect(outBus());
+  N.comp = AC.createDynamicsCompressor(); N.comp.threshold.value = -20; N.comp.ratio.value = 4; N.comp.connect(N.out);
+  N.dry = AC.createGain(); N.dry.gain.value = P.dry; N.dry.connect(N.comp);
+  N.rev = AC.createConvolver(); N.rev.buffer = flIR(P); const rg = AC.createGain(); rg.gain.value = 0.55; N.rev.connect(rg); rg.connect(N.comp);
+  N.wet = AC.createGain(); N.wet.gain.value = 1; N.wet.connect(N.rev);
+  if (withBed) {                                      // the wind: soft noise through a band that drifts slowly up and down
+    const src = AC.createBufferSource(), bp = AC.createBiquadFilter(), lfo = AC.createOscillator(), ld = AC.createGain();
+    src.buffer = flWind(); src.loop = true; bp.type = 'bandpass'; bp.frequency.value = 520; bp.Q.value = 0.7;
+    lfo.frequency.value = 0.06; ld.gain.value = 240; lfo.connect(ld); ld.connect(bp.frequency);
+    N.windG = AC.createGain(); N.windG.gain.value = 0.0001; src.connect(bp); bp.connect(N.windG); N.windG.connect(N.dry);
+    src.start(t); lfo.start(t); N.srcs.push(src, lfo);
+  }
+  return N;
+}
+function flOut(N, g, pan, wet) {                      // pan, then dry, and a share into the echo
+  let o = g; if (pan && AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); o = p; }
+  o.connect(N.dry); if (wet) { const w = AC.createGain(); w.gain.value = wet; o.connect(w); w.connect(N.wet); }
+}
+function flTink(N, t, f, peak, pan, wet, dull, force) {   // one soft glass note at f Hz; `dull` closes the filter further (the other colors' notes)
+  if (!force && FL.v > 12) return;
+  FL.v++; setTimeout(() => { FL.v--; }, 600);
+  const P = N.P, sum = AC.createGain(), lp = AC.createBiquadFilter(); f *= P.fs;
+  sum.gain.value = peak; lp.type = 'lowpass'; lp.Q.value = 0.4; lp.frequency.value = Math.min(P.lp, dull || P.lp); sum.connect(lp);
+  FL_PARTS.forEach(([r, a, share], k) => {
+    const fr = f * r; if (fr > 9000) return;
+    const dur = P.len * share * (dull ? 0.75 : 1);
+    for (const det of (k ? [1] : [1, 1.0035])) {      // the lowest partial is doubled a hair apart, so it beats slowly like real glass
+      const o = AC.createOscillator(), g = AC.createGain();
+      o.frequency.value = fr * det; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a * (k || det === 1 ? 1 : 0.5), t + P.att);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + P.att + dur); o.connect(g); g.connect(sum); o.start(t); o.stop(t + P.att + dur + 0.02);
+    }
+  });
+  flOut(N, lp, pan, wet * P.wet);
+}
+function flCrack(N, t, hf, peak, pan) {               // lake ice: one to three falling chirps (sharper and higher as the base weakens), each with a faint tick
+  const P = N.P, n = 1 + ((Math.random() * 3) | 0); let at = t;
+  for (let i = 0; i < n; i++) {
+    const f0 = (700 + 2300 * (1 - hf)) * P.crk * (0.8 + 0.4 * Math.random()), f1 = f0 * (0.1 + 0.08 * Math.random()), d = 0.07 + 0.12 * Math.random(), pk = peak * (0.5 + 0.5 * Math.random());
+    const o = AC.createOscillator(), lp = AC.createBiquadFilter(), g = AC.createGain(), k = AC.createBufferSource(), kg = AC.createGain(), kl = AC.createBiquadFilter();
+    o.type = 'triangle'; o.frequency.setValueAtTime(f0, at); o.frequency.exponentialRampToValueAtTime(f1, at + d);
+    lp.type = 'lowpass'; lp.frequency.value = 2600; lp.Q.value = 0.5;
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(pk, at + 0.003); g.gain.exponentialRampToValueAtTime(0.0001, at + d * 1.1);
+    o.connect(lp); lp.connect(g); flOut(N, g, pan, 0.7); o.start(at); o.stop(at + d * 1.1 + 0.02);
+    k.buffer = noise(); kl.type = 'lowpass'; kl.frequency.value = 1800; kg.gain.setValueAtTime(pk * 0.5, at); kg.gain.exponentialRampToValueAtTime(0.0001, at + 0.014);
+    k.connect(kl); kl.connect(kg); flOut(N, kg, pan, 0.4); k.start(at, Math.random() * 0.3, 0.02);
+    at += 0.035 + Math.random() * 0.07;
+  }
+}
+function flBoom(N, t, peak, pan, low) {               // the ice booming: a triangle falling away (its harmonics are what a phone plays)
+  const P = N.P, o = AC.createOscillator(), lp = AC.createBiquadFilter(), g = AC.createGain(), L = (low ? 1.3 : 0.7) * P.bm;
+  o.type = 'triangle'; o.frequency.setValueAtTime(low ? 96 : 150, t); o.frequency.exponentialRampToValueAtTime(low ? 34 : 58, t + (low ? 1 : 0.55));
+  lp.type = 'lowpass'; lp.frequency.value = 520; lp.Q.value = 0.6;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + L);
+  o.connect(lp); lp.connect(g); flOut(N, g, pan * 0.5, 0.35); o.start(t); o.stop(t + L + 0.1);
+}
+function flGroan(N, t, dur, peak, pan, f0, f1) {      // the ice creaking: a saw with a slow wobble through a closing filter
+  const P = N.P, o = AC.createOscillator(), lp = AC.createBiquadFilter(), g = AC.createGain(), w = AC.createOscillator(), wd = AC.createGain(); f0 *= P.gr; f1 *= P.gr;
+  o.type = 'sawtooth'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  w.frequency.value = 5.5; wd.gain.value = f0 * 0.035; w.connect(wd); wd.connect(o.frequency);
+  lp.type = 'lowpass'; lp.Q.value = 2.5; lp.frequency.setValueAtTime(f0 * 3.2, t); lp.frequency.exponentialRampToValueAtTime(f1 * 2.5, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + dur * 0.2); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(lp); lp.connect(g); flOut(N, g, pan * 0.5, 0.5); o.start(t); w.start(t); o.stop(t + dur + 0.05); w.stop(t + dur + 0.05);
+}
+function flFreeze(N, t, mine, pan, share) {           // a capture: a low hush swelling, and a few glass notes stepping down and slowing as the ice settles
+  const k = 0.9 + 0.45 * share, s = AC.createBufferSource(), lp = AC.createBiquadFilter(), g = AC.createGain(), pk = mine ? 0.05 : 0.022;
+  s.buffer = noise(); lp.type = 'lowpass'; lp.Q.value = 0.8; lp.frequency.setValueAtTime(320, t); lp.frequency.exponentialRampToValueAtTime(1300, t + 0.45);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(pk, t + 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+  s.connect(lp); lp.connect(g); flOut(N, g, pan, 0.6); s.start(t, Math.random() * 0.2, 0.95);
+  let at = t + 0.03, gap = 0.11;
+  [2.4, 2, 1.5, 1.2, 1].forEach(r => { flTink(N, at, 1000 * k * r, mine ? 0.06 : 0.028, pan + (Math.random() - 0.5) * 0.3, 1.0, mine ? 0 : 3000, true); at += gap; gap *= 1.3; });
+  flBoom(N, t, mine ? 0.07 : 0.035, pan, false);
+}
+function flGive(N, t) {                               // a color is out: the ice gives way
+  flGroan(N, t, 2.4, 0.08, 0, 150, 38); flBoom(N, t + 0.05, 0.12, 0, true);
+  for (let i = 0; i < 5; i++) flCrack(N, t + 0.12 + i * 0.24 + Math.random() * 0.1, 0.2 + Math.random() * 0.5, 0.05, (Math.random() - 0.5) * 1.2);
+}
+const flShare = () => (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length;
+const flNote = (base, share) => base * (0.9 + 0.45 * share) * pick(FL_LADDER) / 1.2;
+function floeHits(ev) {
+  if (!FL.nodes) return;
+  const N = FL.nodes, t = AC.currentTime + 0.004 + Math.random() * 0.012, nowMs = performance.now(), h = HITS;
+  if (nowMs - FL.cAt > 105) {                         // base hits: a chirp, and a boom at each quarter of the base's health lost
+    const e = h.baseMine || h.base;
+    if (e) {
+      const mine = isMine(e), pan = screenPan(e.x, e.y), hf = e.hf === undefined ? 1 : e.hf;
+      flCrack(N, t, hf, mine ? 0.12 : awatch() ? 0.08 : 0.045, pan);
+      const st = Math.floor((1 - hf) * 4), r = FL.st[e.ni] || (FL.st[e.ni] = { t: -9, s: -1 });
+      if (nowMs - r.t > 1600) r.s = -1;
+      r.t = nowMs;
+      if (st > r.s) { r.s = st; flBoom(N, t, mine ? 0.1 : awatch() ? 0.06 : 0.035, pan, false); if (st >= 2) flGroan(N, t + 0.02, 0.7, mine ? 0.04 : 0.02, pan, 130, 70); }
+      FL.cAt = nowMs + Math.random() * 40;
+    }
+  }
+  if (nowMs - FL.tAt > 70) {                          // troop hits: a soft glass note; yours higher, the others lower and duller
+    const e = pickShot(h, 0.65);
+    if (e) {
+      const mine = isMine(e), loud = mine || awatch(), f = flNote(loud ? 1150 : 560, flShare());
+      flTink(N, t, f, mine ? 0.06 : awatch() ? 0.04 : 0.02, screenPan(e.x, e.y), mine ? 0.7 : 1.0, loud ? 0 : 2400, false);
+      FL.tAt = nowMs + Math.random() * 30;
+    }
+  }
+}
+function floeOff() {
+  if (!FL.nodes) return;
+  const N = FL.nodes, t = AC.currentTime; FL.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.3); for (const o of N.srcs) o.stop(t + 1.5);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 7500);
+}
+function floeTick() {
+  const want = AC && AC.state === 'running' && settings.sound && isFloe() && audible() && G && !G.over;
+  if (FL.nodes && (!want || FL.nodes.key !== settings.tone)) floeOff();     // switching between Floe and Floe-1 rebuilds it
+  if (!want) { FL.st = {}; return; }
+  if (!FL.nodes) FL.nodes = flBuild(true);
+  const N = FL.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
+  N.windG.gain.setTargetAtTime(0.012 + 0.02 * heat, now, 1.2);
+  for (const f of G.fx) {                             // captures and knockouts
+    if (f.fl) continue; f.fl = 1;
+    if (G.t - f.b > 1.5 || (fogOn() && f.x !== undefined && !seenXY(f.x, f.y))) continue;
+    if (f.k === 'ring') flFreeze(N, now + 0.02, !awatch() && f.c === PLAYER, screenPan(f.x, f.y), flShare());
+    else if (f.k === 'elim') flGive(N, now + 0.02);
+  }
+}
+function floePreview() {                              // three notes, a chirp with a boom, a freeze-over and a low groan, with the wind (and hum) under them
+  const N = flBuild(true), t = AC.currentTime + 0.05;
+  N.windG.gain.value = 0.02;
+  [[0, 1], [0.4, 1.5], [0.85, 1.2]].forEach(([d, r], i) => flTink(N, t + d, 1150 * r, 0.06, (i - 1) * 0.3, 0.7, 0, true));
+  flCrack(N, t + 1.5, 0.6, 0.12, 0); flBoom(N, t + 1.55, 0.1, 0, false);
+  flFreeze(N, t + 2.3, true, 0, 0.5);
+  flGroan(N, t + 3.4, 1.3, 0.05, 0, 130, 60);
+  N.out.gain.setTargetAtTime(0.0001, t + 6.2, 0.5); for (const o of N.srcs) o.stop(t + 7.5);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 14000);
+}
+
 function syncRivals() {
   const open = watching ? watchRivals : settings.rivals;
   $('rivals').hidden = !(watching && open);                     // the table of every color's upgrades is for watching AI matches only
@@ -4391,18 +4907,19 @@ function syncSound() {
     pbus.frequency.setTargetAtTime(cutoff(), AC.currentTime, 0.02);
   }
 }
-let lastPreview = 0;
+let lastPreview = 0, lastPreviewTone = '';
 function previewSound() {                       // a sample bleep and bloop so you can hear the setting
   const now = performance.now();
-  const gap = ({ overdrive: 2400, drift: 2500, chip: 2200, cosmos: 3200 })[settings.tone] || 140;
-  if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < gap) return;
-  lastPreview = now;
+  const gap = ({ overdrive: 2400, drift: 2500, chip: 2200, cosmos: 3200, floe: 4200 })[settings.tone] || 140;
+  if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < gap && lastPreviewTone === settings.tone) return;
+  lastPreview = now; lastPreviewTone = settings.tone;
   previewing = true;                                  // a preview is always heard at full level, not through the menu mix
   try {
     if (settings.tone === 'overdrive') { odPreview(); return; }
     if (settings.tone === 'drift') { driftPreview(); return; }
     if (settings.tone === 'chip') { chipPreview(); return; }
     if (settings.tone === 'cosmos') { cosmosPreview(); return; }
+    if (isFloe()) { floePreview(); return; }
     const f = hz(ROOT[PLAYER] - 12 + pick(PENTA));
     tone(f, f * 0.94, 0.1, 0.055, 'sine', 0, 0.018); tone(f * 2, f * 1.88, 0.07, 0.009, 'sine', 0, 0.012);
   } finally { previewing = false; }
@@ -4430,9 +4947,11 @@ const SHAPE_INFO = { random: 'A random shape, different each time the map is rol
 const SPECIAL_INFO = { on: 'Fortress, Forge, Beacon and Relay bases are scattered across the map. Tap the i to see what each does.', off: 'No special bases. Every base is the same.' };
 const SETTINGS_INFO = {
   tone: { simple: 'Soft, round tones, low and warm. Pairs with Classic.', overdrive: 'A dark beat that builds with the fighting. Pairs with Overload.', drift: 'Gentle plucked notes in a big quiet room. Pairs with Atlas.',
-    chip: 'Old console bleeps played by the battle: blips, crunches and power-up runs. Pairs with Pixel.', cosmos: 'A deep drone, sonar pings and pads that swell with the fighting. Pairs with Nebula.' },
+    chip: 'A four-channel console played by the battle: combo runs, buzzy crunches and little fanfares. Pairs with Pixel.', cosmos: 'A deep drone, sonar pings and pads that swell with the fighting. Pairs with Nebula.',
+    floe: 'Soft glass, cracking ice and low groans in a long cold echo, played by the fighting. Pairs with Rime.' },
   visual: { classic: 'Clean squares and triangles, with soft glows, light trails and sparks.', overload: 'Maximum chaos: beat-synced flashes, lightning and shakes. Team colors stay true.', atlas: 'A surveyor\'s chart: influence washes and plotted courses.',
-    pixel: 'Chunky pixels and scanlines, like an old console. Pairs with Chip.', nebula: 'Deep space: suns, drifting stars and supernova captures. Pairs with Cosmos.' },
+    pixel: 'Chunky pixels and scanlines, like an old console. Pairs with Chip.', nebula: 'Deep space: suns, drifting stars and supernova captures. Pairs with Cosmos.',
+    rime: 'A winter night: frost grows over what you hold, bases are crystals, and a capture freezes over. Pairs with Floe.' },
   menuSound: { on: 'Plays the background match quietly behind the menus.', off: 'Menus stay silent.' },
   colors: { standard: 'Blue, red, green, yellow and purple.', safe: 'Blue, orange, teal, yellow and magenta, chosen to stay distinct for color-blind players.', contrast: 'Brighter colors, bolder lines and stronger text.' },
   symbols: { off: 'Teams are shown by color only.', on: 'Each color also gets its own shape. Empty bases are hollow squares.' },
@@ -4498,6 +5017,42 @@ const syncAllText = () => { for (const m of ['classic', 'custom', 'spec']) syncT
 let stack = ['scrHome'], previewMode = 'custom', pvOnly = false, pvCtx = null, pvOwners = null;
 const SCREEN_MODE = { scrClassic: 'classic', scrCustom: 'custom', scrEnemies: 'custom', scrMap: 'custom', scrSpectate: 'spec' };
 const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 'shape'], scrSpectate: ['hintSpec', 'diff'] };
+// ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
+const TESTER_NOTES = true;
+const NEWS = [
+  { v: '47.1.3', t: 'What\'s new page and update button', b: ['New: this What\'s new page, opened from the icon beside the build number. A dot on the icon shows when there is a build you have not read about yet.', 'New: a Check for update button below. It looks for a newer build and reloads into it.'] },
+  { v: '47.1.1', t: 'Sound fix', b: ['Sound now comes back by itself if your phone pauses it (a text, another app). Before, it could stay silent until you tapped a base.', 'If it cannot come back, a short message tells you to tap the screen.'] },
+  { v: '47.1 and 47', t: 'Smarter rivals, tougher bases', b: ['Brutal rivals now keep troops home when you march at them, answer small raids, and strike any base you leave empty. Hard rivals do a lighter version. Easy and Normal play as before.', 'Health now also makes your bases tougher to break, and the rivals benefit too.', 'Hard rivals pick on you a little less.'] }
+];
+function renderNews() {
+  const box = $('newsBody'); box.textContent = '';
+  for (const e of NEWS) {
+    const d = document.createElement('div'), h = document.createElement('h3'), sp = document.createElement('span'), ul = document.createElement('ul');
+    h.textContent = e.t + ' '; sp.textContent = e.v; h.appendChild(sp); ul.className = 'how';
+    for (const line of e.b) { const li = document.createElement('li'); li.textContent = line; ul.appendChild(li); }
+    d.appendChild(h); d.appendChild(ul); box.appendChild(d);
+  }
+  save('ice-seen-build', { v: NEWS[0].v }); syncNews();
+}
+async function checkUpdate() {
+  const btn = $('bUpd'), msg = $('updMsg'), cur = $('buildNo').textContent.trim();
+  if (!/^https?:$/.test(location.protocol)) { msg.textContent = 'This copy cannot check for updates. Open the installed app or the website.'; return; }
+  btn.disabled = true; msg.textContent = 'Checking...';
+  try {
+    const url = location.href.split(/[?#]/)[0], r = await fetch(url, { cache: 'reload' });
+    if (!r.ok) throw new Error('status ' + r.status);
+    const m = /id="buildNo">([^<]+)</.exec(await r.text());
+    if (!m) throw new Error('no build number');
+    try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg) await reg.update(); } catch (_) {}
+    const next = m[1].trim();
+    if (next === cur) msg.textContent = 'You are on the newest build (' + cur.replace('Build ', '') + ').';
+    else { msg.textContent = next + ' is ready. Reloading...'; setTimeout(() => location.reload(), 900); }
+  } catch (_) { msg.textContent = 'Could not reach the update. Check your connection and try again.'; }
+  btn.disabled = false;
+}
+$('bUpd').addEventListener('click', checkUpdate);
+function syncNews() { $('newsBtn').hidden = !TESTER_NOTES; $('newsDot').hidden = !TESTER_NOTES || load('ice-seen-build', {}).v === NEWS[0].v; }
+syncNews();
 function showScreen(id) {
   for (const sc of document.querySelectorAll('#menu .screen')) sc.hidden = sc.id !== id;
   const m = SCREEN_MODE[id];
@@ -4507,6 +5062,7 @@ function showScreen(id) {
   if (id === 'scrSettings') { settingsKey = 'tone'; syncGlobalSeg(); renderSettingsHint(); }
   if (id === 'scrPlay') updateLadderBlurb();
   if (id === 'scrStats') renderStats();
+  if (id === 'scrNews') { renderNews(); $('updMsg').textContent = ''; }
   placePreview();
   const f = $(id).querySelector('.primary, .back, button'); if (f) f.focus({ preventScroll: true });
 }
@@ -4878,7 +5434,7 @@ window.addEventListener('popstate', e => {
     try { history.go(-backPos); } catch (e) { draining = false; }
   }
 });
-for (const ev of ['pointerup', 'keydown']) document.addEventListener(ev, () => setTimeout(() => { armBack(); if (settings.sound && settings.menuSound !== 'off') audioOn(); }, 0), true);
+for (const ev of ['pointerup', 'keydown']) document.addEventListener(ev, () => setTimeout(() => { armBack(); if (settings.sound && (settings.menuSound !== 'off' || mode === 'play')) audioOn(); }, 0), true);
 
 // ---- input ----
 let infoNode = null, infoTimer = 0;
@@ -5129,7 +5685,7 @@ window.addEventListener('keydown', e => {
   else if (e.key === 's') $('bSend').click();
   else if (e.key === 'm') $('bSound').click();
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); else audioKick(); });
 if (window.ResizeObserver) new ResizeObserver(layout).observe(document.body);
 else window.addEventListener('resize', layout);
 
@@ -5282,7 +5838,7 @@ function frame(nowMs) {
   stepFling(dt);
   if (G && fogOn()) computeFog();
   if (G) playSfx(nowMs, dt);
-  if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); mixTick(); }
+  if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); floeTick(); mixTick(); }
   const fsw = G ? fogSwap() : null;                 // under fog, bases out of sight are drawn as last seen
   try { draw(nowMs / 1000); if (mode === 'play' || mode === 'paused') drawMinimap(); } finally { fogRestore(fsw); }
   perfTick(nowMs, tDraw - tSim, performance.now() - tDraw);
@@ -5297,6 +5853,8 @@ if (PERF) window.__dbg = () => ({ mode, pvOnly, stack: stack.slice(), backPos, d
 if (PERF) { window.__coach = () => coach ? { i: coach.i, n: coach.lesson.steps.length, id: coach.lesson.id } : null; window.__hud = hud; window.__info = showInfo; window.__coachAim = () => coach ? { hl: coach.hlId, ph: $('coachPh').textContent } : null; window.__txt = () => ({ DIFF_INFO, PERSONA_INFO, SHAPE_INFO, SETTINGS_INFO, SPECIAL_INFO }); window.__mods = () => MODS; window.__sel = () => selBase; window.__coachTo = n => { coach.i = n; coach.g0 = G.t; coachShow(); }; }       // test hooks
 if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$('mm').hidden });
 if (PERF) window.__scr = (x, y) => toScreen(x, y);
+if (PERF) window.__chip = () => ({ on: !!CH.nodes, busy: CH.nodes ? Object.values(CH.nodes.ch).filter(c => c.off > AC.currentTime).length : 0 });   // sound-test hook
+if (PERF) window.__floe = () => ({ on: !!FL.nodes, v: FL.v, gain: FL.nodes ? FL.nodes.out.gain.value : 0 });   // sound-test hook
 if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; };          // tests: where a world point lands on screen
 requestAnimationFrame(frame);
 })();
