@@ -197,7 +197,8 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .ibtn { position: relative; float: right; width: 26px; height: 26px; margin-top: -4px; padding: 0; border-radius: 50%; border: 1px solid var(--faint); background: rgba(0,0,0,.35); color: var(--dim); font: italic 600 14px/24px Georgia, serif; }
 .ibtn::after { content: ''; position: absolute; inset: -9px; }
 .ibtn[aria-expanded="true"] { color: var(--ink); border-color: var(--dim); }
-.newsBtn { position: relative; display: inline-block; vertical-align: middle; width: 22px; height: 22px; margin: 0 0 0 -6px; padding: 0; border-radius: 50%; border: 1px solid var(--faint); background: rgba(0,0,0,.35); color: var(--dim); pointer-events: auto; opacity: .85; }
+.ver .bw { position: relative; display: inline-block; }
+.newsBtn { position: absolute; left: calc(100% - 8px); top: 50%; width: 22px; height: 22px; margin: -11px 0 0 0; padding: 0; border-radius: 50%; border: 1px solid var(--faint); background: rgba(0,0,0,.35); color: var(--dim); pointer-events: auto; opacity: .85; }
 .newsBtn[hidden] { display: none; }
 .newsBtn::after { content: ''; position: absolute; inset: -12px; }
 .newsBtn svg { display: block; width: 12px; height: 12px; margin: auto; }
@@ -324,6 +325,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .chcard b { font-size: 15px; font-weight: 600; }
 .chcard .d { grid-column: 1; font-size: 12.5px; color: var(--dim); line-height: 1.35; }
 .chcard .stars { grid-row: 1 / span 3; grid-column: 2; display: flex; gap: 3px; }
+.chcard.fresh { border-color: var(--blue); box-shadow: inset 0 0 0 1px var(--blue); }
 .chcard.locked { pointer-events: none; background: rgba(0,0,0,.2); border-color: #26262b; }
 .chcard.locked b, .chcard.locked .d, .chcard.locked .best { color: #4a4a50; }
 .chcard.locked .stars svg { stroke: #34343a; }
@@ -515,14 +517,14 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       </div>
       <div class="rec"><span id="rec"></span><button class="ibtn" id="aboutBtn" aria-label="About this game" aria-expanded="false">i</button></div>
       <p class="about aboutcard" id="aboutCard" hidden><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
-      <p class="newhere" id="newHere" hidden>New here? Check <b>How to play</b>.</p>
+      <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
     </div>
-    <div class="ver"><span class="build" id="buildNo">Build 47.1.3</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.5</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
       <button class="ghost big2" data-go="scrStats">Stats</button>
-      <button class="ghost big2" data-go="scrHelp">How to play</button>
+      <button class="ghost big2" data-go="scrHelp">How to Play</button>
     </div>
   </section>
 
@@ -651,7 +653,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
   </section>
 
   <section class="screen wide" id="scrHelp" hidden>
-    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>How to play</h2></header>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>How to Play</h2></header>
     <p class="specintro" id="practiceHint">One guided match that teaches the basics: sending troops, upgrades, special bases and taking a rival base. You can skip any step.</p>
     <h3 class="sub">Practice</h3>
     <div id="practiceList" class="ladder"></div>
@@ -5020,7 +5022,7 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
-  { v: '47.1.3', t: 'What\'s new page and update button', b: ['New: this What\'s new page, opened from the icon beside the build number. A dot on the icon shows when there is a build you have not read about yet.', 'New: a Check for update button below. It looks for a newer build and reloads into it.'] },
+  { v: '47.1.5', t: 'Tester tools and small touches', b: ['New: this What\'s new page, opened from the icon beside the build number, with a dot when there is a build you have not read about yet.', 'New: a Check for update button below. It looks for a newer build and reloads into it.', 'How to Play has a capital P, and its Guided match card has a permanent blue border so it is easy to spot (it says Completed once you have beaten it).'] },
   { v: '47.1.1', t: 'Sound fix', b: ['Sound now comes back by itself if your phone pauses it (a text, another app). Before, it could stay silent until you tapped a base.', 'If it cannot come back, a short message tells you to tap the screen.'] },
   { v: '47.1 and 47', t: 'Smarter rivals, tougher bases', b: ['Brutal rivals now keep troops home when you march at them, answer small raids, and strike any base you leave empty. Hard rivals do a lighter version. Easy and Normal play as before.', 'Health now also makes your bases tougher to break, and the rivals benefit too.', 'Hard rivals pick on you a little less.'] }
 ];
@@ -5700,7 +5702,7 @@ function updateNewHere() {                          // first launch: nudge towar
   $('newHere').hidden = !show; document.querySelector('#scrHome [data-go=scrHelp]').classList.toggle('nudge', show);
 }
 function renderPractice() {
-  $('practiceList').innerHTML = PRACTICE.map(p => `<button class="chcard" data-p="${p.id}"><b>${p.name}</b><span class="d">${p.desc}</span><span class="best">${practiceDone[p.id] ? '&#10003; Done' : 'Not tried yet'}</span></button>`).join('');
+  $('practiceList').innerHTML = PRACTICE.map(p => `<button class="chcard fresh" data-p="${p.id}"><b>${p.name}</b><span class="d">${p.desc}</span><span class="best">${practiceDone[p.id] ? '&#10003; Completed' : 'Not tried yet'}</span></button>`).join('');
   $('practiceHint').hidden = PRACTICE.some(p => practiceDone[p.id]);
   updateNewHere();
 }
