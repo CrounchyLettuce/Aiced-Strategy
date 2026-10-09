@@ -9,6 +9,9 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aiced">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,7 +33,7 @@ body {
   height: 100%; margin: 0; overflow: hidden; background: var(--bg); color: var(--ink);
   font-family: 'Chakra Petch', 'Bahnschrift', 'DIN Alternate', 'Segoe UI', system-ui, sans-serif;
   font-variant-numeric: tabular-nums; touch-action: none; overscroll-behavior: none;
-  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
 }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
@@ -129,6 +132,7 @@ body { position: relative; }
   background: rgba(0,0,0,.68); touch-action: pan-y;
 }
 .overlay[hidden] { display: none; }
+body:has(#end:not([hidden])) #hud { opacity: 0; transition: opacity .25s; }
 .screen, .endcard { margin: auto; width: min(100%, 380px); display: flex; flex-direction: column; gap: 14px; }
 .screen[hidden] { display: none !important; }
 .screen.wide { width: min(100%, 560px); }
@@ -527,7 +531,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.13</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.14</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -657,6 +661,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
   <section class="screen wide" id="scrNews" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>What's new</h2></header>
     <div class="updrow"><button id="bUpd" class="ghost small">Check for update</button><span id="updMsg" class="specintro" role="status" aria-live="polite"></span></div>
+    <p class="specintro" id="iosHint" hidden>On iPhone: for the full-screen game, tap the Share button in Safari, then Add to Home Screen, and open the game from that icon.</p>
     <p class="specintro">What changed in the latest builds. This page is only in the test versions.</p>
     <div id="newsBody"></div>
     <button id="newsMore" class="ghost small" hidden aria-expanded="false">Show older changes</button>
@@ -2205,6 +2210,7 @@ function hwBench() {                                   // best of three short ru
   return best;
 }
 let quality = startQ(), slowSince = 0, frameAvg = 16.7;
+const IOS = /iP(hone|od|ad)/.test(navigator.userAgent || '') || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);     // iPhone, iPod, or an iPad that calls itself a Mac
 let audFix = (() => { try { const v = JSON.parse(localStorage.getItem('ice-audio')); return v && Number.isInteger(v.a) && v.a >= 0 && v.a < 3 ? v.a : -1; } catch (e) { return -1; } })();   // -1 = Auto
 const AQ = () => audFix >= 0 ? audFix : quality >= 3 ? 2 : quality >= 2 ? 1 : 0;       // sound weight: 0 Full, 1 Light, 2 Lite (Auto follows the picture level)
 const AQ_IR = [1, 0.55, 0.35];                         // how long the echo tails are, against Full
@@ -5343,6 +5349,7 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '47.1.14', t: 'Ready for iPhone, and the AI strength in Spectate', b: ['Spectate now shows how strong the AI is, in one word next to the troop count, like your own matches do.', 'iPhone and iPad: the game now blocks the pinch zoom of the page itself, wakes the sound on the first touch, and fixes the screen size after turning the phone. There is a hint on this page for putting the game on the Home Screen.'] },
   { v: '47.1.13', t: 'Made for slower phones', b: ['The game now checks how fast your phone is the first time it opens, and starts a slower phone on a lighter picture and a lighter sound. Auto still steps down by itself if the game slows.', 'The sound has a lighter version too: a shorter echo and fewer notes at once, with the same feel. It follows the picture level on Auto.'] },
   { v: '47.1.12', t: 'Smoother Rime when zoomed out', b: ['The frost background no longer slows the game down when you zoom all the way out and pan around. Zoomed in it is still drawn as sharp lines.'] },
   { v: '47.1.11', t: 'A tidier What\'s new', b: ['Check for update is at the top of this page, and only the newest four builds show. A button opens the older ones.', 'The flash for an earned upgrade point reaches further and is brighter in every style, so you can see it when you are watching the troops and not the corner. It also fades out instead of cutting off.', 'The strength of the rivals (Easy, Normal, Hard, Brutal or Random) shows next to your troop count in every match you play.', 'The selection ring is bigger, so it sits outside the swirl of troops around a base, and its share gauge is easier to read: the part you send is bright and thick with a dot at its end, and the rest is dim.', 'Rime\'s frost looks like cracked ice again: the cracks bend, their tips thin out, and there is a faint haze behind the main ones. Still sharp when you zoom in.'] },
@@ -5609,7 +5616,7 @@ function startGame(watch, scen, modeKey, prac) {
   G.autoplay = watching;
   hudEl.classList.toggle('noup', !!G.mods.noup); hudEl.classList.toggle('fog', !!G.mods.fog);
   $('kothRow').hidden = !G.mods.koth; $('objRow').hidden = !G.scenarioId; initFog();
-  { const strength = !watching && !curPrac && !curScen && G.diffName ? (DIFF_LABEL[G.diffName] || '') : ''; $('diffTag').textContent = strength; }      // how strong the rivals are, in one word
+  { const strength = !curPrac && !curScen && G.diffName ? (DIFF_LABEL[G.diffName] || '') : ''; $('diffTag').textContent = strength; }      // how strong the rivals are, in one word
   startCoach();
   hasRules = !!G.scenarioId || G.overtimeOn || Object.values(G.mods).some(Boolean); rulesCache = '';
   peekUntil = G.scenarioId ? performance.now() + 7000 : 0;       // a challenge opens its rules for a few seconds, so you see the goals
@@ -6070,6 +6077,19 @@ window.addEventListener('keydown', e => {
   else if (e.key === 'm') $('bSound').click();
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); else audioKick(); });
+if (IOS) {                                            // everything below runs on iPhone and iPad only
+  for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, e => e.preventDefault(), { passive: false });     // Safari ignores "no zoom" in the viewport tag; this stops a two-finger pinch zooming the page
+  const wake = () => {                                // sound only starts after a touch, and Safari can leave it "suspended" or "interrupted": a touch wakes it with a silent blip
+    if (!AC || AC.state === 'running') return;
+    try { AC.resume(); const b = AC.createBuffer(1, 1, 22050), src = AC.createBufferSource(); src.buffer = b; src.connect(AC.destination); src.start(0); } catch (_) {}
+  };
+  for (const ev of ['touchend', 'click']) document.addEventListener(ev, wake, { capture: true, passive: true });
+  window.addEventListener('pageshow', audioKick);     // coming back to the game from the app switcher
+  const fix = () => { for (const ms of [60, 250, 700]) setTimeout(layout, ms); };      // Safari reports the new screen size late after turning the phone or when the toolbars move
+  window.addEventListener('orientationchange', fix);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fix);
+  if (!navigator.standalone) $('iosHint').hidden = false;
+}
 if (window.ResizeObserver) new ResizeObserver(layout).observe(document.body);
 else window.addEventListener('resize', layout);
 
@@ -6241,7 +6261,7 @@ if (PERF) window.__scr = (x, y) => toScreen(x, y);
 if (PERF) { window.__own = (id, o) => { G.nodes[id].owner = o; }; window.__tick = d => { G.t += d; }; window.__orders = () => (G ? G._orders | 0 : 0); window.__nodes = () => G.nodes.map(n => ({ id: n.id, x: n.x, y: n.y, o: n.owner })); window.__ring = () => ({ sel: selBase, valid: selValid(), ringNew, flashed: performance.now() - selFlash < 400, ghost: !!selGhost }); }
 if (PERF) window.__chip = () => ({ on: !!CH.nodes, busy: CH.nodes ? Object.values(CH.nodes.ch).filter(c => c.off > AC.currentTime).length : 0 });   // sound-test hook
 if (PERF) window.__floe = () => ({ on: !!FL.nodes, v: FL.v, gain: FL.nodes ? FL.nodes.out.gain.value : 0 });   // sound-test hook
-if (PERF) { window.__ir = () => ({ dr: DR.ir && DR.ir.duration, cs: CS.ir && CS.ir.duration, fl: Object.fromEntries(Object.entries(FL.ir).map(([k, v]) => [k, v.duration])), nodes: { dr: DR.nodes && DR.nodes.tier, cs: CS.nodes && CS.nodes.tier, fl: FL.nodes && FL.nodes.tier } }); window.__aq = () => AQ(); window.__hwset = ms => { HW.list = [ms, ms, ms]; HW.ms = ms; HW.done = true; save('ice-hw', { v: 3, list: HW.list }); if (qualFix < 0 && mode !== 'play') { quality = startQ(); layout(); } syncQual(); }; window.__hw = () => ({ ms: HW.ms, done: HW.done, tier: hwTier(), quality, aq: AQ(), audFix }); }
+if (PERF) { window.__ios = () => IOS; window.__ir = () => ({ dr: DR.ir && DR.ir.duration, cs: CS.ir && CS.ir.duration, fl: Object.fromEntries(Object.entries(FL.ir).map(([k, v]) => [k, v.duration])), nodes: { dr: DR.nodes && DR.nodes.tier, cs: CS.nodes && CS.nodes.tier, fl: FL.nodes && FL.nodes.tier } }); window.__aq = () => AQ(); window.__hwset = ms => { HW.list = [ms, ms, ms]; HW.ms = ms; HW.done = true; save('ice-hw', { v: 3, list: HW.list }); if (qualFix < 0 && mode !== 'play') { quality = startQ(); layout(); } syncQual(); }; window.__hw = () => ({ ms: HW.ms, done: HW.done, tier: hwTier(), quality, aq: AQ(), audFix }); }
 if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; updateView(); };          // tests: where a world point lands on screen
 requestAnimationFrame(frame);
 })();
