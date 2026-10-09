@@ -527,7 +527,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.11</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.13</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -671,6 +671,10 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <div class="seg tight" id="ringRow"><button data-r="new">New</button><button data-r="old">Old</button></div>
     <p class="specintro">Chip sound speed (test): New plays fewer, slower notes in a fight (up to about 5 a second). Old is the earlier speed.</p>
     <div class="seg tight" id="chipRow"><button data-c="new">New</button><button data-c="old">Old</button></div>
+    <p class="specintro">Sound weight: Full is the whole sound. Light and Lite use a shorter echo, fewer notes at once and fewer layers, for slower phones. Auto follows the picture level.</p>
+    <div class="seg tight" id="audRow"><button data-a="-1">Auto</button><button data-a="0">Full</button><button data-a="1">Light</button><button data-a="2">Lite</button></div>
+    <p class="specintro" id="hwNow" role="status" aria-live="polite"></p>
+    <button id="hwRun" class="ghost small">Run the phone check again</button>
   </section>
 
   <section class="screen wide" id="scrHelp" hidden>
@@ -2176,7 +2180,34 @@ const viewSize = () => rot ? [H, W] : [W, H];
 // stepped down automatically if the frame rate stays low, so a slower phone trades sharpness for smoothness.
 const DPR_MAX = Math.min(window.devicePixelRatio || 1, 2.5), QUALITY = [1, 0.8, 0.65, 0.5];
 let qualFix = (() => { try { const v = JSON.parse(localStorage.getItem('ice-quality')); return v && Number.isInteger(v.q) && v.q >= 0 && v.q < QUALITY.length ? v.q : -1; } catch (e) { return -1; } })();   // -1 = Auto
-let quality = qualFix >= 0 ? qualFix : 0, slowSince = 0, frameAvg = 16.7;
+// The phone check: a short speed test (done once, a moment after the first start, and kept) plus the memory figure Chrome gives. It picks where Auto starts:
+// tier 0 = Full picture and sound, 1 = Medium, 2 = Low. The limits are first guesses; the hidden quality screen shows what each phone measured.
+const HW_LIMITS = [30, 55];                            // ms for the test below: under 30 = tier 0, under 55 = tier 1, else tier 2
+const hwMedian = l => { if (!l.length) return 0; const a = [...l].sort((x, y) => x - y); return a[a.length >> 1]; };      // the middle reading: one bad launch cannot flip the level
+const HW = (() => {
+  let st = null; try { st = JSON.parse(localStorage.getItem('ice-hw')); } catch (e) {}
+  const list = st && st.v === 3 && Array.isArray(st.list) ? st.list.filter(Number.isFinite).slice(-5) : [];
+  return { list, ms: hwMedian(list), done: list.length > 0, mem: navigator.deviceMemory || 0, cores: navigator.hardwareConcurrency || 0 };
+})();
+function hwTier() {
+  let t = HW.done ? (HW.ms < HW_LIMITS[0] ? 0 : HW.ms < HW_LIMITS[1] ? 1 : 2) : 0;
+  if (HW.mem && HW.mem <= 2) t = Math.max(t, 1);                  // 2 GB or less: at least Medium
+  return t;
+}
+const startQ = () => qualFix >= 0 ? qualFix : [0, 2, 3][hwTier()];
+function hwBench() {                                   // best of three short runs, so one busy moment does not count against the phone
+  let best = 1e9;
+  for (let k = 0; k < 3; k++) {
+    const t0 = performance.now(); let x = 1.0001, sum = 0;
+    for (let i = 0; i < 600000; i++) { x = x * 1.0000001 + Math.sin(i * 0.001); sum += x % 3; }
+    best = Math.min(best, performance.now() - t0 + (sum > 1e300 ? 1 : 0));
+  }
+  return best;
+}
+let quality = startQ(), slowSince = 0, frameAvg = 16.7;
+let audFix = (() => { try { const v = JSON.parse(localStorage.getItem('ice-audio')); return v && Number.isInteger(v.a) && v.a >= 0 && v.a < 3 ? v.a : -1; } catch (e) { return -1; } })();   // -1 = Auto
+const AQ = () => audFix >= 0 ? audFix : quality >= 3 ? 2 : quality >= 2 ? 1 : 0;       // sound weight: 0 Full, 1 Light, 2 Lite (Auto follows the picture level)
+const AQ_IR = [1, 0.55, 0.35];                         // how long the echo tails are, against Full
 function watchFrameRate(frameMs, nowMs) {
   if (qualFix >= 0) { slowSince = 0; return; }                  // a held level never steps down by itself
   if (mode !== 'play' || document.hidden) { slowSince = 0; frameAvg = 16.7; return; }
@@ -3457,18 +3488,29 @@ function rimeFernStyles(R) {                         // per fern and branch dept
   const r = R.cw * 0.6, gm = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, r);   // the middle of the map a shade lighter, like moonlight on a frozen lake; ends at zero, so no edge
   gm.addColorStop(0, 'rgba(70,125,175,0.09)'); gm.addColorStop(1, 'rgba(20,50,90,0)'); R.mk = gm;
 }
+function rimeStrokeFerns(c, R, sc, vis) {            // draws the frost cracks on a canvas whose scale is sc screen px per world unit; vis culls (null = all)
+  const top = 3 - (quality >= 3 ? 2 : quality >= 1 ? 1 : 0);          // slower quality steps skip the finest branches
+  c.lineCap = 'round';
+  const lw = [0, 1, 2, 3].map(d => { const w = Math.max(0.8, 1.7 - d * 0.35); return Math.max(0.8, Math.min(w * R.k * sc, w * 2.2)) / sc; });   // thick as before at the usual zoom, but never fat bands when zoomed far in
+  for (const fr of R.list) {
+    if (vis && (fr.x1 < vis.x0 || fr.x0 > vis.x1 || fr.y1 < vis.y0 || fr.y0 > vis.y1)) continue;
+    if (quality < 2) { c.strokeStyle = fr.hs; c.lineWidth = 6 / sc; c.stroke(fr.hz); }
+    for (let d = 0; d <= top; d++) { c.strokeStyle = fr.st[d]; c.lineWidth = lw[d]; c.stroke(fr.paths[d]); }
+  }
+}
 function drawRimeBack(now) {                         // called with the world transform in place; leaves the screen transform behind
   const R = rimeBack(); rimeFernStyles(R); ctx.globalAlpha = 1;
   { const r = R.cw * 0.6, x0 = Math.max(W / 2 - r, VIS.x0), x1 = Math.min(W / 2 + r, VIS.x1), y0 = Math.max(H / 2 - r, VIS.y0), y1 = Math.min(H / 2 + r, VIS.y1);
     if (x1 > x0 && y1 > y0) { ctx.fillStyle = R.mk; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); } }
-  const top = 3 - (quality >= 3 ? 2 : quality >= 1 ? 1 : 0);          // slower quality steps skip the finest branches
-  ctx.lineCap = 'round';
-  const lw = [0, 1, 2, 3].map(d => { const w = Math.max(0.8, 1.7 - d * 0.35); return Math.max(0.8, Math.min(w * R.k * V.s, w * 2.2)) / V.s; });   // thick as before at the usual zoom, but never fat bands when zoomed far in
-  for (const fr of R.list) {
-    if (fr.x1 < VIS.x0 || fr.x0 > VIS.x1 || fr.y1 < VIS.y0 || fr.y0 > VIS.y1) continue;
-    if (quality < 2) { ctx.strokeStyle = fr.hs; ctx.lineWidth = 6 / V.s; ctx.stroke(fr.hz); }
-    for (let d = 0; d <= top; d++) { ctx.strokeStyle = fr.st[d]; ctx.lineWidth = lw[d]; ctx.stroke(fr.paths[d]); }
-  }
+  const sc = V.s * dpr, BS = 1.25;
+  if (sc <= BS) {                                                      // zoomed out: the whole frost is one picture, made once per map and quality step
+    if (!R.bmp || R.bq !== quality) {
+      if (!R.bmp) { R.bmp = document.createElement('canvas'); R.bmp.width = Math.ceil(R.cw * BS); R.bmp.height = Math.ceil(R.ch * BS); }
+      const bc = R.bmp.getContext('2d'); bc.setTransform(1, 0, 0, 1, 0, 0); bc.clearRect(0, 0, R.bmp.width, R.bmp.height);
+      bc.setTransform(BS, 0, 0, BS, -R.ox * BS, -R.oy * BS); rimeStrokeFerns(bc, R, BS, null); R.bq = quality;
+    }
+    ctx.drawImage(R.bmp, R.ox, R.oy, R.cw, R.ch);
+  } else rimeStrokeFerns(ctx, R, sc, VIS);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const w = Math.ceil(F.w) + 40, h = Math.ceil(F.h) + 40, mv = reduceMotion ? 0 : 1, PAR = [0.04, 0.1, 0.2];
   if (!RIME.snow || RIME.sw !== w || RIME.sh !== h || RIME.sq !== quality) {
@@ -4591,14 +4633,14 @@ const DR_STEP = 60 / 76 / 2, DR_SCALE = [0, 2, 4, 7, 9];
 const drMidi = d => 50 + 12 * Math.floor(d / 5) + DR_SCALE[((d % 5) + 5) % 5];
 const DR = { nodes: null, pool: [], bell: null, caps: [], deg: 8, next: 0, step: 0, ir: null, bedBuf: null };
 function drBuild(withBed) {
-  const t = AC.currentTime, N = { oscs: [] };
+  const t = AC.currentTime, N = { oscs: [], tier: AQ() };
   N.out = AC.createGain(); N.out.gain.value = 0.72; N.out.connect(outBus());          // sits level with Simple
   N.dry = AC.createGain(); N.dry.gain.value = 0.8; N.dry.connect(N.out);
-  if (!DR.ir) {                                       // the room: two seconds and a half of softly dulled, fading noise
-    const sr = AC.sampleRate, len = Math.floor(sr * 2.6); DR.ir = AC.createBuffer(2, len, sr);
+  if (!DR.ir || DR.irT !== AQ()) {                    // the room: two seconds and a half of softly dulled, fading noise (shorter on the lighter sound levels)
+    const sr = AC.sampleRate, k = AQ_IR[AQ()], len = Math.floor(sr * 2.6 * k); DR.ir = AC.createBuffer(2, len, sr); DR.irT = AQ();
     for (let c = 0; c < 2; c++) {
       const d = DR.ir.getChannelData(c); let lp = 0;
-      for (let i = 0; i < len; i++) { lp += (Math.random() * 2 - 1 - lp) * 0.35; d[i] = lp * Math.exp(-i / sr * 2.6) * Math.min(1, i / (sr * 0.02)); }
+      for (let i = 0; i < len; i++) { lp += (Math.random() * 2 - 1 - lp) * 0.35; d[i] = lp * Math.exp(-i / sr * 2.6 / k) * Math.min(1, i / (sr * 0.02)); }
     }
   }
   N.rev = AC.createConvolver(); N.rev.buffer = DR.ir; N.rev.connect(N.out);
@@ -4622,7 +4664,7 @@ function drPluck(N, t, midi, peak, pan, wet) {
   o1.connect(lp); o2.connect(g2); g2.connect(lp); lp.connect(g);
   let out = g; if (AC.createStereoPanner) { const pn = AC.createStereoPanner(); pn.pan.value = pan; g.connect(pn); out = pn; }
   const w = AC.createGain(); w.gain.value = wet; out.connect(N.dry); out.connect(w); w.connect(N.rev);
-  o1.start(t); o2.start(t); o1.stop(t + 1.2); o2.stop(t + 1.2);
+  o1.start(t); o1.stop(t + 1.2); if (AQ() < 2) { o2.start(t); o2.stop(t + 1.2); }          // the lightest level drops the shimmer overtone
 }
 function drBell(N, t, peak, pan) {                    // a low, slightly metallic bell: a base is being worn down
   let out = N.dry; if (AC.createStereoPanner) { const pn = AC.createStereoPanner(); pn.pan.value = pan; pn.connect(N.dry); pn.connect(N.rev); out = pn; }
@@ -4668,15 +4710,15 @@ function drSlot(N, t, heat) {
     walk();
     const d = mine || awatch() ? DR.deg : DR.deg - 5, pan = screenPan(e.x, e.y);   // other colors' fights sit an octave below
     drPluck(N, t, drMidi(d), mine ? 0.06 : awatch() ? 0.04 : 0.022, pan, mine ? 0.7 : 1.1);
-    if (n >= 6) drPluck(N, t + 0.02, drMidi(d + 2), mine ? 0.035 : 0.018, pan, 1.0);   // a big fight thickens into two voices
+    if (n >= 6 && AQ() < 1) drPluck(N, t + 0.02, drMidi(d + 2), mine ? 0.035 : 0.018, pan, 1.0);   // a big fight thickens into two voices
     DR.pool.length = 0;
   }
 }
 function driftClock() {
   const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'drift' && audible() && G && !G.over;
-  if (!want) {
+  if (!want || (DR.nodes && DR.nodes.tier !== AQ())) {         // off, or the sound level changed: let it fade (and rebuild below)
     if (DR.nodes) { const N = DR.nodes, t = AC.currentTime; DR.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.4); for (const o of N.oscs) o.stop(t + 2.5); }
-    DR.pool.length = 0; DR.caps.length = 0; DR.bell = null; return;
+    if (!want) { DR.pool.length = 0; DR.caps.length = 0; DR.bell = null; return; }
   }
   if (!DR.nodes) { DR.nodes = drBuild(true); DR.next = AC.currentTime + 0.05; DR.step = 0; }
   const N = DR.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
@@ -4865,13 +4907,13 @@ const CS_CHORDS = [                                   // pad voicings (MIDI), on
 ];
 const CS = { nodes: null, pool: [], sonar: null, caps: [], deg: 9, next: 0, step: 0, ir: null };
 function csIR() {                                     // a vast space: five seconds, bright, slowly fading
-  if (CS.ir && CS.ir.sampleRate === AC.sampleRate) return CS.ir;
-  const sr = AC.sampleRate, len = Math.floor(sr * 5); CS.ir = AC.createBuffer(2, len, sr);
-  for (let c = 0; c < 2; c++) { const d = CS.ir.getChannelData(c); let lp = 0; for (let i = 0; i < len; i++) { lp += (Math.random() * 2 - 1 - lp) * 0.6; d[i] = lp * Math.exp(-i / sr * 1.3) * Math.min(1, i / (sr * 0.06)); } }
+  if (CS.ir && CS.ir.sampleRate === AC.sampleRate && CS.irT === AQ()) return CS.ir;
+  const sr = AC.sampleRate, k = AQ_IR[AQ()], len = Math.floor(sr * 5 * k); CS.ir = AC.createBuffer(2, len, sr); CS.irT = AQ();
+  for (let c = 0; c < 2; c++) { const d = CS.ir.getChannelData(c); let lp = 0; for (let i = 0; i < len; i++) { lp += (Math.random() * 2 - 1 - lp) * 0.6; d[i] = lp * Math.exp(-i / sr * 1.3 / k) * Math.min(1, i / (sr * 0.06)); } }
   return CS.ir;
 }
 function csBuild(withBed) {
-  const t = AC.currentTime, N = { oscs: [] };
+  const t = AC.currentTime, N = { oscs: [], tier: AQ() };
   N.out = AC.createGain(); N.out.gain.value = 0.0001; N.out.gain.setTargetAtTime(CS_LEVEL, t, withBed ? 0.8 : 0.01); N.out.connect(outBus());
   N.dry = AC.createGain(); N.dry.gain.value = 0.5; N.dry.connect(N.out);
   N.rev = AC.createConvolver(); N.rev.buffer = csIR(); const rg = AC.createGain(); rg.gain.value = 0.6; N.rev.connect(rg); rg.connect(N.out);
@@ -4892,11 +4934,11 @@ function csBuild(withBed) {
     N.padLP.connect(N.padG); N.padG.connect(N.dry); N.padG.connect(N.wet);
     N.voices = [];
     const vib = AC.createOscillator(), vd = AC.createGain(); vib.frequency.value = 0.21; vd.gain.value = 7; vib.connect(vd); vib.start(t); N.oscs.push(vib);
-    CS_CHORDS[0].forEach((m, i) => {                  // five voices, each a sine and a shimmering triangle an octave up
+    CS_CHORDS[0].forEach((m, i) => { if (AQ() >= 2 && i >= 3) return;  /* Lite: three voices */                  // five voices, each a sine and a shimmering triangle an octave up
       const a = AC.createOscillator(), b = AC.createOscillator(), ga = AC.createGain(), gb = AC.createGain();
       a.frequency.value = hz(m); b.type = 'triangle'; b.frequency.value = hz(m) * 2; b.detune.value = (i % 2 ? 6 : -6); vd.connect(b.detune);
       ga.gain.value = 0.16; gb.gain.value = 0.035; a.connect(ga); b.connect(gb); ga.connect(N.padLP); gb.connect(N.padLP);
-      a.start(t); b.start(t); N.voices.push([a, b]); N.oscs.push(a, b);
+      a.start(t); N.voices.push([a, b]); N.oscs.push(a); if (AQ() < 1) { b.start(t); N.oscs.push(b); }      // Light and Lite leave out the shimmering octave voices
     });
   }
   return N;
@@ -4963,15 +5005,15 @@ function csSlot(N, t, heat) {
     CS.deg = Math.max(2, Math.min(19, CS.deg + st));
     const d = mine || awatch() ? CS.deg : CS.deg - 7, pan = screenPan(e.x, e.y);   // other colors' fights sound an octave below
     csPing(N, t, csMidi(d), mine ? 0.06 : awatch() ? 0.04 : 0.022, pan);
-    if (n >= 8 && heat > 0.5) csPing(N, t + CS_STEP / 2, csMidi(d + 4), mine ? 0.03 : 0.015, -pan);   // a big fight answers itself
+    if (n >= 8 && heat > 0.5 && AQ() < 1) csPing(N, t + CS_STEP / 2, csMidi(d + 4), mine ? 0.03 : 0.015, -pan);   // a big fight answers itself
     CS.pool.length = 0;
   }
 }
 function cosmosTick() {
   const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'cosmos' && audible() && G && !G.over;
-  if (!want) {
+  if (!want || (CS.nodes && CS.nodes.tier !== AQ())) {         // off, or the sound level changed: let it fade (and rebuild below)
     if (CS.nodes) { const N = CS.nodes, t = AC.currentTime; CS.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.5); for (const o of N.oscs) o.stop(t + 3); setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 6000); }
-    CS.pool.length = 0; CS.caps.length = 0; CS.sonar = null; return;
+    if (!want) { CS.pool.length = 0; CS.caps.length = 0; CS.sonar = null; return; }
   }
   if (!CS.nodes) { CS.nodes = csBuild(true); CS.next = AC.currentTime + 0.05; CS.step = 0; }
   const N = CS.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
@@ -5008,9 +5050,9 @@ const flp = () => FLP[settings.tone] || FLP.floe;
 const isFloe = () => settings.tone === 'floe';
 const FL = { nodes: null, v: 0, tAt: 0, cAt: 0, st: {}, win: null, ir: {} };
 function flIR(P) {                                    // a long echo whose tail darkens as it fades, with one faint far-off bounce per side
-  const key = settings.tone, sr = AC.sampleRate;
+  const key = settings.tone + ':' + AQ(), sr = AC.sampleRate, rv = P.rev * AQ_IR[AQ()];
   if (FL.ir[key] && FL.ir[key].sampleRate === sr) return FL.ir[key];
-  const len = Math.floor(sr * P.rev), pre = Math.floor(sr * 0.03), buf = AC.createBuffer(2, len, sr), tau = P.rev / 7.5;
+  const len = Math.floor(sr * rv), pre = Math.floor(sr * 0.03), buf = AC.createBuffer(2, len, sr), tau = rv / 7.5;
   for (let c = 0; c < 2; c++) {
     const d = buf.getChannelData(c); let l1 = 0, l2 = 0;
     for (let i = pre; i < len; i++) {
@@ -5033,7 +5075,7 @@ function flWind() {                                   // four seconds of soft no
   return (FL.win = b);
 }
 function flBuild(withBed) {
-  const P = flp(), t = AC.currentTime, N = { srcs: [], key: settings.tone, P };
+  const P = flp(), t = AC.currentTime, N = { srcs: [], key: settings.tone, P, tier: AQ() };
   N.out = AC.createGain(); N.out.gain.value = 0.0001; N.out.gain.setTargetAtTime(FL_LEVEL * P.lvl, t, withBed ? 0.6 : 0.01); N.out.connect(outBus());
   N.comp = AC.createDynamicsCompressor(); N.comp.threshold.value = -20; N.comp.ratio.value = 4; N.comp.connect(N.out);
   N.dry = AC.createGain(); N.dry.gain.value = P.dry; N.dry.connect(N.comp);
@@ -5053,14 +5095,14 @@ function flOut(N, g, pan, wet) {                      // pan, then dry, and a sh
   o.connect(N.dry); if (wet) { const w = AC.createGain(); w.gain.value = wet; o.connect(w); w.connect(N.wet); }
 }
 function flTink(N, t, f, peak, pan, wet, dull, force) {   // one soft glass note at f Hz; `dull` closes the filter further (the other colors' notes)
-  if (!force && FL.v > 12) return;
+  if (!force && FL.v > [12, 7, 4][AQ()]) return;                 // at most this many notes sounding at once
   FL.v++; setTimeout(() => { FL.v--; }, 600);
   const P = N.P, sum = AC.createGain(), lp = AC.createBiquadFilter(); f *= P.fs;
   sum.gain.value = peak; lp.type = 'lowpass'; lp.Q.value = 0.4; lp.frequency.value = Math.min(P.lp, dull || P.lp); sum.connect(lp);
   FL_PARTS.forEach(([r, a, share], k) => {
-    const fr = f * r; if (fr > 9000) return;
+    const fr = f * r; if (fr > 9000 || k >= [3, 2, 2][AQ()]) return;          // the lighter levels leave out the highest glass partial (Lite also the middle)
     const dur = P.len * share * (dull ? 0.75 : 1);
-    for (const det of (k ? [1] : [1, 1.0035])) {      // the lowest partial is doubled a hair apart, so it beats slowly like real glass
+    for (const det of (k || AQ() >= 1 ? [1] : [1, 1.0035])) {      // the lowest partial is doubled a hair apart, so it beats slowly like real glass
       const o = AC.createOscillator(), g = AC.createGain();
       o.frequency.value = fr * det; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a * (k || det === 1 ? 1 : 0.5), t + P.att);
       g.gain.exponentialRampToValueAtTime(0.0001, t + P.att + dur); o.connect(g); g.connect(sum); o.start(t); o.stop(t + P.att + dur + 0.02);
@@ -5069,7 +5111,7 @@ function flTink(N, t, f, peak, pan, wet, dull, force) {   // one soft glass note
   flOut(N, lp, pan, wet * P.wet);
 }
 function flCrack(N, t, hf, peak, pan) {               // lake ice: one to three falling chirps (sharper and higher as the base weakens), each with a faint tick
-  const P = N.P, n = 1 + ((Math.random() * 3) | 0); let at = t;
+  const P = N.P, n = Math.min(1 + ((Math.random() * 3) | 0), AQ() >= 2 ? 1 : 3); let at = t;
   for (let i = 0; i < n; i++) {
     const f0 = (700 + 2300 * (1 - hf)) * P.crk * (0.8 + 0.4 * Math.random()), f1 = f0 * (0.1 + 0.08 * Math.random()), d = 0.07 + 0.12 * Math.random(), pk = peak * (0.5 + 0.5 * Math.random());
     const o = AC.createOscillator(), lp = AC.createBiquadFilter(), g = AC.createGain(), k = AC.createBufferSource(), kg = AC.createGain(), kl = AC.createBiquadFilter();
@@ -5103,7 +5145,7 @@ function flFreeze(N, t, mine, pan, share) {           // a capture: a low hush s
   g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(pk, t + 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
   s.connect(lp); lp.connect(g); flOut(N, g, pan, 0.6); s.start(t, Math.random() * 0.2, 0.95);
   let at = t + 0.03, gap = 0.11;
-  [2.4, 2, 1.5, 1.2, 1].forEach(r => { flTink(N, at, 1000 * k * r, mine ? 0.06 : 0.028, pan + (Math.random() - 0.5) * 0.3, 1.0, mine ? 0 : 3000, true); at += gap; gap *= 1.3; });
+  (AQ() >= 1 ? [2.4, 1.5, 1] : [2.4, 2, 1.5, 1.2, 1]).forEach(r => { flTink(N, at, 1000 * k * r, mine ? 0.06 : 0.028, pan + (Math.random() - 0.5) * 0.3, 1.0, mine ? 0 : 3000, true); at += gap; gap *= 1.3; });
   flBoom(N, t, mine ? 0.07 : 0.035, pan, false);
 }
 function flGive(N, t) {                               // a color is out: the ice gives way
@@ -5115,7 +5157,7 @@ const flNote = (base, share) => base * (0.9 + 0.45 * share) * pick(FL_LADDER) / 
 function floeHits(ev) {
   if (!FL.nodes) return;
   const N = FL.nodes, t = AC.currentTime + 0.004 + Math.random() * 0.012, nowMs = performance.now(), h = HITS;
-  if (nowMs - FL.cAt > 105) {                         // base hits: a chirp, and a boom at each quarter of the base's health lost
+  if (nowMs - FL.cAt > [105, 150, 200][AQ()]) {                         // base hits: a chirp, and a boom at each quarter of the base's health lost
     const e = h.baseMine || h.base;
     if (e) {
       const mine = isMine(e), pan = screenPan(e.x, e.y), hf = e.hf === undefined ? 1 : e.hf;
@@ -5127,7 +5169,7 @@ function floeHits(ev) {
       FL.cAt = nowMs + Math.random() * 40;
     }
   }
-  if (nowMs - FL.tAt > 70) {                          // troop hits: a soft glass note; yours higher, the others lower and duller
+  if (nowMs - FL.tAt > [70, 100, 140][AQ()]) {                          // troop hits: a soft glass note; yours higher, the others lower and duller
     const e = pickShot(h, 0.65);
     if (e) {
       const mine = isMine(e), loud = mine || awatch(), f = flNote(loud ? 1150 : 560, flShare());
@@ -5143,7 +5185,7 @@ function floeOff() {
 }
 function floeTick() {
   const want = AC && AC.state === 'running' && settings.sound && isFloe() && audible() && G && !G.over;
-  if (FL.nodes && (!want || FL.nodes.key !== settings.tone)) floeOff();     // switching between Floe and Floe-1 rebuilds it
+  if (FL.nodes && (!want || FL.nodes.key !== settings.tone || FL.nodes.tier !== AQ())) floeOff();     // switching between Floe and Floe-1 rebuilds it
   if (!want) { FL.st = {}; return; }
   if (!FL.nodes) FL.nodes = flBuild(true);
   const N = FL.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
@@ -5301,6 +5343,8 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '47.1.13', t: 'Made for slower phones', b: ['The game now checks how fast your phone is the first time it opens, and starts a slower phone on a lighter picture and a lighter sound. Auto still steps down by itself if the game slows.', 'The sound has a lighter version too: a shorter echo and fewer notes at once, with the same feel. It follows the picture level on Auto.'] },
+  { v: '47.1.12', t: 'Smoother Rime when zoomed out', b: ['The frost background no longer slows the game down when you zoom all the way out and pan around. Zoomed in it is still drawn as sharp lines.'] },
   { v: '47.1.11', t: 'A tidier What\'s new', b: ['Check for update is at the top of this page, and only the newest four builds show. A button opens the older ones.', 'The flash for an earned upgrade point reaches further and is brighter in every style, so you can see it when you are watching the troops and not the corner. It also fades out instead of cutting off.', 'The strength of the rivals (Easy, Normal, Hard, Brutal or Random) shows next to your troop count in every match you play.', 'The selection ring is bigger, so it sits outside the swirl of troops around a base, and its share gauge is easier to read: the part you send is bright and thick with a dot at its end, and the rest is dim.', 'Rime\'s frost looks like cracked ice again: the cracks bend, their tips thin out, and there is a faint haze behind the main ones. Still sharp when you zoom in.'] },
   { v: '47.1.10', t: 'A sound for upgrade points, and a calmer Chip', b: ['Earning an upgrade point now plays a soft two-note chime in your sound style, in that style\'s own key. Settings has a Hear it button for it.', 'Chip plays fewer, slower notes in a fight, so the scale no longer rushes.'] },
   { v: '47.1.9', t: 'Sharper Rime frost', b: ['The cracked-ice background in Rime is drawn as fine lines now, so it stays sharp when you zoom in.', 'The frost fades in from the edge of the map and the hard edge is gone.', 'Every new match now starts with the send share back at 100%, so a 50% or 25% setting from the last game cannot surprise you.', 'The end-of-match card shows the build number and how you finished (your Health, Speed and Damage, time played, troops knocked out, most bases held).'] },
@@ -5350,12 +5394,22 @@ function syncQual() {
   $('qualNow').textContent = qualFix < 0 ? 'Auto: the game picks the level.' : 'Held at ' + QNAMES[qualFix] + ' (' + Math.round(QUALITY[qualFix] * 100) + '% sharpness).';
   for (const b of $('ringRow').children) b.setAttribute('aria-pressed', String((b.dataset.r === 'new') === ringNew));
   for (const b of $('chipRow').children) b.setAttribute('aria-pressed', String((b.dataset.c === 'new') === chipNew));
+  for (const b of $('audRow').children) b.setAttribute('aria-pressed', String(+b.dataset.a === audFix));
+  $('hwNow').textContent = 'Phone check: ' + (HW.done ? HW.ms.toFixed(1) + ' ms (last readings ' + HW.list.map(x => x.toFixed(0)).join(', ') + ')' : 'not run yet') + (HW.mem ? ', ' + HW.mem + ' GB memory' : '') + (HW.cores ? ', ' + HW.cores + ' cores' : '') + '. Auto starts at ' + QNAMES[[0, 2, 3][hwTier()]] + '. Now: picture ' + QNAMES[quality] + ', sound ' + ['Full', 'Light', 'Lite'][AQ()] + '.';
   $('qualNote').hidden = qualFix < 0; $('qualNote').textContent = qualFix < 0 ? '' : 'Picture quality held at ' + QNAMES[qualFix];
 }
 for (const b of $('qualRow').children) b.addEventListener('click', () => {
   qualFix = +b.dataset.q; save('ice-quality', { q: qualFix });
-  quality = qualFix >= 0 ? qualFix : 0; slowSince = 0; frameAvg = 16.7; layout(); syncQual();
+  quality = startQ(); slowSince = 0; frameAvg = 16.7; layout(); syncQual();
 });
+for (const b of $('audRow').children) b.addEventListener('click', () => { audFix = +b.dataset.a; save('ice-audio', { a: audFix }); syncQual(); });
+function runPhoneCheck() {                            // the speed test: on every start (a moment after launch), or again from the hidden screen; the last five readings are kept
+  HW.list = [...HW.list, hwBench()].slice(-5); HW.ms = hwMedian(HW.list); HW.done = true; save('ice-hw', { v: 3, list: HW.list });
+  if (qualFix < 0 && mode !== 'play') { quality = startQ(); slowSince = 0; frameAvg = 16.7; layout(); }
+  syncQual();
+}
+$('hwRun').addEventListener('click', () => runPhoneCheck());
+setTimeout(() => { if (!PERF) runPhoneCheck(); }, 1500);          // the test pages skip it, so a busy test machine cannot change their picture level;
 for (const b of $('chipRow').children) b.addEventListener('click', () => { chipNew = b.dataset.c === 'new'; save('ice-chiptest', { v: chipNew ? 'new' : 'old' }); syncQual(); });
 for (const b of $('ringRow').children) b.addEventListener('click', () => { ringNew = b.dataset.r === 'new'; save('ice-ringtest', { v: ringNew ? 'new' : 'old' }); syncQual(); });
 {                                                     // four taps on "Strategy" within two seconds open it
@@ -5920,7 +5974,7 @@ document.querySelectorAll('.seg[data-mode]').forEach(seg => seg.addEventListener
 document.querySelectorAll('.seg[data-glob]').forEach(seg => seg.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   const key = seg.dataset.glob; settings[key] = b.dataset.v; save('ice-settings', settings);
-  if (key === 'visual') { quality = qualFix >= 0 ? qualFix : 0; slowSince = 0; frameAvg = 16.7; layout(); }          // a new style gets a fresh shot at full resolution
+  if (key === 'visual') { quality = startQ(); slowSince = 0; frameAvg = 16.7; layout(); }          // a new style gets a fresh shot at full resolution
   if (key === 'tone') { audioOn(); syncSound(); lastPreview = 0; setTimeout(previewSound, 30); }
   if (key === 'menuSound' && b.dataset.v === 'on') audioOn();
   if (key === 'screen') applyScreenLock();
@@ -6187,6 +6241,7 @@ if (PERF) window.__scr = (x, y) => toScreen(x, y);
 if (PERF) { window.__own = (id, o) => { G.nodes[id].owner = o; }; window.__tick = d => { G.t += d; }; window.__orders = () => (G ? G._orders | 0 : 0); window.__nodes = () => G.nodes.map(n => ({ id: n.id, x: n.x, y: n.y, o: n.owner })); window.__ring = () => ({ sel: selBase, valid: selValid(), ringNew, flashed: performance.now() - selFlash < 400, ghost: !!selGhost }); }
 if (PERF) window.__chip = () => ({ on: !!CH.nodes, busy: CH.nodes ? Object.values(CH.nodes.ch).filter(c => c.off > AC.currentTime).length : 0 });   // sound-test hook
 if (PERF) window.__floe = () => ({ on: !!FL.nodes, v: FL.v, gain: FL.nodes ? FL.nodes.out.gain.value : 0 });   // sound-test hook
+if (PERF) { window.__ir = () => ({ dr: DR.ir && DR.ir.duration, cs: CS.ir && CS.ir.duration, fl: Object.fromEntries(Object.entries(FL.ir).map(([k, v]) => [k, v.duration])), nodes: { dr: DR.nodes && DR.nodes.tier, cs: CS.nodes && CS.nodes.tier, fl: FL.nodes && FL.nodes.tier } }); window.__aq = () => AQ(); window.__hwset = ms => { HW.list = [ms, ms, ms]; HW.ms = ms; HW.done = true; save('ice-hw', { v: 3, list: HW.list }); if (qualFix < 0 && mode !== 'play') { quality = startQ(); layout(); } syncQual(); }; window.__hw = () => ({ ms: HW.ms, done: HW.done, tier: hwTier(), quality, aq: AQ(), audFix }); }
 if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; updateView(); };          // tests: where a world point lands on screen
 requestAnimationFrame(frame);
 })();
