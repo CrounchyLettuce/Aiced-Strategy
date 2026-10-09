@@ -48,9 +48,11 @@ body { position: relative; }
 }
 #stats { top: 8px; left: 10px; width: 136px; padding: 8px 9px; display: flex; flex-direction: column; gap: 7px; }
 #ctrl { top: 8px; right: 10px; display: flex; gap: 6px; }
-#upg { left: 10px; bottom: 8px; width: 336px; padding: 7px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+#upg { left: 10px; bottom: 8px; width: 336px; padding: 7px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; transition: box-shadow .9s ease-out, border-color .9s ease-out; }
 #upg .xp { grid-column: 1 / -1; }
-#upg.ptsGlow { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue), 0 0 16px rgba(53,119,255,.55); transition: box-shadow .4s, border-color .4s; }
+#diffTag { margin-left: 8px; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; align-self: center; }
+#diffTag:empty { display: none; }
+#upg.ptsGlow { border-color: var(--blue); box-shadow: 0 0 0 2px var(--blue), 0 0 30px rgba(53,119,255,.85), 0 0 70px rgba(53,119,255,.4); transition: box-shadow .3s ease-out, border-color .3s ease-out; }
 #ptsFx { position: fixed; z-index: 2; pointer-events: none; }
 #mapWrap { position: absolute; right: 10px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; pointer-events: none; }
 #mapWrap > * { pointer-events: auto; }
@@ -206,6 +208,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .newsBtn svg { display: block; width: 12px; height: 12px; margin: auto; }
 .newsBtn i { position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; border-radius: 50%; background: #3577ff; box-shadow: 0 0 0 2px #000; }
 .updrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+#newsMore { align-self: flex-start; }
 .updrow .ghost { flex: none; }
 #newsBody { display: flex; flex-direction: column; gap: 14px; }
 #newsBody h3 { margin: 0 0 6px; font-size: 14px; font-weight: 500; color: var(--ink); }
@@ -467,7 +470,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <button class="statbtn" id="statsBtn" aria-expanded="false" aria-controls="rivals" title="Show the rules of this match">
       <span class="army">
         <svg class="tri" viewBox="0 0 12 12" aria-hidden="true"><path id="triPath" d="M6 1 11 11H1Z" fill="#3577ff"/></svg>
-        <span id="army">0</span><span id="cap" class="dim">/20</span>
+        <span id="army">0</span><span id="cap" class="dim">/20</span><span id="diffTag" class="dim"></span>
         <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
       </span>
       <span class="terr" id="terr">
@@ -524,7 +527,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.10</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.11</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -653,9 +656,10 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 
   <section class="screen wide" id="scrNews" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>What's new</h2></header>
+    <div class="updrow"><button id="bUpd" class="ghost small">Check for update</button><span id="updMsg" class="specintro" role="status" aria-live="polite"></span></div>
     <p class="specintro">What changed in the latest builds. This page is only in the test versions.</p>
     <div id="newsBody"></div>
-    <div class="updrow"><button id="bUpd" class="ghost small">Check for update</button><span id="updMsg" class="specintro" role="status" aria-live="polite"></span></div>
+    <button id="newsMore" class="ghost small" hidden aria-expanded="false">Show older changes</button>
   </section>
 
   <section class="screen wide" id="scrQual" hidden>
@@ -3243,35 +3247,38 @@ function hexFrac(g, x, y, r, f) {                     // the first f of a hexago
 function drawSelRing(sn, now, kk, al) {                       // called with the world transform in place; line widths are in screen pixels (k * u)
   const g = ctx, u = 1 / V.s, f = settings.send, col = TEAM_COLORS[PLAYER], mv = reduceMotion ? 0 : 1, TAU = Math.PI * 2, T = -Math.PI / 2, E = T + f * TAU;
   const flash = Math.max(0, 1 - (performance.now() - selFlash) / 380), cal = isAtlas(), br = cal ? 0 : Math.sin(now * (isOver() ? 8 : 5)) * mv;
-  const R = Math.max(26, 32 * u) * (1 + 0.05 * br) * (kk || 1), hx = sn.x, hy = sn.y;
+  const R = Math.max(40, 34 * u) * (1 + 0.05 * br) * (kk || 1), hx = sn.x, hy = sn.y;      // Pixel marks its selection another way and is not drawn here
   const arc = (r, a0, a1) => { g.beginPath(); g.arc(hx, hy, r, a0, a1); g.stroke(); };
+  const rest = (r, c, a, w) => { if (f < 0.999) { g.strokeStyle = hexA(c, a); g.lineWidth = w * u; arc(r, E, T + TAU); } };      // the share you do not send: dim
+  const cap = (r, c, rad) => { g.fillStyle = c; g.beginPath(); g.arc(hx + Math.cos(E) * r, hy + Math.sin(E) * r, rad * u, 0, TAU); g.fill(); };      // a dot where the lit part ends
   g.save(); g.setLineDash([]); g.lineCap = 'round'; g.lineJoin = 'round'; if (al != null) g.globalAlpha = al;
   if (isRime()) {                                     // a hexagon of ice; the lit edges are the share you send
     g.strokeStyle = hexA('#bfe6ff', 0.4 + 0.3 * flash); g.lineWidth = 1.3 * u; hexFrac(g, hx, hy, R, 1);
     g.strokeStyle = hexA(col, 1); g.lineWidth = 3.2 * u; hexFrac(g, hx, hy, R, f);
     g.fillStyle = hexA('#e8f6ff', 0.85); for (let i = 0; i < 6; i++) { const a = T + i * Math.PI / 3; g.beginPath(); g.arc(hx + Math.cos(a) * R, hy + Math.sin(a) * R, 1.8 * u, 0, TAU); g.fill(); }
   } else if (isNebula()) {                            // a thin orbit with a bright body travelling round it, and spikes like a star
-    g.strokeStyle = hexA(col, 0.3); g.lineWidth = 5.5 * u; arc(R, 0, TAU);
-    g.strokeStyle = hexA('#cfe0ff', 0.35 + 0.3 * flash); g.lineWidth = 1 * u; arc(R, 0, TAU);
-    g.strokeStyle = hexA(col, 1); g.lineWidth = 2.2 * u; arc(R, T, E);
+    g.strokeStyle = hexA(col, 0.3); g.lineWidth = 6 * u; arc(R, T, E);
+    rest(R, '#cfe0ff', 0.2 + 0.2 * flash, 1);
+    g.strokeStyle = hexA('#cfe0ff', 0.45 + 0.3 * flash); g.lineWidth = 1 * u; arc(R, T, E);
+    g.strokeStyle = hexA(col, 1); g.lineWidth = 3.4 * u; arc(R, T, E); cap(R, '#ffffff', 3);
     g.strokeStyle = hexA('#ffffff', 0.45); g.lineWidth = 1 * u; g.beginPath(); g.moveTo(hx - R * 1.35, hy); g.lineTo(hx + R * 1.35, hy); g.moveTo(hx, hy - R * 1.35); g.lineTo(hx, hy + R * 1.35); g.stroke();
     const a = now * 1.4 * mv + T; g.fillStyle = '#ffffff'; g.beginPath(); g.arc(hx + Math.cos(a) * R, hy + Math.sin(a) * R, 2.3 * u, 0, TAU); g.fill();
   } else if (cal) {                                   // Atlas: calm and exact, with four ticks
-    g.strokeStyle = hexA(col, 0.45); g.lineWidth = 1.4 * u; arc(R, 0, TAU);
-    g.strokeStyle = hexA(col, 1); g.lineWidth = 3 * u; arc(R, T, E);
+    rest(R, col, 0.28, 1.2);
+    g.strokeStyle = hexA(col, 1); g.lineWidth = 4 * u; arc(R, T, E); cap(R, '#ffffff', 3);
     g.strokeStyle = hexA(col, 0.9); g.lineWidth = 1.6 * u; g.beginPath();
     for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2; g.moveTo(hx + Math.cos(a) * (R + 3 * u), hy + Math.sin(a) * (R + 3 * u)); g.lineTo(hx + Math.cos(a) * (R + 9 * u), hy + Math.sin(a) * (R + 9 * u)); }
     g.stroke();
   } else if (isOver()) {                              // Overload: louder, two rings, glowing
     g.globalCompositeOperation = 'lighter';
-    g.strokeStyle = hexA(col, 0.2 + 0.4 * flash); g.lineWidth = 12 * u; arc(R, 0, TAU);
-    g.strokeStyle = hexA(col, 0.5); g.lineWidth = 2 * u; arc(R, 0, TAU);
-    g.strokeStyle = hexA('#ffffff', 0.95); g.lineWidth = 4.2 * u; arc(R, T, E);
+    g.strokeStyle = hexA(col, 0.2 + 0.4 * flash); g.lineWidth = 12 * u; arc(R, T, E);
+    rest(R, col, 0.3, 1.6);
+    g.strokeStyle = hexA('#ffffff', 0.95); g.lineWidth = 4.6 * u; arc(R, T, E); cap(R, '#ffffff', 3.6);
     g.strokeStyle = hexA(col, 0.5 + 0.3 * br); g.lineWidth = 1.5 * u; arc(R * 1.28, 0, TAU);
   } else {                                            // Classic: a soft halo, a faint track and a bright gauge
-    g.strokeStyle = hexA(col, 0.22 + 0.4 * flash); g.lineWidth = 8 * u; arc(R, 0, TAU);
-    g.strokeStyle = hexA(col, 0.4); g.lineWidth = 1.6 * u; arc(R, 0, TAU);
-    g.strokeStyle = hexA(col, 1); g.lineWidth = 3.4 * u; arc(R, T, E);
+    g.strokeStyle = hexA(col, 0.22 + 0.4 * flash); g.lineWidth = 8 * u; arc(R, T, E);
+    rest(R, col, 0.22, 1.3);
+    g.strokeStyle = hexA(col, 1); g.lineWidth = 4.2 * u; arc(R, T, E); cap(R, '#ffffff', 3);
   }
   if (flash > 0 && !cal) { g.strokeStyle = hexA(col, flash * 0.8); g.lineWidth = 2 * u; arc(R * (1 + 0.5 * (1 - flash)), 0, TAU); }
   g.restore();
@@ -3411,19 +3418,22 @@ function rimeHex(x, y, r) {                          // a closed hexagon, point 
 function rimeBack() {                                // frost creeping in from the edges: vector ferns in world space, built once per map
   if (RIME.g === G && RIME.back) return RIME.back;
   const cw = W * 1.1, ch = H * 1.1, ox = -W * 0.05, oy = -H * 0.05, k = cw / 1024, fade = cw * 0.07;
-  const rnd = rimeRng(((G.seed || 7) * 2654435761) >>> 0), list = [];
+  const rnd = rimeRng(((G.seed || 7) * 2654435761) >>> 0), rk = rimeRng(((G.seed || 7) * 40503 + 977) >>> 0), list = [];     // rk: the kinks, from their own stream so the pattern of the frost stays the same
   for (let i = 0; i < 30; i++) {                     // each fern starts on an edge and grows inward (same random order as before, so the same frost)
     const side = i % 4, t = rnd(), len = (0.07 + rnd() * 0.11) * cw;
     const x = ox + (side === 0 ? t * cw : side === 1 ? cw : side === 2 ? t * cw : 0), y = oy + (side === 0 ? 0 : side === 1 ? t * ch : side === 2 ? ch : t * ch);
     const a0 = (side === 0 ? Math.PI / 2 : side === 1 ? Math.PI : side === 2 ? -Math.PI / 2 : 0) + (rnd() - 0.5) * 0.9;
-    const fr = { paths: [new Path2D(), new Path2D(), new Path2D(), new Path2D()], st: null, x0: x, x1: x, y0: y, y1: y };
+    const fr = { paths: [new Path2D(), new Path2D(), new Path2D(), new Path2D()], hz: new Path2D(), st: null, x0: x, x1: x, y0: y, y1: y };
     const fern = (px, py, an, ln, d) => {
       if (ln < 6 * k || d > 3) return;
-      const x2 = px + Math.cos(an) * ln, y2 = py + Math.sin(an) * ln;
-      fr.paths[d].moveTo(px, py); fr.paths[d].lineTo(x2, y2);
-      fr.x0 = Math.min(fr.x0, x2); fr.x1 = Math.max(fr.x1, x2); fr.y0 = Math.min(fr.y0, y2); fr.y1 = Math.max(fr.y1, y2);
-      for (const f of [0.38, 0.7]) {
-        const bx = px + (x2 - px) * f, by = py + (y2 - py) * f;
+      const x2 = px + Math.cos(an) * ln, y2 = py + Math.sin(an) * ln, nx = -Math.sin(an), ny = Math.cos(an);
+      const j1 = (rk() - 0.5) * 0.14 * ln, j2 = (rk() - 0.5) * 0.14 * ln;                       // the crack bends at each branch point, like ice does
+      const pts = [[px + (x2 - px) * 0.38 + nx * j1, py + (y2 - py) * 0.38 + ny * j1], [px + (x2 - px) * 0.7 + nx * j2, py + (y2 - py) * 0.7 + ny * j2]];
+      const P = fr.paths[d], T = fr.paths[Math.min(3, d + 1)];                                  // the last stretch is drawn as thin as the next branch level: the tip tapers
+      P.moveTo(px, py); P.lineTo(pts[0][0], pts[0][1]); P.lineTo(pts[1][0], pts[1][1]); T.moveTo(pts[1][0], pts[1][1]); T.lineTo(x2, y2);
+      if (d < 2) { fr.hz.moveTo(px, py); fr.hz.lineTo(pts[0][0], pts[0][1]); fr.hz.lineTo(pts[1][0], pts[1][1]); fr.hz.lineTo(x2, y2); }
+      fr.x0 = Math.min(fr.x0, x2, pts[0][0], pts[1][0]); fr.x1 = Math.max(fr.x1, x2, pts[0][0], pts[1][0]); fr.y0 = Math.min(fr.y0, y2, pts[0][1], pts[1][1]); fr.y1 = Math.max(fr.y1, y2, pts[0][1], pts[1][1]);
+      for (const [bx, by] of pts) {
         fern(bx, by, an + 1.0 + (rnd() - 0.5) * 0.25, ln * 0.42, d + 1); fern(bx, by, an - 1.0 + (rnd() - 0.5) * 0.25, ln * 0.42, d + 1);
       }
       if (d < 2) fern(x2, y2, an + (rnd() - 0.5) * 0.3, ln * 0.5, d + 1);
@@ -3438,6 +3448,7 @@ function rimeFernStyles(R) {                         // per fern and branch dept
   if (R.mk) return;
   for (const fr of R.list) {
     fr.st = [];
+    { const gh = ctx.createLinearGradient(fr.ax, fr.ay, fr.bx, fr.by); gh.addColorStop(0, 'rgba(150,205,255,0)'); gh.addColorStop(1, 'rgba(150,205,255,0.05)'); fr.hs = gh; }   // the haze behind the main cracks
     for (let d = 0; d < 4; d++) {
       const gr = ctx.createLinearGradient(fr.ax, fr.ay, fr.bx, fr.by), al = 0.17 - d * 0.035;
       gr.addColorStop(0, 'rgba(190,226,255,0)'); gr.addColorStop(1, 'rgba(190,226,255,' + al.toFixed(3) + ')'); fr.st.push(gr);
@@ -3455,6 +3466,7 @@ function drawRimeBack(now) {                         // called with the world tr
   const lw = [0, 1, 2, 3].map(d => { const w = Math.max(0.8, 1.7 - d * 0.35); return Math.max(0.8, Math.min(w * R.k * V.s, w * 2.2)) / V.s; });   // thick as before at the usual zoom, but never fat bands when zoomed far in
   for (const fr of R.list) {
     if (fr.x1 < VIS.x0 || fr.x0 > VIS.x1 || fr.y1 < VIS.y0 || fr.y0 > VIS.y1) continue;
+    if (quality < 2) { ctx.strokeStyle = fr.hs; ctx.lineWidth = 6 / V.s; ctx.stroke(fr.hz); }
     for (let d = 0; d <= top; d++) { ctx.strokeStyle = fr.st[d]; ctx.lineWidth = lw[d]; ctx.stroke(fr.paths[d]); }
   }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -4001,15 +4013,15 @@ function setStyle(el, prop, v) { const k = '_s' + prop; if (el[k] !== v) { el[k]
 function setClass(el, cls, on) { const k = '_c' + cls; if (el[k] !== on) { el[k] = on; el.classList.toggle(cls, on); } }
 // ---- the point-earned pulse: a burst around the upgrade panel, in the language of each visual style ----
 // Points that follow each other within 0.9 s join ONE burst (it gets stronger and lasts a little longer; nothing is queued and nothing repeats).
-const PF = { cv: null, g: null, ps: [], fx: [], raf: 0, t2: 0, lastPt: 0, strength: 0, starts: 0, glowT: 0, R: 1, w: 0, h: 0, M: 48, chimes: [] };
+const PF = { cv: null, g: null, ps: [], fx: [], raf: 0, t2: 0, lastPt: 0, strength: 0, starts: 0, glowT: 0, R: 1, w: 0, h: 0, M: 120, chimes: [] };
 const PF_CAP = 90, PF_Q = [1, 0.7, 0.45, 0.25];
 const PF_STYLE = {
-  classic:  { n: 26, kind: 'streak', cols: ['#3577ff', '#8fb3ff', '#ffffff'], w: 1.6, v: [70, 150], life: [0.45, 0.85], len: 0.07 },
-  overload: { n: 48, kind: 'streak', cols: ['#ffffff', '#ffd24a', '#ff7a3d', '#3577ff'], w: 2.6, v: [110, 230], life: [0.4, 0.8], len: 0.09, add: true, flash: true },
+  classic:  { n: 34, kind: 'streak', cols: ['#3577ff', '#8fb3ff', '#ffffff'], w: 2.2, v: [130, 290], life: [0.55, 1.0], len: 0.08 },
+  overload: { n: 56, kind: 'streak', cols: ['#ffffff', '#ffd24a', '#ff7a3d', '#3577ff'], w: 3.2, v: [200, 420], life: [0.5, 0.95], len: 0.1, add: true, flash: true },
   atlas:    { n: 0, rings: true },
-  pixel:    { n: 26, kind: 'pixel', cols: ['#3577ff', '#8fb3ff', '#ffffff'], v: [40, 100], life: [0.5, 0.9] },
-  nebula:   { n: 34, kind: 'dust', cols: ['#ffffff', '#cfe0ff', '#ffe6c4', '#b8ccff'], v: [10, 38], life: [1, 1.7], flare: true },
-  rime:     { n: 16, kind: 'shard', cols: ['#bfe6ff', '#e8f6ff', '#8fd0ff'], v: [45, 110], life: [0.8, 1.25], hex: true }
+  pixel:    { n: 34, kind: 'pixel', cols: ['#3577ff', '#8fb3ff', '#ffffff'], v: [90, 210], life: [0.6, 1.05] },
+  nebula:   { n: 44, kind: 'dust', cols: ['#ffffff', '#cfe0ff', '#ffe6c4', '#b8ccff'], v: [24, 80], life: [1.2, 2.0], flare: true },
+  rime:     { n: 22, kind: 'shard', cols: ['#bfe6ff', '#e8f6ff', '#8fd0ff'], v: [90, 220], life: [1.0, 1.5], hex: true }
 };
 const pfRnd = (a, b) => a + Math.random() * (b - a);
 function pfCanvas() {
@@ -4104,8 +4116,8 @@ function pfSpawn(merged) {
   const add = o => { if (PF.fx.length < 12) PF.fx.push(Object.assign({ t0: performance.now(), pw, ph, cx, cy, gain }, o)); };
   if (merged && PF.fx.length) { for (const o of PF.fx) { o.gain = gain; o.t0 += 250; } }   // a later point only makes the same rings, flare or hexagon bigger and longer
   else {
-    if (st.flash) add({ k: 'ring', dur: 0.55, grow: 22, w: 3.5, col: '#ffd24a', lite: true });
-    if (st.rings) { add({ k: 'ring', dur: 0.7, grow: 20, w: 1.5, col: '#3577ff' }); add({ k: 'ring', dur: 0.7, grow: 30, w: 1.2, col: '#ffffff', delay: 0.12 }); }
+    if (st.flash) add({ k: 'ring', dur: 0.65, grow: 54, w: 4.5, col: '#ffd24a', lite: true });
+    if (st.rings) { add({ k: 'ring', dur: 0.8, grow: 50, w: 2.6, col: '#3577ff' }); add({ k: 'ring', dur: 0.8, grow: 76, w: 2, col: '#ffffff', delay: 0.12 }); add({ k: 'ring', dur: 0.9, grow: 100, w: 1.4, col: '#8fb3ff', delay: 0.24 }); }
     if (st.flare) add({ k: 'flare', dur: 0.9 });
     if (st.hex) add({ k: 'hex', dur: 0.9 });
   }
@@ -4128,14 +4140,14 @@ function pfTick(ts) {
     const f = t / o.dur; g.globalCompositeOperation = o.lite ? 'lighter' : 'source-over';
     if (o.k === 'ring') pfRing(g, o, f);
     else if (o.k === 'flare') {                       // Nebula: a small star that blooms on the counter, with diffraction spikes
-      const e = 1 - (1 - f) * (1 - f), a = Math.max(0, 1 - f), gr = g.createRadialGradient(o.cx, o.cy, 0, o.cx, o.cy, 24 * o.gain);
-      gr.addColorStop(0, 'rgba(207,224,255,' + (0.55 * a).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(207,224,255,0)');
-      g.globalAlpha = 1; g.fillStyle = gr; g.fillRect(o.cx - 30, o.cy - 30, 60, 60);
-      g.globalAlpha = a; g.strokeStyle = '#ffffff'; g.lineWidth = 1; const L = (8 + 24 * e) * o.gain;
+      const e = 1 - (1 - f) * (1 - f), a = Math.max(0, 1 - f), gr = g.createRadialGradient(o.cx, o.cy, 0, o.cx, o.cy, 56 * o.gain);
+      gr.addColorStop(0, 'rgba(207,224,255,' + (0.8 * a).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(207,224,255,0)');
+      g.globalAlpha = 1; g.fillStyle = gr; g.fillRect(o.cx - 70, o.cy - 70, 140, 140);
+      g.globalAlpha = a; g.strokeStyle = '#ffffff'; g.lineWidth = 1.6; const L = (14 + 60 * e) * o.gain;
       g.beginPath(); g.moveTo(o.cx - L, o.cy); g.lineTo(o.cx + L, o.cy); g.moveTo(o.cx, o.cy - L); g.lineTo(o.cx, o.cy + L); g.stroke();
     } else if (o.k === 'hex') {                       // Rime: a hexagon of ice racing outward from the counter
-      const e = 1 - (1 - f) * (1 - f), rad = (8 + 32 * e) * o.gain;
-      g.globalAlpha = Math.max(0, 1 - f) * 0.9; g.strokeStyle = '#bfe6ff'; g.lineWidth = 1.5; g.beginPath();
+      const e = 1 - (1 - f) * (1 - f), rad = (14 + 70 * e) * o.gain;
+      g.globalAlpha = Math.max(0, 1 - f) * 0.95; g.strokeStyle = '#d8f0ff'; g.lineWidth = 2.4; g.beginPath();
       for (let j = 0; j < 6; j++) { const an = -Math.PI / 2 + j * Math.PI / 3; g[j ? 'lineTo' : 'moveTo'](o.cx + Math.cos(an) * rad, o.cy + Math.sin(an) * rad); }
       g.closePath(); g.stroke();
     }
@@ -4149,13 +4161,13 @@ function pfTick(ts) {
     if (p.kind === 'streak') {
       g.globalAlpha = a; g.lineWidth = p.st.w; g.lineCap = 'round'; g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.vx * p.st.len, p.y - p.vy * p.st.len); g.stroke();
     } else if (p.kind === 'pixel') {                  // square pixels on a 3 px grid, blinking out at the end
-      if (f > 0.75 && ((p.age * 16) | 0) % 2) continue;
-      g.globalAlpha = 1; g.fillRect(Math.round(p.x / 3) * 3, Math.round(p.y / 3) * 3, 3, 3);
+      g.globalAlpha = f > 0.85 ? 0.35 : f > 0.7 ? 0.65 : 1;                       // the last pixels dim in steps instead of blinking out
+      g.fillRect(Math.round(p.x / 3) * 3, Math.round(p.y / 3) * 3, 4, 4);
     } else if (p.kind === 'dust') {
       g.globalAlpha = a * (0.6 + 0.4 * Math.sin(p.age * 14 + p.ph)); g.beginPath(); g.arc(p.x, p.y, 0.9 + (p.ph % 1) * 0.9, 0, 6.283); g.fill();
     } else {                                          // shard: a long kite of ice, slowly turning
       p.rot += p.vr * dt; g.globalAlpha = a; g.save(); g.translate(p.x, p.y); g.rotate(p.rot);
-      g.beginPath(); g.moveTo(7, 0); g.lineTo(-0.5, 2.6); g.lineTo(-5, 0); g.lineTo(-0.5, -2.6); g.closePath(); g.fill(); g.restore();
+      g.scale(1.5, 1.5); g.beginPath(); g.moveTo(7, 0); g.lineTo(-0.5, 2.6); g.lineTo(-5, 0); g.lineTo(-0.5, -2.6); g.closePath(); g.fill(); g.restore();
     }
   }
   g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
@@ -5289,6 +5301,7 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '47.1.11', t: 'A tidier What\'s new', b: ['Check for update is at the top of this page, and only the newest four builds show. A button opens the older ones.', 'The flash for an earned upgrade point reaches further and is brighter in every style, so you can see it when you are watching the troops and not the corner. It also fades out instead of cutting off.', 'The strength of the rivals (Easy, Normal, Hard, Brutal or Random) shows next to your troop count in every match you play.', 'The hidden graphics screen can also be opened with four quick taps on the word Settings, so you can open it in the middle of a match.', 'The selection ring is bigger, so it sits outside the swirl of troops around a base, and its share gauge is easier to read: the part you send is bright and thick with a dot at its end, and the rest is dim.', 'Rime\'s frost looks like cracked ice again: the cracks bend, their tips thin out, and there is a faint haze behind the main ones. Still sharp when you zoom in.'] },
   { v: '47.1.10', t: 'A sound for upgrade points, and a calmer Chip', b: ['Earning an upgrade point now plays a soft two-note chime in your sound style, in that style\'s own key. Settings has a Hear it button for it.', 'Chip plays fewer, slower notes in a fight, so the scale no longer rushes.'] },
   { v: '47.1.9', t: 'Sharper Rime frost', b: ['The cracked-ice background in Rime is drawn as fine lines now, so it stays sharp when you zoom in.', 'The frost fades in from the edge of the map and the hard edge is gone.', 'Every new match now starts with the send share back at 100%, so a 50% or 25% setting from the last game cannot surprise you.', 'The end-of-match card shows the build number and how you finished (your Health, Speed and Damage, time played, troops knocked out, most bases held).'] },
   { v: '47.1.8', t: 'A clearer selection ring', b: ['The ring around a selected base is bigger and brighter, in the shape of your visual style, and fills like a clock hand to show how much of your army a tap will send.', 'Selecting a base gives a short double buzz.', 'A tap on empty space clears your selection and you can see it go: the ring closes in with a small tick.', 'You can now slide the map around even when fully zoomed out.', 'The wins-in-games line is gone from the main menu. Stats still has it.'] },
@@ -5298,16 +5311,20 @@ const NEWS = [
   { v: '47.1.1', t: 'Sound fix', b: ['Sound now comes back by itself if your phone pauses it (a text, another app). Before, it could stay silent until you tapped a base.', 'If it cannot come back, a short message tells you to tap the screen.'] },
   { v: '47.1 and 47', t: 'Smarter rivals, tougher bases', b: ['Brutal rivals now keep troops home when you march at them, answer small raids, and strike any base you leave empty. Hard rivals do a lighter version. Easy and Normal play as before.', 'Health now also makes your bases tougher to break, and the rivals benefit too.', 'Hard rivals pick on you a little less.'] }
 ];
+const NEWS_SHOWN = 4; let newsAll = false;             // the newest four builds show; a button opens the older ones
 function renderNews() {
   const box = $('newsBody'); box.textContent = '';
-  for (const e of NEWS) {
+  for (const e of newsAll ? NEWS : NEWS.slice(0, NEWS_SHOWN)) {
     const d = document.createElement('div'), h = document.createElement('h3'), sp = document.createElement('span'), ul = document.createElement('ul');
     h.textContent = e.t + ' '; sp.textContent = e.v; h.appendChild(sp); ul.className = 'how';
     for (const line of e.b) { const li = document.createElement('li'); li.textContent = line; ul.appendChild(li); }
     d.appendChild(h); d.appendChild(ul); box.appendChild(d);
   }
+  const more = $('newsMore'); more.hidden = NEWS.length <= NEWS_SHOWN; more.setAttribute('aria-expanded', String(newsAll));
+  more.textContent = newsAll ? 'Show fewer' : 'Show older changes (' + (NEWS.length - NEWS_SHOWN) + ')';
   save('ice-seen-build', { v: NEWS[0].v }); syncNews();
 }
+$('newsMore').addEventListener('click', () => { newsAll = !newsAll; renderNews(); });
 async function checkUpdate() {
   const btn = $('bUpd'), msg = $('updMsg'), cur = $('buildNo').textContent.trim();
   if (!/^https?:$/.test(location.protocol)) { msg.textContent = 'This copy cannot check for updates. Open the installed app or the website.'; return; }
@@ -5343,10 +5360,9 @@ for (const b of $('chipRow').children) b.addEventListener('click', () => { chipN
 for (const b of $('ringRow').children) b.addEventListener('click', () => { ringNew = b.dataset.r === 'new'; save('ice-ringtest', { v: ringNew ? 'new' : 'old' }); syncQual(); });
 {                                                     // four taps on "Strategy" within two seconds open it
   let taps = [];
-  $('stratTag').addEventListener('click', () => {
-    const t = performance.now(); taps = taps.filter(x => t - x < 2000); taps.push(t);
-    if (taps.length >= 4) { taps = []; go('scrQual'); }
-  });
+  const fourTaps = () => { const t = performance.now(); taps = taps.filter(x => t - x < 2000); taps.push(t); if (taps.length >= 4) { taps = []; go('scrQual'); } };
+  $('stratTag').addEventListener('click', fourTaps);
+  document.querySelector('#scrSettings h2').addEventListener('click', fourTaps);          // also from the Settings title, so it can be opened in the middle of a match
 }
 syncQual();
 function showScreen(id) {
@@ -5539,6 +5555,7 @@ function startGame(watch, scen, modeKey, prac) {
   G.autoplay = watching;
   hudEl.classList.toggle('noup', !!G.mods.noup); hudEl.classList.toggle('fog', !!G.mods.fog);
   $('kothRow').hidden = !G.mods.koth; $('objRow').hidden = !G.scenarioId; initFog();
+  { const strength = !watching && !curPrac && !curScen && G.diffName ? (DIFF_LABEL[G.diffName] || '') : ''; $('diffTag').textContent = strength; }      // how strong the rivals are, in one word
   startCoach();
   hasRules = !!G.scenarioId || G.overtimeOn || Object.values(G.mods).some(Boolean); rulesCache = '';
   peekUntil = G.scenarioId ? performance.now() + 7000 : 0;       // a challenge opens its rules for a few seconds, so you see the goals
