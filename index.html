@@ -217,7 +217,8 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 #newsBody { display: flex; flex-direction: column; gap: 14px; }
 #newsBody h3 { margin: 0 0 6px; font-size: 14px; font-weight: 500; color: var(--ink); }
 #newsBody h3 span { color: var(--dim); font-weight: 400; }
-.aboutcard { margin: 0; padding: 10px 12px; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.45); }
+.aboutcard { margin: 0; padding: 10px 12px; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.45); max-height: max(120px, calc(100vh - 230px)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+@media (orientation: landscape) and (max-height: 430px) { .aboutcard { max-height: max(110px, calc(100vh - 190px)); padding: 8px 10px; } .aboutcard.about { font-size: 11.5px; line-height: 1.35; } }
 .aboutcard[hidden] { display: none; }
 
 .about { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--dim); }
@@ -231,6 +232,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 #coach[hidden] { display: none; }
 #coachBox { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 #coachPh { font-style: normal; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility: hidden; pointer-events: none; }
 #coachRing, #coachArrow { position: fixed; left: 0; top: 0; z-index: 3; pointer-events: none; }
 #coachRing[hidden], #coachArrow[hidden] { display: none; }
 #coachRing i { display: block; width: 56px; height: 56px; border: 2px solid #ffcd30; border-radius: 50%; box-shadow: 0 0 12px rgba(255,205,48,.55); animation: coachPulse 1.3s ease-in-out infinite; }
@@ -262,6 +264,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .endcard { width: min(100%, 440px); gap: 12px; }
 .endcard h2 { margin: 0; font-size: 30px; line-height: 1.05; font-weight: 700; letter-spacing: .02em; }
 .endcard p { margin: 0; font-size: 15px; line-height: 1.45; color: var(--dim); max-width: 42ch; }
+.endcard p .coda { display: block; margin-top: 8px; color: var(--ink); }
 .endriv .rr + h3 { margin-top: 10px; }
 .endriv h3 { margin: 0 0 6px; font-size: 12px; font-weight: 500; color: var(--dim); letter-spacing: .04em; }
 .endriv .rr { display: grid; grid-template-columns: 1fr auto; gap: 8px; font-size: 13px; padding: 3px 0; }
@@ -526,12 +529,12 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
         <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 42 43 24 33.5 6 43Z" fill="#3577ff"/></svg>
         <div class="mt"><h1>Aiced</h1><span class="tag" id="stratTag">Strategy</span></div>
       </div>
-      <div class="rec"><span id="rec"></span><button class="ibtn" id="aboutBtn" aria-label="About this game" aria-expanded="false">i</button></div>
-      <p class="about aboutcard" id="aboutCard" hidden><b>Built with AI.</b> Aiced Strategy was made by one person working with Claude, an AI from Anthropic. It started as a remake of an old Android game called ICE.</p>
+      <div class="rec"><span id="rec"></span><button class="ibtn" id="aboutBtn" aria-label="About" aria-expanded="false">i</button></div>
+      <p class="about aboutcard" id="aboutCard" hidden>Aiced Strategy has been built exclusively using Claude AI. I understand the complicated emotions regarding AI, so I have poured as much of myself into this as a person possibly could- but it should be known that every line of code, the UI, menus, all of it was built with Claude. I contributed only my thoughts. This game was inspired by an old mobile game called ICE. It was a simplistic strategy game about sending troops to bases, tactically working your way through the map and enemies until the entire match is yours. Simple upgrades, simple controls, but a deeply satisfying gameplay loop, with a cute appearance and audio that scratched my brain in a fun way as a bonus. This game was built with all of that in mind, I hope you enjoy it for what it is.</p>
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 47.1.14</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.3</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -543,10 +546,10 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
   <section class="screen" id="scrPlay" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Play</h2></header>
     <div class="modes">
-      <button class="mode" id="mClassic" data-go="scrClassic"><b>Classic</b><span>The standard match. Choose your team, the map size and how strong the AI is.</span></button>
-      <button class="mode" id="mCustom" data-go="scrCustom"><b>Custom</b><span>Set up your own match: rivals, map, special bases and rule modifiers.</span></button>
-      <button class="mode" id="mSpec" data-go="scrSpectate"><b>Spectate</b><span>Watch the AI play against itself on a map you choose.</span></button>
-      <button class="mode" id="mLadder"><b>Challenge Maps</b><span id="ladderBlurb">Fixed maps with special goals. Earn up to three stars on each.</span></button>
+      <button class="mode" id="mClassic" data-go="scrClassic"><b>Classic</b><span>The standard match. Choose your team, map size, and AI strength.</span></button>
+      <button class="mode" id="mCustom" data-go="scrCustom"><b>Custom</b><span>Set up your own match: Enemies, Map, Special Bases and Rule Modifiers.</span></button>
+      <button class="mode" id="mSpec" data-go="scrSpectate"><b>Spectate</b><span>Setup match and watch the AI play against itself.</span></button>
+      <button class="mode" id="mLadder"><b>Challenge Maps</b><span id="ladderBlurb">Fixed maps with special rules and goals. Earn stars to unlock more maps.</span></button>
     </div>
   </section>
 
@@ -620,9 +623,9 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
     <div class="opts">
       <div class="opt"><span>Volume</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"></div>
       <div class="opt"><span>Menu sound</span><div class="seg tight" data-glob="menuSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
-      <div class="opt stack"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="overdrive">Overdrive</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button><button data-v="floe">Floe</button></div></div>
+      <div class="opt stack"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="hearth">Hearth</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button><button data-v="floe">Floe</button></div></div>
       <div class="opt"><span>Upgrade chime</span><div class="seg tight" id="chimeRow"><button id="bChime" aria-label="Hear the chime for an earned upgrade point">Hear it</button></div></div>
-      <div class="opt stack"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="overload">Overload</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button><button data-v="rime">Rime</button></div></div>
+      <div class="opt stack"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="ember">Ember</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button><button data-v="rime">Rime</button></div></div>
       <div class="opt"><span>Colors</span><div class="seg tight wrap" data-glob="colors"><button data-v="standard">Standard</button><button data-v="safe">Color-safe</button><button data-v="contrast">High contrast</button></div></div>
       <div class="opt"><span>Team symbols</span><div class="seg tight" data-glob="symbols"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
       <div class="opt" id="rowHaptics"><span>Haptics</span><div class="seg tight" data-glob="haptics"><button data-v="off">Off</button><button data-v="light">Light</button><button data-v="normal">Normal</button></div></div>
@@ -895,7 +898,7 @@ function practiceOpts(id) {
 }
 function scenarioOpts(id) {
   const c = SCENARIOS.find(x => x.id === id); if (!c) return {};
-  return { scenarioId: c.id, size: c.size, teams: c.teams, shape: c.shape, diff: c.diff, seed: c.seed, mods: c.mods, specials: c.specials,
+  return { scenarioId: c.id, map: c.map, size: c.size, teams: c.teams, shape: c.shape, diff: c.diff, seed: c.seed, mods: c.mods, specials: c.specials,
     specialKinds: c.specialKinds, surround: c.surround, playerTroops: c.playerTroops, fair: c.fair, persona: c.persona, objective: c.objective, stars: c.stars,
     aiTune: c.aiTune, hpMul: c.hpMul, fogScale: c.fogScale, quake: c.quake, crowns: c.crowns, kothTarget: c.kothTarget };
 }
@@ -930,6 +933,57 @@ const SIZES = {
   huge:    { n: [64, 76], area: 2200000, teams: 5, capPer: 6 }
 };
 const OPENING_DEFENDERS = 7; // every base next to a starting base gets the same garrison
+// ---- static maps: hand-made layouts (bases, links, who starts where) that a challenge can use instead of a generated map ----
+// { id, w, h, size ('small'..'huge': army cap and nothing else), nodes: [[x, y]...], edges: [[a, b]...], starts: [base id per color in play, you first],
+//   optional: bridges [[a, b]...], shape, deco, specials { baseId: 'fortress'|'forge'|'beacon'|'relay' }, crown: baseId }
+// Draw them with tools/maps/mapmaker.html; validateStaticMap() lists whatever is wrong with one.
+const STATIC_MAPS = { surrounded: {"id": "surrounded", "w": 1308, "h": 734, "size": "medium", "nodes": [[654, 367], [95, 85], [250, 95], [420, 110], [105, 255], [300, 250], [505, 265], [1213, 85], [1058, 95], [888, 110], [1203, 255], [1008, 250], [803, 265], [95, 649], [250, 639], [420, 624], [105, 479], [300, 484], [505, 469], [1213, 649], [1058, 639], [888, 624], [1203, 479], [1008, 484], [803, 469], [654, 115], [654, 619]], "edges": [[1, 2], [2, 3], [1, 4], [2, 5], [4, 5], [5, 6], [3, 6], [6, 0], [3, 25], [6, 25], [7, 8], [8, 9], [7, 10], [8, 11], [10, 11], [11, 12], [9, 12], [12, 0], [9, 25], [12, 25], [13, 14], [14, 15], [13, 16], [14, 17], [16, 17], [17, 18], [15, 18], [18, 0], [15, 26], [18, 26], [19, 20], [20, 21], [19, 22], [20, 23], [22, 23], [23, 24], [21, 24], [24, 0], [21, 26], [24, 26], [4, 16], [10, 22]], "starts": [0, 1, 7, 19, 13]} };
+function validateStaticMap(mp) {
+  const bad = [], isN = v => typeof v === 'number' && isFinite(v);
+  if (!mp || typeof mp !== 'object') return ['not a map'];
+  if (!isN(mp.w) || !isN(mp.h) || mp.w < 400 || mp.h < 300 || mp.w > 4000 || mp.h > 3000) bad.push('w and h must be sizes of a sensible world');
+  if (mp.size != null && !SIZES[mp.size]) bad.push('size must be small, medium, large or huge');
+  const N = Array.isArray(mp.nodes) ? mp.nodes.length : 0;
+  if (N < 6 || N > 90) bad.push('between 6 and 90 bases');
+  if (!Array.isArray(mp.edges)) return bad.concat('edges missing');
+  if (bad.length) return bad;
+  mp.nodes.forEach((p, i) => { if (!Array.isArray(p) || !isN(p[0]) || !isN(p[1])) bad.push('base ' + i + ' needs [x, y]'); else if (p[0] < 40 || p[0] > mp.w - 40 || p[1] < 40 || p[1] > mp.h - 40) bad.push('base ' + i + ' is too close to the edge of the world'); });
+  if (bad.length) return bad;
+  const P = mp.nodes, d = (i, j) => Math.hypot(P[i][0] - P[j][0], P[i][1] - P[j][1]);
+  for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) if (d(i, j) < 90) bad.push('bases ' + i + ' and ' + j + ' are closer than 90');
+  const seen = new Set(), adj = P.map(() => []);
+  for (const e of mp.edges) {
+    if (!Array.isArray(e) || !Number.isInteger(e[0]) || !Number.isInteger(e[1]) || e[0] < 0 || e[1] < 0 || e[0] >= N || e[1] >= N) { bad.push('a link names a base that is not there'); continue; }
+    const [a, b] = e; if (a === b) { bad.push('base ' + a + ' links to itself'); continue; }
+    const key = a < b ? a + '-' + b : b + '-' + a; if (seen.has(key)) { bad.push('link ' + key + ' appears twice'); continue; } seen.add(key);
+    adj[a].push(b); adj[b].push(a);
+    if (d(a, b) < 60 || d(a, b) > 450) bad.push('link ' + key + ' is ' + Math.round(d(a, b)) + ' long (60 to 450 is fine)');
+    for (let k = 0; k < N; k++) if (k !== a && k !== b && segDist(P[k], P[a], P[b]) < 36) bad.push('link ' + key + ' runs through base ' + k);
+  }
+  const E = mp.edges.filter(e => Array.isArray(e) && Number.isInteger(e[0]) && Number.isInteger(e[1]) && e[0] >= 0 && e[1] >= 0 && e[0] < N && e[1] < N && e[0] !== e[1]);
+  for (let i = 0; i < E.length; i++) for (let j = i + 1; j < E.length; j++) {
+    const [a, b] = E[i], [c, e] = E[j];
+    if (a !== c && a !== e && b !== c && b !== e && segCross(P[a], P[b], P[c], P[e])) bad.push('links ' + a + '-' + b + ' and ' + c + '-' + e + ' cross');
+  }
+  for (let i = 0; i < N; i++) if (!adj[i].length) bad.push('base ' + i + ' has no link');
+  { const got = new Set([0]), st = [0]; while (st.length) { const u = st.pop(); for (const v of adj[u]) if (!got.has(v)) { got.add(v); st.push(v); } } if (got.size < N) bad.push('the map is in separate pieces'); }
+  const S = mp.starts;
+  if (!Array.isArray(S) || S.length < 2 || S.length > 5 || new Set(S).size !== S.length || S.some(v => !Number.isInteger(v) || v < 0 || v >= N)) bad.push('starts: 2 to 5 different bases');
+  else {
+    for (const a of S) for (const b of S) if (a < b && adj[a].includes(b)) bad.push('starts ' + a + ' and ' + b + ' are next to each other');
+    if (mp.specials) for (const [id, kind] of Object.entries(mp.specials)) {
+      if (!SPECIAL_KINDS.includes(kind)) bad.push('special ' + id + ' is not a kind');
+      else if (!(id in P)) bad.push('special on a base that is not there');
+      else if (S.includes(+id) || S.some(st => adj[st].includes(+id))) bad.push('special ' + id + ' is on or next to a start');
+    }
+    if (mp.crown != null && (!Number.isInteger(mp.crown) || mp.crown < 0 || mp.crown >= N || S.includes(mp.crown))) bad.push('crown must be a base that is not a start');
+  }
+  return bad;
+}
+function fixedToMap(f, nTeams) {
+  return { nodes: f.nodes.map(p => [p[0], p[1]]), edges: f.edges.map(e => [e[0], e[1]]), bridges: (f.bridges || []).map(e => [e[0], e[1]]),
+    starts: f.starts.slice(0, nTeams), shape: f.shape || 'continent', deco: f.deco || null };
+}
 
 function mulberry32(a) {
   return function () {
@@ -1132,24 +1186,26 @@ function newGame(opts) {
   if (opts.scenario) opts = Object.assign({}, scenarioOpts(opts.scenario), opts);
   const seed = opts.seed != null ? opts.seed : (Math.random() * 4294967296) >>> 0;
   const rng = mulberry32(seed);
-  const spec = SIZES[opts.size] || SIZES.medium;
+  const fixed = opts.fixedMap || (opts.map ? STATIC_MAPS[opts.map] : null);          // a hand-made map, or null for a generated one
+  const spec = SIZES[opts.size || (fixed && fixed.size)] || SIZES.medium;
   const mods = Object.assign({ blitz: false, glass: false, noup: false, koth: false, fog: false }, opts.mods || {});
   const baseHP = C.baseHP * (mods.glass ? 0.5 : 1) * (opts.hpMul || 1);
   // which colors are in this match: you (team 0) plus a random pick of the others, or any colors when only AIs play
-  const nTeams = Math.max(2, Math.min(5, opts.teams || spec.teams));
+  const nTeams = Math.max(2, Math.min(5, opts.teams || (fixed ? fixed.starts.length : spec.teams)));
   const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const active = opts.watch ? shuffled([0, 1, 2, 3, 4]).slice(0, nTeams).sort() : [0, ...shuffled([1, 2, 3, 4]).slice(0, nTeams - 1).sort()];
   let m;
   // the world can be reshaped to match the screen; the base count per area stays the same
   const shape = SHAPES.includes(opts.shape) ? opts.shape : 'continent';
-  if (opts.world) { W = opts.world.w; H = opts.world.h; }
+  if (fixed) { W = fixed.w; H = fixed.h; }
+  else if (opts.world) { W = opts.world.w; H = opts.world.h; }
   else { const area = spec.area * SHAPE_AREA[shape]; H = Math.sqrt(area / 1.78); W = area / H; }
-  m = randomMap(rng, spec, opts.keep, nTeams, shape, opts.fair);
+  m = fixed ? fixedToMap(fixed, nTeams) : randomMap(rng, spec, opts.keep, nTeams, shape, opts.fair);
   if (!m) {                                            // belt and braces: a world too small for the map falls back to a plain one rather than failing to start
     const area = spec.area; H = Math.sqrt(area / 1.78); W = area / H;
     m = randomMap(rng, spec, [], nTeams, 'continent');
   }
-  if (opts.surround && m.edges) {                       // "Last stand": you start on a hub with the rivals on its doorstep
+  if (opts.surround && m.edges && !fixed) {                       // "Last stand": you start on a hub with the rivals on its doorstep
     const adjL = m.nodes.map(() => []);
     for (const [a, b] of m.edges) { adjL[a].push(b); adjL[b].push(a); }
     const dd = (a, b) => Math.hypot(m.nodes[a][0] - m.nodes[b][0], m.nodes[a][1] - m.nodes[b][1]);
@@ -1176,7 +1232,7 @@ function newGame(opts) {
     scenarioId: opts.scenarioId || null, practice: opts.practice || null, obj: opts.objective || { type: 'conquest' }, starGoals: opts.stars || null,
     os: { hold: 0, forges: 0, surv: 0 }, playerLosses: 0,
     bridges: new Set((m.bridges || []).map(([a, b]) => a < b ? a + '-' + b : b + '-' + a)),
-    diff: D, diffName: opts.diff || 'normal', sizeName: opts.size || 'medium', active,
+    diff: D, diffName: opts.diff || 'normal', sizeName: opts.size || (fixed && fixed.size) || 'medium', active,
     capPer: spec.capPer,
     teams: TEAM_COLORS.map((c, i) => ({ i, active: active.includes(i), alive: active.includes(i), xp: 0, points: (i === PLAYER && opts.startPoints) || 0, earned: 0,
       lv: { hp: 0, spd: 0, dmg: 0 }, kills: 0, bases: 0, count: 0, beacons: 0, forges: 0, hill: 0, mem: null,
@@ -1200,12 +1256,15 @@ function newGame(opts) {
     }
   }
   G.specials = !!opts.specials;
-  if (G.specials) {
+  if (fixed && fixed.specials) {                       // hand-placed special bases
+    G.specials = true;
+    for (const [id, kind] of Object.entries(fixed.specials)) { const n = nodes[+id]; n.kind = kind; if (kind === 'fortress') n.hp = n.maxHp = baseHP * SPECIALS.fortress.hp; }
+  } else if (G.specials) {
     placeSpecials(nodes, m.starts, rng, mods.noup, opts.specialKinds, opts.fair);       // with no upgrades there's no point in a Beacon
     for (const n of nodes) if (n.kind === 'fortress') n.hp = n.maxHp = baseHP * SPECIALS.fortress.hp;
   }
   if (mods.koth) {
-    G.crown = placeCrown(nodes, m.starts, opts.fair);
+    G.crown = fixed && fixed.crown != null ? (nodes[fixed.crown].crown = true, fixed.crown) : placeCrown(nodes, m.starts, opts.fair);
     if (G.crown < 0) mods.koth = false;                   // no room for one: play a normal match
     else if (opts.crowns === 2) {                         // Double crown: a second one, well away from the first
       G.crown2 = placeCrown(nodes, m.starts, opts.fair, G.crown, 3);
@@ -2027,9 +2086,9 @@ function aiThink(team) {
 // ================= UI =================
 // Everything you see and hear. Reads the simulation's state (G) every frame and draws it.
 //   view & camera ...... fitting the map to the screen, pinch/drag/zoom, screen <-> world conversion
-//   drawing ............ lines, bases, troops, attack lines, effects; six visual styles: Classic, Overload, Atlas, Pixel, Nebula, Rime
+//   drawing ............ lines, bases, troops, attack lines, effects; six visual styles: Classic, Ember, Atlas, Pixel, Nebula, Rime (Overload was retired in 48.1.5; its code stays until the clean-up)
 //   HUD ................ army count, territory bar, rival table, upgrades (only writes values that changed)
-//   sound .............. shared hit picking + six sound styles: Simple, Overdrive, Drift, Chip, Cosmos, Floe (each pairs with a visual style)
+//   sound .............. shared hit picking + six sound styles: Simple, Hearth, Drift, Chip, Cosmos, Floe (each pairs with a visual style; Overdrive was retired in 48.2, its code stays until the clean-up)
 //   screens ............ menu stack (home, setup, settings, stats, how to play, pause), starting/ending games
 //   end screen ......... match timeline chart and key moments
 //   back gesture ....... Android back steps through menus and pauses matches
@@ -2046,6 +2105,7 @@ let F = { x: 0, y: 0, w: 1, h: 1 }, s0 = 1, rot = false, cam = { z: 1, cu: W / 2
 const zmax = () => 3 * Math.max(1, W / 1000);
 let mode = 'demo', speedMul = 1, last = performance.now(), acc = 0;
 let watching = false, watchRivals = true;   // watching: an AI-only match you spectate
+let endAt = 0;                                          // when the end card appeared (its buttons wait a moment, so last taps on the map cannot press them)
 let selBase = null, selG = null, lastFromSel = -1, selHinted = false, selT = 0, selAt = 0, selFlash = 0, selGhost = null;     // select-then-send: the base whose troops your next tap will send
 let hover = null, uiFx = [], hl = [], lastHud = 0, toastTimer = 0, lastTap = { id: -1, t: 0 }, lockHinted = false;
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -2153,11 +2213,13 @@ settings.volume = Number.isFinite(+settings.volume) && settings.volume >= 0 && s
 settings.sound = settings.sound !== false; settings.rivals = settings.rivals === true;
 if (settings.tone === 'felt') settings.tone = 'soft'; else if (settings.tone === 'hum') settings.tone = 'drift';     // retired profiles move to their closest relative
 if (settings.tone === 'bright' || settings.tone === 'soft') settings.tone = 'simple';                                // Build 36: the two became Simple
-if (!['simple', 'overdrive', 'drift', 'chip', 'cosmos', 'floe'].includes(settings.tone)) settings.tone = 'simple';
+if (settings.tone === 'overdrive') settings.tone = 'hearth';                                                         // Build 48.2: Overdrive was replaced by Hearth
+if (!['simple', 'hearth', 'drift', 'chip', 'cosmos', 'floe'].includes(settings.tone)) settings.tone = 'simple';
 if (!['auto', 'landscape', 'portrait'].includes(settings.screen)) settings.screen = 'auto';
 if (!['on', 'off'].includes(settings.menuSound)) settings.menuSound = 'on';
-if (settings.visual === 'spark') settings.visual = 'classic';                                                        // Build 36: Spark was folded into Classic
-if (!['classic', 'overload', 'atlas', 'pixel', 'nebula', 'rime'].includes(settings.visual)) settings.visual = 'classic';
+if (settings.visual === 'spark') settings.visual = 'classic';
+if (settings.visual === 'overload') settings.visual = 'ember';                                                        // Build 48.1.5: Overload was replaced by Ember                                                        // Build 36: Spark was folded into Classic
+if (!['classic', 'ember', 'atlas', 'pixel', 'nebula', 'rime'].includes(settings.visual)) settings.visual = 'classic';
 if (!['standard', 'safe', 'contrast'].includes(settings.colors)) settings.colors = 'standard';
 if (!['off', 'on'].includes(settings.symbols)) settings.symbols = 'off';
 if (!['off', 'light', 'normal'].includes(settings.haptics)) settings.haptics = 'normal';
@@ -2181,6 +2243,21 @@ if (!SENDS.includes(settings.send)) settings.send = 1;
 // ---- view & camera ----
 // "view" coordinates are world coordinates turned to match the screen (sideways on tall screens)
 const viewSize = () => rot ? [H, W] : [W, H];
+let BBG = null, BB = null;
+function mapBox() {                                   // the outermost bases in world space (cached per match)
+  if (BB && BBG === G) return BB;
+  if (!G || !G.nodes || !G.nodes.length) return { x0: 0, x1: W, y0: 0, y1: H };
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const n of G.nodes) { if (n.x < x0) x0 = n.x; if (n.x > x1) x1 = n.x; if (n.y < y0) y0 = n.y; if (n.y > y1) y1 = n.y; }
+  BB = { x0, x1, y0, y1 }; BBG = G; return BB;
+}
+function boxUV() { const b = mapBox(); return rot ? { u0: H - b.y1, u1: H - b.y0, v0: b.x0, v1: b.x1 } : { u0: b.x0, u1: b.x1, v0: b.y0, v1: b.y1 }; }
+function mapView() {                                  // the same box with a little room round it: what the minimap and the setup preview show (the full view uses MAP_MARGIN instead)
+  const b = boxUV(), pad = 28 + 0.01 * Math.max(b.u1 - b.u0, b.v1 - b.v0);
+  return { u0: b.u0 - pad, v0: b.v0 - pad, w: b.u1 - b.u0 + 2 * pad, h: b.v1 - b.v0 + 2 * pad };
+}
+const MAP_MARGIN = 0.10;                              // share of the screen left empty on each side of the tight axis at the full view (the same on every map size)
+const fitScale = () => { const b = boxUV(), k = 1 - 2 * MAP_MARGIN; return Math.max(0.05, Math.min(F.w * k / Math.max(1, b.u1 - b.u0), F.h * k / Math.max(1, b.v1 - b.v0))); };
 // Render resolution: capped at 2.5x (indistinguishable on a phone, about a third fewer pixels than 3x), and
 // stepped down automatically if the frame rate stays low, so a slower phone trades sharpness for smoothness.
 const DPR_MAX = Math.min(window.devicePixelRatio || 1, 2.5), QUALITY = [1, 0.8, 0.65, 0.5];
@@ -2233,39 +2310,15 @@ function layout() {
   const newRot = r.height > r.width * 1.1;
   F = { x: r.left, y: r.top, w: Math.max(1, r.width), h: Math.max(1, r.height) };
   if (newRot !== rot) { rot = newRot; resetCam(); }
-  const [ww, wh] = viewSize();
-  s0 = Math.max(0.05, Math.min(F.w / ww, F.h / wh));
+  s0 = fitScale();
   updateView();
   if (!$('mm').hidden) sizeMinimap();
   if (!hudEl.hidden) placeMapButton();
 }
-function worldPlan(shape, size, watch) {             // the world is shaped to the whole screen, so a menu preview and the game agree
-  const B = document.body.getBoundingClientRect(), r = B.height > B.width * 1.1;
-  const aspect = Math.min(2.5, Math.max(1.4, r ? B.height / B.width : B.width / B.height));
-  const area = SIZES[size].area * (SHAPE_AREA[shape] || 1), h = Math.sqrt(area / aspect), w = area / h;
-  // Keep bases out from under the HUD. The zones are fixed rectangles that mirror the real panels (not measured from the page),
-  // so the preview behind the menu and the game you start come out as exactly the same map.
-  const ww = r ? h : w, wh = r ? w : h, sc = Math.min(B.width / ww, B.height / wh);
-  const ex = B.left + B.width / 2 - ww / 2 * sc, ey = B.top + B.height / 2 - wh / 2 * sc;
-  const toW = (px, py) => { const u = (px - ex) / sc, v = (py - ey) / sc; return r ? { x: v, y: h - u } : { x: u, y: v }; };
-  const L = B.left, T = B.top, R = B.right, Bt = B.bottom, m = 36;                // m: room for troops circling a base
-  const strip = 8 + 112 + 8;                                                       // the upgrade strip and its gap, in portrait the map button rides above it
-  const zones = [
-    [L + 10, T + 8, L + 146, T + (watch ? 230 : 116)],                              // stats panel (spectating opens its table)
-    [R - 220, T + 8, R - 10, T + 58],                                               // control buttons
-    [L + 10, Bt - 120, r ? R - 10 : L + 346, Bt - 8],                               // upgrade panel
-    [R - 56, Bt - (r ? strip + 46 : 54), R - 10, Bt - (r ? strip : 8)]              // map button
-  ];
-  const keep = zones.map(([x0, y0, x1, y1]) => {
-    const a = toW(x0, y0), c = toW(x1, y1);
-    return { x0: Math.min(a.x, c.x) - m, x1: Math.max(a.x, c.x) + m, y0: Math.min(a.y, c.y) - m, y1: Math.max(a.y, c.y) + m };
-  });
-  return { world: { w, h }, keep };
-}
 // ---- minimap: hidden until the map button is tapped; tap or drag on it to move the view ----
 let mmCtx = null;
 function sizeMinimap() {
-  const c = $('mm'), [ww, wh] = viewSize();
+  const c = $('mm'), mv = mapView(), ww = mv.w, wh = mv.h;
   const k = Math.min(Math.min(200, F.w * 0.42) / ww, Math.min(150, F.h * 0.42) / wh);
   const w = Math.max(40, Math.round(ww * k)), h = Math.max(30, Math.round(wh * k)), d = Math.min(window.devicePixelRatio || 1, 2.5);
   c.width = Math.round(w * d); c.height = Math.round(h * d); c.style.width = w + 'px'; c.style.height = h + 'px';
@@ -2273,8 +2326,8 @@ function sizeMinimap() {
 }
 function setMinimap(on) { $('mm').hidden = !on; $('bMap').setAttribute('aria-pressed', String(on)); if (on) sizeMinimap(); }
 function paintMap(x, w, h, live, u) {                // the map as a diagram: terrain, lines and bases. `live` adds armies and your view box.
-  const [ww, wh] = viewSize(), k = Math.min(w / ww, h / wh);
-  const P = (px, py) => rot ? [(H - py) * k, px * k] : [px * k, py * k];
+  const mv = mapView(), k = Math.min(w / mv.w, h / mv.h);
+  const P = (px, py) => rot ? [(H - py - mv.u0) * k, (px - mv.v0) * k] : [(px - mv.u0) * k, (py - mv.v0) * k];
   const fogM = fogOn(), D = G.deco;
   if (D && D.kind === 'river') { x.strokeStyle = 'rgba(90,140,220,0.35)'; x.lineWidth = Math.max(2, D.hw * k); x.beginPath(); D.line.forEach(([px, py], i) => { const p = P(px, py); i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1]); }); x.stroke(); }
   if (D && D.kind === 'islands') { x.fillStyle = 'rgba(255,255,255,0.06)'; for (const hl of islandHulls()) { x.beginPath(); hl.forEach(([px, py], i) => { const p = P(px, py); i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1]); }); x.closePath(); x.fill(); } }
@@ -2306,8 +2359,8 @@ function paintMap(x, w, h, live, u) {                // the map as a diagram: te
     return;
   }
   const s = V.s, u0 = cam.cu - F.w / (2 * s), v0 = cam.cv - F.h / (2 * s);
-  const rx0 = Math.max(0.6, u0 * k), ry0 = Math.max(0.6, v0 * k);              // your view, kept inside the minimap's edges
-  const rx1 = Math.min(w - 0.6, (u0 + F.w / s) * k), ry1 = Math.min(h - 0.6, (v0 + F.h / s) * k);
+  const rx0 = Math.max(0.6, (u0 - mv.u0) * k), ry0 = Math.max(0.6, (v0 - mv.v0) * k);              // your view, kept inside the minimap's edges
+  const rx1 = Math.min(w - 0.6, (u0 + F.w / s - mv.u0) * k), ry1 = Math.min(h - 0.6, (v0 + F.h / s - mv.v0) * k);
   x.strokeStyle = '#fff'; x.lineWidth = 1.2; x.strokeRect(rx0, ry0, Math.max(2, rx1 - rx0), Math.max(2, ry1 - ry0));
 }
 function drawMinimap() {
@@ -2324,7 +2377,7 @@ function placePreview() {
   const bx0 = portrait ? pad : scr.right + pad, bx1 = B.width - pad, by0 = pad, by1 = portrait ? scr.top - pad : B.height - pad;
   const mg = 14, aw = bx1 - bx0 - chrome - 2 * mg, ah = by1 - by0 - chrome - 2 * mg;     // mg: room around the map for rings on edge bases
   if (aw < 90 || ah < 60) { card.hidden = true; return; }
-  const [ww, wh] = viewSize(), k = Math.min(aw / ww, ah / wh), w = Math.max(40, Math.round(ww * k)), h = Math.max(30, Math.round(wh * k)), d = Math.min(window.devicePixelRatio || 1, 2.5);
+  const mv = mapView(), ww = mv.w, wh = mv.h, k = Math.min(aw / ww, ah / wh), w = Math.max(40, Math.round(ww * k)), h = Math.max(30, Math.round(wh * k)), d = Math.min(window.devicePixelRatio || 1, 2.5);
   const tw = w + 2 * mg, th = h + 2 * mg;
   card.hidden = false;
   pv.width = Math.round(tw * d); pv.height = Math.round(th * d); pv.style.width = tw + 'px'; pv.style.height = th + 'px';
@@ -2336,8 +2389,8 @@ function placePreview() {
   finally { G.nodes.forEach((n, i) => { n.owner = now[i]; }); }
 }
 function mmJump(e) {
-  const c = $('mm'), r = c.getBoundingClientRect(), [ww, wh] = viewSize(), k = Math.min(c._w / ww, c._h / wh);
-  cam.cu = (e.clientX - r.left) / k; cam.cv = (e.clientY - r.top) / k; fling.vx = fling.vy = 0; updateView();
+  const c = $('mm'), r = c.getBoundingClientRect(), mv = mapView(), k = Math.min(c._w / mv.w, c._h / mv.h);
+  cam.cu = (e.clientX - r.left) / k + mv.u0; cam.cv = (e.clientY - r.top) / k + mv.v0; fling.vx = fling.vy = 0; updateView();
 }
 // fling: a quick swipe keeps gliding and slows down, like any map app
 const fling = { vx: 0, vy: 0 }, panHist = [];
@@ -2351,17 +2404,17 @@ function placeMapButton() {                           // in portrait, sit above 
   const fr = field.getBoundingClientRect();
   wrap.style.bottom = (rot && r.height && !hudEl.classList.contains('watch') && !hudEl.classList.contains('noup') ? Math.round(fr.bottom - r.top + 8) : 8) + 'px';
 }
-function resetCam() { const [ww, wh] = viewSize(); cam = { z: 1, cu: ww / 2, cv: wh / 2 }; }
+function resetCam() { const B = boxUV(); cam = { z: 1, cu: (B.u0 + B.u1) / 2, cv: (B.v0 + B.v1) / 2 }; }
 function updateView() {
-  const [ww, wh] = viewSize();
+  s0 = fitScale();
   cam.z = Math.min(zmax(), Math.max(1, cam.z));
-  const s = s0 * cam.z, hw = F.w / (2 * s), hh = F.h / (2 * s);
-  // The camera may run past the edge of the map by up to half a screen (also at the full view), so a base on the edge can be brought to
-  // the middle of the view, clear of the HUD. The extra space is just black. Double-tapping the map button puts the whole map back in the middle.
+  const s = s0 * cam.z;
+  // The centre of the camera may reach the outermost base on each side and go no further (also at the full view), so a base on the edge can be
+  // brought to the middle of the view, clear of the HUD. Double-tapping the map button puts the whole map back in the middle.
   {
-    const exU = Math.max(0, ww / 2 - hw) + hw, exV = Math.max(0, wh / 2 - hh) + hh;
-    cam.cu = Math.min(ww / 2 + exU, Math.max(ww / 2 - exU, cam.cu));
-    cam.cv = Math.min(wh / 2 + exV, Math.max(wh / 2 - exV, cam.cv));
+    const B = boxUV();
+    cam.cu = Math.min(B.u1, Math.max(B.u0, cam.cu));
+    cam.cv = Math.min(B.v1, Math.max(B.v0, cam.cv));
   }
   V = { s, rot, ex: F.x + F.w / 2 - cam.cu * s, ey: F.y + F.h / 2 - cam.cv * s };
 }
@@ -2435,8 +2488,8 @@ function drawOverloadBg(now, dt) {
   const cx = W / 2, cy = H / 2, R = Math.hypot(W, H) * 0.55, want = [140, 100, 60, 0][quality];
   if (stars.R !== R || stars.length !== want) { stars.length = 0; stars.R = R; for (let i = 0; i < want; i++) stars.push({ a: Math.random() * 6.283, r: Math.random() * R, v: 40 + Math.random() * 120 }); }
   ctx.lineWidth = 1 / V.s; ctx.strokeStyle = hexA(rainbowAt(0, 0, now), 0.04 + 0.07 * kick); ctx.beginPath();   // a grid that pulses
-  for (let x = 0; x <= W; x += 60) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
-  for (let y = 0; y <= H; y += 60) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+  for (let x = Math.floor(VIS.x0 / 60) * 60; x <= VIS.x1; x += 60) { ctx.moveTo(x, VIS.y0); ctx.lineTo(x, VIS.y1); }
+  for (let y = Math.floor(VIS.y0 / 60) * 60; y <= VIS.y1; y += 60) { ctx.moveTo(VIS.x0, y); ctx.lineTo(VIS.x1, y); }
   ctx.stroke();
   ctx.globalCompositeOperation = 'lighter';
   if (quality < 2) {                                 // a giant square and triangle slowly turning against each other
@@ -2533,7 +2586,8 @@ const isAtlas = () => settings.visual === 'atlas';
 const isPixel = () => settings.visual === 'pixel';
 const isNebula = () => settings.visual === 'nebula';
 const isRime = () => settings.visual === 'rime';
-const fxOn = () => !reduceMotion && (isSpark() || isClassic() || isNebula() || isRime());   // the particle effects (Pixel draws its own, Atlas has none)
+const isEmber = () => settings.visual === 'ember';
+const fxOn = () => !reduceMotion && (isSpark() || isClassic() || isNebula() || isRime() || isEmber());   // the particle effects (Pixel draws its own, Atlas has none)
 const glowCache = new Map();
 function glow(color) {                               // a soft round glow, pre-drawn once per color
   let g = glowCache.get(color);
@@ -2629,10 +2683,15 @@ function drawClusterGlows(arr, img, strength) {
 function vfxHits(ev) {                               // sparks where hits land, flying the way the blow went
   if (isPixel() && !reduceMotion) { pxHits(ev); return; }
   if (!fxOn()) return;
-  const OV = isOver(), LT = isClassic(), NB = isNebula(), RM = isRime(), mult = OV ? 3 : 1;
+  const OV = isOver(), LT = isClassic(), NB = isNebula(), RM = isRime(), EM = isEmber(), mult = OV ? 3 : 1;
   let budget = OV ? 16 : LT ? 6 : 10, numbers = 0;
   for (const e of ev) {
     if (budget-- <= 0 || e.tx === undefined) break;
+    if (EM) {                                        // Ember: a few sparks thrown off where a blow lands
+      if (e.base) emit(e.tx, e.ty, Math.random() < .5 ? '#ffd9a8' : colorOf(e.team), 2, 55, 0.4, 1.5, 0, e.tx - e.x, e.ty - e.y, 1.6);
+      else if (Math.random() < 0.35) emit(e.tx, e.ty, '#ffb070', 1, 45, 0.28, 1.1, 0, e.tx - e.x, e.ty - e.y, 1.2);
+      continue;
+    }
     if (RM) {                                        // Rime: chips of ice where a blow lands
       if (e.base) emit(e.tx, e.ty, Math.random() < .6 ? '#e6f6ff' : colorOf(e.team), 2, 62, 0.45, 1.9, 1, e.tx - e.x, e.ty - e.y, 1.8);
       else if (Math.random() < 0.5) emit(e.tx, e.ty, '#d6eeff', 1, 55, 0.3, 1.2, 0, e.tx - e.x, e.ty - e.y, 1.2);
@@ -2651,9 +2710,10 @@ function vfxFx() {                                   // deaths and captures from
     if (f.sp) continue; f.sp = 1;
     if (!fxOn()) continue;
     if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
-    const OV = isOver(), LT = isClassic(), NB = isNebula(), RM = isRime(), now = performance.now() / 1000;
+    const OV = isOver(), LT = isClassic(), NB = isNebula(), RM = isRime(), EM = isEmber(), now = performance.now() / 1000;
     if (f.k === 'pop') {
-      if (RM) emit(f.x, f.y, Math.random() < .5 ? '#e6f6ff' : colorOf(f.c), 5, 65, 0.6, 2.2, 1);     // a troop shatters
+      if (EM) { }                                    // Ember draws its own (drawEmberFx)
+      else if (RM) emit(f.x, f.y, Math.random() < .5 ? '#e6f6ff' : colorOf(f.c), 5, 65, 0.6, 2.2, 1);     // a troop shatters
       else if (NB) emit(f.x, f.y, Math.random() < .5 ? '#ffffff' : colorOf(f.c), 4, 50, 0.7, 1.4, 0);     // a puff of stardust
       else emit(f.x, f.y, colorOf(f.c), OV ? 12 : LT ? 4 : 5, OV ? 110 : LT ? 60 : 70, OV ? 0.8 : LT ? 0.45 : 0.55, OV ? 2.8 : LT ? 2 : 2.4, 1);
       if (OV) {
@@ -2661,7 +2721,8 @@ function vfxFx() {                                   // deaths and captures from
         if (f.by === PLAYER && !watching) { combo = now - comboT < 1.6 ? combo + 1 : 1; comboT = now; }
       }
     } else if (f.k === 'ring') {
-      if (RM) { emit(f.x, f.y, colorOf(f.c), 16, 130, 1.0, 2.4, 1); emit(f.x, f.y, '#e6f6ff', 14, 105, 0.9, 2.0, 1); }   // the freeze throws out shards
+      if (EM) { }                                    // Ember: the catch is drawn by drawEmberFx
+      else if (RM) { emit(f.x, f.y, colorOf(f.c), 16, 130, 1.0, 2.4, 1); emit(f.x, f.y, '#e6f6ff', 14, 105, 0.9, 2.0, 1); }   // the freeze throws out shards
       else if (NB) { emit(f.x, f.y, colorOf(f.c), 30, 150, 1.4, 1.8, 0); emit(f.x, f.y, '#ffffff', 12, 90, 1.1, 1.4, 0); }   // a supernova throws out its stardust
       else emit(f.x, f.y, colorOf(f.c), OV ? 40 : LT ? 14 : 22, OV ? 170 : LT ? 95 : 110, LT ? 0.75 : 0.9, LT ? 1.9 : 2.2, 0);
       const n = G.nodes.find(nd => nd.x === f.x && nd.y === f.y);
@@ -2849,6 +2910,7 @@ function drawDeco(now) {
   const D = G.deco; if (!D) return;
   if (isNebula()) { drawNebulaDeco(D); return; }
   if (isRime()) { drawRimeDeco(D); return; }
+  if (isEmber()) { drawEmberDeco(D); return; }
   if (D.kind === 'river') {
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.strokeStyle = 'rgba(70,120,200,0.07)'; ctx.lineWidth = D.hw * 1.7; ctx.beginPath();
@@ -2885,10 +2947,10 @@ function drawBridges() {                             // crossties along every br
 function drawEdges(now) {
   const nodes = G.nodes, lw = Math.max(1.4, 1.1 / V.s) * (HC ? 1.35 : 1);
   const slow = reduceMotion ? 0 : -now * 3, fast = reduceMotion ? 0 : -now * 9;
-  const inner = EDGE_IN, out = EDGE_OUT, NB = isNebula(), RM = isRime(), DASH = NB || RM ? [] : [5, 7];
+  const inner = EDGE_IN, out = EDGE_OUT, NB = isNebula(), RM = isRime(), EM = isEmber(), DASH = NB || RM ? [] : EM ? [2, 6] : [5, 7];
   for (let i = 0; i < 5; i++) { inner[i].length = 0; out[i].length = 0; }
   ctx.setLineDash(DASH); ctx.lineDashOffset = slow; ctx.lineWidth = NB ? lw * 0.8 : RM ? lw * 0.85 : lw;
-  ctx.strokeStyle = HC ? 'rgba(255,255,255,0.4)' : NB ? 'rgba(190,200,255,0.11)' : RM ? 'rgba(175,215,245,0.18)' : 'rgba(255,255,255,0.17)';
+  ctx.strokeStyle = HC ? 'rgba(255,255,255,0.4)' : NB ? 'rgba(190,200,255,0.11)' : RM ? 'rgba(175,215,245,0.18)' : EM ? 'rgba(150,108,84,0.22)' : 'rgba(255,255,255,0.17)';
   ctx.beginPath();
   for (const [a, b] of G.edges) {
     const A = nodes[a], B = nodes[b], oa = A.owner, ob = B.owner;
@@ -2903,13 +2965,13 @@ function drawEdges(now) {
   for (let i = 0; i < 5; i++) {
     const L = inner[i];
     if (L.length) {
-      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 0.6 : NB ? 0.2 : RM ? 0.36 : 0.28); ctx.lineDashOffset = slow; ctx.beginPath();
+      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 0.6 : NB ? 0.2 : RM ? 0.36 : EM ? 0.34 : 0.28); ctx.lineDashOffset = slow; ctx.beginPath();
       for (let j = 0; j < L.length; j += 2) { if (RM) rimeSeg(L[j], L[j + 1], 1); else { ctx.moveTo(L[j].x, L[j].y); ctx.lineTo(L[j + 1].x, L[j + 1].y); } }
       ctx.stroke();
     }
     const O = out[i];
     if (O.length) {   // drawn from the owner outward, so the dashes drift toward what they can attack
-      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 1 : NB ? 0.42 : RM ? 0.85 : 0.6); ctx.lineDashOffset = fast; ctx.lineWidth = lw * (NB ? 1 : RM ? 1.1 : 1.25); ctx.beginPath();
+      ctx.strokeStyle = hexA(TEAM_COLORS[i], HC ? 1 : NB ? 0.42 : RM ? 0.85 : EM ? 0.72 : 0.6); ctx.lineDashOffset = fast; ctx.lineWidth = lw * (NB ? 1 : RM ? 1.1 : 1.25); ctx.beginPath();
       for (let j = 0; j < O.length; j += 3) {
         const P = O[j], Q = O[j + 1], f = O[j + 2];
         if (RM) rimeSeg(P, Q, f); else { ctx.moveTo(P.x, P.y); ctx.lineTo(P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f); }
@@ -2928,6 +2990,15 @@ function drawEdges(now) {
           ctx.drawImage(gi, P.x + (Q.x - P.x) * f * ph - 7, P.y + (Q.y - P.y) * f * ph - 7, 14, 14);
         }
         ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+      }
+      if (EM && !reduceMotion) {                     // Ember: a warm spark drifts out along each way out
+        ctx.setLineDash([]); ctx.globalCompositeOperation = 'lighter'; const eg = emGlow(EM_HEART);
+        for (let j = 0; j < O.length; j += 3) {
+          const P = O[j], Q = O[j + 1], f = O[j + 2], ph = (now * 0.3 + ((P.id * 7 + Q.id * 13) * 0.618) % 1) % 1;
+          ctx.globalAlpha = 0.7 * Math.sin(Math.PI * ph);
+          ctx.drawImage(eg, P.x + (Q.x - P.x) * f * ph - 5, P.y + (Q.y - P.y) * f * ph - 5, 10, 10);
+        }
+        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash(DASH);
       }
       if (RM && !reduceMotion) {                     // Rime: a tiny shard of light slides out along each way out
         ctx.setLineDash([]); ctx.fillStyle = '#eaf8ff';
@@ -2994,11 +3065,239 @@ function drawArrows(now) {            // off-screen pointers: your bases under a
   const L = G.lock[PLAYER];
   if (L != null) point(G.nodes[L], null);
 }
+// ---- "Ember": a banked fire seen from far away on a cold night ----
+// A held base is a fire: a coal body, a bloom in its team color, a white-hot heart. Damage chars the face and opens hairline fissures of orange light.
+// A thin ring above everything (troops included) shows the health left. A capture is the new fire catching: a rim of light races round,
+// a tongue of flame leaps and sparks lift. Glows are sprites drawn once, and the dark background is one picture made once per screen size.
+const EMB = { cols: new Map(), spr: new Map(), bg: null, bgk: '', own: new Map(), og: null, ash: [] };
+const EM_WHITE = [255, 241, 220], EM_FIRE = [255, 120, 50], EM_HEART = [255, 150, 70], EM_COAL = [190, 70, 30], EM_R = 11;
+const EM_HALO = { r: 2.2, a: 0.28 };                 // the dark disc under each troop that keeps it readable over a base's glow (kept light on purpose)
+const emHash = n => { let x = (n * 2654435761) >>> 0; x ^= x >>> 15; x = Math.imul(x, 2246822519) >>> 0; x ^= x >>> 13; return (x >>> 0) / 4294967296; };
+const emMix = (a, b, k) => [Math.round(a[0] + (b[0] - a[0]) * k), Math.round(a[1] + (b[1] - a[1]) * k), Math.round(a[2] + (b[2] - a[2]) * k)];
+const emCss = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function emCol(hex) {                                 // a team color and the shades Ember needs from it, worked out once
+  let k = EMB.cols.get(hex); if (k) return k;
+  const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255];
+  k = { c, hot: emMix(c, EM_WHITE, 0.74), mid: emMix(c, EM_WHITE, 0.35), ring: emMix(c, EM_WHITE, 0.3), body: emMix(c, [0, 0, 0], 0.35), tr: emMix(c, EM_WHITE, 0.18), spark: emMix(c, EM_WHITE, 0.8) };
+  EMB.cols.set(hex, k); return k;
+}
+function emGlow(c) {                                  // a soft round glow in one color, drawn once and reused
+  const key = c[0] + ',' + c[1] + ',' + c[2]; let s = EMB.spr.get(key); if (s) return s;
+  s = document.createElement('canvas'); s.width = s.height = 64;
+  const g = s.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, emCss(c, 1)); gr.addColorStop(0.4, emCss(c, 0.38)); gr.addColorStop(1, emCss(c, 0));
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64); EMB.spr.set(key, s); return s;
+}
+function emBlob(x, y, r, c, a) { ctx.globalAlpha = Math.min(1, a); ctx.drawImage(emGlow(c), x - r, y - r, 2 * r, 2 * r); }     // call with 'lighter' set; resets nothing
+function drawEmberBack(now) {                         // called with the world transform in place; leaves the screen transform behind
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const w = Math.ceil(F.w), h = Math.ceil(F.h), key = w + 'x' + h + 'x' + dpr;
+  if (!EMB.bg || EMB.bgk !== key) {
+    const c = EMB.bg || (EMB.bg = document.createElement('canvas')); c.width = Math.ceil(w * dpr); c.height = Math.ceil(h * dpr);
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.fillStyle = '#050302'; g.fillRect(0, 0, w, h);
+    let gr = g.createRadialGradient(w * 0.5, h * 0.55, 0, w * 0.5, h * 0.55, Math.max(w, h) * 0.7);       // a faint warmth in the middle of the dark
+    gr.addColorStop(0, 'rgba(34,15,8,0.55)'); gr.addColorStop(0.55, 'rgba(14,7,4,0.35)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    gr = g.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.72);   // and the edges falling away
+    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.62)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    EMB.bgk = key;
+  }
+  ctx.drawImage(EMB.bg, F.x, F.y, F.w, F.h);
+  const t = reduceMotion ? 0 : now, qk = [1, 0.7, 0.5, 0.3][quality], n = Math.round(46 * qk);
+  ctx.fillStyle = 'rgb(180,150,125)';                 // ash drifting up
+  for (let i = 0; i < n; i++) {
+    const a = emHash(i + 1), b = emHash(i + 101), c = emHash(i + 201), sp = 3 + a * 7;
+    ctx.globalAlpha = 0.05 + c * 0.13;
+    ctx.fillRect(F.x + b * F.w + Math.sin(t * 0.3 + c * 6.28) * (6 + a * 10), F.y + (F.h + 20 - ((t * sp + b * F.h * 2) % (F.h + 40))), 1.2, 1.2);
+  }
+  if (quality < 3) {                                  // and a few live sparks among it
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 7; i++) {
+      const a = emHash(i + 301), b = emHash(i + 401), c = emHash(i + 501), life = 5 + a * 4, ph = ((t + b * 50) % life) / life;
+      emBlob(F.x + c * F.w + Math.sin(t * 0.8 + a * 9) * 14, F.y + F.h * 0.9 - ph * F.h * 0.8, 5, EM_HEART, Math.sin(ph * Math.PI) * 0.55);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  ctx.globalAlpha = 1;
+}
+function drawEmberDeco(D) {                           // terrain as cooling ground: a river is a dark seam with a slow ember-orange current, islands and the ring are faint warm outlines
+  if (D.kind === 'river') {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(150,70,40,0.08)'; ctx.lineWidth = D.hw * 1.7; ctx.beginPath();
+    D.line.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+    ctx.strokeStyle = 'rgba(200,110,60,0.22)'; ctx.lineWidth = 1.4; ctx.setLineDash([10, 14]);
+    ctx.lineDashOffset = reduceMotion ? 0 : -performance.now() / 1000 * 12; ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0;
+  } else if (D.kind === 'islands') {
+    ctx.fillStyle = 'rgba(255,200,160,0.025)'; ctx.strokeStyle = 'rgba(220,160,120,0.08)'; ctx.lineWidth = 1.2; ctx.setLineDash([2, 7]);
+    for (const h of islandHulls()) { ctx.beginPath(); h.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    ctx.setLineDash([]);
+  } else if (D.kind === 'ring') {
+    ctx.strokeStyle = 'rgba(220,160,120,0.09)'; ctx.lineWidth = 1.2; ctx.setLineDash([3, 9]);
+    ctx.beginPath(); ctx.ellipse(D.cx, D.cy, D.rx, D.ry, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+  }
+}
+function emCracks(x, y, r, id, d, t) {                // the base is a coal: hairline fissures of orange light, more of them and longer as it loses health
+  const n = Math.min(10, Math.ceil(d * 11)), lw = (0.45 + d * 0.3) * Math.max(1, 0.8 / V.s), spots = [];
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (let pass = 0; pass < 2; pass++) {
+    ctx.strokeStyle = pass ? 'rgba(255,118,40,0.88)' : 'rgba(255,80,24,0.15)'; ctx.lineWidth = pass ? lw : lw + 1.6;
+    for (let i = 0; i < n; i++) {
+      const ang = emHash(id * 13 + i) * 6.2832, len = r * (0.55 + emHash(id * 5 + i) * 0.42) * (0.55 + 0.45 * Math.min(1, d * 1.3)), fl = 0.78 + 0.22 * Math.sin(t * 7 + i * 2.3 + id);
+      const j1 = (emHash(id + i * 3) - 0.5) * r * 0.28, j2 = (emHash(id + i * 7) - 0.5) * r * 0.22, c = Math.cos(ang), s_ = Math.sin(ang), px = -s_, py = c;
+      ctx.globalAlpha = fl; ctx.beginPath(); ctx.moveTo(x + c * r * 0.2, y + s_ * r * 0.2);
+      ctx.lineTo(x + c * len * 0.5 + px * j1, y + s_ * len * 0.5 + py * j1); ctx.lineTo(x + c * len + px * j2, y + s_ * len + py * j2);
+      if (d > 0.5 && i % 2 === 0) { ctx.moveTo(x + c * len * 0.5 + px * j1, y + s_ * len * 0.5 + py * j1); ctx.lineTo(x + c * len * 0.8 + px * (j1 + r * 0.25), y + s_ * len * 0.8 + py * (j1 + r * 0.25)); }
+      ctx.stroke();
+      if (pass && d > 0.45 && i % 3 === 0) spots.push(x + c * len * 0.5 + px * j1, y + s_ * len * 0.5 + py * j1, fl);
+    }
+  }
+  for (let i = 0; i < spots.length; i += 3) emBlob(spots[i], spots[i + 1], r * 0.32, [255, 120, 40], 0.4 * d * spots[i + 2]);     // hot spots where a fissure forks, like a coal breathing
+  ctx.globalAlpha = 1;
+}
+function drawEmberBase(n, c, now) {
+  const x = n.x, y = n.y, r = EM_R, id = n.id, mv = reduceMotion ? 0 : 1, t = now * mv;
+  if (EMB.og !== G) { EMB.og = G; EMB.own.clear(); EMB.ash.length = 0; }
+  const po = EMB.own.get(id);
+  if (po !== n.owner) {                               // the colour that just lost this base leaves as ash (only when a capture was really just seen)
+    EMB.own.set(id, n.owner);
+    if (po !== undefined && po >= 0 && G.fx.some(f => f.k === 'ring' && f.x === x && f.y === y && G.t - f.b < 0.6)) EMB.ash.push({ x, y, from: po, t: G.t });
+  }
+  if (n.owner < 0) {                                  // a neutral base: a cold coal with a pulse far down in it
+    ctx.fillStyle = '#120d0b'; ctx.beginPath(); ctx.arc(x, y, r * 0.86, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = HC ? 'rgba(205,165,140,0.95)' : 'rgba(176,126,98,0.92)'; ctx.lineWidth = HC ? 1.8 : 1.3; ctx.stroke();
+    const br = 0.5 + 0.5 * Math.sin(t * 0.55 + emHash(id) * 6.28), nh = Math.max(0.08, Math.min(1, n.hp / n.maxHp)), nd = 1 - nh;
+    ctx.globalCompositeOperation = 'lighter';
+    emBlob(x, y, r * 2.6, EM_COAL, 0.07);                                                                                            // a faint wide smudge, so a dark base is still a place on the map
+    emBlob(x + (emHash(id + 7) - 0.5) * r * 0.3, y + (emHash(id + 9) - 0.5) * r * 0.3, r * 0.9, EM_COAL, (0.2 + 0.8 * br * br) * 0.5);       // a steady cold coal that still breathes
+    if (nd > 0.04) emCracks(x, y, r, id, Math.min(0.97, nd), t);                                                                    // attacked: it cracks like any other base
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    if (SYM && !n.kind) { ctx.strokeStyle = NEUTRAL_COLOR; ctx.lineWidth = 2; ctx.strokeRect(x - 4.6, y - 4.6, 9.2, 9.2); }
+    return;
+  }
+  const k = emCol(c), h = Math.max(0.08, Math.min(1, n.hp / n.maxHp)), dmg = 1 - h, ph = emHash(id) * 6.28;
+  const fl = 1 + mv * (0.07 * Math.sin(now * 6.3 + ph) + 0.045 * Math.sin(now * 11.7 + ph * 2.3) + 0.03 * Math.sin(now * 2.1 + ph * 0.5));
+  ctx.fillStyle = emCss(k.body, 0.9); ctx.beginPath(); ctx.arc(x, y, r * 0.9, 0, 6.2832); ctx.fill();            // the coal body under the light
+  ctx.globalCompositeOperation = 'lighter';
+  if (quality === 0) emBlob(x, y, r * 7.5, EM_FIRE, 0.07 * (0.4 + h * 0.6));                                     // firelight on the ground around it: the board takes a warm cast
+  if (quality < 2) emBlob(x, y, r * 4.4 * fl, k.c, 0.26 * (0.45 + h * 0.55));                                    // wide bloom
+  emBlob(x, y, r * 1.5 * fl, EM_HEART, 0.3 * (0.5 + h * 0.5));                                                   // every fire has the same orange heart, whatever its color
+  emBlob(x, y, r * 2.0 * fl, k.c, 0.5);                                                                          // near glow
+  emBlob(x, y, r * 0.95 * fl, k.hot, 0.95 * (0.55 + h * 0.45));                                                  // hot centre
+  if (G.t - n.lastHitT < 0.07) emBlob(x, y, r * 1.5, k.hot, 0.7);                                                // struck
+  ctx.globalAlpha = 1;
+  if (dmg > 0.02) {                                   // the face chars over as it loses health
+    const kk = 0.92 * Math.pow(dmg, 1.05);
+    ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = emCss([Math.round(255 + (62 - 255) * kk), Math.round(255 + (26 - 255) * kk), Math.round(255 + (16 - 255) * kk)], 1);
+    ctx.beginPath(); ctx.arc(x, y, r * 0.96, 0, 6.2832); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.strokeStyle = emCss(k.c, 0.82); ctx.lineWidth = HC ? 1.9 : 1.2; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.stroke();     // the rim holds the team color
+  if (n.kind) { /* a special's glyph is drawn on top by drawSpecialMark */ }
+  else if (SYM) { ctx.fillStyle = emCss(k.hot, 0.95); ctx.beginPath(); symPath(ctx, symOf(n.owner), x, y, 4.6); ctx.fill(); }
+  else {                                              // the flame is never a perfect circle; it dims and goes orange as the base is hurt
+    ctx.fillStyle = emCss(dmg > 0 ? emMix(k.hot, [255, 140, 60], Math.min(1, dmg * 1.1)) : k.hot, 0.95 * (0.12 + 0.88 * Math.pow(h, 1.6)));
+    const cr = r * 0.34 * (0.7 + 0.3 * h);
+    for (let q = 0; q < 3; q++) { const a = t * (2.3 + q * 1.7) + ph + q * 2.1; ctx.beginPath(); ctx.arc(x + Math.cos(a) * r * 0.1, y + Math.sin(a * 1.3) * r * 0.1 - r * 0.04, cr * (q ? 0.72 : 1), 0, 6.2832); ctx.fill(); }
+  }
+  if (dmg > 0.04) { ctx.globalCompositeOperation = 'lighter'; emCracks(x, y, r, id, Math.min(0.97, dmg), t); ctx.globalCompositeOperation = 'source-over'; }
+}
+function drawEmberRings(now) {                        // health, above the troops so a swarm cannot hide it: a thin ring that burns away clockwise, on a dark seat
+  const mv = reduceMotion ? 0 : 1, R = EM_R * 1.38, a0 = -Math.PI / 2, lw = Math.max(HC ? 1.9 : 1.35, 1.1 / V.s);
+  ctx.lineCap = 'butt';
+  for (const n of G.nodes) {
+    if (n.hp >= n.maxHp - 0.5 || !inV(n.x, n.y)) continue;
+    const k = emCol(colorOf(n.owner)), f = Math.max(0, Math.min(1, n.hp / n.maxHp)), hit = G.t - n.lastHitT < 0.15, x = n.x, y = n.y;
+    ctx.strokeStyle = 'rgba(8,4,3,0.6)'; ctx.lineWidth = lw + 1.5; ctx.beginPath(); ctx.arc(x, y, R, 0, 6.2832); ctx.stroke();       // dark seat so the ring reads over any glow
+    ctx.strokeStyle = hit ? 'rgba(255,230,200,0.5)' : 'rgba(170,140,115,0.30)'; ctx.lineWidth = lw; ctx.stroke();                     // what has burned away: a cold grey track
+    if (f > 0.004) {
+      ctx.strokeStyle = emCss(k.ring, 0.98); ctx.beginPath(); ctx.arc(x, y, R, a0, a0 + 6.2832 * f); ctx.stroke();
+      const ha = a0 + 6.2832 * f;                     // the burning end: a live spark where the ring is eating itself
+      ctx.globalCompositeOperation = 'lighter'; emBlob(x + Math.cos(ha) * R, y + Math.sin(ha) * R, EM_R * 0.45, k.spark, (hit ? 1 : 0.7) * (0.75 + 0.25 * mv * Math.sin(now * 17 + n.id)));
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    }
+  }
+}
+function drawEmberTroops(buckets) {
+  const mv = !reduceMotion;
+  if (mv) {                                           // a short warm streak behind each troop on the move
+    ctx.globalCompositeOperation = 'lighter';
+    for (let b = 1; b < 6; b++) { const arr = buckets[b]; if (!arr.length) continue; ctx.fillStyle = emCss(emCol(TEAM_COLORS[b - 1]).c, 0.5); trailPath(arr, 8, 1.0); }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  ctx.fillStyle = 'rgba(6,3,2,' + EM_HALO.a + ')'; ctx.beginPath();     // a light dark disc under each troop, so it keeps its colour over a base's glow
+  for (let b = 1; b < 6; b++) for (const t of buckets[b]) { ctx.moveTo(t.x + EM_HALO.r, t.y); ctx.arc(t.x, t.y, EM_HALO.r, 0, 6.2832); }
+  ctx.fill();
+  const sc = 0.5 * (HC ? 1.2 : 1);
+  for (let b = 1; b < 6; b++) {                       // the troop keeps its team color, only a little lightened
+    const arr = buckets[b]; if (!arr.length) continue;
+    ctx.fillStyle = emCss(emCol(TEAM_COLORS[b - 1]).tr, 1); ctx.beginPath();
+    const kind = SYM ? symOf(b - 1) : 'circle', kk = SYM ? sc * 1.3 : sc;
+    for (const t of arr) troopShape(ctx, kind, t.x, t.y, t.nx, t.ny, kk);
+    ctx.fill();
+  }
+  if (buckets[0].length) {                            // neutral guards: dull grey
+    ctx.fillStyle = 'rgba(150,135,125,0.55)'; ctx.beginPath();
+    for (const t of buckets[0]) troopShape(ctx, 'circle', t.x, t.y, t.nx, t.ny, 0.45);
+    ctx.fill();
+  }
+  if (quality < 3) {                                  // a white-hot speck in each, like a spark
+    ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = 'rgba(255,241,220,0.55)'; ctx.beginPath();
+    for (let b = 1; b < 6; b++) for (const t of buckets[b]) ctx.rect(t.x - 0.4, t.y - 0.4, 0.8, 0.8);
+    ctx.fill(); ctx.globalCompositeOperation = 'source-over';
+  }
+}
+function emCatch(x, y, to, age) {                     // the new fire catching: its rim lights, the core breathes, sparks rise (no expanding ring)
+  const k = emCol(colorOf(to)), r = EM_R, hot = emMix(k.c, EM_WHITE, 0.8), mid = k.mid;
+  if (quality < 2) emBlob(x, y, r * 7.5, [255, 130, 50], 0.20 * Math.pow(Math.max(0, 1 - age / 0.8), 1.5));       // the warm cast of the board lifts for a moment
+  emBlob(x, y, r * 2.3, hot, 0.85 * Math.pow(Math.max(0, 1 - age / 0.55), 1.6));                                  // one white-hot breath, on the core only
+  ctx.globalAlpha = 1;
+  const run = Math.min(1, age / 0.5), e = 1 - Math.pow(1 - run, 2.4), a0 = -Math.PI / 2, head = a0 + e * 6.2832, fade = age < 0.5 ? 1 : Math.max(0, 1 - (age - 0.5) / 0.55);
+  if (fade > 0 && e > 0.001) {                        // an arc races once round the rim, lit behind it
+    ctx.lineCap = 'round'; ctx.strokeStyle = emCss(mid, 0.8 * fade); ctx.lineWidth = 1.7; ctx.beginPath(); ctx.arc(x, y, r * 1.02, a0, head); ctx.stroke();
+    ctx.strokeStyle = emCss(hot, 0.95 * fade); ctx.lineWidth = 2.6; ctx.beginPath(); ctx.arc(x, y, r * 1.02, Math.max(a0, head - 1.1), head); ctx.stroke();
+    emBlob(x + Math.cos(head) * r * 1.02, y + Math.sin(head) * r * 1.02, r * 1.1, hot, 0.9 * fade); ctx.globalAlpha = 1;
+  }
+  if (age > 0.05 && age < 0.9) {                      // a tongue of flame leaps from the top and thins out
+    const q = (age - 0.05) / 0.85, hh = r * (0.9 + q * 2.4);
+    ctx.save(); ctx.translate(x, y - r * 0.5 - hh * 0.45); ctx.scale(0.4, 1); ctx.globalCompositeOperation = 'lighter'; emBlob(0, 0, hh, hot, 0.5 * Math.pow(1 - q, 1.4)); ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+  for (let i = 0; i < 14; i++) {                      // sparks lift straight up, swaying, slowing as they cool
+    const st = 0.1 + i * 0.045 + emHash(i + 3) * 0.05, life = 0.9 + emHash(i + 11) * 0.6, p = (age - st) / life; if (p < 0 || p > 1) continue;
+    const sx = x + (emHash(i * 7 + Math.floor(x)) - 0.5) * r * 1.5 + Math.sin(age * 5 + i) * r * 0.22 * p, sy = y - r * 0.4 - (p * (2 - p)) * r * (2.6 + emHash(i + 21) * 2.6), al = Math.pow(1 - p, 1.2);
+    ctx.fillStyle = emCss(emHash(i + 31) > 0.5 ? hot : mid, al); ctx.fillRect(sx - 0.8, sy - 0.8, 1.7, 1.7);
+    ctx.strokeStyle = emCss(k.c, al * 0.4); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(sx, sy + 0.8); ctx.lineTo(sx, sy + 4.5); ctx.stroke();
+  }
+}
+function drawEmberFx() {                              // a troop lost is a few rays of heat; a capture is the catch; the colour that lost the base leaves ash
+  const fogD = fogOn();
+  ctx.globalCompositeOperation = 'lighter';
+  for (const f of G.fx) {
+    if (f.x === undefined) continue;
+    const age = G.t - f.b;
+    if (fogD && !seenXY(f.x, f.y)) continue;
+    if (f.k === 'pop' && age < 0.45) {
+      const q = age / 0.45; ctx.strokeStyle = emCss(emMix(emCol(colorOf(f.c)).c, [255, 176, 112], 0.45), (1 - q) * 0.9); ctx.lineWidth = 1; ctx.beginPath();
+      for (let i = 0; i < 5; i++) { const a = emHash(Math.floor(f.x * 7 + f.y * 3 + f.b * 60) + i) * 6.28, r0 = 1 + q * 2.2, r1 = 2.2 + q * 6; ctx.moveTo(f.x + Math.cos(a) * r0, f.y + Math.sin(a) * r0); ctx.lineTo(f.x + Math.cos(a) * r1, f.y + Math.sin(a) * r1); }
+      ctx.stroke();
+    } else if (f.k === 'ring' && age < 1.7) emCatch(f.x, f.y, f.c, age);
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  for (let j = EMB.ash.length - 1; j >= 0; j--) {
+    const a = EMB.ash[j], age = G.t - a.t;
+    if (age > 3.2 || age < 0) { EMB.ash.splice(j, 1); continue; }
+    if (fogD && !seenXY(a.x, a.y)) continue;
+    const q = age / 3.2, fc = emMix(emCol(colorOf(a.from)).c, [154, 142, 132], 0.78);
+    ctx.fillStyle = emCss(fc, 0.45 * (1 - q));
+    for (let i = 0; i < 12; i++) { const an = emHash(i * 29 + Math.floor(a.y)) * 6.28, d = EM_R * (0.8 + age * (0.8 + emHash(i + 9) * 1.2)); ctx.fillRect(a.x + Math.cos(an) * d, a.y + Math.sin(an) * d - age * 6, 1.4, 1.4); }
+  }
+  ctx.globalAlpha = 1;
+}
 function draw(now) {
   const OV = isOver(), dtD = Math.min(0.1, Math.max(0, now - lastDrawT)); lastDrawT = now;
   kick = OV ? beatKick(now) : 0;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = OV ? 'rgba(0,0,0,0.45)' : isAtlas() ? '#04070d' : isNebula() ? '#01020a' : isRime() ? '#030a14' : '#000';   // Overload never fully clears, so everything leaves a smear
+  ctx.fillStyle = OV ? 'rgba(0,0,0,0.45)' : isAtlas() ? '#04070d' : isNebula() ? '#01020a' : isRime() ? '#030a14' : isEmber() ? '#050302' : '#000';   // Overload never fully clears, so everything leaves a smear
   ctx.fillRect(0, 0, cv.width, cv.height);
   if (!G || (mode === 'demo' && pvOnly)) return;      // setup screens show their map in the preview card instead
   const fogD = fogOn();
@@ -3016,13 +3315,14 @@ function draw(now) {
   ctx.beginPath(); ctx.rect(F.x, F.y, F.w, F.h); ctx.clip();
   applyView(sx, sy);
   updateVis();
-  const nodes = G.nodes, SP = isSpark(), CL = isClassic(), NB = isNebula(), RM = isRime();
+  const nodes = G.nodes, SP = isSpark(), CL = isClassic(), NB = isNebula(), RM = isRime(), EM = isEmber();
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   vfxFx(); stepParts();
   if (OV) drawOverloadBg(now, dtD);
   else if (SP && quality < 3) drawMotes(reduceMotion ? 0 : now);
   if (NB) { drawNebulaBack(now); applyView(sx, sy); }
   else if (RM) { drawRimeBack(now); applyView(sx, sy); }
+  else if (EM) { drawEmberBack(now); applyView(sx, sy); }
 
   if (isAtlas()) drawAtlasBack(now);
   if (PERF && window.__bgOnly) { ctx.restore(); return; }          // test hook: only the background, so tests can measure it alone
@@ -3070,6 +3370,7 @@ function draw(now) {
     const c = colorOf(n.owner);
     if (NB) drawSun(n, c, now);
     else if (RM) drawCrystal(n, c, now);
+    else if (EM) drawEmberBase(n, c, now);
     else if (SP) {                                   // Overload's base: soft glow, a slowly turning frame, a breathing core
       const mv = reduceMotion ? 0 : 1, own = n.owner >= 0, cc = c;
       const br = (1 + 0.07 * Math.sin(now * 2.2 + n.id) * mv) * (OV ? 1 + 0.35 * kick : 1);
@@ -3115,9 +3416,9 @@ function draw(now) {
     } else {
       ctx.fillStyle = NEUTRAL_COLOR; ctx.fillRect(n.x - 5.5, n.y - 5.5, 11, 11);
     }
-    if (n.kind) drawSpecialMark(n, now, (SP || CL || NB || RM) && G.t - n.lastHitT < 0.07);
+    if (n.kind) drawSpecialMark(n, now, (SP || CL || NB || RM || EM) && G.t - n.lastHitT < 0.07);
     if (n.crown) drawCrown(n, now);
-    if (n.hp < n.maxHp - 0.5) {
+    if (!EM && n.hp < n.maxHp - 0.5) {                 // (Ember draws its own ring, above the troops)
       const f = Math.max(0, n.hp / n.maxHp), hit = G.t - n.lastHitT < 0.15;
       ctx.lineWidth = 2.2;
       ctx.strokeStyle = hit ? 'rgba(255,255,255,0.3)' : HC ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)';
@@ -3197,7 +3498,8 @@ function draw(now) {
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     }
   }
-  for (let b = 0; b < 6; b++) {
+  if (EM) drawEmberTroops(buckets);
+  for (let b = 0; b < 6 && !EM; b++) {
     const arr = buckets[b]; if (!arr.length) continue;
     ctx.fillStyle = b === 0 ? (NB && !HC ? '#9097ad' : NEUTRAL_COLOR) : TEAM_COLORS[b - 1];   // Nebula: empty bases' guards a shade dimmer than the stars they guard
     ctx.beginPath();
@@ -3218,8 +3520,10 @@ function draw(now) {
     }
   }
 
+  if (EM) drawEmberRings(now);
   if (!reduceMotion && NB) drawNebulaFx();
   else if (!reduceMotion && RM) drawRimeFx();
+  else if (!reduceMotion && EM) drawEmberFx();
   else if (!reduceMotion) {
     ctx.lineWidth = 1.1;
     for (const f of G.fx) {
@@ -3249,7 +3553,7 @@ function draw(now) {
     ctx.globalAlpha = 1;
   }
   if (isAtlas()) drawAtlasFront(now);
-  if (SP || CL || NB || RM) drawParts();
+  if (SP || CL || NB || RM || EM) drawParts();
   for (let i = uiFx.length - 1; i >= 0; i--) {
     const f = uiFx[i], age = now - f.b;
     if (age > 0.5) { uiFx.splice(i, 1); continue; }
@@ -3808,7 +4112,7 @@ function pxGround(tk) {                               // the ground changes only
       y.fill();
     }
     y.fillStyle = 'rgba(80,100,170,0.3)'; y.beginPath();              // a faint dot grid fixed to the ground, like the tiles of an old map
-    for (let wx = st; wx < W; wx += st) for (let wy = st; wy < H; wy += st) { pxp(wx, wy); if (PXX >= 0 && PXY >= 0 && PXX < g.width && PXY < g.height) y.rect(PXX, PXY, 1, 1); }
+    for (let wx = Math.floor(VIS.x0 / st) * st; wx < VIS.x1; wx += st) for (let wy = Math.floor(VIS.y0 / st) * st; wy < VIS.y1; wy += st) { pxp(wx, wy); if (PXX >= 0 && PXY >= 0 && PXX < g.width && PXY < g.height) y.rect(PXX, PXY, 1, 1); }
     y.fill();
     if (G.bridges.size) {                                             // bridges: solid crossties
       const T = bridgeTies(); y.fillStyle = 'rgba(255,255,255,0.45)'; y.beginPath();
@@ -4069,7 +4373,8 @@ const PF_STYLE = {
   atlas:    { n: 0, rings: true },
   pixel:    { n: 34, kind: 'pixel', cols: ['#3577ff', '#8fb3ff', '#ffffff'], v: [90, 210], life: [0.6, 1.05] },
   nebula:   { n: 44, kind: 'dust', cols: ['#ffffff', '#cfe0ff', '#ffe6c4', '#b8ccff'], v: [24, 80], life: [1.2, 2.0], flare: true },
-  rime:     { n: 22, kind: 'shard', cols: ['#bfe6ff', '#e8f6ff', '#8fd0ff'], v: [90, 220], life: [1.0, 1.5], hex: true }
+  rime:     { n: 22, kind: 'shard', cols: ['#bfe6ff', '#e8f6ff', '#8fd0ff'], v: [90, 220], life: [1.0, 1.5], hex: true },
+  ember:    { n: 30, kind: 'streak', cols: ['#ffd9a8', '#ff9a4a', '#fff1dc'], w: 1.6, v: [60, 170], life: [0.8, 1.4], len: 0.06, add: true }
 };
 const pfRnd = (a, b) => a + Math.random() * (b - a);
 function pfCanvas() {
@@ -4099,6 +4404,7 @@ function ptsOsc(f, t, dur, peak, atk, f2) {            // one sine note straight
 function ptsChime(N, t) {                              // N: the running (or preview) nodes of the current sound style; null for Simple
   const share = G ? (G.teams[PLAYER].bases / G.nodes.length) : 0.4;
   switch (settings.tone) {
+    case 'hearth': heNote(N, t, 293.66, 0.55, 0.5); heNote(N, t + 0.12, 440, 0.55, 0.7); break;
     case 'overdrive':
       [[69, 0, 0.1], [76, 0.09, 0.22]].forEach(([m, d, len]) => {
         const o = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain();
@@ -4123,8 +4429,8 @@ function ptsChime(N, t) {                              // N: the running (or pre
 }
 function ptsSound() {                                  // an upgrade point was earned in a match you are playing
   if (!AC || !settings.sound || !audible() || awatch() || AC.state !== 'running') return;
-  const N = ({ overdrive: OD.nodes, drift: DR.nodes, chip: CH.nodes, cosmos: CS.nodes, floe: FL.nodes })[settings.tone];
-  if (settings.tone !== 'simple' && !N && ['overdrive', 'drift', 'chip', 'cosmos', 'floe'].includes(settings.tone)) return;     // that style's sound is not up yet
+  const N = ({ hearth: HE.nodes, drift: DR.nodes, chip: CH.nodes, cosmos: CS.nodes, floe: FL.nodes })[settings.tone];
+  if (settings.tone !== 'simple' && !N && ['hearth', 'drift', 'chip', 'cosmos', 'floe'].includes(settings.tone)) return;     // that style's sound is not up yet
   try { ptsChime(N || null, AC.currentTime + 0.01); PF.chimes.push({ tone: settings.tone, at: performance.now() }); if (PF.chimes.length > 40) PF.chimes.shift(); } catch (e) { /* a missing voice must never stop the game */ }
 }
 let lastChimePrev = 0;
@@ -4135,7 +4441,7 @@ function ptsPreview() {                                // the "Hear it" button i
   try {
     const t = AC.currentTime + 0.05; let N = null, off = null;
     switch (settings.tone) {
-      case 'overdrive': N = odBuild(false); off = () => N.music.gain.setTargetAtTime(0.0001, t + 1.2, 0.2); break;
+      case 'hearth': N = heBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 6000); break;
       case 'drift': N = drBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 4000); break;
       case 'chip': N = chBuild(true); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 1500); break;
       case 'cosmos': N = csBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 5000); break;
@@ -4338,11 +4644,15 @@ const pick = a => a[(Math.random() * a.length) | 0];
 // volume slider is perceptual (squared). "Simple" (the old Bright and Soft, folded together) sits an octave low, rounds off each blip's start and filters the top end
 const MASTER_BOOST = 2;                              // +6 dB: a 70% slider now sounds like the old 100%
 const soundGain = () => settings.sound ? MASTER_BOOST * Math.pow(settings.volume / 100, 2) : 0;
-const cutoff = () => ({ simple: 1500, overdrive: 9000, drift: 6500, chip: 7000, cosmos: 5200, floe: 4800 })[settings.tone] || 1500;
+const cutoff = () => ({ simple: 1500, hearth: 7000, drift: 6500, chip: 7000, cosmos: 5200, floe: 4800 })[settings.tone] || 1500;
 let kickT = 0, lostSince = 0, lostToast = false;
 function audioKick() {                                // the phone can pause or interrupt web audio (a text, another app, the screen): ask for the sound back
   if (!AC || !settings.sound || document.hidden) return;
   try { const p = AC.resume(); if (p && p.catch) p.catch(() => {}); } catch (_) {}
+}
+function audioHush() {                               // the page is hidden: the frame loop that fades the sustained beds has stopped, so stop the whole sound until we are back
+  if (!AC || AC.state !== 'running') return;
+  try { const p = AC.suspend(); if (p && p.catch) p.catch(() => {}); } catch (_) {}
 }
 function audioOn() {
   try {
@@ -4407,6 +4717,7 @@ function playSfx(nowMs, dt) {
   if (settings.tone === 'chip') { chipHits(ev); return; }
   if (settings.tone === 'cosmos') { cosmosHits(ev); return; }
   if (isFloe()) { floeHits(ev); return; }
+  if (isHearth()) { heHits(ev); return; }
   if (nowMs - lastBloop > 150) {              // base hits: a low, round bloop that drops in pitch
     const e = h.baseMine || h.base;
     if (e) {
@@ -5214,6 +5525,222 @@ function floePreview() {                              // three notes, a chirp wi
   setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 14000);
 }
 
+// ---- "Hearth": a banked fire, in sound, for Ember ----
+// The approved clip made live. A low warm bed (D with a fifth, slightly detuned so it breathes) that gets louder and brighter as the fighting does. Crackles: a base
+// losing another tenth of its health may throw a short run of snaps (thinned to a calm rate, loudest first); a thin share of the real hits are tiny snaps too, panned
+// to where they land. Your orders are soft felt taps. Taking a base is a chord swelling up (D, A, E) with a warm breath; losing one takes the fifth out of the bed for a
+// while, with a low note and a breath of ash. A rival taking a base is the same chord, muffled and quiet. Everything rings into a short, dark room.
+const HE_LEVEL = 0.9;                                  // overall level of the style
+const HE_RIVAL_DB = -36;                               // a rival's capture: the player's chord, muffled, this loud (the player's is -24)
+const HE_RIVAL_PHRASE = false;                         // true = a rival's capture also throws a crackle phrase (it did in 48.2)
+const HE_BUDGET = [22, 15, 10];                        // crackle ticks allowed in any one second, by quality tier
+const HE_PITCH = [98, 98, 110, 98, 123.5, 110];        // the tap's note walks through these
+const HE = { nodes: null, I: 0, Is: 0, rr: 0, crr: 0, cnt: 0, crk: 0, at: 0, last: {}, own: null, lead: -9, og: null, phAt: -9, tapT: -9, tapN: 0, v: 0, bank: null, ir: null, phrases: 0, caps: 0, losses: 0, taps: 0, duck: -9, winT: -9, winN: 0, rc: [], rcaps: 0, rskip: 0, snaps: 0, drop: 0 };
+const isHearth = () => settings.tone === 'hearth';
+const heDb = d => Math.pow(10, d / 20);
+const heExp = m => -m * Math.log(1 - Math.random());
+const heGauss = () => { let u = 0; for (let i = 0; i < 6; i++) u += Math.random(); return (u - 3) * 1.414; };
+const hePoisson = l => { const L = Math.exp(-l); let k = 0, p = 1; do { k++; p *= Math.random(); } while (p > L); return k - 1; };
+const heClamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function heBiquad(x, hi, f, sr) {                       // a second-order high or low pass, run in place
+  const w = 2 * Math.PI * f / sr, cs = Math.cos(w), al = Math.sin(w) / 1.414, a0 = 1 + al, b0 = hi ? (1 + cs) / 2 : (1 - cs) / 2, b1 = hi ? -(1 + cs) : 1 - cs, a1 = -2 * cs, a2 = 1 - al;
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  for (let i = 0; i < x.length; i++) { const v = x[i], y = (b0 * v + b1 * x1 + b0 * x2 - a1 * y1 - a2 * y2) / a0; x2 = x1; x1 = v; y2 = y1; y1 = y; x[i] = y; }
+}
+function heBank() {                                     // the snaps, made once: quiet ones (very short) and loud ones (longer, some with a wooden body)
+  if (HE.bank && HE.bank.sr === AC.sampleRate) return HE.bank;
+  const sr = AC.sampleRate, n = Math.floor(sr * 0.12), noiseArr = () => { const x = new Float32Array(n); for (let i = 0; i < n; i++) x[i] = Math.random() * 2 - 1; return x; };
+  const make = loud => {
+    const fc = Math.exp(Math.log(700) + Math.random() * Math.log(6500 / 700)), dec = loud ? 0.005 + Math.random() * 0.015 : 0.0015 + Math.random() * 0.0035, x = noiseArr();
+    heBiquad(x, true, fc * 0.55, sr); heBiquad(x, false, Math.min(fc * 1.7, sr * 0.45), sr);
+    let pk = 1e-9; for (let i = 0; i < n; i++) { x[i] *= Math.exp(-i / (sr * dec)) * (1 - Math.exp(-i / (sr * 0.0004))); pk = Math.max(pk, Math.abs(x[i])); }
+    for (let i = 0; i < n; i++) x[i] /= pk;
+    if (loud && Math.random() < 0.35) {
+      const y = noiseArr(), bd = 0.02 + Math.random() * 0.03; heBiquad(y, true, 220, sr); heBiquad(y, false, 800, sr);
+      let q = 1e-9; for (let i = 0; i < n; i++) { y[i] *= Math.exp(-i / (sr * bd)); q = Math.max(q, Math.abs(y[i])); }
+      pk = 1e-9; for (let i = 0; i < n; i++) { x[i] = x[i] * 0.8 + y[i] / q * 0.7; pk = Math.max(pk, Math.abs(x[i])); }
+      for (let i = 0; i < n; i++) x[i] /= pk;
+    }
+    const b = AC.createBuffer(1, n, sr); b.getChannelData(0).set(x); return b;
+  };
+  const quiet = [], loud = []; for (let i = 0; i < 28; i++) quiet.push(make(false)); for (let i = 0; i < 20; i++) loud.push(make(true));
+  return (HE.bank = { sr, quiet, loud });
+}
+function heIR() {                                       // a short dark room: noise that decays in about 0.4 s, softened above 2.6 kHz
+  const key = AQ(), sr = AC.sampleRate; if (HE.ir && HE.ir.k === key && HE.ir.b.sampleRate === sr) return HE.ir.b;
+  const len = Math.floor(sr * 1.7 * AQ_IR[key]), buf = AC.createBuffer(2, len, sr), a = 1 - Math.exp(-2 * Math.PI * 2600 / sr);
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c); let l1 = 0, l2 = 0, sum = 0;
+    for (let i = 0; i < len; i++) { const t = i / sr; l1 += (heGauss() * Math.exp(-t / 0.38) - l1) * a; l2 += (l1 - l2) * a; d[i] = l2 * (1 - Math.exp(-t / 0.012)); sum += Math.abs(d[i]); }
+    const k = 1 / (Math.sqrt(sum) * 4); for (let i = 0; i < len; i++) d[i] *= k;
+  }
+  HE.ir = { k: key, b: buf }; return buf;
+}
+function heSend(N, src, dB, pan, wet) {                // a signal into the mix: gain, pan, a dry part and a share into the room
+  const g = AC.createGain(); g.gain.value = heDb(dB); src.connect(g); let o = g;
+  if (pan && AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); o = p; }
+  const d = AC.createGain(); d.gain.value = 1 - wet * 0.5; o.connect(d); d.connect(N.mix);
+  const w = AC.createGain(); w.gain.value = wet * 1.6; o.connect(w); w.connect(N.rev);
+}
+const HE_BINS = [-0.85, -0.42, 0, 0.42, 0.85];
+function heBuild(withBed) {
+  const t = AC.currentTime, q = AQ(), N = { srcs: [], tier: q };
+  N.out = AC.createGain(); N.out.gain.value = 0.0001; N.out.gain.setTargetAtTime(HE_LEVEL, t, withBed ? 0.6 : 0.01); N.out.connect(outBus());
+  N.mix = AC.createGain(); N.mix.connect(N.out);
+  N.rev = AC.createConvolver(); N.rev.normalize = false; N.rev.buffer = heIR(); N.rev.connect(N.mix);
+  N.bins = HE_BINS.map(p => {                           // the crackle goes through five fixed positions across the room
+    const g = AC.createGain(); g.gain.value = heDb(-25); let o = g;
+    if (AC.createStereoPanner) { const pn = AC.createStereoPanner(); pn.pan.value = p; g.connect(pn); o = pn; }
+    const d = AC.createGain(); d.gain.value = 0.875; o.connect(d); d.connect(N.mix);
+    const w = AC.createGain(); w.gain.value = 0.4; o.connect(w); w.connect(N.rev); return g;
+  });
+  if (withBed) {
+    N.bedLP = AC.createBiquadFilter(); N.bedLP.type = 'lowpass'; N.bedLP.frequency.value = 520; N.bedLP.Q.value = 0.7;
+    N.bed = AC.createGain(); N.bed.gain.value = 0.6; N.breath = AC.createGain(); N.breath.gain.value = 1;
+    N.fifthG = AC.createGain(); N.fifthG.gain.value = 1;
+    const lfo = AC.createOscillator(), ld = AC.createGain(); lfo.frequency.value = 0.07; ld.gain.value = 0.18; lfo.connect(ld); ld.connect(N.breath.gain); lfo.start(t); N.srcs.push(lfo);
+    const add = (f, a, to) => { const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = f; g.gain.value = a; o.connect(g); g.connect(to); o.start(t); N.srcs.push(o); };
+    add(73.42, 1 / 1.9, N.bedLP); add(146.84, 0.35 / 1.9, N.bedLP);                                    // the root (D) and its octave
+    add(110.13, 0.8 / 1.75, N.fifthG); add(220.4, 0.8 * 0.3 / 1.75, N.fifthG);                          // the fifth (A) and its octave: this is the part that leaves on a loss
+    if (q < 2) { add(73.77, 0.5 / 1.9, N.bedLP); add(109.7, 0.8 * 0.45 / 1.75, N.fifthG); }           // a hair apart from the root and the fifth, so they beat slowly
+    N.fifthG.connect(N.bedLP); N.bedLP.connect(N.bed); N.bed.connect(N.breath); heSend(N, N.breath, -26, 0, 0.25);
+    const rt = AC.createBufferSource(), rl = AC.createBiquadFilter(), rl2 = AC.createBiquadFilter(), rg = AC.createGain();   // room tone: a very low rumble of air
+    rt.buffer = noise(); rt.loop = true; rl.type = rl2.type = 'lowpass'; rl.frequency.value = rl2.frequency.value = 380; rg.gain.value = 2.6;
+    rt.connect(rl); rl.connect(rl2); rl2.connect(rg); heSend(N, rg, -46, 0, 0.1); rt.start(t); N.srcs.push(rt);
+  }
+  return N;
+}
+function heSnap(N, t, a, pan) {                         // one tick of crackle
+  if (t < HE.duck && a < -9) return;                    // the quiet ticks step back for a moment around a rival's capture
+  const clk = AC.currentTime;
+  if (clk - HE.winT >= 1) { HE.winT = clk; HE.winN = 0; }                         // one budget for all the crackle together, per second
+  const cap = HE_BUDGET[AQ()];
+  if (HE.winN >= cap || (HE.winN >= cap * 0.65 && a < -9)) { HE.drop++; return; }     // past two thirds of it only the louder ticks get through
+  HE.winN++; HE.snaps++;
+  if (HE.v >= [56, 34, 18][AQ()]) return; HE.v++; setTimeout(() => { HE.v--; }, 140);
+  const bank = heBank(), list = a > -9 ? bank.loud : bank.quiet, src = AC.createBufferSource(), g = AC.createGain();
+  src.buffer = list[(Math.random() * list.length) | 0]; g.gain.value = heDb(a); src.connect(g);
+  g.connect(N.bins[heClamp(Math.round((pan + 1) * 2), 0, 4)]); src.start(t);
+}
+function hePhrase(N, t, steps, pan0, rival, I) {        // a run of snaps, loudest first, a little rhythm in the gaps
+  const sc = [1, 0.7, 0.5][AQ()], k = Math.max(2, Math.round((4 + ((Math.random() * 3) | 0) + hePoisson(7 * I) + (rival ? 3 : 0)) * sc));
+  const a0 = Math.min(0, -Math.random() * 8 - 5 * (1 - I) + 1.5 * (steps - 1) + (rival ? 3 : 0)); let at = t;
+  for (let j = 0; j < k; j++) {
+    heSnap(N, at, Math.max(-40, a0 - 2 * j - heExp(5)), heClamp((Math.random() * 1.4 - 0.7) * 0.6 + pan0 * 0.7, -0.95, 0.95));
+    at += Math.exp(Math.log(0.03) + 0.6 * heGauss());
+  }
+  HE.phrases++;
+}
+function heNote(N, t, f, amp, len) {                     // a soft felt note (the tap and the upgrade chime)
+  const o = AC.createOscillator(), o2 = AC.createOscillator(), g = AC.createGain(), g2 = AC.createGain(), lp = AC.createBiquadFilter();
+  o.frequency.value = f; o2.frequency.value = f * 1.5; g2.gain.value = 0.5; o2.connect(g2); o.connect(g); g2.connect(g);
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(amp, t + 0.004); g.gain.setTargetAtTime(0.0001, t + 0.004, 0.11 * (len || 1) / 0.5 * 0.5);
+  lp.type = 'lowpass'; lp.frequency.value = 700 * (f > 200 ? 2.5 : 1); lp.Q.value = 0.7; g.connect(lp); heSend(N, lp, -19, 0, 0.3);
+  o.start(t); o2.start(t); o.stop(t + 0.9); o2.stop(t + 0.9);
+}
+function heTap(moved) {                                  // your order: one soft tap (orders within a quarter of a second share one)
+  const N = HE.nodes, ms = performance.now(); if (!N || !AC || AC.state !== 'running') return;
+  if (ms - HE.tapT < 250) { HE.tapT = ms; return; }
+  HE.tapT = ms; HE.taps++; heNote(N, AC.currentTime + 0.01, HE_PITCH[HE.tapN++ % HE_PITCH.length], 0.75 + 0.25 * Math.min(1, (moved | 0) / 12), 1);
+}
+function heSwell(N, t0, f, att, rel, g0) {              // one note of the chord: a smooth rise, a short hold, a long fade
+  const g = AC.createGain(), hold = 0.4, steps = 12, curve = new Float32Array(steps);
+  for (let i = 0; i < steps; i++) { const x = i / (steps - 1); curve[i] = g0 * x * x * (3 - 2 * x) + 0.0001; }
+  g.gain.setValueAtTime(0.0001, t0); g.gain.setValueCurveAtTime(curve, t0, att); g.gain.setValueAtTime(g0, t0 + att + hold); g.gain.setTargetAtTime(0.0001, t0 + att + hold, rel);
+  [[1, 1], [2, 0.22], [3.01, 0.08]].forEach(([r, a]) => { const o = AC.createOscillator(), pg = AC.createGain(); o.frequency.value = f * r; pg.gain.value = a; o.connect(pg); pg.connect(g); o.start(t0); o.stop(t0 + att + hold + rel * 6); });
+  return g;
+}
+function heChord(N, t) {                                 // you took a base: D, A, E swelling up, and a warm breath
+  const K = 1 / 3, lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1800;
+  [[146.83, 0, 1, 0.5, 2.8], [220, 0.15 * K, 0.8, 0.5, 2.8], [329.63, 0.3 * K, 0.55, 0.5, 2.8], [659.26, 0.5 * K, 0.18, 0.6, 2.2]].forEach(([f, d, a, att, rel]) => heSwell(N, t + d, f, att, rel, a).connect(lp));
+  heSend(N, lp, -24, 0, 0.5);
+  const s = AC.createBufferSource(), nl = AC.createBiquadFilter(), g = AC.createGain(); s.buffer = noise(); nl.type = 'lowpass'; nl.frequency.value = 900;
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(1.6, t + 0.3); g.gain.setTargetAtTime(0.0001, t + 0.3, 0.9); s.connect(nl); nl.connect(g); heSend(N, g, -45, 0, 0.5); s.start(t, Math.random() * 0.3, 4);
+  HE.caps++;
+}
+function heLoss(N, t) {                                  // you lost a base: the fifth leaves the bed, ash, a low last note
+  if (N.fifthG) {
+    const gp = N.fifthG.gain, curve = new Float32Array(16); for (let i = 0; i < 16; i++) { const x = i / 15; curve[i] = 0.026 + (1 - 0.026) * x * x * (3 - 2 * x); }
+    gp.cancelScheduledValues(t); gp.setTargetAtTime(0.0001, t, 1.1); gp.setValueAtTime(0.026, t + 4); gp.setValueCurveAtTime(curve, t + 4, 8);
+  }
+  const s = AC.createBufferSource(), hp = AC.createBiquadFilter(), lp = AC.createBiquadFilter(), g = AC.createGain(); s.buffer = noise(); hp.type = 'highpass'; hp.frequency.value = 1400; lp.type = 'lowpass'; lp.frequency.value = 5200;
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(1, t + 1.2); g.gain.setTargetAtTime(0.0001, t + 1.2, 1.6); s.connect(hp); hp.connect(lp); lp.connect(g); heSend(N, g, -54, 0.2, 0.6); s.start(t, Math.random() * 0.3, 6);
+  const o = AC.createOscillator(), og = AC.createGain(); o.frequency.value = 55; og.gain.setValueAtTime(0.0001, t + 0.5); og.gain.linearRampToValueAtTime(0.8, t + 1.3); og.gain.setTargetAtTime(0.0001, t + 1.3, 2.6); o.connect(og); heSend(N, og, -30, 0, 0.3); o.start(t + 0.5); o.stop(t + 11);
+  HE.losses++;
+}
+function heRivalCapture(N, t, pan) {                      // a rival took a base: your chord, muffled and quiet (an octave up so a phone speaker plays it, no breath)
+  const clk = AC.currentTime; HE.rc = HE.rc.filter(x => clk - x < 2);
+  if (HE.rc.length >= 3) { HE.rskip++; return; }          // never more than three in two seconds, however busy the war is
+  HE.rc.push(clk); HE.duck = t + 0.55;
+  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520; lp.Q.value = 0.5;
+  [[293.66, 0, 1], [440, 0.05, 0.8], [659.26, 0.1, 0.5]].forEach(([f, d, a]) => heSwell(N, t + d, f, 0.35, 1.6, a).connect(lp));
+  heSend(N, lp, HE_RIVAL_DB, pan * 0.6, 0.45);
+  HE.rcaps++;
+}
+function heHits(ev) {                                    // every frame with fighting in it: count it, look for health steps, throw a share of the hits as tiny snaps
+  HE.cnt += ev.length;
+  const N = HE.nodes; if (!N) return;
+  const t0 = AC.currentTime + 0.012, nowMs = performance.now(), scat = (4 + 14 * HE.I) * [1, 0.6, 0.35][AQ()] / Math.max(1, HE.rr);
+  for (const e of ev) {
+    if (e.base && e.hf !== undefined) {
+      const st = Math.floor(e.hf * 10 + 1e-9), p = HE.last[e.ni]; HE.last[e.ni] = st;
+      if (p !== undefined && st < p) {                   // another tenth of this base is gone: it may crack, at a calm rate that follows the fight
+        HE.crk++;
+        if (nowMs - HE.phAt >= 900 && Math.random() < Math.min(1, (0.10 + 0.65 * Math.pow(HE.I, 1.2)) / Math.max(0.1, HE.crr))) { HE.phAt = nowMs; hePhrase(N, t0, p - st, screenPan(e.x, e.y), false, HE.I); }
+      }
+    }
+    if (Math.random() < scat) heSnap(N, t0 + Math.random() * 0.016, Math.max(-45, -heExp(15)), screenPan(e.x, e.y));
+  }
+}
+function heOff() {
+  if (!HE.nodes) return;
+  const N = HE.nodes, t = AC.currentTime; HE.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.3); for (const o of N.srcs) o.stop(t + 1.5);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 9000);
+}
+function heTick() {
+  const want = AC && AC.state === 'running' && settings.sound && isHearth() && audible() && G && !G.over;
+  if (HE.nodes && (!want || HE.nodes.tier !== AQ())) heOff();
+  if (!want) { HE.last = {}; HE.own = null; HE.og = null; return; }
+  if (!HE.nodes) HE.nodes = heBuild(true);
+  const N = HE.nodes, now = AC.currentTime, ms = performance.now(), dt = Math.min(0.25, Math.max(0.001, (ms - HE.at) / 1000)); HE.at = ms;
+  if (HE.og !== G) { HE.og = G; HE.last = {}; HE.own = G.nodes.map(n => n.owner); HE.rr = HE.Is = HE.I = HE.crr = HE.cnt = HE.crk = 0; for (const f of G.fx) f.he = 1; }
+  HE.rr += (HE.cnt / dt - HE.rr) * (1 - Math.exp(-dt / 1.5)); HE.cnt = 0;                       // hits a second, smoothed
+  HE.I = heClamp(Math.log(Math.max(HE.rr, 1) / 40) / Math.log(330 / 40), 0, 1);                  // 0 (quiet) .. 1 (everything at once), on a log scale
+  HE.Is += (HE.I - HE.Is) * (1 - Math.exp(-dt / 2.5));
+  HE.crr += (HE.crk / dt - HE.crr) * (1 - Math.exp(-dt / 3)); HE.crk = 0;                        // how often bases are crossing a tenth, smoothed
+  N.bed.gain.setTargetAtTime(0.45 + 0.45 * HE.Is, now, 0.25);
+  N.bedLP.frequency.setTargetAtTime(520 + 780 * heClamp((HE.Is - 0.3) / 0.5, 0, 1), now, 0.25);
+  for (const f of G.fx) {                                // captures
+    if (f.he) continue; f.he = 1;
+    if (f.k !== 'ring' || G.t - f.b > 1.5 || (fogOn() && f.x !== undefined && !seenXY(f.x, f.y))) continue;
+    const n = G.nodes.find(nd => nd.x === f.x && nd.y === f.y), from = n && HE.own ? HE.own[n.id] : -2, to = f.c;
+    if (!awatch()) {                                     // your match: the chord and the loss are yours, a rival's capture is a crackle and one low note
+      if (to === PLAYER) heChord(N, now + 0.02);
+      else if (from === PLAYER) heLoss(N, now + 0.02);
+      else { heRivalCapture(N, now + 0.02, screenPan(f.x, f.y)); if (HE_RIVAL_PHRASE) hePhrase(N, now + 0.02, 3, screenPan(f.x, f.y), true, HE.I); }
+    } else {                                             // Spectate favors no team: the chord marks a change of lead, whoever takes it
+      const own2 = {}; for (const m of G.nodes) own2[m.id] = (n && m.id === n.id) ? to : m.owner;
+      const c2 = {}; for (const id in own2) if (own2[id] >= 0) c2[own2[id]] = (c2[own2[id]] || 0) + 1;
+      let best = -1, bc = 0, tie = false; for (const k in c2) { if (c2[k] > bc) { bc = c2[k]; best = +k; tie = false; } else if (c2[k] === bc) tie = true; }
+      const lead = tie ? HE.lead : best, changed = lead !== HE.lead && lead >= 0 && HE.lead !== undefined && HE.lead !== -9;
+      if (lead >= 0) HE.lead = lead;
+      if (changed && to === lead) heChord(N, now + 0.02);
+      else { heRivalCapture(N, now + 0.02, screenPan(f.x, f.y)); if (HE_RIVAL_PHRASE) hePhrase(N, now + 0.02, 3, screenPan(f.x, f.y), true, HE.I); }
+    }
+  }
+  if (HE.own) for (const n of G.nodes) HE.own[n.id] = n.owner;
+}
+function hePreview() {                                   // a few taps, a crackle, the chord and the low note of a loss, over the bed
+  const N = heBuild(true), t = AC.currentTime + 0.05;
+  N.bed.gain.value = 0.75;
+  [[0.1, 0], [0.55, 2], [1.0, 4]].forEach(([d, i]) => heNote(N, t + d, HE_PITCH[i], 0.9, 1));
+  hePhrase(N, t + 1.6, 3, -0.2, false, 0.55);
+  heChord(N, t + 2.6);
+  heLoss(N, t + 5.0);
+  N.out.gain.setTargetAtTime(0.0001, t + 7.4, 0.5); for (const o of N.srcs) o.stop(t + 9);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 14000);
+}
+
 function syncRivals() {
   const open = watching ? watchRivals : settings.rivals;
   $('rivals').hidden = !(watching && open);                     // the table of every color's upgrades is for watching AI matches only
@@ -5239,12 +5766,12 @@ $('bChime').addEventListener('click', () => { audioOn(); ptsPreview(); });
 let lastPreview = 0, lastPreviewTone = '';
 function previewSound() {                       // a sample bleep and bloop so you can hear the setting
   const now = performance.now();
-  const gap = ({ overdrive: 2400, drift: 2500, chip: 2200, cosmos: 3200, floe: 4200 })[settings.tone] || 140;
+  const gap = ({ hearth: 6200, drift: 2500, chip: 2200, cosmos: 3200, floe: 4200 })[settings.tone] || 140;
   if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < gap && lastPreviewTone === settings.tone) return;
   lastPreview = now; lastPreviewTone = settings.tone;
   previewing = true;                                  // a preview is always heard at full level, not through the menu mix
   try {
-    if (settings.tone === 'overdrive') { odPreview(); return; }
+    if (isHearth()) { hePreview(); return; }
     if (settings.tone === 'drift') { driftPreview(); return; }
     if (settings.tone === 'chip') { chipPreview(); return; }
     if (settings.tone === 'cosmos') { cosmosPreview(); return; }
@@ -5275,10 +5802,10 @@ const SHAPE_INFO = { random: 'A random shape, different each time the map is rol
   river: 'A river splits the map in two, with a few crossings to fight over.' };
 const SPECIAL_INFO = { on: 'Fortress, Forge, Beacon and Relay bases are scattered across the map. Tap the i to see what each does.', off: 'No special bases. Every base is the same.' };
 const SETTINGS_INFO = {
-  tone: { simple: 'Soft, round tones, low and warm. Pairs with Classic.', overdrive: 'A dark beat that builds with the fighting. Pairs with Overload.', drift: 'Gentle plucked notes in a big quiet room. Pairs with Atlas.',
+  tone: { simple: 'Soft, round tones, low and warm. Pairs with Classic.', hearth: 'A banked fire: a low warm hum, crackles that follow the fighting, and a soft chord when you take a base. Pairs with Ember.', drift: 'Gentle plucked notes in a big quiet room. Pairs with Atlas.',
     chip: 'A four-channel console played by the battle: combo runs, buzzy crunches and little fanfares. Pairs with Pixel.', cosmos: 'A deep drone, sonar pings and pads that swell with the fighting. Pairs with Nebula.',
     floe: 'Soft glass, cracking ice and low groans in a long cold echo, played by the fighting. Pairs with Rime.' },
-  visual: { classic: 'Clean squares and triangles, with soft glows, light trails and sparks.', overload: 'Maximum chaos: beat-synced flashes, lightning and shakes. Team colors stay true.', atlas: 'A surveyor\'s chart: influence washes and plotted courses.',
+  visual: { classic: 'Clean squares and triangles, with soft glows, light trails and sparks.', ember: 'A fire seen from afar at night: bases burn in their color, crack with orange light when hurt, a capture is a new fire catching. Pairs with Hearth.', atlas: 'A surveyor\'s chart: influence washes and plotted courses.',
     pixel: 'Chunky pixels and scanlines, like an old console. Pairs with Chip.', nebula: 'Deep space: suns, drifting stars and supernova captures. Pairs with Cosmos.',
     rime: 'A winter night: frost grows over what you hold, bases are crystals, and a capture freezes over. Pairs with Floe.' },
   menuSound: { on: 'Plays the background match quietly behind the menus.', off: 'Menus stay silent.' },
@@ -5349,6 +5876,14 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '48.3', t: 'A sound for every capture', b: ['In Hearth, a rival taking a base now has a sound too: your capture chord, muffled and quieter. The crackle stays calmer when many fights happen at once.', 'When you leave the app, the sound now stops instead of holding one note.', 'In Ember, bases nobody owns yet are easier to spot, and they now show cracks and a health ring when they are attacked.'] },
+  { v: '48.2', t: 'Ember and Hearth', b: ['Hearth is a new sound style, made to go with Ember: a low warm hum that grows with the fighting, crackles when a base is hit hard, a soft tap when you send troops, and a chord when you take a base. It replaces Overdrive.', 'If you had Overdrive picked, you now have Hearth.'] },
+  { v: '48.1.6', t: 'Check for update tells the truth', b: ['The Check for update button used to say you had the newest build even when a newer one was out. It now checks the website itself, and reloads straight into the new build when there is one.'] },
+  { v: '48.1.5', t: 'Ember', b: ['A new look called Ember takes the place of Overload. Every base is a small fire: it burns in its team color, cracks open with orange light as it takes damage, and a thin ring around it shows how much health is left. A capture is the new color catching fire.', 'If you had Overload picked, you now have Ember.'] },
+  { v: '48.1.4', t: 'Fewer lost taps', b: ['A tap that slides a few pixels still counts. A tap made while another finger is still on the screen now counts too, and a stray touch can no longer jam the controls.', 'When your selected base is lost or the selection runs out, the ring now visibly closes. A base under your finger now beats the arrow beside it. After a match ends, the first moment of taps cannot press Play again by accident.'] },
+  { v: '48.1.3', t: 'A word at the end', b: ['After a normal match there is now one short line under the result.'] },
+  { v: '48.1.1', t: 'More room around the map', b: ['The full view (double tap the map button) now leaves a little more room around the map on every size, so the outermost bases are not hard against the edge of the screen.'] },
+  { v: '48.1', t: 'Maps no longer depend on your screen', b: ['A map seed now gives the same map on every device. The map is built by the game\'s own rules, and the screen only decides how much of it you see.', 'You can move the camera until the outermost base on each side reaches the middle of the screen, and the full view (double tap the map button) fits those outermost bases to the screen.'] },
   { v: '47.1.14', t: 'Ready for iPhone, and the AI strength in Spectate', b: ['Spectate now shows how strong the AI is, in one word next to the troop count, like your own matches do.', 'iPhone and iPad: the game now blocks the pinch zoom of the page itself, wakes the sound on the first touch, and fixes the screen size after turning the phone. There is a hint on this page for putting the game on the Home Screen.'] },
   { v: '47.1.13', t: 'Made for slower phones', b: ['The game now checks how fast your phone is the first time it opens, and starts a slower phone on a lighter picture and a lighter sound. Auto still steps down by itself if the game slows.', 'The sound has a lighter version too: a shorter echo and fewer notes at once, with the same feel. It follows the picture level on Auto.'] },
   { v: '47.1.12', t: 'Smoother Rime when zoomed out', b: ['The frost background no longer slows the game down when you zoom all the way out and pan around. Zoomed in it is still drawn as sharp lines.'] },
@@ -5381,14 +5916,14 @@ async function checkUpdate() {
   if (!/^https?:$/.test(location.protocol)) { msg.textContent = 'This copy cannot check for updates. Open the installed app or the website.'; return; }
   btn.disabled = true; msg.textContent = 'Checking...';
   try {
-    const url = location.href.split(/[?#]/)[0], r = await fetch(url, { cache: 'reload' });
+    const url = location.href.split(/[?#]/)[0], r = await fetch(url + '?upd=' + Date.now(), { cache: 'no-store' });   // a fresh address: no saved copy (service worker or browser) can answer it
     if (!r.ok) throw new Error('status ' + r.status);
     const m = /id="buildNo">([^<]+)</.exec(await r.text());
     if (!m) throw new Error('no build number');
     try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg) await reg.update(); } catch (_) {}
     const next = m[1].trim();
     if (next === cur) msg.textContent = 'You are on the newest build (' + cur.replace('Build ', '') + ').';
-    else { msg.textContent = next + ' is ready. Reloading...'; setTimeout(() => location.reload(), 900); }
+    else { msg.textContent = next + ' is ready. Reloading...'; setTimeout(() => location.replace(url + '?v=' + encodeURIComponent(next.replace('Build ', ''))), 900); }   // a new address, so the browser cannot hand back the old page
   } catch (_) { msg.textContent = 'Could not reach the update. Check your connection and try again.'; }
   btn.disabled = false;
 }
@@ -5474,7 +6009,7 @@ function renderLadder() {
   }
   $('ladder').innerHTML = h;
 }
-function updateLadderBlurb() { $('ladderBlurb').textContent = `Fixed maps with special goals. Earn up to three stars on each. ${totalStars()} of ${SCENARIOS.length * 3} stars.`; }
+function updateLadderBlurb() { $('ladderBlurb').textContent = `Fixed maps with special rules and goals. Earn stars to unlock more maps. ${totalStars()} of ${SCENARIOS.length * 3} stars.`; }
 function openBrief(id) {
   const c = SCENARIOS.find(x => x.id === id); briefId = id;
   $('briefTitle').textContent = c.name; $('briefDesc').textContent = c.desc + (c.rule ? ' ' + c.rule : '');
@@ -5581,7 +6116,7 @@ function optsFor(key) {
   return { size: c.size, diff: c.diff, seed: seedOf(c), shape, teams: teamsFor(key), watch,
     specials: !classic && c.special === 'on', persona: classic ? 'mixed' : c.persona,
     overtime: otActive(key),
-    mods: classic ? {} : Object.assign({}, c.mods, { fog: c.mods.fog && !watch }), ...worldPlan(shape, c.size, watch) };
+    mods: classic ? {} : Object.assign({}, c.mods, { fog: c.mods.fog && !watch }) };
 }
 function buildPreview(key) {                         // the map behind the menu is the map you'll get
   if (mode !== 'demo') return;
@@ -5596,6 +6131,7 @@ function buildPreview(key) {                         // the map behind the menu 
 function startDemo() { mode = 'demo'; buildPreview(previewMode); }
 let curModeKey = 'custom';
 function startGame(watch, scen, modeKey, prac) {
+  resetPtrs();
   curPrac = prac || null; curScen = scen || null; curModeKey = scen ? curModeKey : (modeKey || (watch ? 'spec' : 'custom'));
   const cfg = settings[curModeKey];
   audioOn(); armBack(); hideInfo();
@@ -5610,7 +6146,7 @@ function startGame(watch, scen, modeKey, prac) {
   syncCtrl(); syncRivals(); layout();
   if (curPrac) newGame(practiceOpts(curPrac));          // a practice lesson: tiny map, a rival that never attacks
   else if (curScen) newGame({ scenario: curScen });          // fixed map and rules: the same every attempt
-  else { newGame(optsFor(curModeKey)); cfg.seed = rnd32(); save('ice-settings', settings); }   // play the previewed map, then roll the next one
+  else { newGame(PERF && window.__fixedOnce ? Object.assign(optsFor(curModeKey), { fixedMap: window.__fixedOnce, teams: 0 }) : optsFor(curModeKey)); cfg.seed = rnd32(); save('ice-settings', settings); }   // play the previewed map, then roll the next one
   for (let i = 0; i < 5; i++) for (const c of rivalCells[i]) c.style.display = G.teams[i].active ? '' : 'none';   // only colors in play
   setMinimap(false); fling.vx = fling.vy = 0;
   G.autoplay = watching;
@@ -5632,6 +6168,7 @@ function startGame(watch, scen, modeKey, prac) {
 }
 function pause() {
   if (mode !== 'play') return;
+  resetPtrs();
   mode = 'paused'; hover = null; selBase = null; hideInfo();
   resetStack('scrPause'); show('menu', true);
 }
@@ -5690,6 +6227,20 @@ function drawTimeline(moments) {
   }
   $('tlEnd').textContent = fmt(G.t);
 }
+// One quiet line under the end-card stats. Picked from a short list by the map's seed, so a replay of the same map says the same thing.
+// Rules for these lines: say a true thing, never tell the player how to feel, no jokes at their expense, no exclamation marks.
+const CODA = {
+  win:      ['Quiet again.', 'That\'s all of it.', 'Nothing left to take.'],
+  winHard:  ['They didn\'t make it easy.', 'That was earned.'],
+  lossEarly: ['These go fast sometimes.', 'The opening is the hardest part to read.'],
+  lossBig:  ['You had most of it for a while.', 'You were closer than it feels.'],
+  loss:     ['It\'ll be here when you\'re ready.', 'Worth another look.']
+};
+function endCoda() {
+  const win = G.result === 'win', hard = G.diffName === 'hard' || G.diffName === 'brutal';
+  const pool = win ? (hard ? CODA.winHard : CODA.win) : G.t < 150 ? CODA.lossEarly : G.peak >= 0.4 * G.nodes.length ? CODA.lossBig : CODA.loss;
+  return pool[(G.seed >>> 0) % pool.length];
+}
 function showEnd() {
   mode = 'over';
   const P = G.teams[PLAYER], N = G.nodes.length, t = $('endTitle'), sub = $('endSub');
@@ -5727,6 +6278,9 @@ function showEnd() {
   if (G.diffName === 'random' && !G.scenarioId) {   // the secret rolls, revealed
     const list = G.teams.filter(T => T.active && (watching || T.i !== PLAYER)).map(T => `${TEAM_NAMES[T.i]} ${DIFF_LABEL[T.diffName]}`).join(', ');
     sub.textContent += ` Rival strengths: ${list}.`;
+  }
+  if (!watching && !G.practice && !G.scenarioId && G.endReason !== 'crown') {      // a normal match: one more line under the stats
+    const c = document.createElement('span'); c.className = 'coda'; c.textContent = endCoda(); sub.appendChild(c);
   }
   nextScen = null; let challengeMoments = null;
   if (G.practice) {                                 // a lesson: a tick instead of stars or highlights
@@ -5773,7 +6327,7 @@ function showEnd() {
   if (!watching) buzz(G.result === 'win' ? 'win' : 'lose');
   const moments = pickMoments();
   $('moments').innerHTML = challengeMoments || moments.map(m => `<li><time>${fmt(m.t)}</time><i data-s="${slotOf(momentTeam(m))}" style="background:${momentColor(m)}"></i><span>${momentText(m)}</span></li>`).join('');
-  show('end', true); $('bAgain').focus({ preventScroll: true });
+  show('end', true); endAt = performance.now(); $('bAgain').focus({ preventScroll: true });
   requestAnimationFrame(() => drawTimeline(moments));
 }
 function toMenu() {
@@ -5850,16 +6404,16 @@ const atBase = (t, id) => { const b = G.nodes[id]; return t.team === PLAYER && (
 const selValid = () => selBase != null && G && selG === G && mode === 'play' && G.nodes[selBase].owner === PLAYER;
 function selCheck() {                              // a selection ends when its base is lost or after 12 s of game time, so it can never come back by surprise
   if (selBase != null && G && selG === G && G.nodes[selBase].owner === PLAYER && G.t - selT < 12) return true;
-  if (selBase != null && mode === 'play') selBase = null;
+  if (selBase != null && mode === 'play') { if (G && selG === G && !selGhost) selGhost = { id: selBase, t: performance.now() }; selBase = null; }        // ends on its own: show the ring closing
   return false;
 }
 function handleTap(px, py) {
   if (mode !== 'play' || !G || G.over) return;
   audioOn();
   if (watching) return;                             // spectating: look around, no orders
-  for (const a of arrowHits) if ((a.x - px) ** 2 + (a.y - py) ** 2 < 30 * 30) { centerOn(a.n.x, a.n.y); return; }
   selCheck();
   const n = pickNode(px, py);
+  if (!n) for (const a of arrowHits) if ((a.x - px) ** 2 + (a.y - py) ** 2 < 30 * 30) { centerOn(a.n.x, a.n.y); return; }      // a base under the finger wins over an arrow beside it
   if (!n) {                                          // a tap on empty space clears the selection, and now you can see it: the ring collapses and the phone ticks
     if (selValid()) { selGhost = { id: selBase, t: performance.now() }; buzz('tap'); }
     selBase = null; lastTap = { id: -1, t: 0 }; return;
@@ -5881,7 +6435,7 @@ function handleTap(px, py) {
   const r = command(PLAYER, n.id, settings.send, from == null ? undefined : t => atBase(t, from));
   lastFromSel = r && from != null ? n.id : -1;
   if (r) {
-    G._orders = (G._orders | 0) + 1; buzz('tap');
+    G._orders = (G._orders | 0) + 1; buzz('tap'); if (isHearth()) heTap(r.moved);
     uiFx.push({ k: 'go', x: n.x, y: n.y, b: now });
     if (r.edges.length) hl.push({ edges: r.edges, b: now });
     if (dbl) {
@@ -5892,18 +6446,22 @@ function handleTap(px, py) {
 }
 const ptrs = new Map();
 let gest = null;
+function resetPtrs() { ptrs.clear(); if (gest) clearTimeout(gest.timer); gest = null; }          // forget every finger (an 'up' that never came must not jam later taps)
 function pinchState() {
   const [a, b] = [...ptrs.values()];
   return { mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) || 1 };
 }
 cv.addEventListener('pointerdown', e => {
   if (mode !== 'play') return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return;                        // right and middle clicks are not taps
+  if (e.isPrimary && ptrs.size) resetPtrs();                                      // a new first finger means the old ones are gone
   try { cv.setPointerCapture(e.pointerId); } catch (_) {}
   fling.vx = fling.vy = 0; panHist.length = 0; hideInfo();
-  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, t0: performance.now() });
   if (gest) clearTimeout(gest.timer);
   if (ptrs.size === 1) { gest = { kind: 'tap', sx: e.clientX, sy: e.clientY, lx: e.clientX, ly: e.clientY, type: e.pointerType }; const g = gest; g.timer = setTimeout(() => longPress(g), 450); }
-  else if (ptrs.size === 2) { const p = pinchState(); gest = { kind: 'pinch', d0: p.d, z0: cam.z, lx: p.mx, ly: p.my }; hover = null; }
+  else if (ptrs.size === 2 && gest && (gest.kind === 'tap' || gest.kind === 'held') && gest.type !== 'mouse') { gest = { kind: 'tap2' }; hover = null; }     // wait: two quick thumb taps overlap, a pinch slides
+  else { const p = pinchState(); gest = { kind: 'pinch', d0: p.d, z0: cam.z, lx: p.mx, ly: p.my }; hover = null; }
 });
 cv.addEventListener('pointermove', e => {
   const p = ptrs.get(e.pointerId);
@@ -5921,8 +6479,10 @@ cv.addEventListener('pointermove', e => {
     cam.cu -= (q.mx - gest.lx) / V.s; cam.cv -= (q.my - gest.ly) / V.s; updateView();   // two-finger drag pans
     zoomAround(q.mx, q.my, gest.z0 * q.d / gest.d0);
     gest.lx = q.mx; gest.ly = q.my;
+  } else if (gest.kind === 'tap2') {
+    if ([...ptrs.values()].some(q => Math.hypot(q.x - q.sx, q.y - q.sy) > 14)) { const q = pinchState(); gest = { kind: 'pinch', d0: q.d, z0: cam.z, lx: q.mx, ly: q.my }; }
   } else if (gest.kind === 'tap' || gest.kind === 'pan') {
-    const thr = gest.type === 'mouse' ? 4 : 10;
+    const thr = gest.type === 'mouse' ? 6 : 14;
     if (gest.kind === 'tap' && Math.hypot(e.clientX - gest.sx, e.clientY - gest.sy) > thr) { gest.kind = 'pan'; hover = null; clearTimeout(gest.timer); }
     if (gest.kind === 'pan') {
       cam.cu -= (e.clientX - gest.lx) / V.s; cam.cv -= (e.clientY - gest.ly) / V.s; updateView();
@@ -5932,9 +6492,19 @@ cv.addEventListener('pointermove', e => {
   }
 });
 function endPtr(e) {
-  if (!ptrs.has(e.pointerId)) return;
+  const lifted = ptrs.get(e.pointerId);
+  if (!lifted) return;
   ptrs.delete(e.pointerId);
   if (gest) clearTimeout(gest.timer);
+  if (gest && gest.kind === 'tap2') {
+    const nowT = performance.now();
+    if (e.type === 'pointerup' && nowT - lifted.t0 < 450 && Math.hypot(e.clientX - lifted.sx, e.clientY - lifted.sy) <= 14) handleTap(e.clientX, e.clientY);      // a quick, still touch is a tap even with another finger down
+    if (ptrs.size === 0) { gest = null; return; }
+    const [q] = [...ptrs.values()], rested = nowT - q.t0;
+    if (e.type !== 'pointerup' || rested >= 450 || Math.hypot(q.x - q.sx, q.y - q.sy) > 14) gest = { kind: 'pan', lx: q.x, ly: q.y, type: 'touch' };       // the finger left behind has rested or slid: it is not a tap
+    else { gest = { kind: 'tap', sx: q.sx, sy: q.sy, lx: q.x, ly: q.y, type: 'touch' }; const g = gest; g.timer = setTimeout(() => longPress(g), 450 - rested); }
+    return;
+  }
   if (gest && gest.kind === 'tap' && ptrs.size === 0 && e.type === 'pointerup') handleTap(e.clientX, e.clientY);
   if (gest && gest.kind === 'pan' && ptrs.size === 0 && e.type === 'pointerup') {
     const now = performance.now(), recent = panHist.filter(q => now - q[0] < 120);
@@ -5944,15 +6514,21 @@ function endPtr(e) {
     }
   }
   if (ptrs.size === 0) gest = null;
-  else if (gest && gest.kind === 'pinch') { const [q] = [...ptrs.values()]; gest = { kind: 'pan', lx: q.x, ly: q.y, type: 'touch' }; }
+  else if (gest && gest.kind === 'pinch') {
+    if (ptrs.size === 1) { const [q] = [...ptrs.values()]; gest = { kind: 'pan', lx: q.x, ly: q.y, type: 'touch' }; }
+    else { const p = pinchState(); gest = { kind: 'pinch', d0: p.d, z0: cam.z, lx: p.mx, ly: p.my }; }        // three fingers down and one lifts: the other two carry on pinching
+  }
 }
 cv.addEventListener('pointerup', endPtr);
 cv.addEventListener('pointercancel', endPtr);
+cv.addEventListener('lostpointercapture', endPtr);
+window.addEventListener('blur', resetPtrs);
 cv.addEventListener('pointerleave', e => { if (!ptrs.has(e.pointerId)) hover = null; });
 cv.addEventListener('wheel', e => {
   if (mode !== 'play') return;
   e.preventDefault();
-  zoomAround(e.clientX, e.clientY, cam.z * Math.exp(-e.deltaY * 0.0015));
+  const dy = e.deltaMode === 1 ? e.deltaY * 33 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;       // Firefox sends lines, not pixels
+  zoomAround(e.clientX, e.clientY, cam.z * Math.exp(-dy * 0.0015));
 }, { passive: false });
 let mapTapT = 0, mapTapTimer = 0;
 $('bMap').addEventListener('click', () => {           // tap: minimap on/off; double-tap: the whole battlefield
@@ -5963,9 +6539,10 @@ $('bMap').addEventListener('click', () => {           // tap: minimap on/off; do
 });
 let mmDrag = false;
 $('mm').addEventListener('pointerdown', e => { mmDrag = true; try { $('mm').setPointerCapture(e.pointerId); } catch (_) {} mmJump(e); });
-$('mm').addEventListener('pointermove', e => { if (mmDrag) mmJump(e); });
+$('mm').addEventListener('pointermove', e => { if (mmDrag && (e.pointerType !== 'mouse' || e.buttons)) mmJump(e); else if (mmDrag) mmDrag = false; });
 $('mm').addEventListener('pointerup', () => { mmDrag = false; });
 $('mm').addEventListener('pointercancel', () => { mmDrag = false; });
+$('mm').addEventListener('lostpointercapture', () => { mmDrag = false; });
 cv.addEventListener('contextmenu', e => e.preventDefault());
 
 document.querySelectorAll('.seg[data-mode]').forEach(seg => seg.addEventListener('click', e => {
@@ -6022,15 +6599,15 @@ function leaveToMenu() {                            // back to where you set the
   else { const scr = { classic: 'scrClassic', custom: 'scrCustom', spec: 'scrSpectate' }[key]; if (scr) go(scr); }
 }
 $('bQuit').addEventListener('click', leaveToMenu);
-$('bAgain').addEventListener('click', () => startGame(watching, curScen, curModeKey, curPrac));
-$('bNext').addEventListener('click', () => startGame(false, nextScen));
-$('bMenu').addEventListener('click', leaveToMenu);
+$('bAgain').addEventListener('click', () => { if (performance.now() - endAt < 450) return; startGame(watching, curScen, curModeKey, curPrac); });
+$('bNext').addEventListener('click', () => { if (performance.now() - endAt < 450) return; startGame(false, nextScen); });
+$('bMenu').addEventListener('click', () => { if (performance.now() - endAt < 450) return; leaveToMenu(); });
 $('bReset').addEventListener('click', () => confirmReset($('bReset'), 'Reset stats', doResetStats));
 $('bResetCh').addEventListener('click', () => confirmReset($('bResetCh'), 'Reset challenges', doResetChallenges));
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
 document.querySelectorAll('#menu .back').forEach(b => b.addEventListener('click', back));
 $('bPause').addEventListener('click', pause);
-$('bSpeed').addEventListener('click', () => { const sp = speeds(); speedMul = sp[(sp.indexOf(speedMul) + 1) % sp.length]; syncCtrl(); });
+$('bSpeed').addEventListener('click', () => { if (mode !== 'play') return; const sp = speeds(); speedMul = sp[(sp.indexOf(speedMul) + 1) % sp.length]; syncCtrl(); });
 $('statsBtn').addEventListener('click', () => {
   if (!watching && !hasRules) return;
   if (watching) watchRivals = !watchRivals;
@@ -6058,7 +6635,7 @@ $('vol').addEventListener('input', () => {
   settingsKey = 'volume'; renderSettingsHint();
 });
 $('bSound').addEventListener('click', () => { settings.sound = !settings.sound; save('ice-settings', settings); audioOn(); syncSound(); });
-$('bSend').addEventListener('click', () => { settings.send = SENDS[(SENDS.indexOf(settings.send) + 1) % SENDS.length]; save('ice-settings', settings); syncCtrl(); });
+$('bSend').addEventListener('click', () => { if (mode !== 'play') return; settings.send = SENDS[(SENDS.indexOf(settings.send) + 1) % SENDS.length]; save('ice-settings', settings); syncCtrl(); });
 
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') { onBack(); e.preventDefault(); return; }
@@ -6076,7 +6653,7 @@ window.addEventListener('keydown', e => {
   else if (e.key === 's') $('bSend').click();
   else if (e.key === 'm') $('bSound').click();
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); else audioKick(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { resetPtrs(); pause(); audioHush(); } else audioKick(); });
 if (IOS) {                                            // everything below runs on iPhone and iPad only
   for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, e => e.preventDefault(), { passive: false });     // Safari ignores "no zoom" in the viewport tag; this stops a two-finger pinch zooming the page
   const wake = () => {                                // sound only starts after a touch, and Safari can leave it "suspended" or "interrupted": a touch wakes it with a silent blip
@@ -6242,7 +6819,7 @@ function frame(nowMs) {
   stepFling(dt);
   if (G && fogOn()) computeFog();
   if (G) playSfx(nowMs, dt);
-  if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); floeTick(); mixTick(); }
+  if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); floeTick(); heTick(); mixTick(); }
   const fsw = G ? fogSwap() : null;                 // under fog, bases out of sight are drawn as last seen
   try { draw(nowMs / 1000); if (mode === 'play' || mode === 'paused') drawMinimap(); } finally { fogRestore(fsw); }
   perfTick(nowMs, tDraw - tSim, performance.now() - tDraw);
@@ -6260,8 +6837,10 @@ if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$(
 if (PERF) window.__scr = (x, y) => toScreen(x, y);
 if (PERF) { window.__own = (id, o) => { G.nodes[id].owner = o; }; window.__tick = d => { G.t += d; }; window.__orders = () => (G ? G._orders | 0 : 0); window.__nodes = () => G.nodes.map(n => ({ id: n.id, x: n.x, y: n.y, o: n.owner })); window.__ring = () => ({ sel: selBase, valid: selValid(), ringNew, flashed: performance.now() - selFlash < 400, ghost: !!selGhost }); }
 if (PERF) window.__chip = () => ({ on: !!CH.nodes, busy: CH.nodes ? Object.values(CH.nodes.ch).filter(c => c.off > AC.currentTime).length : 0 });   // sound-test hook
+if (PERF) window.__hearth = () => ({ on: !!HE.nodes, v: HE.v, I: HE.I, Is: HE.Is, rr: HE.rr, phrases: HE.phrases, caps: HE.caps, losses: HE.losses, taps: HE.taps, rcaps: HE.rcaps, rskip: HE.rskip, snaps: HE.snaps, drop: HE.drop, gain: HE.nodes ? HE.nodes.out.gain.value : 0 });   // sound-test hook
 if (PERF) window.__floe = () => ({ on: !!FL.nodes, v: FL.v, gain: FL.nodes ? FL.nodes.out.gain.value : 0 });   // sound-test hook
-if (PERF) { window.__ios = () => IOS; window.__ir = () => ({ dr: DR.ir && DR.ir.duration, cs: CS.ir && CS.ir.duration, fl: Object.fromEntries(Object.entries(FL.ir).map(([k, v]) => [k, v.duration])), nodes: { dr: DR.nodes && DR.nodes.tier, cs: CS.nodes && CS.nodes.tier, fl: FL.nodes && FL.nodes.tier } }); window.__aq = () => AQ(); window.__hwset = ms => { HW.list = [ms, ms, ms]; HW.ms = ms; HW.done = true; save('ice-hw', { v: 3, list: HW.list }); if (qualFix < 0 && mode !== 'play') { quality = startQ(); layout(); } syncQual(); }; window.__hw = () => ({ ms: HW.ms, done: HW.done, tier: hwTier(), quality, aq: AQ(), audFix }); }
+if (PERF) { window.__box = () => ({ box: boxUV(), view: mapView(), s0, W, H, rot }); window.__ios = () => IOS; window.__ir = () => ({ dr: DR.ir && DR.ir.duration, cs: CS.ir && CS.ir.duration, fl: Object.fromEntries(Object.entries(FL.ir).map(([k, v]) => [k, v.duration])), nodes: { dr: DR.nodes && DR.nodes.tier, cs: CS.nodes && CS.nodes.tier, fl: FL.nodes && FL.nodes.tier } }); window.__aq = () => AQ(); window.__hwset = ms => { HW.list = [ms, ms, ms]; HW.ms = ms; HW.done = true; save('ice-hw', { v: 3, list: HW.list }); if (qualFix < 0 && mode !== 'play') { quality = startQ(); layout(); } syncQual(); }; window.__hw = () => ({ ms: HW.ms, done: HW.done, tier: hwTier(), quality, aq: AQ(), audFix }); }
+if (PERF) window.__validate = id => validateStaticMap(typeof id === 'string' ? STATIC_MAPS[id] : id);
 if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; updateView(); };          // tests: where a world point lands on screen
 requestAnimationFrame(frame);
 })();
