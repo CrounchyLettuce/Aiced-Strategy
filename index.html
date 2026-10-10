@@ -57,7 +57,11 @@ body { position: relative; }
 #diffTag:empty { display: none; }
 #upg.ptsGlow { border-color: var(--blue); box-shadow: 0 0 0 2px var(--blue), 0 0 30px rgba(53,119,255,.85), 0 0 70px rgba(53,119,255,.4); transition: box-shadow .3s ease-out, border-color .3s ease-out; }
 #ptsFx { position: fixed; z-index: 2; pointer-events: none; }
-#mapWrap { position: absolute; right: 10px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; pointer-events: none; }
+#mapWrap { position: absolute; left: 10px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; pointer-events: none; }
+#hud:not(.rotv) #mapWrap { flex-direction: row-reverse; align-items: flex-end; }          /* landscape: the minimap opens beside the map button, not above it */
+#sendTri { position: absolute; right: 10px; bottom: 8px; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+#sendTri button { pointer-events: auto; width: 52px; min-height: 52px; font-size: 15px; }
+#sendTri button[aria-pressed="true"] { border-color: var(--blue); background: var(--blue-soft); }
 #mapWrap > * { pointer-events: auto; }
 #mm { display: block; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.72); touch-action: none; }
 #mm[hidden] { display: none; }
@@ -115,7 +119,7 @@ body { position: relative; }
 .up.ready .lv::before { content: '+ '; color: var(--blue); }
 .up.max .nm, .up.max .lv { color: var(--dim); }
 .up.bump { animation: bump .25s ease-out; }
-#hud.watch #upg, #hud.noup #upg, #hud.watch #bSend, #hud.watch .army .tri { display: none; }
+#hud.watch #upg, #hud.noup #upg, #hud.watch #sendTri, #hud.watch .army .tri { display: none; }
 #hud.fog #terr, #hud.fog #rivals { display: none !important; }   /* fog hides what the other colors hold */
 @keyframes bump { 40% { transform: scale(.96); } }
 
@@ -496,19 +500,23 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
     <div id="mapWrap">
       <canvas id="mm" hidden aria-label="Minimap. Tap or drag to move the view."></canvas>
       <button id="bMap" aria-pressed="false" aria-label="Map. Tap for the minimap, double-tap to see the whole battlefield." title="Tap: minimap · Double-tap: whole battlefield">
-        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="3.5" width="15" height="13" rx="1"/><path d="M6.3 7.3 12.8 8.8 9.3 12.8" stroke-width="1"/><rect x="5" y="6" width="2.6" height="2.6" fill="currentColor" stroke="none"/><rect x="11.5" y="7.5" width="2.6" height="2.6" fill="currentColor" stroke="none"/><rect x="8" y="11.5" width="2.6" height="2.6" fill="currentColor" stroke="none"/></svg>
+        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M2 5.3 7 3.6 13 5.6 18 3.9V14.7L13 16.4 7 14.4 2 16.1Z"/><path d="M7 3.6V14.4M13 5.6V16.4"/></svg>
       </button>
     </div>
   </div>
   <div id="ctrl" class="rail">
-    <button class="ctl" id="bPause" aria-label="Pause">
-      <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" fill="currentColor"/></svg>
-    </button>
     <button class="ctl" id="bSpeed" aria-label="Game speed">1×</button>
-    <button class="ctl" id="bSend" aria-label="How much of your army each tap sends"><span><span id="sendV">100%</span><small>send</small></span></button>
     <button class="ctl" id="bSound" aria-label="Sound" aria-pressed="true">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path id="sndOn" d="M11 5.5c1 .7 1.5 1.6 1.5 2.5s-.5 1.8-1.5 2.5M12.6 3.6C14 4.7 14.8 6.3 14.8 8s-.8 3.3-2.2 4.4" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/><path id="sndOff" d="M11 6l4 4M15 6l-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="display:none"/></svg>
     </button>
+    <button class="ctl" id="bPause" aria-label="Pause">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" fill="currentColor"/></svg>
+    </button>
+  </div>
+  <div id="sendTri" role="group" aria-label="How much of your army each tap sends">
+    <button class="ctl" data-send="0.25" aria-pressed="false" aria-label="Send 25% of your army">25%</button>
+    <button class="ctl" data-send="0.5" aria-pressed="false" aria-label="Send 50% of your army">50%</button>
+    <button class="ctl" data-send="1" aria-pressed="true" aria-label="Send 100% of your army">100%</button>
   </div>
   <div id="coach" class="rail panel" hidden><span id="coachBox"><em id="coachPh"></em><span id="coachTxt"></span></span><button id="coachSkip" class="ghost" aria-label="Skip this step">Skip</button></div>
   <div id="upg" class="rail panel">
@@ -534,7 +542,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.3</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.5.1</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -2102,6 +2110,8 @@ const STEP = 1 / 60, SENDS = [1, .5, .25];
 const speeds = () => watching ? [1, 2, 4] : [1, 2];
 let dpr = 1, V = { s: 1, ex: 0, ey: 0, rot: false };
 let F = { x: 0, y: 0, w: 1, h: 1 }, s0 = 1, rot = false, cam = { z: 1, cu: W / 2, cv: H / 2 }, arrowHits = [];
+let drawDirty = true, lastDrawAt = 0;                   // F2: paused and the menu demo draw less often; drawDirty asks for a redraw at once
+let FIT_K = 1, statsHold = false;                      // FIT_K: how far the whole-battlefield view backs away to clear the HUD; statsHold: the stats panel is folded while the minimap is open
 const zmax = () => 3 * Math.max(1, W / 1000);
 let mode = 'demo', speedMul = 1, last = performance.now(), acc = 0;
 let watching = false, watchRivals = true;   // watching: an AI-only match you spectate
@@ -2257,7 +2267,25 @@ function mapView() {                                  // the same box with a lit
   return { u0: b.u0 - pad, v0: b.v0 - pad, w: b.u1 - b.u0 + 2 * pad, h: b.v1 - b.v0 + 2 * pad };
 }
 const MAP_MARGIN = 0.10;                              // share of the screen left empty on each side of the tight axis at the full view (the same on every map size)
-const fitScale = () => { const b = boxUV(), k = 1 - 2 * MAP_MARGIN; return Math.max(0.05, Math.min(F.w * k / Math.max(1, b.u1 - b.u0), F.h * k / Math.max(1, b.v1 - b.v0))); };
+const fitScale = () => { const b = boxUV(), k = 1 - 2 * MAP_MARGIN; return Math.max(0.05, Math.min(F.w * k / Math.max(1, b.u1 - b.u0), F.h * k / Math.max(1, b.v1 - b.v0)) * FIT_K); };
+function refitHud() {                                   // the whole-battlefield view backs away, a step at a time, until no base sits under a HUD piece (zoomed in, nothing changes)
+  FIT_K = 1;
+  if (hudEl.hidden || !G || !G.nodes || !G.nodes.length) return;
+  const rects = [];
+  for (const id of ['statsBtn', 'ctrl', 'upg', 'bMap', 'sendTri']) { const r = $(id).getBoundingClientRect(); if (r.width > 0 && r.height > 0) rects.push(r); }
+  if (!rects.length) return;
+  const b = boxUV(), s1 = fitScale(), cu = (b.u0 + b.u1) / 2, cv = (b.v0 + b.v1) / 2, cx = F.x + F.w / 2, cy = F.y + F.h / 2, pad = 14;
+  const pts = G.nodes.map(n => rot ? [H - n.y, n.x] : [n.x, n.y]);
+  for (let k = 1; k >= 0.55; k -= 0.01) {
+    let ok = true;
+    for (const [u, v] of pts) {
+      const x = cx + (u - cu) * s1 * k, y = cy + (v - cv) * s1 * k;
+      if (rects.some(r => x > r.left - pad && x < r.right + pad && y > r.top - pad && y < r.bottom + pad)) { ok = false; break; }
+    }
+    if (ok) { FIT_K = k; return; }
+  }
+  FIT_K = 0.55;
+}
 // Render resolution: capped at 2.5x (indistinguishable on a phone, about a third fewer pixels than 3x), and
 // stepped down automatically if the frame rate stays low, so a slower phone trades sharpness for smoothness.
 const DPR_MAX = Math.min(window.devicePixelRatio || 1, 2.5), QUALITY = [1, 0.8, 0.65, 0.5];
@@ -2302,7 +2330,7 @@ function watchFrameRate(frameMs, nowMs) {
 function layout() {
   dpr = Math.max(1, DPR_MAX * QUALITY[quality]);
   const w = window.innerWidth, h = window.innerHeight;
-  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); drawDirty = true;
   cv.style.width = w + 'px'; cv.style.height = h + 'px';
   let r;
   const b = document.body.getBoundingClientRect();
@@ -2310,10 +2338,12 @@ function layout() {
   const newRot = r.height > r.width * 1.1;
   F = { x: r.left, y: r.top, w: Math.max(1, r.width), h: Math.max(1, r.height) };
   if (newRot !== rot) { rot = newRot; resetCam(); }
+  hudEl.classList.toggle('rotv', rot);
+  if (!hudEl.hidden) placeMapButton();
+  refitHud();
   s0 = fitScale();
   updateView();
   if (!$('mm').hidden) sizeMinimap();
-  if (!hudEl.hidden) placeMapButton();
 }
 // ---- minimap: hidden until the map button is tapped; tap or drag on it to move the view ----
 let mmCtx = null;
@@ -2324,7 +2354,12 @@ function sizeMinimap() {
   c.width = Math.round(w * d); c.height = Math.round(h * d); c.style.width = w + 'px'; c.style.height = h + 'px';
   c._w = w; c._h = h; c._d = d; mmCtx = c.getContext('2d');
 }
-function setMinimap(on) { $('mm').hidden = !on; $('bMap').setAttribute('aria-pressed', String(on)); if (on) sizeMinimap(); }
+const rectsClash = (a, b) => { const p = a.getBoundingClientRect(), q = b.getBoundingClientRect(); return p.width > 0 && q.width > 0 && p.left < q.right + 6 && p.right > q.left - 6 && p.top < q.bottom + 6 && p.bottom > q.top - 6; };
+function setMinimap(on) {
+  $('mm').hidden = !on; $('bMap').setAttribute('aria-pressed', String(on));
+  if (on) { sizeMinimap(); if (!statsHold && (watching ? watchRivals : settings.rivals) && rectsClash($('mm'), $('stats'))) { statsHold = true; syncRivals(); } }      // fold the open stats panel for as long as the minimap is up (not saved)
+  else if (statsHold) { statsHold = false; syncRivals(); }
+}
 function paintMap(x, w, h, live, u) {                // the map as a diagram: terrain, lines and bases. `live` adds armies and your view box.
   const mv = mapView(), k = Math.min(w / mv.w, h / mv.h);
   const P = (px, py) => rot ? [(H - py - mv.u0) * k, (px - mv.v0) * k] : [(px - mv.u0) * k, (py - mv.v0) * k];
@@ -2399,10 +2434,12 @@ function stepFling(dt) {
   cam.cu -= fling.vx * dt / V.s; cam.cv -= fling.vy * dt / V.s;
   const k = Math.exp(-dt * 4.2); fling.vx *= k; fling.vy *= k; updateView();
 }
-function placeMapButton() {                           // in portrait, sit above the upgrade strip
-  const wrap = $('mapWrap'), upg = $('upg'), r = upg.getBoundingClientRect();
-  const fr = field.getBoundingClientRect();
-  wrap.style.bottom = (rot && r.height && !hudEl.classList.contains('watch') && !hudEl.classList.contains('noup') ? Math.round(fr.bottom - r.top + 8) : 8) + 'px';
+function placeMapButton() {                           // the map button (bottom left) and the send stack (portrait) sit 14 px clear of the upgrade panel, so a slip cannot buy an upgrade
+  const upg = $('upg'), r = upg.getBoundingClientRect(), fr = field.getBoundingClientRect();
+  const has = r.height > 0 && !hudEl.classList.contains('watch') && !hudEl.classList.contains('noup');
+  const lift = has ? Math.round(fr.bottom - r.top + 14) : 8;
+  $('mapWrap').style.bottom = lift + 'px';
+  $('sendTri').style.bottom = (rot ? lift : 8) + 'px';
 }
 function resetCam() { const B = boxUV(); cam = { z: 1, cu: (B.u0 + B.u1) / 2, cv: (B.v0 + B.v1) / 2 }; }
 function updateView() {
@@ -2850,6 +2887,11 @@ function drawSpecialMark(n, now, struck) {
 // ---- "Atlas": a surveyor's chart. Washes of color show who holds the ground, fine dotted lines plot where armies are headed ----
 function drawAtlasBack(now) {
   const nodes = G.nodes, near = (x, y) => x > VIS.x0 - 100 && x < VIS.x1 + 100 && y > VIS.y0 - 100 && y < VIS.y1 + 100;
+  let own = settings.colors + (HC ? 'h' : ''); for (const n of nodes) own += String.fromCharCode(66 + n.owner);
+  bgCache('#04070d', own, G, ctx => atlasStatic(ctx, nodes, near));
+  atlasLive(now, nodes, near);
+}
+function atlasStatic(ctx, nodes, near) {
   ctx.lineWidth = Math.max(1, 1.1 / V.s); ctx.strokeStyle = 'rgba(150,185,255,0.16)'; ctx.setLineDash([]);
   ctx.strokeRect(10, 10, W - 20, H - 20);                       // the edge of the chart
   ctx.fillStyle = 'rgba(150,185,255,0.12)'; ctx.beginPath();    // graph-paper dots, only where you can see
@@ -2864,6 +2906,8 @@ function drawAtlasBack(now) {
     ctx.globalAlpha = own ? 0.4 : 0.1; ctx.drawImage(glow(colorOf(n.owner)), n.x - r, n.y - r, r * 2, r * 2);
   }
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+}
+function atlasLive(now, nodes, near) {
   ctx.lineWidth = Math.max(1, 1 / V.s); ctx.setLineDash([2, 7]);   // contour rings around held bases, breathing very slowly
   for (const n of nodes) if (n.owner >= 0 && near(n.x, n.y)) {
     const br = reduceMotion ? 0 : Math.sin(now * 0.7 + n.id) * 1.6, c = colorOf(n.owner);
@@ -3041,7 +3085,7 @@ function drawArrows(now) {            // off-screen pointers: your bases under a
   // arrows ride the edge of the open play area between the HUD panels, so none hides under a panel
   const pad = 20, rb = el => { const r = el.getBoundingClientRect(); return r.width ? r : null; };
   const top = Math.max(F.y + pad, ...['stats', 'ctrl'].map(id => rb($(id))).filter(Boolean).map(r => r.bottom + 14));
-  const low = [rb($('upg')), rb($('bMap')), $('mm').hidden ? null : rb($('mm'))].filter(Boolean).map(r => r.top - 14);
+  const low = [rb($('upg')), rb($('bMap')), rb($('sendTri')), $('mm').hidden ? null : rb($('mm'))].filter(Boolean).map(r => r.top - 14);
   const bot = Math.min(F.y + F.h - pad, ...low);
   const x0 = F.x + pad, x1 = F.x + F.w - pad, y0 = Math.min(top, bot - 40), y1 = Math.max(bot, y0 + 40);
   const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
@@ -3665,7 +3709,7 @@ function nebulaStars() {
   NEB.stars = out; NEB.sw = w; NEB.sh = h; NEB.q = quality; return out;
 }
 function drawNebulaBack(now) {                       // called with the world transform in place; leaves the screen transform behind
-  ctx.globalAlpha = 1; ctx.drawImage(nebulaClouds(), -W * 0.1, -H * 0.1, W * 1.2, H * 1.2);
+  ctx.globalAlpha = 1; { const cl = nebulaClouds(); bgCache('#01020a', 'neb', G, g => g.drawImage(cl, -W * 0.1, -H * 0.1, W * 1.2, H * 1.2)); }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const st = nebulaStars(), w = NEB.sw, h = NEB.sh, mv = reduceMotion ? 0 : 1, PAR = [0.05, 0.12, 0.24];
   let col = null;
@@ -3808,19 +3852,34 @@ function rimeStrokeFerns(c, R, sc, vis) {            // draws the frost cracks o
     for (let d = 0; d <= top; d++) { c.strokeStyle = fr.st[d]; c.lineWidth = lw[d]; c.stroke(fr.paths[d]); }
   }
 }
+const BGC = { c: null, key: '', src: null, miss: 0 };
+function bgCache(clear, key, src, paint) {        // the static part of a background, kept in a screen-sized opaque canvas; painted again only when its key changes
+  const m = ctx.getTransform(), k = [m.a, m.b, m.c, m.d, m.e, m.f, cv.width, cv.height, F.x, F.y, F.w, F.h, quality, key].join();
+  if (!BGC.c) BGC.c = document.createElement('canvas');
+  const c = BGC.c;
+  if (BGC.key !== k || BGC.src !== src || (PERF && window.__noBgCache)) {
+    BGC.miss++;
+    if (c.width !== cv.width || c.height !== cv.height) { c.width = cv.width; c.height = cv.height; }
+    const g = c.getContext('2d', { alpha: false }); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+    g.fillStyle = clear; g.fillRect(0, 0, c.width, c.height);
+    g.save(); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.beginPath(); g.rect(F.x, F.y, F.w, F.h); g.clip(); g.setTransform(m); paint(g); g.restore();
+    BGC.key = k; BGC.src = src;
+  }
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(c, 0, 0); ctx.restore();
+}
 function drawRimeBack(now) {                         // called with the world transform in place; leaves the screen transform behind
   const R = rimeBack(); rimeFernStyles(R); ctx.globalAlpha = 1;
-  { const r = R.cw * 0.6, x0 = Math.max(W / 2 - r, VIS.x0), x1 = Math.min(W / 2 + r, VIS.x1), y0 = Math.max(H / 2 - r, VIS.y0), y1 = Math.min(H / 2 + r, VIS.y1);
-    if (x1 > x0 && y1 > y0) { ctx.fillStyle = R.mk; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); } }
+  const moon = g => { const r = R.cw * 0.6, x0 = Math.max(W / 2 - r, VIS.x0), x1 = Math.min(W / 2 + r, VIS.x1), y0 = Math.max(H / 2 - r, VIS.y0), y1 = Math.min(H / 2 + r, VIS.y1);
+    if (x1 > x0 && y1 > y0) { g.fillStyle = R.mk; g.fillRect(x0, y0, x1 - x0, y1 - y0); } };
   const sc = V.s * dpr, BS = 1.25;
-  if (sc <= BS) {                                                      // zoomed out: the whole frost is one picture, made once per map and quality step
+  if (sc <= BS) {                                                      // zoomed out: the whole frost is one picture, made once per map and quality step, and the moonlight with it is kept in the background cache
     if (!R.bmp || R.bq !== quality) {
       if (!R.bmp) { R.bmp = document.createElement('canvas'); R.bmp.width = Math.ceil(R.cw * BS); R.bmp.height = Math.ceil(R.ch * BS); }
       const bc = R.bmp.getContext('2d'); bc.setTransform(1, 0, 0, 1, 0, 0); bc.clearRect(0, 0, R.bmp.width, R.bmp.height);
       bc.setTransform(BS, 0, 0, BS, -R.ox * BS, -R.oy * BS); rimeStrokeFerns(bc, R, BS, null); R.bq = quality;
     }
-    ctx.drawImage(R.bmp, R.ox, R.oy, R.cw, R.ch);
-  } else rimeStrokeFerns(ctx, R, sc, VIS);
+    bgCache('#030a14', 'rime', R, g => { moon(g); g.drawImage(R.bmp, R.ox, R.oy, R.cw, R.ch); });
+  } else { moon(ctx); rimeStrokeFerns(ctx, R, sc, VIS); }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const w = Math.ceil(F.w) + 40, h = Math.ceil(F.h) + 40, mv = reduceMotion ? 0 : 1, PAR = [0.04, 0.1, 0.2];
   if (!RIME.snow || RIME.sw !== w || RIME.sh !== h || RIME.sq !== quality) {
@@ -4604,8 +4663,7 @@ function toast(msg, color, team) {                   // team (optional): which t
   toastTimer = setTimeout(() => $('toast').classList.remove('on'), 2200);
 }
 function syncCtrl() {
-  $('sendV').textContent = Math.round(settings.send * 100) + '%';
-  $('bSend').setAttribute('aria-label', 'Each tap sends ' + Math.round(settings.send * 100) + '% of your army');
+  document.querySelectorAll('#sendTri button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.send === settings.send)));
   $('bSpeed').textContent = speedMul + '×';
 }
 
@@ -4754,7 +4812,7 @@ function applyColors(watch, colorKey) {
   renderSwatches();
 }
 function syncLook() {                                 // Colors and Team symbols -> the flags the drawing code reads, and two page attributes the CSS reads
-  SYM = settings.symbols === 'on'; HC = settings.colors === 'contrast';
+  SYM = settings.symbols === 'on'; HC = settings.colors === 'contrast'; drawDirty = true;
   document.documentElement.dataset.sym = SYM ? 'on' : 'off'; document.documentElement.dataset.colors = settings.colors;
 }
 function currentColorArgs() {                         // the color choice that is in force right now: the running match, or the setup behind the menu
@@ -5742,7 +5800,7 @@ function hePreview() {                                   // a few taps, a crackl
 }
 
 function syncRivals() {
-  const open = watching ? watchRivals : settings.rivals;
+  const open = (watching ? watchRivals : settings.rivals) && !statsHold;
   $('rivals').hidden = !(watching && open);                     // the table of every color's upgrades is for watching AI matches only
   $('statsBtn').setAttribute('aria-expanded', String(open));
   $('statsBtn').classList.toggle('noexp', !watching && !hasRules);
@@ -5876,6 +5934,10 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '48.5.1', t: 'The minimap opens at once', b: ['The minimap now opens the moment you tap the map button. Before, it waited a moment in case you were double-tapping.'] },
+  { v: '48.5', t: 'Lighter on your battery', b: ['While the game is paused, and behind the menus, the game now does far less drawing, so the phone stays cooler and the battery lasts longer.', 'Rime, Atlas and Nebula keep their backgrounds ready instead of drawing them again every frame, so they run smoother on slower phones.'] },
+  { v: '48.4.1', t: 'Buttons work with two thumbs', b: ['A button on the screen now responds even while your other finger is holding or dragging the map. Before, it could ignore the tap.'] },
+  { v: '48.4', t: 'A new layout for the buttons', b: ['Speed, Sound and Pause now sit together at the top right, with Pause in the corner. How much of your army each tap sends is now three buttons on the right edge (25, 50 and 100 percent), and the one you picked stays lit. The map button moved to the bottom left, above the upgrade panel.', 'The full view of the map now backs away a little when it has to, so no base is hidden behind a button.'] },
   { v: '48.3', t: 'A sound for every capture', b: ['In Hearth, a rival taking a base now has a sound too: your capture chord, muffled and quieter. The crackle stays calmer when many fights happen at once.', 'When you leave the app, the sound now stops instead of holding one note.', 'In Ember, bases nobody owns yet are easier to spot, and they now show cracks and a health ring when they are attacked.'] },
   { v: '48.2', t: 'Ember and Hearth', b: ['Hearth is a new sound style, made to go with Ember: a low warm hum that grows with the fighting, crackles when a base is hit hard, a soft tap when you send troops, and a chord when you take a base. It replaces Overdrive.', 'If you had Overdrive picked, you now have Hearth.'] },
   { v: '48.1.6', t: 'Check for update tells the truth', b: ['The Check for update button used to say you had the newest build even when a newer one was out. It now checks the website itself, and reloads straight into the new build when there is one.'] },
@@ -6045,7 +6107,7 @@ function rulesHtml() {
   return h;
 }
 function renderRules() {
-  const open = watching ? watchRivals : settings.rivals, show = hasRules && (open || performance.now() < peekUntil);
+  const open = (watching ? watchRivals : settings.rivals) && !statsHold, show = hasRules && (open || performance.now() < peekUntil);
   if ($('rulesBox').hidden === show) $('rulesBox').hidden = !show;
   if (!show) return;
   const h = rulesHtml(); if (h !== rulesCache) { rulesCache = h; $('rulesBox').innerHTML = h; }
@@ -6169,7 +6231,7 @@ function startGame(watch, scen, modeKey, prac) {
 function pause() {
   if (mode !== 'play') return;
   resetPtrs();
-  mode = 'paused'; hover = null; selBase = null; hideInfo();
+  mode = 'paused'; hover = null; selBase = null; hideInfo(); drawDirty = true;
   resetStack('scrPause'); show('menu', true);
 }
 function resume() {
@@ -6530,12 +6592,12 @@ cv.addEventListener('wheel', e => {
   const dy = e.deltaMode === 1 ? e.deltaY * 33 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;       // Firefox sends lines, not pixels
   zoomAround(e.clientX, e.clientY, cam.z * Math.exp(-dy * 0.0015));
 }, { passive: false });
-let mapTapT = 0, mapTapTimer = 0;
-$('bMap').addEventListener('click', () => {           // tap: minimap on/off; double-tap: the whole battlefield
+let mapTapT = 0, mapWas = false;
+$('bMap').addEventListener('click', () => {           // tap: minimap on/off at once; a second tap inside 300 ms undoes that and shows the whole battlefield
   const now = performance.now();
-  if (now - mapTapT < 300) { clearTimeout(mapTapTimer); mapTapT = 0; fling.vx = fling.vy = 0; resetCam(); updateView(); return; }
-  mapTapT = now;
-  mapTapTimer = setTimeout(() => { mapTapT = 0; setMinimap($('mm').hidden); }, 300);
+  if (now - mapTapT < 300) { mapTapT = 0; setMinimap(mapWas); fling.vx = fling.vy = 0; resetCam(); updateView(); return; }
+  mapTapT = now; mapWas = !$('mm').hidden;
+  setMinimap(!mapWas);
 });
 let mmDrag = false;
 $('mm').addEventListener('pointerdown', e => { mmDrag = true; try { $('mm').setPointerCapture(e.pointerId); } catch (_) {} mmJump(e); });
@@ -6610,9 +6672,11 @@ $('bPause').addEventListener('click', pause);
 $('bSpeed').addEventListener('click', () => { if (mode !== 'play') return; const sp = speeds(); speedMul = sp[(sp.indexOf(speedMul) + 1) % sp.length]; syncCtrl(); });
 $('statsBtn').addEventListener('click', () => {
   if (!watching && !hasRules) return;
+  if (statsHold) { setMinimap(false); layout(); return; }                   // the panel was folded for the minimap: tapping it puts the minimap away and the panel back
   if (watching) watchRivals = !watchRivals;
   else { settings.rivals = !settings.rivals; save('ice-settings', settings); }
   syncRivals(); layout();
+  if (!$('mm').hidden && rectsClash($('mm'), $('stats'))) setMinimap(false);          // opening the panel over the minimap puts the minimap away
 });
 syncSeg(); syncGlobalSeg(); syncAllText(); renderMods(); renderSettingsHint(); renderSpecials();
 $('mLadder').addEventListener('click', () => { renderLadder(); go('scrLadder'); });
@@ -6635,7 +6699,8 @@ $('vol').addEventListener('input', () => {
   settingsKey = 'volume'; renderSettingsHint();
 });
 $('bSound').addEventListener('click', () => { settings.sound = !settings.sound; save('ice-settings', settings); audioOn(); syncSound(); });
-$('bSend').addEventListener('click', () => { if (mode !== 'play') return; settings.send = SENDS[(SENDS.indexOf(settings.send) + 1) % SENDS.length]; save('ice-settings', settings); syncCtrl(); });
+function setSend(f) { if (mode !== 'play' || !SENDS.includes(f)) return; settings.send = f; save('ice-settings', settings); syncCtrl(); }
+document.querySelectorAll('#sendTri button').forEach(b => b.addEventListener('click', () => setSend(+b.dataset.send)));
 
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') { onBack(); e.preventDefault(); return; }
@@ -6650,9 +6715,19 @@ window.addEventListener('keydown', e => {
   else if (e.key === '2' || e.key === 'w') buy('spd');
   else if (e.key === '3' || e.key === 'e') buy('dmg');
   else if (e.key === 'f') $('bSpeed').click();
-  else if (e.key === 's') $('bSend').click();
+  else if (e.key === 's') setSend(SENDS[(SENDS.indexOf(settings.send) + 1) % SENDS.length]);
   else if (e.key === 'm') $('bSound').click();
 });
+document.addEventListener('pointerdown', e => {          // a second finger on a HUD button: the browser gives no click while another finger is down, so press it ourselves
+  if (e.pointerType !== 'touch' || e.isPrimary || !e.target.closest) return;
+  const b = e.target.closest('#hud button'); if (!b || b.disabled) return;
+  b._pc = performance.now(); b.click();
+}, true);
+document.addEventListener('click', e => {                // ...and if the browser does send its own click for that press, drop it
+  if (!e.isTrusted) return;
+  const b = e.target.closest && e.target.closest('#hud button');
+  if (b && b._pc && performance.now() - b._pc < 700) { b._pc = 0; e.stopImmediatePropagation(); e.preventDefault(); }
+}, true);
 document.addEventListener('visibilitychange', () => { if (document.hidden) { resetPtrs(); pause(); audioHush(); } else audioKick(); });
 if (IOS) {                                            // everything below runs on iPhone and iPad only
   for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, e => e.preventDefault(), { passive: false });     // Safari ignores "no zoom" in the viewport tag; this stops a two-finger pinch zooming the page
@@ -6821,7 +6896,11 @@ function frame(nowMs) {
   if (G) playSfx(nowMs, dt);
   if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); floeTick(); heTick(); mixTick(); }
   const fsw = G ? fogSwap() : null;                 // under fog, bases out of sight are drawn as last seen
-  try { draw(nowMs / 1000); if (mode === 'play' || mode === 'paused') drawMinimap(); } finally { fogRestore(fsw); }
+  const gap = mode === 'paused' ? 250 : mode === 'demo' ? 28 : 0;      // F2: nothing moves while paused (4 a second is plenty for the slow decoration); the demo behind the menus shows at about 30 a second
+  if (!gap || drawDirty || nowMs - lastDrawAt >= gap) {
+    drawDirty = false; lastDrawAt = nowMs;
+    try { draw(nowMs / 1000); if (mode === 'play' || mode === 'paused') drawMinimap(); } finally { fogRestore(fsw); }
+  } else fogRestore(fsw);
   perfTick(nowMs, tDraw - tSim, performance.now() - tDraw);
   watchFrameRate(dt * 1000, nowMs);
   if (mode === 'play' && nowMs - lastHud > 100) { lastHud = nowMs; hud(); }
@@ -6835,6 +6914,8 @@ if (PERF) { window.__chimes = () => PF.chimes.slice(); window.__aud = () => ({ a
 if (PERF) { window.__coach = () => coach ? { i: coach.i, n: coach.lesson.steps.length, id: coach.lesson.id } : null; window.__hud = hud; window.__info = showInfo; window.__coachAim = () => coach ? { hl: coach.hlId, ph: $('coachPh').textContent } : null; window.__txt = () => ({ DIFF_INFO, PERSONA_INFO, SHAPE_INFO, SETTINGS_INFO, SPECIAL_INFO }); window.__mods = () => MODS; window.__sel = () => selBase; window.__coachTo = n => { coach.i = n; coach.g0 = G.t; coachShow(); }; }       // test hooks
 if (PERF) window.__cam = () => ({ z: cam.z, cu: cam.cu, cv: cam.cv, minimap: !$('mm').hidden });
 if (PERF) window.__scr = (x, y) => toScreen(x, y);
+if (PERF) window.__fit = () => ({ k: FIT_K, hold: statsHold });
+if (PERF) window.__bg = () => ({ miss: BGC.miss, drawn: lastDrawAt, dirty: drawDirty });
 if (PERF) { window.__own = (id, o) => { G.nodes[id].owner = o; }; window.__tick = d => { G.t += d; }; window.__orders = () => (G ? G._orders | 0 : 0); window.__nodes = () => G.nodes.map(n => ({ id: n.id, x: n.x, y: n.y, o: n.owner })); window.__ring = () => ({ sel: selBase, valid: selValid(), ringNew, flashed: performance.now() - selFlash < 400, ghost: !!selGhost }); }
 if (PERF) window.__chip = () => ({ on: !!CH.nodes, busy: CH.nodes ? Object.values(CH.nodes.ch).filter(c => c.off > AC.currentTime).length : 0 });   // sound-test hook
 if (PERF) window.__hearth = () => ({ on: !!HE.nodes, v: HE.v, I: HE.I, Is: HE.Is, rr: HE.rr, phrases: HE.phrases, caps: HE.caps, losses: HE.losses, taps: HE.taps, rcaps: HE.rcaps, rskip: HE.rskip, snaps: HE.snaps, drop: HE.drop, gain: HE.nodes ? HE.nodes.out.gain.value : 0 });   // sound-test hook
