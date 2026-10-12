@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#000000">
-<title>Aiced Strategy</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -12,6 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Aiced">
+<title>Aiced Strategy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -194,6 +195,9 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 }
 @media (orientation: landscape) and (max-height: 430px) { #scrSettings .seg.five button { min-height: 32px; height: 32px; } }
 .seg button[aria-pressed="true"] { color: var(--ink); background: var(--blue-soft); box-shadow: inset 0 -2px 0 var(--blue); }
+.seg button .lk { display: none; width: 8px; height: 10px; margin-left: 4px; vertical-align: -1px; }
+.seg button.lockd { opacity: .6; }
+.seg button.lockd .lk { display: inline-block; }
 .btns { display: flex; gap: 8px; }
 .btns button { flex: 1; min-height: 50px; border-radius: 4px; font-size: 16px; font-weight: 600; }
 .primary { background: var(--blue); color: #fff; }
@@ -542,7 +546,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.5.2</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.7.1</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -567,7 +571,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
       <div class="opt"><span>Your team</span><div class="seg swatches" data-mode="classic" data-key="color"><button data-v="blue" aria-label="Blue"><i style="background:#3577ff"></i></button><button data-v="red" aria-label="Red"><i style="background:#f2433c"></i></button><button data-v="green" aria-label="Green"><i style="background:#2db857"></i></button><button data-v="yellow" aria-label="Yellow"><i style="background:#ffcd30"></i></button><button data-v="purple" aria-label="Purple"><i style="background:#a656ff"></i></button></div></div>
       <div class="opt"><span>Map size</span><div class="seg" data-mode="classic" data-key="size"><button data-v="small">Small</button><button data-v="medium">Medium</button><button data-v="large">Large</button></div></div>
       <p class="blurb" id="classicSize"></p>
-      <div class="opt"><span>AI strength</span><div class="seg" data-mode="classic" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button></div></div>
+      <div class="opt"><span>AI strength</span><div class="seg" data-mode="classic" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button><button data-v="deadly">Deadly<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button></div></div>
       <p class="blurb" id="classicDiff"></p>
     </div>
     <button id="startClassic" class="primary big" data-start="classic">Start</button>
@@ -589,7 +593,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Enemies</h2></header>
     <div class="opts">
       <div class="opt"><span>Rivals</span><div class="seg tight" data-mode="custom" data-key="opp"><button data-v="auto">Auto</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
-      <div class="opt"><span>AI strength</span><div class="seg tight" data-mode="custom" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button><button data-v="random">Random</button></div></div>
+      <div class="opt"><span>AI strength</span><div class="seg tight" data-mode="custom" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button><button data-v="deadly">Deadly<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button><button data-v="random">Random</button></div></div>
       <div class="opt"><span>Personality</span><div class="seg tight" data-mode="custom" data-key="persona"><button data-v="mixed">Mixed</button><button data-v="aggressive">Aggressive</button><button data-v="sturdy">Sturdy</button><button data-v="adaptive">Adaptive</button></div></div>
       <p class="hintline" id="hintEnemies"></p>
     </div>
@@ -609,7 +613,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Spectate</h2></header>
     <div class="opts">
       <div class="opt"><span>Colors</span><div class="seg tight" data-mode="spec" data-key="opp"><button data-v="auto">Auto</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button></div></div>
-      <div class="opt"><span>AI strength</span><div class="seg tight" data-mode="spec" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button><button data-v="random">Random</button></div></div>
+      <div class="opt"><span>AI strength</span><div class="seg tight" data-mode="spec" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button><button data-v="deadly">Deadly<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button><button data-v="random">Random</button></div></div>
       <div class="opt wide2"><span>Shape</span><div class="seg tight" data-mode="spec" data-key="shape"><button data-v="random">Random</button><button data-v="continent">Continent</button><button data-v="islands">Islands</button><button data-v="ring">Ring</button><button data-v="river">River</button></div></div>
       <div class="opt"><span>Size</span><div class="seg tight" data-mode="spec" data-key="size"><button data-v="small">Small</button><button data-v="medium">Medium</button><button data-v="large">Large</button><button data-v="huge">Huge</button></div></div>
       <div class="opt"><span>Special bases <button class="info" id="infoSpec" data-go="scrSpecials" aria-label="What are special bases?">i</button></span><div class="seg" data-mode="spec" data-key="special"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
@@ -798,7 +802,19 @@ const DIFF = {
   easy:   { interval: [4.2, 6.4], margin: 2.1,  frac: .5,  spawn: .75, playerBias: 0,   xp: 1, smart: 0 },
   normal: { interval: [3.3, 5.0], margin: 1.75, frac: .6,  spawn: .86, playerBias: .05, xp: 1, smart: 0 },
   hard:   { interval: [1.5, 2.4], margin: 1.25, frac: .82, spawn: 1.08, playerBias: .30, xp: 1, smart: 1 },
-  brutal: { interval: [0.8, 1.2], margin: 1.1,  frac: .88, spawn: 1.18, playerBias: .5,  xp: 1.2, smart: 2 }
+  brutal: { interval: [0.8, 1.2], margin: 1.1,  frac: .88, spawn: 1.18, playerBias: .5,  xp: 1.2, smart: 2, dly: { prey: { ratio: 1.6, bonus: 4 } } },
+  // Build 48.7.1 Deadly: troops build 10% faster and upgrades come 25% faster than Brutal's, and a smarter head. Every behavior below is a switch only this entry has; see aiThink.
+  //   mass: until `until` s, picks on nearby rivals harder (+rival to their target score)   retreat: a garrison that cannot be saved walks to a stronger neighbor (min: enemy strength, ratio: how outnumbered)
+  //   warn: an army visibly walking up to a base is answered before it fires a shot (r: px, min: strength, dwell: s it must stay, value: base worth, big: strength that ignores the worth check, ratio: vs garrison, cap: share of the army, real: a force this share of the army is answered in full, hold: s to commit)
+  //   prey: a base the player holds with under 1/ratio of the rival's whole army gets +bonus on its target score, so a slow or meek player is hit early (Brutal has this one too)
+  //   near: how hard the distance a force must gather over counts against a target (1 = Brutal's; the old Deadly went back to spawn for its second base)
+  //   bold: the share of its army cap at which a rival goes in waves (95% of the army, a thinner margin); Brutal and below do it at 0.9
+  //   def: one defense at a time (hold: s a defended base stays the answer, stick: how much better another base's need must score to take over, ratio: a base the rival cannot muster half the attackers for is left to the retreat, not fed troops)
+  //   def.late: a base with nobody left defending it is draining; if the help cannot get there before the base falls it is left alone (the retreat has the garrison already)
+  //   last: LAST STAND. A rival down to `bases` bases or fewer, with under `share` of the biggest rival's army, after `after` s: no small raids, attacks only with a gathered force of at least `min` strength and `troops` troops (x1.25 margin), and the rest of its troops mass up instead
+  //   sliver: small raids on weak bases (extra: shots on top of Brutal's, maxDef: weakest defense it hits, cap: share of the army, keep: troops left at the source)
+  deadly: { interval: [0.8, 1.2], margin: 1.1,  frac: .88, spawn: 1.30, playerBias: .5,  xp: 1.5, smart: 2,
+    dly: { prey: { ratio: 1.6, bonus: 4 }, near: 3, bold: 0.7, def: { hold: 5, stick: 1.5, ratio: 2, late: 1 }, last: { bases: 4, share: 0.5, after: 90, min: 8, troops: 6 },  mass: { until: 240, rival: 2 }, retreat: { min: 3, ratio: 2 }, warn: { r: 400, min: 3, dwell: .8, value: .5, big: 6, ratio: .3, cap: .3, real: .4, hold: 10 }, sliver: { extra: 1, maxDef: 7, cap: .25, keep: 3 } } }
 };
 // AI personalities. hp/spd/dmg: how strongly it pulls toward each upgrade. pref: how much extra it wants each kind of special base.
 // margin: how much stronger than the defenders it wants to be before it attacks (lower = bolder).
@@ -1248,7 +1264,7 @@ function newGame(opts) {
       diff: D, diffName: opts.diff || 'normal', style: styleFor(opts.persona, rng) })),
     fx: [], sfx: [], lock: [null, null, null, null, null], over: false,
     // match history for the end-screen timeline: base counts once a second, plus notable moments
-    hist: [], nextSample: 0, log: [], homes: [-1, -1, -1, -1, -1], lastTaker: [null, null, null, null, null],
+    hist: [], spot: [null, null, null, null, null], nextSample: 0, log: [], homes: [-1, -1, -1, -1, -1], lastTaker: [null, null, null, null, null],
     leader: -1, leadCand: -1, leadSince: 0, playerCaps: 0, result: null, winner: null, peak: 1
   };
   m.starts.forEach((n, j) => {
@@ -1535,6 +1551,7 @@ function update(dt) {
           h.heat += C.garrisonHeat; if (t.lastHit !== null) h.heatBy = t.lastHit;
         }
       }
+      if (t.team >= 0) G.spot[t.team] = { x: t.x, y: t.y };
       if (G.fx.length < 400) G.fx.push({ k: 'pop', x: t.x, y: t.y, c: t.team, b: G.t, by: t.lastHit });
     }
   }
@@ -1564,7 +1581,7 @@ function update(dt) {
   sampleHistory();
   checkEnd();
   if (G.over) sampleHistory(true);
-  if (G.step % 30 === 0) G.fx = G.fx.filter(f => G.t - f.b < 2);
+  if (G.step % 30 === 0) G.fx = G.fx.filter(f => G.t - f.b < (f.k === 'elim' ? 3.8 : 2));
 }
 
 function presenceStep(dt) {
@@ -1603,13 +1620,13 @@ function hitBase(n, team, dmg, x, y) {
 function takeNode(n, team) {
   const prev = n.owner;
   if (prev >= 0) {
-    G.lastTaker[prev] = team;
+    G.lastTaker[prev] = team; G.spot[prev] = { x: n.x, y: n.y };
     if (G.homes[prev] === n.id) G.log.push({ t: G.t, k: 'home', a: team, b: prev });
   }
   if (team === PLAYER) G.playerCaps++;
   if (prev === PLAYER) G.playerLosses++;
   n.owner = team; n.hp = n.maxHp * C.flipHP; n.lastHitT = G.t; n.spawnT = C.spawnEvery * 0.5; n.heat = 0;
-  G.fx.push({ k: 'ring', x: n.x, y: n.y, c: team, b: G.t });
+  G.fx.push({ k: 'ring', x: n.x, y: n.y, c: team, from: prev, b: G.t });
   if (n.kind) G.fx.push({ k: 'special', c: team, from: prev, kind: n.kind, b: G.t });
   if (n.crown) G.log.push({ t: G.t, k: 'crown', a: team, b: prev });
   if (G.teams[team].target === n.id) G.teams[team].target = null;
@@ -1652,7 +1669,8 @@ function recount() {
     const was = T.alive;
     T.alive = T.bases > 0 || T.count > 0;
     if (was && !T.alive) {
-      G.fx.push({ k: 'elim', c: T.i, b: G.t });
+      const sp = G.spot[T.i] || (G.homes[T.i] >= 0 ? G.nodes[G.homes[T.i]] : null);
+      G.fx.push({ k: 'elim', c: T.i, x: sp ? sp.x : undefined, y: sp ? sp.y : undefined, b: G.t });
       G.log.push({ t: G.t, k: 'out', b: T.i, a: G.lastTaker[T.i] });
     }
   }
@@ -1904,6 +1922,12 @@ function aiThink(team) {
     for (const t of G.troops) if (t.team === team && !t.path.length && keepLeft[t.home] > 0) { held.add(t); keepLeft[t.home] -= S.st[ti]; }
   }
   const holdFilter = sm ? (t => !held.has(t)) : null;
+  const LSd = D.dly && D.dly.last;                      // DEADLY: last stand
+  let lastStand = false;
+  if (LSd && G.t >= LSd.after && T.bases <= LSd.bases) {
+    let top = 0; for (let i = 0; i < G.teams.length; i++) if (i !== team && G.teams[i].alive && G.teams[i].count > top) top = G.teams[i].count;
+    lastStand = T.count < top * LSd.share;
+  }
   // fog of war: the AI sees only near its own bases and troops. Elsewhere it remembers the last strength it saw there.
   let seen = null;
   if (G.mods.fog) {
@@ -1955,32 +1979,99 @@ function aiThink(team) {
       const back = nearestOwned(team, v);
       if (back >= 0) command(team, back, 1, t => finalDest(t) === v);
       T.target = null; G.lock[team] = null; T.avoid = v; T.avoidUntil = G.t + 12;
-      G.fx.push({ k: 'retreat', c: team, b: G.t });
+      T.fail = (T.fail && T.fail.v === v && G.t - T.fail.t < 150) ? { v, n: Math.min(4, T.fail.n + 1), t: G.t } : { v, n: 1, t: G.t };
+      G.fx.push({ k: 'retreat', c: team, x: nodes[v].x, y: nodes[v].y, hx: back >= 0 ? nodes[back].x : nodes[v].x, hy: back >= 0 ? nodes[back].y : nodes[v].y, b: G.t });
       G.log.push({ t: G.t, k: 'retreat', a: team });
       break primary;
     }
   }
 
   let best = null;
+  // 2a. DEADLY: a garrison that cannot be saved walks to a stronger neighbor instead of dying for nothing (never from a crown or special base, never down a cut-off road)
+  if (D.dly && D.dly.retreat && T.bases > 1) {
+    const RT = D.dly.retreat;
+    for (const n of nodes) {
+      if (n.owner !== team || n.crown || n.kind || G.t - (n.evacT || -99) < 10) continue;
+      const en = enemyAt(n.id), my = mine[n.id]; if (en < RT.min || my < 1) continue;
+      const rt0 = routeTable(team, n.id), help = reachFrom(rt0, n.id, DEF_R);
+      if (en < (my + help) * RT.ratio) continue;                              // there is a real chance, so defend it
+      let ref = -1, rs = 0;
+      for (const u of n.adj) {
+        if (nodes[u].owner !== team || nodes[u].crown) continue;
+        const eu = enemyAt(u), sc = mine[u] + 1 - eu * 2; if (eu > en * 0.3 || sc <= rs) continue;
+        if (mine[u] + my < eu * 1.2) continue;
+        rs = sc; ref = u;
+      }
+      if (ref < 0) continue;
+      if (command(team, ref, 1, t => !t.path.length && t.home === n.id)) n.evacT = G.t;
+    }
+  }
   // 2. defend, but only a base that's actually under assault (real damage or a garrison being cut down)
+  const DF = D.dly && D.dly.def;                       // DEADLY: one defense at a time
+  if (DF && T.dcom && (G.t >= T.dcom.until || nodes[T.dcom.node].owner !== team)) T.dcom = null;
+  const HW = DF && DF.late ? (T.hpw || (T.hpw = new Array(N).fill(null))) : null;
+  if (HW) for (const n of nodes) {
+    if (n.owner !== team) { HW[n.id] = null; continue; }
+    const w = HW[n.id];
+    if (!w || G.t - w.t >= 0.5) HW[n.id] = { hp: n.hp, t: G.t, rate: w ? Math.max(0, (w.hp - n.hp) / (G.t - w.t)) : 0 };
+  }
+  const WN = D.dly && D.dly.warn;                      // DEADLY: early warning, with bait-proofing
+  if (WN && !T.wseen) T.wseen = {};
+  let armyTot = 0; if (WN) for (let i = 0; i < N; i++) armyTot += mine[i];
   for (const n of nodes) {
     if (n.owner !== team) continue;
-    if (n.heat < (n.crown ? 25 : C.assaultHeat) * (T.style.guard || 1) * (sm ? 0.3 : 1) && !(sm && enemyAt(n.id) >= 2)) continue;   // the crown is defended at the first sign of trouble; smart rivals answer a small raid too
-    const en = enemyAt(n.id); if (en < 0.5) continue;
+    let appr = 0, viaWarn = false;
+    if (WN) {                                           // enemy strength visibly walking up to this base, inside the wide ring around it (physical positions only, like everything the AI sees)
+      const R2 = WN.r * WN.r;
+      for (const t of G.troops) { if (t.team === team || t.team < 0 || !t.path.length || t.path[0] !== n.id) continue; const dx = t.x - n.x, dy = t.y - n.y; if (dx * dx + dy * dy < R2) appr += S.st[t.team + 1]; }
+      if (appr >= WN.min) { if (T.wseen[n.id] == null) T.wseen[n.id] = G.t; } else T.wseen[n.id] = null;
+    }
+    const hot = !(n.heat < (n.crown ? 25 : C.assaultHeat) * (T.style.guard || 1) * (sm ? 0.3 : 1) && !(sm && enemyAt(n.id) >= 2));   // the crown is defended at the first sign of trouble; smart rivals answer a small raid too
+    if (!hot) {
+      if (!WN || T.wseen[n.id] == null || G.t - T.wseen[n.id] < WN.dwell) continue;            // not shot at yet: only a force that has stood near for a moment counts
+      const value = (n.crown ? 3 : 0) + (n.kind ? 1.5 : 0) + n.adj.length * 0.4 + mine[n.id] * 0.1;
+      if (value < WN.value && appr < WN.big) continue;                                         // an unimportant base is not worth being lured over, unless the force is big
+      if (T.warn && G.t < T.warn.until) continue;                                              // one early answer at a time: after it, the attack plans go on
+      if (appr < mine[n.id] * WN.ratio) continue;                                              // the garrison already looks able to hold
+      viaWarn = true;
+    }
+    const en = Math.max(enemyAt(n.id), viaWarn ? appr : 0); if (en < 0.5) continue;
     const my = committed[n.id]; if (my >= en * 1.25) continue;
     const rt = routeTable(team, n.id), reach = reachFrom(rt, n.id, DEF_R);
     if (reach <= 0.5) continue;
-    const sc = 2.5 + en / (my + 1) + (1 - n.hp / n.maxHp) * 1.5 + G.rng() * .3;
-    if (!best || sc > best.sc) best = { sc, node: n.id, frac: Math.min(1, Math.max(.4, (en * 1.3 - my) / reach)), kind: 'def', R: DEF_R };
+    if (DF && en >= (mine[n.id] + reach) * DF.ratio) continue;                    // hopeless: the retreat takes the garrison out, no troops are fed in a few at a time
+    if (DF && T.dskip && T.dskip[n.id] > G.t) continue;                           // nobody could go last time: look at the other bases first
+    if (HW && n.pres[ti] === 0 && HW[n.id] && HW[n.id].rate > 0.5) {               // nobody is defending it and its health is draining: can the help arrive before it falls?
+      const tFall = n.hp / HW[n.id].rate, tArr = gatherRadius(rt, Math.min(Math.max(4, en), reach * 0.9)) / S.sp[ti];
+      if (tArr > tFall) continue;
+    }
+    const sc = 2.5 + en / (my + 1) + (1 - n.hp / n.maxHp) * 1.5 + (DF ? (T.dcom && T.dcom.node === n.id ? DF.stick : 0) - n.id * 1e-4 : G.rng() * .3) - (viaWarn ? 1 : 0);
+    let fr = Math.min(1, Math.max(.4, (en * 1.3 - my) / reach));
+    if (viaWarn && appr < WN.real * armyTot) fr = Math.min(fr, Math.max(0.05, WN.cap * armyTot / reach));   // a small force never pulls more than its share of the army; a force as big as the army is a real attack
+    if (!best || sc > best.sc) best = { sc, node: n.id, frac: fr, kind: 'def', R: DEF_R, warn: viaWarn };
   }
+  if (DF && best && best.kind === 'def') {               // DEADLY: carry the defense out now; if nobody can go, forget it for a few seconds and carry on with the rest of the plan
+    const away = T.dcom && T.dcom.node !== best.node ? T.dcom.node : -1;           // switching: the troops already on their way to the first base stay on it
+    const r = command(team, best.node, best.frac, away >= 0 ? (t => !(t.path.length && finalDest(t) === away)) : null, best.R);
+    if (r) {
+      if (!T.dcom || T.dcom.node !== best.node) T.dcom = { node: best.node, until: G.t + DF.hold };
+      if (best.warn) T.warn = { v: best.node, until: G.t + WN.hold }; else { T.target = null; G.lock[team] = null; }
+      break primary;
+    }
+    (T.dskip || (T.dskip = {}))[best.node] = G.t + 3; best = null;
+  }
+  if (best && best.warn) T.warn = { v: best.node, until: G.t + WN.hold };
 
   // 3. stick with an attack that's still going (and give a fresh one time to arrive before second-guessing it)
   if (!best && T.target != null && nodes[T.target].owner !== team && G.t < (T.busyUntil || 0) && committed[T.target] > 0.5) break primary;
   if (!best && T.target != null) {
     const v = T.target;
-    if (nodes[v].owner === team) T.target = null;
-    else if (committed[v] > 0.5 && committed[v] > enemyAt(v) * 0.9) break primary;
-    else { T.target = null; G.lock[team] = null; }
+    if (nodes[v].owner === team) { T.target = null; if (T.fail && T.fail.v === v) T.fail = null; }
+    else if (committed[v] > 0.5 && committed[v] > enemyAt(v) * 0.9 && !(G.t - (T.since || 0) > 60 && nodes[v].hp > nodes[v].maxHp * 0.9)) break primary;   // an attack that has run a minute without touching the base is not 'still going'
+    else {
+      T.target = null; G.lock[team] = null;
+      T.fail = (T.fail && T.fail.v === v && G.t - T.fail.t < 150) ? { v, n: Math.min(4, T.fail.n + 1), t: G.t } : { v, n: 1, t: G.t };
+    }
   }
 
   // 4. pick something to hit
@@ -1988,28 +2079,40 @@ function aiThink(team) {
     const front = new Set();
     for (const n of nodes) if (n.owner === team || mine[n.id] > 0)
       for (const v of n.adj) if (nodes[v].owner !== team) front.add(v);
-    const full = T.count >= capOf(team) * 0.9;
-    const margin = (full ? Math.max(1.05, D.margin * 0.8) : D.margin) * (T.style.margin || 1), frac = full ? 0.95 : D.frac;
+    const MS = (D.dly && D.dly.mass && G.t < D.dly.mass.until) ? D.dly.mass : null;   // DEADLY: early on, nearby rivals are the preferred target
+    const full = T.count >= capOf(team) * ((D.dly && D.dly.bold) || 0.9);
+    const margin = (full ? Math.max(1.05, D.margin * 0.8) : D.margin) * (T.style.margin || 1) * (lastStand ? 1.25 : 1), frac = full || lastStand ? 0.95 : D.frac;
+    let armyAll4 = 0; for (let i = 0; i < N; i++) armyAll4 += mine[i];
     for (const v of front) {
       const o = nodes[v].owner;
       if (o >= 0 && G.t < C.peace) continue;              // opening ceasefire: neutrals only
       if (v === T.avoid && G.t < T.avoidUntil) continue;  // just got bounced off this one
-      const def = enemyAt(v), rt = routeTable(team, v), need = Math.max(5, def * margin + 1.2) / frac;
-      const R = gatherRadius(rt, need);
+      const def = enemyAt(v), rt = routeTable(team, v);
+      let need = Math.max(5, def * margin + 1.2) / frac, fr = frac;
+      const fl = (T.fail && T.fail.v === v && G.t - T.fail.t < 150) ? T.fail.n : 0;   // failed attacks on this very base: ask for x1.5 more each time
+      if (fl) need *= Math.pow(1.5, fl);
+      let R = gatherRadius(rt, need);
+      if (R > ATK_R && (full || fl)) {                  // the usual margin asks for more than it can ever gather (army cap, or a base that keeps holding):
+        const all = reachFrom(rt, -1, ATK_R), lean = Math.max(5, def * 1.15 + 1);   // go with everything, if everything clearly beats what is there
+        if (all >= lean) { fr = 1; need = all * 0.999; R = gatherRadius(rt, need); }
+      }
       if (R > ATK_R) continue;                          // not enough strength close enough
-      const avail = reachFrom(rt, -1, R + 80) * frac;
-      let sc = (avail - def) / (def + 2) - R / 1500;    // nearer targets win ties
+      const avail = reachFrom(rt, -1, R + 80) * fr;
+      if (lastStand) { const gone = (held ? held.size : 0) * S.st[ti] * fr; if (avail - gone < Math.max(LSd.min, def * margin + 3) || avail - gone < LSd.troops * S.st[ti]) continue; }           // a last stand does not send a handful: one gathered force, or none
+      let sc = (avail - def) / (def + 2) - R / (1500 / ((D.dly && D.dly.near) || 1));    // nearer targets win ties
       sc += (seen && !seen[v] ? 0 : (1 - nodes[v].hp / nodes[v].maxHp)) * 0.8;
       if (nodes[v].kind) sc += ((T.style.pref || {})[nodes[v].kind] || 0.6) * 0.8;   // each personality has its favorites
       if (nodes[v].crown) sc += 1.0 + 2.2 * (o >= 0 && o !== team ? G.teams[o].hill / G.kothTarget : 0);   // and everyone chases whoever is close to winning
       if (hopCrown && hopCrown[v] >= 0) sc += 1.6 * Math.max(0, 1 - hopCrown[v] / 7);                         // and heads for it: bases on the way count extra
       if (o === NEUTRAL) sc += 0.6;
       else {
+        if (D.dly && D.dly.prey && o === PLAYER && !G.autoplay && armyAll4 >= def * D.dly.prey.ratio) sc += D.dly.prey.bonus;     // a slow or meek player: a base he holds with a small defense next to the rival's whole army
+        if (MS) sc += MS.rival;
         if (o === PLAYER && !G.autoplay) sc += D.playerBias;   // nobody gangs up on blue when blue isn't you
         if (G.teams[o].count < T.count * 0.6) sc += 0.3;
       }
       sc += G.rng() * 0.35;
-      if (!best || sc > best.sc) best = { sc, node: v, frac, kind: 'atk', R: R + 80 };
+      if (!best || sc > best.sc) best = { sc, node: v, frac: fr, kind: 'atk', R: R + 80 };
     }
   }
 
@@ -2017,15 +2120,15 @@ function aiThink(team) {
     const r = command(team, best.node, best.frac, best.kind === 'atk' ? holdFilter : null, best.R);
     if (best.kind === 'atk') {
       if (r) {
-        T.target = best.node; T.sent = 0; G.lock[team] = best.node;     // AI locks on too
+        T.target = best.node; T.sent = 0; T.since = G.t; G.lock[team] = best.node;     // AI locks on too
         T.busyUntil = G.t + Math.min(30, Math.max(8, best.R / S.sp[ti] + 6));
       }
-    } else { T.target = null; G.lock[team] = null; }
+    } else if (!best.warn) { T.target = null; G.lock[team] = null; }
     break primary;
   }
 
   // 5. nothing worth hitting yet: mass up next to the softest neighbour
-  if (G.rng() < 0.4) {
+  if (lastStand || G.rng() < 0.4) {
     let wv = -1, wd = Infinity;
     for (const n of nodes) if (n.owner === team)
       for (const v of n.adj) if (nodes[v].owner !== team) { const d = enemyAt(v); if (d < wd) { wd = d; wv = v; } }
@@ -2033,33 +2136,36 @@ function aiThink(team) {
       let stage = -1, sm = -1;
       for (const u of nodes[wv].adj) if (nodes[u].owner === team && mine[u] > sm) { sm = mine[u]; stage = u; }
       let total = 0; for (let i = 0; i < N; i++) total += mine[i];
-      if (stage >= 0 && mine[stage] < total * 0.5) command(team, stage, 0.6, null, 520);
+      if (stage >= 0 && mine[stage] < total * 0.5) command(team, stage, lastStand ? 0.9 : 0.6, null, 520);
     }
   }
   } // end primary
 
   // 5b. smart rivals punish a vacant or lightly held base next to them with just enough troops, without waiting for the main attack to finish
-  if (sm && G.t >= C.peace) {
+  if (sm && G.t >= C.peace && !lastStand) {
     const idleAt = new Float64Array(N);
     for (const t of G.troops) if (t.team === team && !t.path.length) idleAt[t.home] += S.st[ti];
     let shots = 0;
+    const SL = D.dly && D.dly.sliver;                   // DEADLY: a few more raids, never more than a share of the army, only from quiet bases
+    let armyAll = 0; if (SL) for (let i = 0; i < N; i++) armyAll += mine[i];
     for (const nv of nodes) {
-      if (shots >= sm) break;
+      if (shots >= sm + (SL ? SL.extra : 0)) break;
       const v = nv.id; if (nv.owner === team) continue;
-      const def = enemyAt(v); if (def > 5) continue;
+      const def = enemyAt(v); if (def > (SL ? SL.maxDef : 5)) continue;
       if (v === T.target || (v === T.avoid && G.t < T.avoidUntil)) continue;
       const need = Math.max(5, def * D.margin + 3);
       if (committed[v] >= need * 0.8) continue;
       let src = -1, sb = 0;
       for (const u of nv.adj) { if (nodes[u].owner !== team) continue; const av = idleAt[u]; if (av > sb) { sb = av; src = u; } }
       if (src < 0 || sb < need) continue;
+      if (SL && (need > armyAll * SL.cap || enemyAt(src) >= 1 || idleAt[src] - need < SL.keep || (T.warn && T.warn.v === src && G.t < T.warn.until))) continue;   // the source must be quiet, keep a few at home, and not be the base being guarded
       if (command(team, v, Math.min(1, need / sb * 1.2), t => !t.path.length && t.home === src && holdFilter(t))) { committed[v] += need; idleAt[src] -= need; shots++; }
     }
   }
 
   // 6. a second front: once the army is big, troops sitting idle at home raid the softest target elsewhere,
   //    so big maps don't grind down to one attack at a time. Raids retreat by the same rule as main attacks.
-  if (T.count < (sm ? 30 : 60) || G.t < C.peace) { T.raid = null; return; }
+  if (T.count < (sm ? 30 : 60) || G.t < C.peace || lastStand) { T.raid = null; return; }
   const idle = t => t.team === team && !t.path.length && nodes[t.home].owner === team && t.home !== T.target;
   if (T.raid != null) {
     const v = T.raid;
@@ -2176,16 +2282,18 @@ const rnd32 = () => (Math.random() * 4294967296) >>> 0;
 const MODS_OFF = { blitz: false, glass: false, noup: false, koth: false, fog: false };
 // Classic, Custom and Spectate each keep their own settings, so nothing bleeds from one mode into another.
 // Saves from before the split seed all three once, then they go their own ways.
-const DIFFS = ['easy', 'normal', 'hard', 'brutal'], PERSONAS = ['mixed', 'aggressive', 'sturdy', 'adaptive'], SHAPE_CHOICES = ['random', ...SHAPES];
+const unlocks = (() => { const r = load('ice-unlocks', {}); return { deadly: r.deadly === true || r.deadlyCustom === true, deadlyCustom: r.deadlyCustom === true }; })();   // kept apart from Stats, so resetting Stats never locks Deadly again
+const DIFFS = ['easy', 'normal', 'hard', 'brutal'], DIFFS_ALL = [...DIFFS, 'deadly'], PERSONAS = ['mixed', 'aggressive', 'sturdy', 'adaptive'], SHAPE_CHOICES = ['random', ...SHAPES];
 // One setup (Classic, Custom or Spectate) from whatever was saved: every field ends up as something the menus understand.
 // `old` is the pre-split save, where these settings sat at the top level; damaged saves simply fall back to defaults.
 function cleanProfile(kind, p, old) {
   p = isObj(p) ? p : {};
   const c = {
     size: oneOf(p.size ?? old.size, kind === 'classic' ? ['small', 'medium', 'large'] : ['small', 'medium', 'large', 'huge'], 'medium'),
-    diff: oneOf(p.diff ?? old.diff, kind === 'classic' ? DIFFS : [...DIFFS, 'random'], 'normal'),
+    diff: oneOf(p.diff ?? old.diff, kind === 'classic' ? DIFFS_ALL : [...DIFFS_ALL, 'random'], 'normal'),
     seed: Number.isInteger(p.seed) && p.seed > 0 ? p.seed : 0
   };
+  if (c.diff === 'deadly' && !(kind === 'classic' ? unlocks.deadly : unlocks.deadlyCustom)) c.diff = 'brutal';   // a saved Deadly that is not unlocked (damaged save) goes back to Brutal
   if (kind !== 'spec') c.color = oneOf(p.color ?? old.color, COLOR_KEYS, 'blue');
   if (kind !== 'classic') {
     const mods = isObj(p.mods) ? p.mods : isObj(old.mods) ? old.mods : {};
@@ -2239,7 +2347,7 @@ const stats = (() => {
   const matches = count(watch.matches), fastest = {};
   if (isObj(play.fastest)) for (const k of Object.keys(play.fastest)) if (count(play.fastest[k]) > 0) fastest[k] = count(play.fastest[k]);
   return {
-    play: { games: count(play.games), wins: count(play.wins), kills: count(play.kills), caps: count(play.caps), time: count(play.time), most: count(play.most), fastest },
+    play: { games: count(play.games), wins: count(play.wins), kills: count(play.kills), caps: count(play.caps), time: count(play.time), most: count(play.most), fastest, gDiff: dict(play.gDiff), wDiff: dict(play.wDiff) },
     // win *rates* need appearances; matches from before every color always played count as all five appearing
     watch: { matches, byColor: five(watch.byColor), byStyle: dict(watch.byStyle), appColor: Array.isArray(watch.appColor) ? five(watch.appColor) : [0, 1, 2, 3, 4].map(() => matches), appStyle: dict(watch.appStyle) }
   };
@@ -2654,7 +2762,7 @@ let motes = null, lastGT = 0;
 // ---- fog of war: you see near your own bases and troops. The map stays known; what's happening on it doesn't. ----
 const FOGCELLS = new Set();
 let fogSrc = new Float32Array(0), fogN = 0, fogCv = null, fogCx = null, fogSprite = null;
-const fogOn = () => !!(G && G.mods && G.mods.fog && !watching && (mode === 'play' || mode === 'paused'));
+const fogOn = () => !!(G && G.mods && G.mods.fog && !watching && (mode === 'play' || mode === 'paused' || mode === 'ending'));
 function seenXY(x, y) {
   for (let i = 0; i < fogN; i += 3) { const dx = x - fogSrc[i], dy = y - fogSrc[i + 1], r = fogSrc[i + 2]; if (dx * dx + dy * dy < r * r) return true; }
   return false;
@@ -2948,6 +3056,31 @@ function drawAtlasFront(now) {
     if (fogOn() && !seenXY(f.x, f.y)) continue;
     ctx.strokeStyle = hexA(colorOf(f.c), 0.7 * (1 - age / 1.3)); ctx.lineWidth = Math.max(1.2, 1.4 / V.s);
     ctx.beginPath(); ctx.arc(f.x, f.y, 20 + age * 70, 0, Math.PI * 2); ctx.stroke();
+    if (lostMine(f)) {                                            // a base you lost is struck through: two strokes of ink, drawn one after the other
+      const q1 = Math.min(1, age / 0.25), q2 = Math.max(0, Math.min(1, (age - 0.2) / 0.25)), a = 14;
+      ctx.strokeStyle = hexA(colorOf(PLAYER), 0.8 * (1 - age / 1.3)); ctx.lineWidth = Math.max(1.6, 1.8 / V.s); ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(f.x - a, f.y - a); ctx.lineTo(f.x - a + 2 * a * q1, f.y - a + 2 * a * q1);
+      if (q2 > 0) { ctx.moveTo(f.x + a, f.y - a); ctx.lineTo(f.x + a - 2 * a * q2, f.y - a + 2 * a * q2); }
+      ctx.stroke();
+    }
+  }
+  if (!reduceMotion) for (const f of G.fx) {
+    if ((f.k !== 'elim' && f.k !== 'retreat') || f.x === undefined) continue; const age = G.t - f.b;
+    if (fogOn() && !seenXY(f.x, f.y)) continue;
+    if (f.k === 'elim' && age > 0.35 && age < 3.4) {              // knocked out: the last place they stood is circled in ink, in one pen stroke that overshoots its start
+      const e0 = age - 0.35, sw = Math.min(1, e0 / 0.9), turns = sw * 1.15 * Math.PI * 2, fade = e0 < 1.8 ? 1 : Math.max(0, 1 - (e0 - 1.8) / 1.25);
+      ctx.strokeStyle = hexA(colorOf(f.c), 0.8 * fade); ctx.lineWidth = Math.max(1.8, 2 / V.s); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath();
+      for (let i = 0; i <= 44; i++) { const u = i / 44 * turns, r = 26 + u * 1.2 + Math.sin(u * 3) * 0.9, a = -Math.PI / 2 + u, px = f.x + Math.cos(a) * r, py = f.y + Math.sin(a) * r; if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }
+      ctx.stroke();
+    } else if (f.k === 'retreat' && age < 1.2) {                  // called off: a dotted course walks back toward home and the old line is barred at the base
+      const p = age / 1.2, g = rtSeg(f, p, 46);
+      if (g) {
+        ctx.strokeStyle = hexA(colorOf(f.c), 0.95 * (1 - p)); ctx.lineWidth = Math.max(2, 2.2 / V.s); ctx.lineCap = 'round';
+        ctx.setLineDash([2, 5]); ctx.beginPath(); ctx.moveTo(g[0], g[1]); ctx.lineTo(g[2], g[3]); ctx.stroke(); ctx.setLineDash([]);
+        const bx = f.x, by = f.y, nx = -g[5], ny = g[4];
+        ctx.beginPath(); ctx.moveTo(bx - nx * 11, by - ny * 11); ctx.lineTo(bx + nx * 11, by + ny * 11); ctx.stroke();
+      }
+    }
   }
 }
 function drawCrown(n, now) {                         // a gold crown over the base, and the holder's progress as a ring
@@ -3325,6 +3458,11 @@ function emCatch(x, y, to, age) {                     // the new fire catching: 
     ctx.strokeStyle = emCss(k.c, al * 0.4); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(sx, sy + 0.8); ctx.lineTo(sx, sy + 4.5); ctx.stroke();
   }
 }
+function rtSeg(f, p, L) {                           // the stretch of the way home, L long, that has travelled p of its course: [x0, y0, x1, y1, dirx, diry]
+  if (f.hx === undefined) return null;
+  const dx = f.hx - f.x, dy = f.hy - f.y, len = Math.hypot(dx, dy) || 1, h = Math.min(len, p * Math.min(len, 170) * 1.15), t0 = Math.max(0, h - L);
+  return [f.x + dx * t0 / len, f.y + dy * t0 / len, f.x + dx * h / len, f.y + dy * h / len, dx / len, dy / len];
+}
 function drawEmberFx() {                              // a troop lost is a few rays of heat; a capture is the catch; the colour that lost the base leaves ash
   const fogD = fogOn();
   ctx.globalCompositeOperation = 'lighter';
@@ -3336,7 +3474,30 @@ function drawEmberFx() {                              // a troop lost is a few r
       const q = age / 0.45; ctx.strokeStyle = emCss(emMix(emCol(colorOf(f.c)).c, [255, 176, 112], 0.45), (1 - q) * 0.9); ctx.lineWidth = 1; ctx.beginPath();
       for (let i = 0; i < 5; i++) { const a = emHash(Math.floor(f.x * 7 + f.y * 3 + f.b * 60) + i) * 6.28, r0 = 1 + q * 2.2, r1 = 2.2 + q * 6; ctx.moveTo(f.x + Math.cos(a) * r0, f.y + Math.sin(a) * r0); ctx.lineTo(f.x + Math.cos(a) * r1, f.y + Math.sin(a) * r1); }
       ctx.stroke();
-    } else if (f.k === 'ring' && age < 1.7) emCatch(f.x, f.y, f.c, age);
+    } else if (f.k === 'ring' && age < 1.7) {
+      emCatch(f.x, f.y, f.c, age);
+      if (lostMine(f) && age < 1.5) {                     // the fire you lost: a few of its embers drop away and go out
+        const q = age / 1.5, mc = emMix(emCol(colorOf(PLAYER)).c, [255, 176, 112], 0.4);
+        for (let i = 0; i < 8; i++) {
+          const sx = f.x + (emHash(i * 13 + Math.floor(f.x)) - 0.5) * 22, sy = f.y - 3 + q * (14 + emHash(i + 5) * 16) + q * q * 18;
+          ctx.fillStyle = emCss(mc, (1 - q) * (1 - q) * 0.9); ctx.fillRect(sx - 0.9, sy - 0.9, 1.8, 1.8);
+        }
+      }
+    } else if (f.k === 'elim' && age > 0.35 && age < 3.0) {         // knocked out: the last fire sinks, and its embers rise grey and go out
+      const q = (age - 0.35) / 2.65, ec = emCol(colorOf(f.c)).c, hot = emMix(ec, [255, 176, 112], 0.4), r = 4 + 24 * (1 - q) * (1 - q);
+      ctx.globalAlpha = (1 - q) * (1 - q) * 0.6; ctx.drawImage(glow(colorOf(f.c)), f.x - r, f.y - r, 2 * r, 2 * r); ctx.globalAlpha = 1;
+      for (let i = 0; i < 22; i++) {
+        const h = emHash(i * 17 + Math.floor(f.x)), sx = f.x + (emHash(i * 7 + 3) - 0.5) * 34 * (0.4 + q), sy = f.y - q * (14 + h * 54) - q * q * 8;
+        ctx.fillStyle = emCss(emMix(hot, [150, 138, 132], Math.min(1, q * 1.2)), (1 - q) * 0.95); ctx.fillRect(sx - 1.3, sy - 1.3, 2.6, 2.6);
+      }
+    } else if (f.k === 'retreat' && age < 1.2) {                    // called off: three embers drift back toward home on the heat
+      const p = age / 1.2, g = rtSeg(f, p, 34), mc = emMix(emCol(colorOf(f.c)).c, [255, 176, 112], 0.4);
+      if (g) for (let i = 1; i <= 3; i++) {
+        const t = i / 3, px = g[0] + (g[2] - g[0]) * t, py = g[1] + (g[3] - g[1]) * t + Math.sin(age * 9 + i * 2) * 1.5 - age * 3;
+        ctx.fillStyle = emCss(mc, (1 - p) * 0.95 * (0.5 + 0.5 * t)); ctx.fillRect(px - 1.4, py - 1.4, 2.8, 2.8);
+        ctx.globalAlpha = (1 - p) * 0.4 * t; ctx.drawImage(glow(colorOf(f.c)), px - 6, py - 6, 12, 12); ctx.globalAlpha = 1;
+      }
+    }
   }
   ctx.globalCompositeOperation = 'source-over';
   for (let j = EMB.ash.length - 1; j >= 0; j--) {
@@ -3414,7 +3575,7 @@ function draw(now) {
   // lock-on markers: yours while playing, everyone's while watching (shows where each color is focused)
   for (let i = 0; i < 5; i++) {
     const L = G.lock[i];
-    if (L == null || !(mode === 'play' || mode === 'paused') || !G.teams[i].alive) continue;
+    if (L == null || !(mode === 'play' || mode === 'paused' || mode === 'ending') || !G.teams[i].alive) continue;
     if (!watching && i !== PLAYER) continue;
     const n = nodes[L];
     ctx.save(); ctx.translate(n.x, n.y); ctx.rotate(Math.PI / 4 + (reduceMotion ? 0 : now * 0.7) + i * 0.3);
@@ -3593,6 +3754,10 @@ function draw(now) {
         const p = age / 0.9, s = 22 + p * 46;
         ctx.globalAlpha = (1 - p) * 0.85; ctx.strokeStyle = colorOf(f.c); ctx.lineWidth = 1.6;
         ctx.strokeRect(f.x - s / 2, f.y - s / 2, s, s); ctx.lineWidth = 1.1;
+        if (lostMine(f) && !isAtlas()) {             // you lost it: a square in your colour closes in on the base (Atlas strikes the mark through instead)
+          const s4 = 60 - p * 50; ctx.globalAlpha = (1 - p) * 0.9; ctx.strokeStyle = colorOf(PLAYER); ctx.lineWidth = 1.8;
+          ctx.strokeRect(f.x - s4 / 2, f.y - s4 / 2, s4, s4); ctx.lineWidth = 1.1;
+        }
         if (OV && age > 0.22) {                      // Overload: and a third, wider one
           const q = (age - 0.22) / 0.68, s3 = 30 + q * 120;
           ctx.globalAlpha = (1 - q) * 0.5; ctx.strokeStyle = colorOf(f.c); ctx.lineWidth = 3;
@@ -3604,6 +3769,15 @@ function draw(now) {
           ctx.globalAlpha = (1 - q) * 0.6; ctx.lineWidth = 2.2; ctx.strokeRect(-s2 / 2, -s2 / 2, s2, s2); ctx.restore();
           ctx.lineWidth = 1.1;
         }
+      } else if (f.k === 'elim' && age > 0.35 && age < 2.8 && !isAtlas()) {        // knocked out: a flat cross in their colour, drawn in two strokes, held, then gone
+        const e0 = age - 0.35, q1 = Math.min(1, e0 / 0.2), q2 = Math.max(0, Math.min(1, (e0 - 0.15) / 0.2)), a = 15, fade = e0 < 1.5 ? 1 : Math.max(0, 1 - (e0 - 1.5) / 0.95);
+        ctx.globalAlpha = 0.9 * fade; ctx.strokeStyle = colorOf(f.c); ctx.lineWidth = 2.6; ctx.beginPath();
+        ctx.moveTo(f.x - a, f.y - a); ctx.lineTo(f.x - a + 2 * a * q1, f.y - a + 2 * a * q1);
+        if (q2 > 0) { ctx.moveTo(f.x + a, f.y - a); ctx.lineTo(f.x + a - 2 * a * q2, f.y - a + 2 * a * q2); }
+        ctx.stroke(); ctx.lineWidth = 1.1;
+      } else if (f.k === 'retreat' && age < 1.1 && !isAtlas()) {                    // called off: a short flat dash travels from the lost base back toward home
+        const p = age / 1.1, g = rtSeg(f, p, 36);
+        if (g) { ctx.globalAlpha = (1 - p) * 0.85; ctx.strokeStyle = colorOf(f.c); ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(g[0], g[1]); ctx.lineTo(g[2], g[3]); ctx.stroke(); ctx.lineWidth = 1.1; }
       }
     }
     ctx.globalAlpha = 1;
@@ -3779,6 +3953,32 @@ function drawNebulaFx() {
       ctx.beginPath(); ctx.arc(f.x, f.y, 12 + e1 * 95, 0, Math.PI * 2); ctx.stroke();
       ctx.strokeStyle = '#ffffff'; ctx.globalAlpha = (1 - p) * 0.4; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.arc(f.x, f.y, 8 + e2 * 52, 0, Math.PI * 2); ctx.stroke();
+      if (lostMine(f)) {                                               // a star of yours goes out: a soft ring in your colour falls inward and fades into the dark
+        const q = Math.min(1, age / 1.1), r = 4 + 66 * (1 - q) * (1 - q), c2 = colorOf(PLAYER);
+        ctx.strokeStyle = c2; ctx.globalAlpha = (1 - q) * 0.55; ctx.lineWidth = Math.max(0.6, 2.4 * (1 - q));
+        ctx.beginPath(); ctx.arc(f.x, f.y, r, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - q) * 0.35; ctx.drawImage(glow(c2), f.x - r, f.y - r, 2 * r, 2 * r); ctx.globalCompositeOperation = 'source-over';
+      }
+    } else if (f.k === 'elim' && age > 0.35 && age < 3.0) {            // knocked out: a last pinpoint of light shrinks away, and a thin dark ripple spreads where it stood
+      const e0 = age - 0.35, c = colorOf(f.c);
+      if (e0 < 0.6) {
+        const q = e0 / 0.6, r = 2 + 16 * (1 - q) * (1 - q), r2 = r * 2.4;
+        ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.9; ctx.drawImage(glow('#ffffff'), f.x - r, f.y - r, 2 * r, 2 * r);
+        ctx.globalAlpha = (1 - q) * 0.7; ctx.drawImage(glow(c), f.x - r2, f.y - r2, 2 * r2, 2 * r2); ctx.globalCompositeOperation = 'source-over';
+      }
+      if (e0 > 0.45) {
+        const q = (e0 - 0.45) / 2.2, e = 1 - Math.pow(1 - q, 2.2), rv = 6 + e * 80, gr = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, rv);
+        gr.addColorStop(0, 'rgba(0,0,6,' + (0.3 * (1 - q)) + ')'); gr.addColorStop(0.7, 'rgba(0,0,6,' + (0.16 * (1 - q)) + ')'); gr.addColorStop(1, 'rgba(0,0,6,0)');
+        ctx.globalAlpha = 1; ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(f.x, f.y, rv, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = c; ctx.globalAlpha = (1 - q) * 0.45; ctx.lineWidth = Math.max(0.6, 1.6 * (1 - q)); ctx.beginPath(); ctx.arc(f.x, f.y, rv, 0, 6.2832); ctx.stroke();
+      }
+    } else if (f.k === 'retreat' && age < 1.2) {                       // called off: a faint comet of dust drifts back toward home
+      const p = age / 1.2, g = rtSeg(f, p, 50);
+      if (g) {
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = 0; i < 4; i++) { const t = 1 - i * 0.22, px = g[0] + (g[2] - g[0]) * t, py = g[1] + (g[3] - g[1]) * t, r = 10 - i * 1.8; ctx.globalAlpha = (1 - p) * 0.6 * (1 - i * 0.2); ctx.drawImage(glow(colorOf(f.c)), px - r, py - r, 2 * r, 2 * r); }
+        ctx.globalCompositeOperation = 'source-over';
+      }
     }
   }
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -4039,6 +4239,39 @@ function drawRimeFx() {                              // a troop lost is a small 
       ctx.strokeStyle = '#eaf8ff'; ctx.globalAlpha = (1 - p) * 0.75; ctx.lineWidth = 1.2; ctx.beginPath();
       for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 - Math.PI / 2, r0 = 6 + e * 22, r1 = 12 + e * 62; ctx.moveTo(f.x + Math.cos(a) * r0, f.y + Math.sin(a) * r0); ctx.lineTo(f.x + Math.cos(a) * r1, f.y + Math.sin(a) * r1); }
       ctx.stroke();
+      if (lostMine(f)) {                                               // the ice you held cracks: your hexagon closes in, split by jagged lines
+        const hs = i => { const v = Math.sin(f.x * 12.9898 + f.y * 78.233 + i * 37.719) * 43758.5453; return v - Math.floor(v); };
+        ctx.strokeStyle = colorOf(PLAYER); ctx.globalAlpha = (1 - p) * 0.8; ctx.lineWidth = 1.6; ctx.beginPath(); rimeHex(f.x, f.y, 44 - e * 30); ctx.stroke();
+        ctx.strokeStyle = '#f2fbff'; ctx.globalAlpha = (1 - p) * 0.9; ctx.lineWidth = 1; ctx.beginPath();
+        for (let k = 0; k < 7; k++) {
+          const a = hs(k) * Math.PI * 2, L = (10 + hs(k + 9) * 22) * Math.min(1, age / 0.35); let px = f.x, py = f.y, aa = a;
+          ctx.moveTo(px, py);
+          for (let j = 1; j <= 3; j++) { aa += (hs(k * 5 + j) - 0.5) * 1.1; px += Math.cos(aa) * L / 3; py += Math.sin(aa) * L / 3; ctx.lineTo(px, py); }
+        }
+        ctx.stroke();
+      }
+    } else if (f.k === 'elim' && age > 0.35 && age < 3.0) {            // knocked out: a plate of ice grows over the spot in layers, holds, then shatters
+      const e0 = age - 0.35, c = colorOf(f.c), grow = Math.min(1, e0 / 1.0), e = 1 - Math.pow(1 - grow, 3), R = 6 + e * 30;
+      if (e0 < 1.7) {
+        const fade = e0 < 1.3 ? 1 : Math.max(0, 1 - (e0 - 1.3) / 0.4);
+        ctx.fillStyle = 'rgba(190,230,255,' + (0.2 * fade) + ')'; ctx.beginPath(); rimeHex(f.x, f.y, R); ctx.fill();
+        ctx.strokeStyle = c; ctx.globalAlpha = 0.85 * fade; ctx.lineWidth = 2; ctx.beginPath(); rimeHex(f.x, f.y, R); ctx.stroke();
+        ctx.strokeStyle = '#eaf8ff'; ctx.globalAlpha = 0.7 * fade; ctx.lineWidth = 1; ctx.beginPath(); for (let k = 1; k <= 3; k++) rimeHex(f.x, f.y, R * k / 4); ctx.stroke();
+      }
+      if (e0 >= 1.3) {
+        const q = Math.min(1, (e0 - 1.3) / 1.2); ctx.fillStyle = '#e9f7ff'; ctx.globalAlpha = (1 - q) * 0.8;
+        for (let k = 0; k < 6; k++) {
+          const a = k * Math.PI / 3 - Math.PI / 2 + 0.52, d = 14 + q * 46, s = 5 * (1 - q * 0.5), cx = f.x + Math.cos(a) * d, cy = f.y + Math.sin(a) * d;
+          ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * s, cy + Math.sin(a) * s); ctx.lineTo(cx + Math.cos(a + 2.4) * s * 0.7, cy + Math.sin(a + 2.4) * s * 0.7); ctx.lineTo(cx + Math.cos(a - 2.4) * s * 0.7, cy + Math.sin(a - 2.4) * s * 0.7); ctx.closePath(); ctx.fill();
+        }
+      }
+    } else if (f.k === 'retreat' && age < 1.2) {                       // called off: four glints of frost cross back toward home
+      const p = age / 1.2, g = rtSeg(f, p, 52);
+      if (g) {
+        ctx.strokeStyle = '#f2fbff'; ctx.lineWidth = 1.5; ctx.beginPath();
+        for (let i = 1; i <= 4; i++) { const t = i / 4, px = g[0] + (g[2] - g[0]) * t, py = g[1] + (g[3] - g[1]) * t; ctx.moveTo(px - 3.5, py); ctx.lineTo(px + 3.5, py); ctx.moveTo(px, py - 3.5); ctx.lineTo(px, py + 3.5); }
+        ctx.globalAlpha = (1 - p) * 0.95; ctx.stroke();
+      }
     }
   }
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -4347,6 +4580,21 @@ function pxFx(now, fogD) {
         for (const [dx, dy] of [[d, 0], [-d, 0], [0, d], [0, -d], [e, e], [-e, e], [e, -e], [-e, -e]]) x.rect(cx + dx, cy + dy, 1, 1);
         x.fill();
       }
+      if (lostMine(f) && k < 8) {                                      // you lost it: a square ring in your colour steps inward, the last steps dithered
+        x.fillStyle = colorOf(PLAYER); x.beginPath(); pxBox(cx, cy, 5 + (7 - k) * 2, 1, k > 4 ? 1 : 0); x.fill();
+      }
+    } else if (f.k === 'elim' && age > 0.35 && age < 2.6) {            // knocked out: a block blinks in their colour, then falls apart pixel by pixel
+      const k = Math.floor((age - 0.35) * 10); pxp(f.x, f.y); const cx = PXX, cy = PXY;
+      if (k < 6) { x.fillStyle = k % 2 ? '#ffffff' : colorOf(f.c); x.beginPath(); for (let dy = -3; dy <= 3; dy++) x.rect(cx - 3, cy + dy, 7, 1); x.fill(); }
+      else {
+        const fall = k - 6, P = [[-3, -2], [-1, -3], [2, -3], [3, -1], [-2, 0], [0, -1], [2, 1], [-3, 2], [-1, 2], [1, 3], [3, 3], [0, 0]];
+        x.fillStyle = fall < 8 ? colorOf(f.c) : '#6a6a72'; x.beginPath();
+        for (let i = 0; i < P.length; i++) { if (fall > 11 && (i + fall) % 2) continue; x.rect(cx + P[i][0], cy + P[i][1] + Math.floor(fall * (1 + (i % 3) * 0.5)), 1, 1); }
+        x.fill();
+      }
+    } else if (f.k === 'retreat' && age < 1.2) {                       // called off: a short line of pixels marches back toward home
+      const g = rtSeg(f, age / 1.2, 30), k = Math.floor(age * 10);
+      if (g) { x.fillStyle = colorOf(f.c); x.beginPath(); pxWorldDots(g[0], g[1], g[2], g[3], 3, k); x.fill(); }
     }
   }
   for (let i = uiFx.length - 1; i >= 0; i--) {                        // your taps: a send, an upgrade, a refusal
@@ -4404,6 +4652,7 @@ for (const b of upBtns) {
 function buy(k) {
   if (mode !== 'play' || !G || watching) return;
   if (upgrade(PLAYER, k)) {
+   
     buzz('buy');
     const b = upBtns.find(x => x.dataset.k === k);
     b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
@@ -4689,10 +4938,12 @@ let previewing = false, mixMenu = null;
 const outBus = () => previewing ? pbus : bus;
 const awatch = () => watching || mode === 'demo';                // the match behind the menus is AI vs AI: nobody's hits are "yours"
 const bgHidden = () => mode === 'demo' && pvOnly;               // setup screens run the match unseen, for the ears only
-const audible = () => mode === 'play' || (mode === 'demo' && settings.menuSound !== 'off');
+const ftLive = () => FT.phase === 'tail' && FT.tailUntil > performance.now();                  // the tune's tail is still ringing
+const audible = () => mode === 'play' || mode === 'ending' || (mode === 'over' && ftLive()) || (mode === 'demo' && settings.menuSound !== 'off');
+const menuMix = () => mode !== 'play' && mode !== 'ending' && !(mode === 'over' && FT.tailUntil > performance.now());   // the ending and the tune's tail keep the full match mix; the menus come in after
 function applyMix(now, fast) {
   if (!AC) return;
-  const t = AC.currentTime, tc = fast ? 0.04 : Math.max(0.02, tune.fade / 3), menu = mode !== 'play';
+  const t = AC.currentTime, tc = fast ? 0.04 : Math.max(0.02, tune.fade / 3), menu = menuMix();
   if (now) { mg.gain.value = menu ? tune.vol / 100 : 1; mlp.frequency.value = menu ? tune.cut : 20000; return; }
   mg.gain.setTargetAtTime(menu ? tune.vol / 100 : 1, t, tc);
   mlp.frequency.setTargetAtTime(menu ? tune.cut : 20000, t, tc);
@@ -4705,7 +4956,7 @@ function mixTick() {                                           // every frame: g
     if (nowK - kickT > 1000) { kickT = nowK; audioKick(); }
     if (!lostToast && mode === 'play' && nowK - lostSince > 4000) { lostToast = true; toast('Sound was paused by your phone. Tap to bring it back.', TEAM_COLORS[PLAYER], PLAYER); }
   }
-  const menu = mode !== 'play';
+  const menu = menuMix();
   if (menu !== mixMenu) { mixMenu = menu; applyMix(false); }
 }
 const PENTA = [0, 2, 4, 7, 9], ROOT = [79, 67, 71, 74, 64];
@@ -4736,7 +4987,7 @@ function audioOn() {
       mlp = AC.createBiquadFilter(); mlp.type = 'lowpass'; mlp.Q.value = 0.7; mg = AC.createGain();
       bus.connect(mlp); mlp.connect(mg); mg.connect(master); pbus.connect(master); lim = AC.createDynamicsCompressor(); lim.threshold.value = -3; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.002; lim.release.value = 0.12;
       master.connect(lim); lim.connect(AC.destination);
-      mixMenu = mode !== 'play'; applyMix(true);
+      mixMenu = menuMix(); applyMix(true);
     }
     if (AC.state !== 'running') audioKick();
   } catch (e) { AC = null; }
@@ -4772,6 +5023,7 @@ function scanHits(ev) {
 }
 const pickShot = (h, mineChance) => h.shotMine && Math.random() < mineChance ? h.shotMine : h.shot;
 const isMine = e => e.team === PLAYER && !awatch();
+const lostMine = f => !awatch() && f.from === PLAYER && f.c !== PLAYER;       // a capture ring where a rival took YOUR base
 function playSfx(nowMs, dt) {
   let ev = G.sfx; G.sfx = [];
   if (fogOn()) ev = ev.filter(e => seenXY(e.x, e.y));     // you can't hear fights you can't see
@@ -4779,6 +5031,7 @@ function playSfx(nowMs, dt) {
   if (!bgHidden()) vfxHits(ev);                              // sparks only when the match can be seen
   // how much fighting is going on right now (hits per second, smoothed); "Low hum" swells with it
   shotRate += (ev.length / Math.max(dt, 1 / 120) - shotRate) * (1 - Math.exp(-dt / 1.2));
+  if (settings.tone === 'simple') simpleFx();
   if (!ev.length) return;
   if (!AC || !settings.sound || !audible() || AC.state !== 'running') return;
   const h = scanHits(ev);
@@ -4828,7 +5081,7 @@ function syncLook() {                                 // Colors and Team symbols
   document.documentElement.dataset.sym = SYM ? 'on' : 'off'; document.documentElement.dataset.colors = settings.colors;
 }
 function currentColorArgs() {                         // the color choice that is in force right now: the running match, or the setup behind the menu
-  const live = mode === 'play' || mode === 'paused' || mode === 'over';
+  const live = mode === 'play' || mode === 'paused' || mode === 'ending' || mode === 'over';
   const key = live ? curModeKey : previewMode, watch = live ? watching : key === 'spec';
   return [watch, live && (curScen || curPrac) ? settings.classic.color : key === 'spec' ? 'blue' : settings[key].color];
 }
@@ -4846,6 +5099,31 @@ function noise() {                                  // one shared buffer of whit
   return noiseBuf;
 }
 
+// ---- "Simple": plain signals. Taking a base: three notes up. Losing one: three notes down and a soft low drop. A rival taking one: a single quiet note. A knockout: four notes falling slowly.
+const SP = { rc: [] };
+function spNote(t, midi, dur, peak, pan) {            // one round sine note with a soft start and a short fade
+  const o = AC.createOscillator(), g = AC.createGain(), f = hz(midi);
+  o.type = 'sine'; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 0.985, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); const out = outBus();
+  if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); p.connect(out); } else g.connect(out);
+  o.start(t); o.stop(t + dur + 0.03);
+}
+function spTake(t, pan) { [60, 67, 72].forEach((m, i) => spNote(t + i * 0.09, m, 0.2, 0.07, pan)); }
+function spLose(t, pan) { [67, 60, 55].forEach((m, i) => spNote(t + i * 0.12, m, 0.24, 0.075, pan)); spNote(t, 45, 0.45, 0.085, pan * 0.5); }
+function spRival(t, pan) { const c = AC.currentTime; SP.rc = SP.rc.filter(x => c - x < 2); if (SP.rc.length >= 3) return; SP.rc.push(c); spNote(t, 55, 0.3, 0.032, pan); }
+function spKnock(t) { [62, 57, 53, 46].forEach((m, i) => spNote(t + i * 0.22, m, 0.55, 0.06, 0)); }
+function simpleFx() {                                  // captures and knockouts, once each
+  if (!AC || !settings.sound || !audible() || AC.state !== 'running') return;
+  const now = AC.currentTime + 0.02;
+  for (const f of G.fx) {
+    if (f.sx) continue; f.sx = 1; if (f.ftq) continue;
+    if (G.t - f.b > 1.5 || (fogOn() && f.x !== undefined && !seenXY(f.x, f.y))) continue;
+    if (f.k === 'ring') { const pan = screenPan(f.x, f.y); if (!awatch() && f.c === PLAYER) spTake(now, pan); else if (lostMine(f)) spLose(now, pan); else spRival(now, pan); }
+    else if (f.k === 'elim') spKnock(now);
+    else if (f.k === 'retreat') spRetreat(now, f.x !== undefined ? screenPan(f.x, f.y) : 0);
+  }
+}
 // ---- "Overdrive": a darkcore track for Overload, built live from the battle ----
 // A 16th-note sequencer at 108 bpm, phase-locked to the beat the Overload visuals pulse on. Am - F - C - G in the bass,
 // four-on-the-floor kick with sidechain pumping, and layers that arrive as the fighting heats up:
@@ -4975,7 +5253,7 @@ function odHits(ev) {
   if (OD.hits.length > 16) OD.hits.splice(0, OD.hits.length - 16);
 }
 function odTick() {                                   // every frame: start, stop, or keep the sequencer fed
-  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'overdrive' && audible() && G && !G.over;
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'overdrive' && audible() && G && (!G.over || ftLive());
   if (!want) {
     if (OD.nodes) { const N = OD.nodes, t = AC.currentTime; OD.nodes = null; N.music.gain.cancelScheduledValues(t); N.music.gain.setTargetAtTime(0.0001, t, 0.35); for (const o of N.oscs) o.stop(t + 2); }
     OD.zaps.length = 0; OD.hits.length = 0; return;
@@ -4988,7 +5266,7 @@ function odTick() {                                   // every frame: start, sto
     while (OD.next < AC.currentTime + 0.02) { OD.next += OD_STEP; OD.step++; }
   }
   for (const f of G.fx) {                             // captures and knockouts become musical events
-    if (f.od) continue; f.od = 1;
+    if (f.od) continue; f.od = 1; if (f.ftq) continue;
     if (f.k === 'ring') { if (!fogOn() || seenXY(f.x, f.y)) OD.boom = 1; }
     else if (f.k === 'elim') odFall(OD.nodes, AC.currentTime + 0.02);
   }
@@ -5068,6 +5346,10 @@ function drKnell(N, t) {                              // a color is out: one lon
     o.connect(g); g.connect(N.dry); g.connect(N.rev); o.start(t); o.stop(t + 3.8);
   }
 }
+function drLose(N, t, d0, pan) {                      // a base is lost: the capture's climb turned over. Three soft plucks sinking, slower, with the low bell under them
+  for (let i = 0; i < 3; i++) drPluck(N, t + i * 0.2, drMidi(Math.max(0, d0 - 2 * i)), 0.095 - 0.012 * i, pan, 1.1);
+  drBell(N, t + 0.04, 0.105, pan);
+}
 function driftHits(ev) {
   for (const e of ev) {
     if (e.base) { if (!DR.bell || isMine(e)) DR.bell = { mine: isMine(e), pan: screenPan(e.x, e.y) }; }
@@ -5084,8 +5366,10 @@ function drSlot(N, t, heat) {
     if (DR.deg < centre - 3 && st <= 0) st = 1 + (Math.random() < 0.4 ? 1 : 0);
     DR.deg = Math.max(2, Math.min(18, DR.deg + st));
   };
-  if (DR.caps.length) {                               // a capture climbs three steps
+  if (DR.caps.length) {                               // a capture climbs three steps; losing a base of yours sinks three
     const c = DR.caps.shift(), d0 = DR.deg;
+    if (c.lost) { drLose(N, t, d0, c.pan); return; }
+    if (c.ret) { drRetreat(N, t, d0, c.pan); return; }
     for (let i = 0; i < 3; i++) drPluck(N, t + i * 0.11, drMidi(d0 + 2 * i), c.mine ? 0.075 : 0.035, c.pan, 0.9);
     return;
   }
@@ -5102,7 +5386,7 @@ function drSlot(N, t, heat) {
   }
 }
 function driftClock() {
-  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'drift' && audible() && G && !G.over;
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'drift' && audible() && G && (!G.over || ftLive());
   if (!want || (DR.nodes && DR.nodes.tier !== AQ())) {         // off, or the sound level changed: let it fade (and rebuild below)
     if (DR.nodes) { const N = DR.nodes, t = AC.currentTime; DR.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.4); for (const o of N.oscs) o.stop(t + 2.5); }
     if (!want) { DR.pool.length = 0; DR.caps.length = 0; DR.bell = null; return; }
@@ -5111,10 +5395,11 @@ function driftClock() {
   const N = DR.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
   N.bedG.gain.setTargetAtTime(0.009 + 0.012 * heat, now, 1.5);
   for (const f of G.fx) {                             // captures and knockouts become notes
-    if (f.dr) continue; f.dr = 1;
+    if (f.dr) continue; f.dr = 1; if (f.ftq) continue;
     if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
-    if (f.k === 'ring') DR.caps.push({ mine: !awatch() && f.c === PLAYER, pan: screenPan(f.x, f.y) });
+    if (f.k === 'ring') DR.caps.push({ mine: !awatch() && f.c === PLAYER, lost: lostMine(f), pan: screenPan(f.x, f.y) });
     else if (f.k === 'elim') drKnell(N, now + 0.02);
+    else if (f.k === 'retreat') { if (rtOK('dr', 2)) DR.caps.push({ ret: true, pan: f.x !== undefined ? screenPan(f.x, f.y) : 0 }); }
   }
   if (DR.next < now - 0.25) { const k = Math.ceil((now - DR.next) / DR_STEP); DR.next += k * DR_STEP; DR.step += k; }
   while (DR.next < now + 0.08) { drSlot(N, DR.next, heat); DR.next += DR_STEP; DR.step++; }
@@ -5123,7 +5408,8 @@ function driftPreview() {                             // a short phrase and a be
   const N = drBuild(false), t = AC.currentTime + 0.05;
   [7, 9, 12, 10].forEach((d, i) => drPluck(N, t + i * 0.3, drMidi(d), 0.06, (i - 1.5) * 0.25, 0.9));
   drBell(N, t + 1.4, 0.08, 0);
-  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 5200);
+  drLose(N, t + 2.8, 9, 0);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 7600);
 }
 // ---- "Chip": a four-channel console, played by the battle ----
 // There is no clock and no beat. Every sound plays the moment it happens, on one of four channels like an old console: two pulse waves, a triangle and
@@ -5233,6 +5519,12 @@ function chCapture(N, t, mine, pan, share) {           // a fanfare: five notes 
     [0, 2, 3].forEach((st, i) => b.list.push(chPulse(N, t + i * 0.07, chMidi(c + st - 5), i === 2 ? 0.15 : 0.065, 'p12', 0.034, pan)));
   }
 }
+function chLose(N, t, pan, share) {                   // a base lost: a short falling figure on pulse 2, a thump on the triangle, a dry buzz. Pulse 1 (your combo) is left alone
+  const c = 3 + Math.round(share * 5) + 2, b = chClaim(N, 'p2', t, 0.42, 3, 0), r = chClaim(N, 'tri', t, 0.36, 3, 0), z = chClaim(N, 'nz', t, 0.12, 3, 0);
+  if (b) [4, 2, 0, -3].forEach((st, i) => b.list.push(chPulse(N, t + i * 0.075, chMidi(c + st - 5), i === 3 ? 0.2 : 0.07, 'p25', 0.05, pan)));
+  if (r) r.list.push(chTri(N, t + 0.02, 0, 0.3, 0.12, true, 150));
+  if (z) z.list.push(chNoise(N, t, 0.1, 0.07, 900, true, pan));
+}
 function chFall(N, t) {                               // a color is out: a falling "game over" tune that takes every channel
   const a = chClaim(N, 'p1', t, 1.1, 4, 0), b = chClaim(N, 'p2', t, 1.1, 4, 0), r = chClaim(N, 'tri', t, 1.1, 4, 0), z = chClaim(N, 'nz', t, 1.1, 4, 0);
   for (let i = 0; i < 7; i++) {
@@ -5256,7 +5548,7 @@ function chipHits(ev) {
   else { if (mine) chHit(N, t, mine, true, false); if (other) chHit(N, t, other, false, false); }
 }
 function chipTick() {
-  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'chip' && audible() && G && !G.over;
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'chip' && audible() && G && (!G.over || ftLive());
   if (!want) {
     if (CH.nodes) { const N = CH.nodes, t = AC.currentTime; CH.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.15); setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 1500); }
     return;
@@ -5264,10 +5556,11 @@ function chipTick() {
   if (!CH.nodes) CH.nodes = chBuild(false);
   const N = CH.nodes, now = AC.currentTime;
   for (const f of G.fx) {                             // captures and knockouts become little tunes
-    if (f.ch) continue; f.ch = 1;
+    if (f.ch) continue; f.ch = 1; if (f.ftq) continue;
     if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
-    if (f.k === 'ring') chCapture(N, now + 0.02, !awatch() && f.c === PLAYER, screenPan(f.x, f.y), chShare());
+    if (f.k === 'ring') { if (lostMine(f)) chLose(N, now + 0.02, screenPan(f.x, f.y), chShare()); else chCapture(N, now + 0.02, !awatch() && f.c === PLAYER, screenPan(f.x, f.y), chShare()); }
     else if (f.k === 'elim') chFall(N, now + 0.02);
+    else if (f.k === 'retreat') chRetreat(N, now + 0.02);
   }
 }
 function chipPreview() {                              // a combo climbing and falling, a few thin replies, a crunch with a thump, and a fanfare
@@ -5276,8 +5569,9 @@ function chipPreview() {                              // a combo climbing and fa
   [0.2, 0.42, 0.66].forEach((d, i) => { const c = chClaim(N, 'p2', t0 + d, 0.085, 1, 0.09); if (c) c.list.push(chPulse(N, t0 + d, chMidi(1 + CH_SEQ[i * 2]), 0.085, 'p12', 0.03, 0.4, 0.985)); });
   chCrunch(N, t0 + 0.95, { mine: true, pan: 0, hf: 0.5, ni: -1 }); CH2.hits[-1] = null;
   chCapture(N, t0 + 1.4, true, 0, 0.4);
-  N.out.gain.setTargetAtTime(0.0001, t0 + 2.3, 0.1);
-  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 3800);
+  chLose(N, t0 + 2.3, 0, 0.4);
+  N.out.gain.setTargetAtTime(0.0001, t0 + 3.2, 0.1);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 4800);
 }
 
 // ---- "Cosmos": deep space for Nebula ----
@@ -5357,6 +5651,14 @@ function csBloom(N, t, d0, peak, pan) {               // a capture: a bright cho
     o.connect(g); const out = csPan(N, g, pan); out.connect(N.dry); out.connect(N.wet); out.connect(N.send); o.start(t); o.stop(t + 2.7);
   });
 }
+function csEbb(N, t, d0, peak, pan) {                 // a base lost: the bloom turned over. The same chord, slower to open, sinking a whole tone as it fades
+  [0, 2, 4, 7].forEach((st, i) => {
+    const o = AC.createOscillator(), g = AC.createGain(), f = hz(csMidi(d0 + st)) * (i === 3 ? 2 : 1);
+    o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 0.89, t + 3.2);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak * (i === 3 ? 0.3 : 1), t + 0.3 + i * 0.07); g.gain.exponentialRampToValueAtTime(0.0001, t + 3.2);
+    o.connect(g); const out = csPan(N, g, pan); out.connect(N.dry); out.connect(N.wet); out.connect(N.send); o.start(t); o.stop(t + 3.3);
+  });
+}
 function csSink(N, t) {                               // a color is out: a long low swell, sinking
   const o = AC.createOscillator(), g = AC.createGain();
   o.frequency.setValueAtTime(55, t); o.frequency.exponentialRampToValueAtTime(34, t + 3.5);
@@ -5370,21 +5672,29 @@ function cosmosHits(ev) {
   }
   if (CS.pool.length > 40) CS.pool.splice(0, CS.pool.length - 40);
 }
+const csFT = () => (settings.tone === 'cosmos' && mode === 'play' && (FT.phase === 'build' || FT.phase === 'hold') && FT.kind) ? { g: FT.phase === 'hold' ? 0.4 : FT.g, kind: FT.kind } : null;
 function csSlot(N, t, heat) {
-  if (CS.step % 16 === 0 && N.voices) {              // a new chord: the pad glides there slowly, and opens up with the fighting
+  const fc = csFT();
+  if (N.voices && fc && CS.ftCh !== fc.kind) { CS.ftCh = fc.kind; const ch = CS_CHORDS[fc.kind === 'loss' ? 3 : 1]; N.voices.forEach(([a, b], i) => { a.frequency.setTargetAtTime(hz(ch[i]), t, 1.6); b.frequency.setTargetAtTime(hz(ch[i]) * 2, t, 1.6); }); }
+  else if (N.voices && !fc && CS.ftCh) { CS.ftCh = null; const ch = CS_CHORDS[Math.floor(CS.step / 16) % 4]; N.voices.forEach(([a, b], i) => { a.frequency.setTargetAtTime(hz(ch[i]), t, 1.6); b.frequency.setTargetAtTime(hz(ch[i]) * 2, t, 1.6); }); }
+  if (CS.step % 16 === 0 && N.voices && !fc) {              // a new chord: the pad glides there slowly, and opens up with the fighting
     const ch = CS_CHORDS[(CS.step / 16) % 4];
     N.voices.forEach(([a, b], i) => { a.frequency.setTargetAtTime(hz(ch[i]), t, 1.2); b.frequency.setTargetAtTime(hz(ch[i]) * 2, t, 1.2); });
   }
   if (N.voices) {                                     // the pads only swell with the fighting, and fade away when it stops
-    const lift = Math.min(1, heat * 1.8);
+    const lift = Math.min(1, Math.max(heat * 1.8, fc ? fc.g * 0.9 : 0));
     N.padG.gain.setTargetAtTime(0.0001 + 0.085 * lift * lift, t, 1.6); N.padLP.frequency.setTargetAtTime(600 + 2400 * lift, t, 1.6);
   }
   const share = (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length;
   const centre = 7 + Math.round(share * 7);           // the pings sit higher the more ground you hold
-  if (CS.caps.length) { const c = CS.caps.shift(); csBloom(N, t, centre, c.mine ? 0.05 : 0.025, c.pan); }
-  if (CS.sonar && CS.step % 2 === 0) { csSonar(N, t, CS.sonar.mine ? 0.16 : 0.08, CS.sonar.pan); CS.sonar = null; }
+  if (CS.caps.length) { const c = CS.caps.shift(); if (c.lost) csEbb(N, t, centre - 2, 0.038, c.pan); else csBloom(N, t, centre, c.mine ? 0.05 : 0.025, c.pan); }
+  if (fc && fc.kind === 'loss' && fc.g > 0.08 && CS.step % 2 === 0 && !CS.sonar) CS.sonar = { mine: true, pan: 0, lvl: 0.03 + 0.13 * fc.g };      // the last base under attack: a slow heartbeat of sonar, louder as it gives way (still one every two slots)
+  if (fc && fc.kind === 'win' && fc.g > 0.08 && CS.step % 2 === 1 && !(CS.pool.length && heat > 0.3)) csPing(N, t, csMidi(centre + Math.floor(fc.g * 5)), 0.025 + 0.04 * fc.g, 0, 2.2);   // the last base nearly yours: a ping climbing the scale on the off beats
+  if (CS.sonar && CS.step % 2 === 0) { csSonar(N, t, CS.sonar.lvl || (CS.sonar.mine ? 0.16 : 0.08), CS.sonar.pan); CS.sonar = null; }
+  let retDone = false;
+  if (CS.ret && CS.step % 2 === 0) { csRetreat(N, t, centre, CS.ret.pan); CS.ret = null; retDone = true; }       // a retreat takes the place of that slot's troop ping
   const n = CS.pool.length;
-  if (n && (CS.step % 2 === 0 || heat > 0.3)) {
+  if (n && !retDone && (CS.step % 2 === 0 || heat > 0.3)) {
     let e = CS.pool[n - 1], mine = false;
     if (!awatch()) for (let i = n - 1; i >= 0; i--) if (CS.pool[i].team === PLAYER) { e = CS.pool[i]; mine = true; break; }
     let st = [-2, -1, -1, 0, 1, 1, 2, 3][(Math.random() * 8) | 0];
@@ -5397,18 +5707,19 @@ function csSlot(N, t, heat) {
   }
 }
 function cosmosTick() {
-  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'cosmos' && audible() && G && !G.over;
+  const want = AC && AC.state === 'running' && settings.sound && settings.tone === 'cosmos' && audible() && G && (!G.over || ftLive());
   if (!want || (CS.nodes && CS.nodes.tier !== AQ())) {         // off, or the sound level changed: let it fade (and rebuild below)
     if (CS.nodes) { const N = CS.nodes, t = AC.currentTime; CS.nodes = null; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.5); for (const o of N.oscs) o.stop(t + 3); setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 6000); }
-    if (!want) { CS.pool.length = 0; CS.caps.length = 0; CS.sonar = null; return; }
+    if (!want) { CS.pool.length = 0; CS.caps.length = 0; CS.sonar = null; CS.ret = null; return; }
   }
   if (!CS.nodes) { CS.nodes = csBuild(true); CS.next = AC.currentTime + 0.05; CS.step = 0; }
   const N = CS.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
   for (const f of G.fx) {
-    if (f.cs) continue; f.cs = 1;
+    if (f.cs) continue; f.cs = 1; if (f.ftq) continue;
     if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
-    if (f.k === 'ring') CS.caps.push({ mine: !awatch() && f.c === PLAYER, pan: screenPan(f.x, f.y) });
+    if (f.k === 'ring') CS.caps.push({ mine: !awatch() && f.c === PLAYER, lost: lostMine(f), pan: screenPan(f.x, f.y) });
     else if (f.k === 'elim') csSink(N, now + 0.02);
+    else if (f.k === 'retreat') { if (rtOK('cs', 2.5)) CS.ret = { pan: f.x !== undefined ? screenPan(f.x, f.y) : 0 }; }
   }
   if (CS.caps.length > 2) CS.caps.splice(0, CS.caps.length - 2);
   if (CS.next < now - 0.25) { const k = Math.ceil((now - CS.next) / CS_STEP); CS.next += k * CS_STEP; CS.step += k; }
@@ -5419,7 +5730,8 @@ function cosmosPreview() {                            // a pad chord swelling, t
   CS_CHORDS[0].forEach(m => { const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = hz(m); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.03, t + 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + 3); o.connect(g); g.connect(N.dry); g.connect(N.wet); o.start(t); o.stop(t + 3.1); });
   [9, 11, 13].forEach((d, i) => csPing(N, t + 0.2 + i * CS_STEP, csMidi(d), 0.06, (i - 1) * 0.4));
   csSonar(N, t + 1.6, 0.14, 0);
-  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 7000);
+  csEbb(N, t + 3.1, 8, 0.038, 0);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 11000);
 }
 
 // ---- "Floe" and "Floe-1": ice for Rime ----
@@ -5539,6 +5851,12 @@ function flGive(N, t) {                               // a color is out: the ice
   flGroan(N, t, 2.4, 0.08, 0, 150, 38); flBoom(N, t + 0.05, 0.12, 0, true);
   for (let i = 0; i < 5; i++) flCrack(N, t + 0.12 + i * 0.24 + Math.random() * 0.1, 0.2 + Math.random() * 0.5, 0.05, (Math.random() - 0.5) * 1.2);
 }
+function flLose(N, t, pan) {                          // you lost a base: the ice cracks under you and holds. One sharp chirp, a boom, a short groan, and two dull notes stepping down
+  flCrack(N, t, 0.12, 0.065, pan);
+  flBoom(N, t + 0.03, 0.055, pan, false);
+  flGroan(N, t + 0.1, 0.9, 0.022, pan, 140, 75);
+  [[0.22, 880], [0.62, 590]].forEach(([d, f]) => flTink(N, t + d, f, 0.032, pan * 0.5, 1.3, 1500, true));
+}
 const flShare = () => (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length;
 const flNote = (base, share) => base * (0.9 + 0.45 * share) * pick(FL_LADDER) / 1.2;
 function floeHits(ev) {
@@ -5571,17 +5889,18 @@ function floeOff() {
   setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 7500);
 }
 function floeTick() {
-  const want = AC && AC.state === 'running' && settings.sound && isFloe() && audible() && G && !G.over;
+  const want = AC && AC.state === 'running' && settings.sound && isFloe() && audible() && G && (!G.over || ftLive());
   if (FL.nodes && (!want || FL.nodes.key !== settings.tone || FL.nodes.tier !== AQ())) floeOff();     // switching between Floe and Floe-1 rebuilds it
   if (!want) { FL.st = {}; return; }
   if (!FL.nodes) FL.nodes = flBuild(true);
   const N = FL.nodes, now = AC.currentTime, heat = 1 - Math.exp(-shotRate / 30);
-  N.windG.gain.setTargetAtTime(0.012 + 0.02 * heat, now, 1.2);
+  N.windG.gain.setTargetAtTime(0.012 + 0.02 * heat + 0.03 * ftGauge(), now, 1.2);
   for (const f of G.fx) {                             // captures and knockouts
-    if (f.fl) continue; f.fl = 1;
+    if (f.fl) continue; f.fl = 1; if (f.ftq) continue;
     if (G.t - f.b > 1.5 || (fogOn() && f.x !== undefined && !seenXY(f.x, f.y))) continue;
-    if (f.k === 'ring') flFreeze(N, now + 0.02, !awatch() && f.c === PLAYER, screenPan(f.x, f.y), flShare());
+    if (f.k === 'ring') { if (lostMine(f)) flLose(N, now + 0.02, screenPan(f.x, f.y)); else flFreeze(N, now + 0.02, !awatch() && f.c === PLAYER, screenPan(f.x, f.y), flShare()); }
     else if (f.k === 'elim') flGive(N, now + 0.02);
+    else if (f.k === 'retreat') flRetreat(N, now + 0.02, f.x !== undefined ? screenPan(f.x, f.y) : 0);
   }
 }
 function floePreview() {                              // three notes, a chirp with a boom, a freeze-over and a low groan, with the wind (and hum) under them
@@ -5591,7 +5910,8 @@ function floePreview() {                              // three notes, a chirp wi
   flCrack(N, t + 1.5, 0.6, 0.12, 0); flBoom(N, t + 1.55, 0.1, 0, false);
   flFreeze(N, t + 2.3, true, 0, 0.5);
   flGroan(N, t + 3.4, 1.3, 0.05, 0, 130, 60);
-  N.out.gain.setTargetAtTime(0.0001, t + 6.2, 0.5); for (const o of N.srcs) o.stop(t + 7.5);
+  flLose(N, t + 5.0, 0);
+  N.out.gain.setTargetAtTime(0.0001, t + 7.6, 0.5); for (const o of N.srcs) o.stop(t + 9);
   setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 14000);
 }
 
@@ -5601,7 +5921,7 @@ function floePreview() {                              // three notes, a chirp wi
 // to where they land. Your orders are soft felt taps. Taking a base is a chord swelling up (D, A, E) with a warm breath; losing one takes the fifth out of the bed for a
 // while, with a low note and a breath of ash. A rival taking a base is the same chord, muffled and quiet. Everything rings into a short, dark room.
 const HE_LEVEL = 0.9;                                  // overall level of the style
-const HE_RIVAL_DB = -36;                               // a rival's capture: the player's chord, muffled, this loud (the player's is -24)
+const HE_RIVAL_DB = -29;                               // a rival's capture: the player's chord, muffled, this loud (the player's is -24)
 const HE_RIVAL_PHRASE = false;                         // true = a rival's capture also throws a crackle phrase (it did in 48.2)
 const HE_BUDGET = [22, 15, 10];                        // crackle ticks allowed in any one second, by quality tier
 const HE_PITCH = [98, 98, 110, 98, 123.5, 110];        // the tap's note walks through these
@@ -5722,10 +6042,10 @@ function heSwell(N, t0, f, att, rel, g0) {              // one note of the chord
 }
 function heChord(N, t) {                                 // you took a base: D, A, E swelling up, and a warm breath
   const K = 1 / 3, lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1800;
-  [[146.83, 0, 1, 0.5, 2.8], [220, 0.15 * K, 0.8, 0.5, 2.8], [329.63, 0.3 * K, 0.55, 0.5, 2.8], [659.26, 0.5 * K, 0.18, 0.6, 2.2]].forEach(([f, d, a, att, rel]) => heSwell(N, t + d, f, att, rel, a).connect(lp));
-  heSend(N, lp, -24, 0, 0.5);
+  [[146.83, 0, 1, 0.5, 1.1], [220, 0.15 * K, 0.8, 0.5, 1.1], [329.63, 0.3 * K, 0.55, 0.5, 1.1], [659.26, 0.5 * K, 0.18, 0.6, 0.9]].forEach(([f, d, a, att, rel]) => heSwell(N, t + d, f, att, rel, a).connect(lp));
+  heSend(N, lp, -24, 0, 0.28);
   const s = AC.createBufferSource(), nl = AC.createBiquadFilter(), g = AC.createGain(); s.buffer = noise(); nl.type = 'lowpass'; nl.frequency.value = 900;
-  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(1.6, t + 0.3); g.gain.setTargetAtTime(0.0001, t + 0.3, 0.9); s.connect(nl); nl.connect(g); heSend(N, g, -45, 0, 0.5); s.start(t, Math.random() * 0.3, 4);
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(1.6, t + 0.3); g.gain.setTargetAtTime(0.0001, t + 0.3, 0.9); s.connect(nl); nl.connect(g); heSend(N, g, -45, 0, 0.28); s.start(t, Math.random() * 0.3, 4);
   HE.caps++;
 }
 function heLoss(N, t) {                                  // you lost a base: the fifth leaves the bed, ash, a low last note
@@ -5738,13 +6058,27 @@ function heLoss(N, t) {                                  // you lost a base: the
   const o = AC.createOscillator(), og = AC.createGain(); o.frequency.value = 55; og.gain.setValueAtTime(0.0001, t + 0.5); og.gain.linearRampToValueAtTime(0.8, t + 1.3); og.gain.setTargetAtTime(0.0001, t + 1.3, 2.6); o.connect(og); heSend(N, og, -30, 0, 0.3); o.start(t + 0.5); o.stop(t + 11);
   HE.losses++;
 }
+function heKnock(N, t) {                                 // a color is out: the fire goes down. The fifth leaves the bed for a long while, a last low note, a long cooling breath, and a few last snaps
+  if (N.fifthG) {
+    const gp = N.fifthG.gain, curve = new Float32Array(16); for (let i = 0; i < 16; i++) { const x = i / 15; curve[i] = 0.026 + (1 - 0.026) * x * x * (3 - 2 * x); }
+    gp.cancelScheduledValues(t); gp.setTargetAtTime(0.0001, t, 1.6); gp.setValueAtTime(0.026, t + 7); gp.setValueCurveAtTime(curve, t + 7, 12);
+  }
+  const s = AC.createBufferSource(), hp = AC.createBiquadFilter(), lp = AC.createBiquadFilter(), g = AC.createGain(); s.buffer = noise(); hp.type = 'highpass'; hp.frequency.value = 1100; lp.type = 'lowpass'; lp.frequency.value = 4200;
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(1, t + 1.6); g.gain.setTargetAtTime(0.0001, t + 1.6, 2.2); s.connect(hp); hp.connect(lp); lp.connect(g); heSend(N, g, -48, 0, 0.6); s.start(t, Math.random() * 0.3, 9);
+  for (const [f, d, a] of [[55, 0.4, 0.8], [82.41, 0.9, 0.35]]) {
+    const o = AC.createOscillator(), og = AC.createGain(); o.frequency.value = f; og.gain.setValueAtTime(0.0001, t + d); og.gain.linearRampToValueAtTime(a, t + d + 1.2); og.gain.setTargetAtTime(0.0001, t + d + 1.2, 3.2);
+    o.connect(og); heSend(N, og, -26, 0, 0.3); o.start(t + d); o.stop(t + d + 14);
+  }
+  [[1.9, -32], [3.3, -36], [5.2, -40]].forEach(([d, db]) => heSnap(N, t + d, db, (Math.random() - 0.5) * 0.8));
+  HE.losses++;
+}
 function heRivalCapture(N, t, pan) {                      // a rival took a base: your chord, muffled and quiet (an octave up so a phone speaker plays it, no breath)
   const clk = AC.currentTime; HE.rc = HE.rc.filter(x => clk - x < 2);
   if (HE.rc.length >= 3) { HE.rskip++; return; }          // never more than three in two seconds, however busy the war is
   HE.rc.push(clk); HE.duck = t + 0.55;
-  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520; lp.Q.value = 0.5;
-  [[293.66, 0, 1], [440, 0.05, 0.8], [659.26, 0.1, 0.5]].forEach(([f, d, a]) => heSwell(N, t + d, f, 0.35, 1.6, a).connect(lp));
-  heSend(N, lp, HE_RIVAL_DB, pan * 0.6, 0.45);
+  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 760; lp.Q.value = 0.5;
+  [[293.66, 0, 1], [440, 0.05, 0.8], [659.26, 0.1, 0.5]].forEach(([f, d, a]) => heSwell(N, t + d, f, 0.35, 1.1, a).connect(lp));
+  heSend(N, lp, HE_RIVAL_DB, pan * 0.6, 0.3);
   HE.rcaps++;
 }
 function heHits(ev) {                                    // every frame with fighting in it: count it, look for health steps, throw a share of the hits as tiny snaps
@@ -5768,7 +6102,7 @@ function heOff() {
   setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 9000);
 }
 function heTick() {
-  const want = AC && AC.state === 'running' && settings.sound && isHearth() && audible() && G && !G.over;
+  const want = AC && AC.state === 'running' && settings.sound && isHearth() && audible() && G && (!G.over || ftLive());
   if (HE.nodes && (!want || HE.nodes.tier !== AQ())) heOff();
   if (!want) { HE.last = {}; HE.own = null; HE.og = null; return; }
   if (!HE.nodes) HE.nodes = heBuild(true);
@@ -5781,7 +6115,9 @@ function heTick() {
   N.bed.gain.setTargetAtTime(0.45 + 0.45 * HE.Is, now, 0.25);
   N.bedLP.frequency.setTargetAtTime(520 + 780 * heClamp((HE.Is - 0.3) / 0.5, 0, 1), now, 0.25);
   for (const f of G.fx) {                                // captures
-    if (f.he) continue; f.he = 1;
+    if (f.he) continue; f.he = 1; if (f.ftq) continue;
+    if (f.k === 'elim') { heKnock(N, now + 0.02); continue; }
+    if (f.k === 'retreat') { if (!(fogOn() && f.x !== undefined && !seenXY(f.x, f.y))) heRetreat(N, now + 0.02); continue; }
     if (f.k !== 'ring' || G.t - f.b > 1.5 || (fogOn() && f.x !== undefined && !seenXY(f.x, f.y))) continue;
     const n = G.nodes.find(nd => nd.x === f.x && nd.y === f.y), from = n && HE.own ? HE.own[n.id] : -2, to = f.c;
     if (!awatch()) {                                     // your match: the chord and the loss are yours, a rival's capture is a crackle and one low note
@@ -5807,8 +6143,9 @@ function hePreview() {                                   // a few taps, a crackl
   hePhrase(N, t + 1.6, 3, -0.2, false, 0.55);
   heChord(N, t + 2.6);
   heLoss(N, t + 5.0);
-  N.out.gain.setTargetAtTime(0.0001, t + 7.4, 0.5); for (const o of N.srcs) o.stop(t + 9);
-  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 14000);
+  heKnock(N, t + 8.4);
+  N.out.gain.setTargetAtTime(0.0001, t + 11.4, 0.6); for (const o of N.srcs) o.stop(t + 13);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 22000);
 }
 
 function syncRivals() {
@@ -5834,10 +6171,106 @@ function syncSound() {
 }
 $('bChime').addEventListener('click', () => { audioOn(); ptsPreview(); });
 let lastPreview = 0, lastPreviewTone = '';
+// ---- menu voice, retreat and order taps: the three small cues every sound style answers in its own way ----
+// Menu voice: tapping a button or moving through the menus. It plays at full level (past the menu muffle, like the previews), is a few tens
+// of milliseconds long, and "back" is the same cue turned down a step. Retreat: a rival calling off a lost attack; subtle, throttled, and
+// placed on each style's own grid where it has one. Order tap: the small acknowledgement of your own order.
+const MV = { t: 0 }, RT = {};
+const rtOK = (k, gap) => { const c = AC.currentTime; if (c - (RT[k] || -9) < gap) return false; RT[k] = c; return true; };
+function mvNote(t, f, f2, dur, peak, type, lpf, pan) {   // one short note straight to the preview bus
+  const o = AC.createOscillator(), g = AC.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  let src = o; if (lpf) { const l = AC.createBiquadFilter(); l.type = 'lowpass'; l.frequency.value = lpf; o.connect(l); src = l; }
+  src.connect(g); let out = g; if (pan && AC.createStereoPanner) { const pn = AC.createStereoPanner(); pn.pan.value = pan; g.connect(pn); out = pn; }
+  out.connect(pbus); o.start(t); o.stop(t + dur + 0.03);
+}
+function mvSimple(t, back) { mvNote(t, hz(back ? 69 : 76), 0, back ? 0.09 : 0.07, back ? 0.026 : 0.03); }
+function mvHearth(t, back) {                              // a soft knock on warm wood, with a faint snap on top
+  mvNote(t, back ? 165 : 196, back ? 105 : 128, 0.13, 0.05, 'sine', 900);
+  const n = AC.createBufferSource(), l = AC.createBiquadFilter(), g = AC.createGain(); n.buffer = noise(); l.type = 'bandpass'; l.frequency.value = back ? 900 : 1300; l.Q.value = 1.2;
+  g.gain.setValueAtTime(back ? 0.012 : 0.018, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03); n.connect(l); l.connect(g); g.connect(pbus); n.start(t, Math.random() * 0.3, 0.05);
+}
+function mvPluck(t, midi, peak, pan) {                    // Drift's pluck, dry and short
+  const f = hz(midi), o1 = AC.createOscillator(), o2 = AC.createOscillator(), g2 = AC.createGain(), lp = AC.createBiquadFilter(), g = AC.createGain();
+  o1.type = 'sine'; o1.frequency.value = f; o2.type = 'triangle'; o2.frequency.value = f * 2.003; g2.gain.value = 0.25;
+  lp.type = 'lowpass'; lp.frequency.setValueAtTime(f * 6, t); lp.frequency.exponentialRampToValueAtTime(f * 1.4, t + 0.3);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+  o1.connect(lp); o2.connect(g2); g2.connect(lp); lp.connect(g); let out = g; if (pan && AC.createStereoPanner) { const pn = AC.createStereoPanner(); pn.pan.value = pan; g.connect(pn); out = pn; }
+  out.connect(pbus); o1.start(t); o2.start(t); o1.stop(t + 0.6); o2.stop(t + 0.6);
+}
+function mvDrift(t, back) { mvPluck(t, drMidi(back ? 6 : 11), back ? 0.027 : 0.03, 0); }
+function mvPulse(t, midi, dur, peak) {                    // Chip's pulse note: a hard start, a stepped fall, a hard stop
+  const o = AC.createOscillator(), g = AC.createGain(); o.setPeriodicWave(chWaves().p25); o.frequency.value = hz(midi);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + 0.002); g.gain.setValueAtTime(peak * 0.65, t + dur * 0.5); g.gain.linearRampToValueAtTime(0, t + dur);
+  o.connect(g); g.connect(pbus); o.start(t); o.stop(t + dur + 0.02);
+}
+function mvChip(t, back) { const a = chMidi(7), b = chMidi(10); mvPulse(t, back ? b : a, 0.04, 0.026); mvPulse(t + 0.045, back ? a : b, 0.05, 0.026); }
+function mvCosmos(t, back) {                               // a quiet ping with a short echo, then gone
+  const out = AC.createGain(); out.gain.value = CS_LEVEL; out.connect(pbus);
+  const c0 = AC.currentTime; if (MV.cs) { try { MV.cs.gain.cancelScheduledValues(c0); MV.cs.gain.setTargetAtTime(0, c0, 0.06); } catch (_) {} } MV.cs = out;
+  const dl = AC.createDelay(1), fb = AC.createGain(), lp = AC.createBiquadFilter(), dg = AC.createGain();
+  dl.delayTime.value = 0.32; fb.gain.value = 0.36; lp.type = 'lowpass'; lp.frequency.value = 2200; dg.gain.value = 0.5; dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(dg); dg.connect(out);
+  const f = hz(csMidi(back ? 6 : 11)), o = AC.createOscillator(), o2 = AC.createOscillator(), g = AC.createGain(), g2 = AC.createGain(), pk = 0.035;
+  o.frequency.value = f; o2.frequency.value = f * 2.76;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(pk, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+  g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime(pk * 0.2, t + 0.003); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+  o.connect(g); o2.connect(g2); g2.connect(g); g.connect(out); g.connect(dl); o.start(t); o2.start(t); o.stop(t + 1); o2.stop(t + 1);
+  setTimeout(() => { try { out.disconnect(); dl.disconnect(); } catch (_) {} }, 4500);
+}
+function mvFloe(t, back) {                                 // one soft glass note, no echo, cut off short so quick tapping never piles up
+  const P = flp(), out = AC.createGain(); out.gain.value = FL_LEVEL * P.lvl; out.connect(pbus);
+  const c0 = AC.currentTime; if (MV.fl) { try { MV.fl.gain.cancelScheduledValues(c0); MV.fl.gain.setTargetAtTime(0, c0, 0.02); } catch (_) {} } MV.fl = out;
+  out.gain.setValueAtTime(FL_LEVEL * P.lvl, t + 0.14); out.gain.linearRampToValueAtTime(0.0001, t + 0.42);
+  const N = { P, dry: AC.createGain(), wet: AC.createGain() }; N.dry.gain.value = P.dry; N.dry.connect(out);
+  flTink(N, t, back ? 880 : 1320, 0.03, 0, 0, 0, true);
+  setTimeout(() => { try { out.disconnect(); N.dry.disconnect(); N.wet.disconnect(); } catch (_) {} }, 1500);
+}
+function menuVoice(kind) {                                 // kind: 'tap' or 'back'
+  if (!settings.sound || !soundGain()) return;
+  if (mode !== 'play' && settings.menuSound === 'off') return;
+  audioOn(); if (!AC || AC.state !== 'running') return;
+  const ms = performance.now(); if (ms - MV.t < 70) return; MV.t = ms;
+  const f = { hearth: mvHearth, drift: mvDrift, chip: mvChip, cosmos: mvCosmos, floe: mvFloe }[settings.tone] || mvSimple;
+  try { f(AC.currentTime + 0.005, kind === 'back'); } catch (e) { /* a missing voice must never stop the menus */ }
+}
+document.addEventListener('click', e => {                   // every button in the menus and on the play screen's rail; the map, the upgrade panel and the sound-style row have sounds of their own
+  const b = e.target && e.target.closest ? e.target.closest('button, .chcard, .modrow') : null;
+  if (!b || b.closest('#upg') || b.closest('#sendTri') || b.closest('[data-glob="tone"]') || b.id === 'bChime') return;
+  menuVoice(b.classList.contains('back') || b.closest('.back') ? 'back' : 'tap');
+}, true);
+function spRetreat(t, pan) { if (!rtOK('sp', 1.6)) return; mvNoteOn(t, hz(64), hz(62), 0.16, 0.045, pan); mvNoteOn(t + 0.11, hz(59), hz(57), 0.2, 0.038, pan); }
+function mvNoteOn(t, f, f2, dur, peak, pan) {              // a note on the style's own bus (in a match)
+  const o = AC.createOscillator(), g = AC.createGain(); o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); const out = outBus(); if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan || 0; g.connect(p); p.connect(out); } else g.connect(out); o.start(t); o.stop(t + dur + 0.03);
+}
+function heRetreat(N, t) { if (!rtOK('he', 2)) return; heNote(N, t, 196, 0.35, 1); heNote(N, t + 0.2, 174.6, 0.28, 1); }
+function drRetreat(N, t, d0, pan) { drPluck(N, t, drMidi(Math.max(0, d0 - 3)), 0.045, pan, 1.0); drPluck(N, t + 0.22, drMidi(Math.max(0, d0 - 5)), 0.036, pan, 1.0); }
+function chRetreat(N, t) {
+  if (!rtOK('ch', 1.8)) return; const c = 3 + Math.round(chShare() * 5), b = chClaim(N, 'p2', t, 0.2, 2, 0); if (!b) return;
+  [3, 0].forEach((st, i) => b.list.push(chPulse(N, t + i * 0.08, chMidi(c + st - 5), 0.08, 'p12', 0.05, 0)));
+}
+function csRetreat(N, t, centre, pan) { csPing(N, t, csMidi(centre - 6), 0.05, pan, 1.3); csPing(N, t + CS_STEP / 2, csMidi(centre - 9), 0.03, pan, 1.3); }
+function flRetreat(N, t, pan) { if (!rtOK('fl', 2)) return; flTink(N, t, 520, 0.026, pan, 1.0, 1800, false); flTink(N, t + 0.3, 430, 0.02, pan, 1.0, 1600, false); }
+const orderTapAt = {};
+function orderTap(moved) {                                 // your order was sent: one small cue in the style's own voice (orders within a fifth of a second share one)
+  if (!AC || AC.state !== 'running' || !settings.sound || !audible()) return;
+  const ms = performance.now(); if (ms - (orderTapAt.t || -9e9) < 200) { orderTapAt.t = ms; return; } orderTapAt.t = ms;
+  const t = AC.currentTime + 0.01, k = Math.min(1, (moved | 0) / 12);
+  try {
+    if (isHearth()) heTap(moved);
+    else if (settings.tone === 'drift') { if (DR.nodes) drPluck(DR.nodes, t, drMidi(7 + Math.round(k * 2)), 0.04, 0, 0.5); }
+    else if (settings.tone === 'chip') { const N = CH.nodes; if (N) { const c = chClaim(N, 'p2', t, 0.05, 1, 0.1); if (c) c.list.push(chPulse(N, t, chMidi(3 + Math.round(chShare() * 5) + 2 + Math.round(k * 2)), 0.045, 'p25', 0.055, 0)); } }
+    else if (settings.tone === 'cosmos') { if (CS.nodes) csPing(CS.nodes, t, csMidi(4 + Math.round(k * 2)), 0.05, 0, 0.7); }
+    else if (isFloe()) { if (FL.nodes) flTink(FL.nodes, t, 780 + 120 * k, 0.04, 0, 0.6, 2200, true); }
+    else if (settings.tone === 'simple' || !settings.tone) mvNoteOn(t, hz(72), hz(71), 0.06, 0.04 + 0.01 * k, 0);
+  } catch (e) { /* a missing voice must never stop an order */ }
+}
 function previewSound() {                       // a sample bleep and bloop so you can hear the setting
   const now = performance.now();
-  const gap = ({ hearth: 6200, drift: 2500, chip: 2200, cosmos: 3200, floe: 4200 })[settings.tone] || 140;
+  const gap = ({ hearth: 11000, drift: 3300, chip: 3200, cosmos: 4400, floe: 5400 })[settings.tone] || 140;
   if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < gap && lastPreviewTone === settings.tone) return;
+  const fresh = lastPreviewTone !== settings.tone;
   lastPreview = now; lastPreviewTone = settings.tone;
   previewing = true;                                  // a preview is always heard at full level, not through the menu mix
   try {
@@ -5850,6 +6283,7 @@ function previewSound() {                       // a sample bleep and bloop so y
     tone(f, f * 0.94, 0.1, 0.055, 'sine', 0, 0.018); tone(f * 2, f * 1.88, 0.07, 0.009, 'sine', 0, 0.012);
   } finally { previewing = false; }
   setTimeout(() => { if (AC) { previewing = true; try { const b = hz(45 + pick(PENTA)); tone(b * 1.4, b, 0.2, 0.08, 'sine', 0, 0.02); } finally { previewing = false; } } }, 120);
+  if (fresh && settings.tone === 'simple') setTimeout(() => { if (AC && AC.state === 'running') { previewing = true; try { spLose(AC.currentTime + 0.02, 0); } finally { previewing = false; } } }, 500);   // choosing Simple also plays its lose-a-base cue
 }
 
 {
@@ -5861,7 +6295,8 @@ document.addEventListener('click', e => { const c = $('aboutCard'); if (!c.hidde
 const show = (id, on) => { $(id).hidden = !on; if (id === 'menu') { if (!on) pvOnly = false; placePreview(); } };   // the preview card belongs to the menu: it goes when the menu does
 const SIZE_BASES = { small: 'about 20 bases', medium: 'about 30 bases', large: 'about 45 bases', huge: 'about 70 bases' };
 const HUGE_NOTE = ' Huge matches run long, and modifiers can help.';
-const DIFF_INFO = { easy: 'Rivals act slowly and cautiously. A good place to learn.', normal: 'Rivals play at a steady pace. An even match.', hard: 'Rivals react quickly, favor attacking you, and build troops 8% faster.', brutal: 'Rivals react almost instantly, focus on you, and build troops 18% and upgrades 20% faster.',
+const DIFF_INFO = { easy: 'Rivals act slowly and cautiously. A good place to learn.', normal: 'Rivals play at a steady pace. An even match.', hard: 'Rivals react quickly and favor attacking you. A real fight.', brutal: 'Rivals react almost instantly and go straight for you. No room to relax.',
+  deadly: 'Rivals fight smart. They strike early, spot your moves and cut their losses.',
   random: 'Each rival gets a random strength, revealed when the match ends.' };
 const PERSONA_INFO = { mixed: 'Each rival is randomly Balanced, Aggressive, Sturdy or Adaptive.',
   aggressive: 'Fast and hard-hitting but fragile. Attacks early, defends late, and seeks Relays and Beacons.',
@@ -5888,11 +6323,19 @@ const SPECIAL_SHORT = { fortress: 'More health', forge: 'More troops', beacon: '
 function renderSpecials() {
   $('specList').innerHTML = Object.keys(SPECIALS).map(k => `<div class="spec"><svg viewBox="0 0 28 28" aria-hidden="true">${glyphSvg(k)}</svg><div><b>${SPECIALS[k].name} <em>${SPECIAL_SHORT[k]}</em></b><span>${SPECIALS[k].text}</span></div></div>`).join('');
 }
-const SIZE_LABEL = { small: 'Small', medium: 'Medium', large: 'Large', huge: 'Huge' }, DIFF_LABEL = { easy: 'Easy', normal: 'Normal', hard: 'Hard', brutal: 'Brutal', random: 'Random' };
+const SIZE_LABEL = { small: 'Small', medium: 'Medium', large: 'Large', huge: 'Huge' }, DIFF_LABEL = { easy: 'Easy', normal: 'Normal', hard: 'Hard', brutal: 'Brutal', deadly: 'Deadly', random: 'Random' };
+// Deadly shows in every strength bar. Until it is earned it wears a padlock, and tapping it says how to earn it.
+const LOCK_TEXT = { classic: 'Locked. Beat Brutal on a Large map in Classic to unlock Deadly.', other: 'Locked. Beat Deadly on a Large map in Classic to add it here.' };
+const diffLock = (m, v) => v !== 'deadly' ? '' : m === 'classic' ? (unlocks.deadly ? '' : LOCK_TEXT.classic) : (unlocks.deadlyCustom ? '' : LOCK_TEXT.other);
+const lockHint = (m, text) => { $(m === 'classic' ? 'classicDiff' : m === 'spec' ? 'hintSpec' : 'hintEnemies').textContent = text; };
 function syncSeg() {
   document.querySelectorAll('.seg[data-mode]').forEach(seg => {
     const v = settings[seg.dataset.mode][seg.dataset.key];
-    seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+    seg.querySelectorAll('button').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.v === v));
+      const lk = seg.dataset.key === 'diff' ? diffLock(seg.dataset.mode, b.dataset.v) : '';
+      b.classList.toggle('lockd', !!lk); if (lk) b.setAttribute('aria-disabled', 'true'); else b.removeAttribute('aria-disabled');
+    });
   });
 }
 function syncGlobalSeg() {
@@ -5946,6 +6389,9 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '48.7.1', t: 'Deadly bites harder', b: ['Deadly rivals now build troops 30% and upgrades 50% faster (Brutal is 18% and 20%). They also play tighter. A rival answers one threatened base at a time, and leaves a base alone if help cannot get there before it falls. It hits a base you hold thinly, and a close neighbor, earlier than before.', 'A rival that is down to a few bases and far behind stops sending small raids. It gathers its troops and goes for one big hit instead.', 'Brutal rivals now also go after a base you hold with a thin defense sooner. Deadly is still locked until you beat Brutal on a Large map in Classic.'] },
+  { v: '48.7', t: 'Deadly', b: ['A new strength above Brutal. It stays locked until you beat Brutal on a Large map in Classic, and the padlock tells you so. Deadly rivals are not stronger than Brutal ones: they build at the same speed. They are smarter. They pick on close neighbors early, notice an army walking up to a base, pull a garrison that cannot be saved back to a stronger base, and raid weak bases with small groups.', 'Beat Deadly on a Large map in Classic and it joins Custom and Spectate. Stats now show how many games you won against each strength.'] },
+  { v: '48.6', t: 'Rivals that get stuck', b: ['On Huge maps an Easy rival could sit on its one base for the whole match: its army was full, but its own rules wanted more troops than the army can hold, so it never attacked. A full-strength rival now attacks with everything when it clearly outnumbers the base in front of it. And a rival that keeps failing to take the same base now sends a bigger force each time (up to everything it has nearby), so the last base of a long match falls.', 'Phones with a forced dark theme (some Samsung browsers) no longer recolor the troop bar, so Yellow and the other team colors look right.'] },
   { v: '48.5.2', t: 'Auto picture steps back up', b: ['On Auto, the picture (and the sound weight that follows it) now steps back up after the phone has run smoothly for about 25 seconds, instead of staying low for the whole session once a busy fight had pushed it down. It never goes above the level your phone check picked, and if it steps up and then has to step down again within 20 seconds it stays at the lower level.'] },
   { v: '48.5.1', t: 'The minimap opens at once', b: ['The minimap now opens the moment you tap the map button. Before, it waited a moment in case you were double-tapping.'] },
   { v: '48.5', t: 'Lighter on your battery', b: ['While the game is paused, and behind the menus, the game now does far less drawing, so the phone stays cooler and the battery lasts longer.', 'Rime, Atlas and Nebula keep their backgrounds ready instead of drawing them again every frame, so they run smoother on slower phones.'] },
@@ -6143,11 +6589,13 @@ function renderStats() {
   const p = stats.play, w = stats.watch, dash = '–';
   const tile = (v, l) => `<div class="tile"><b>${v}</b><span>${l}</span></div>`;
   const fast = k => p.fastest[k] ? fmt(p.fastest[k]) : dash;
+  const strengthRows = () => ['easy', 'normal', 'hard', 'brutal', 'deadly'].map(k => { const g = p.gDiff[k] || 0, wn = p.wDiff[k] || 0; return `<div class="prow"><span>${DIFF_LABEL[k]}</span><b>${k === 'deadly' && !unlocks.deadly ? 'Locked' : g ? wn + ' of ' + g + ' won' : dash}</b></div>`; }).join('');
   let h = `<h3>Your games</h3><div class="tiles">
     ${tile(p.games, 'Played')}${tile(p.wins, 'Won')}${tile(p.games ? Math.round(100 * p.wins / p.games) + '%' : dash, 'Win rate')}
     ${tile(p.most || dash, 'Most bases held')}${tile(p.kills.toLocaleString(), 'Troops knocked out')}
     ${tile(p.caps, 'Bases taken')}${tile(p.time ? fmtLong(p.time) : dash, 'Time played')}</div>
     <h3>Fastest win</h3><div class="tiles">${tile(fast('small'), 'Small map')}${tile(fast('medium'), 'Medium map')}${tile(fast('large'), 'Large map')}${tile(fast('huge'), 'Huge map')}</div>
+    <h3>By rival strength</h3><div>${strengthRows()}</div>
     <h3>AI vs AI</h3>`;
   if (!w.matches) h += `<p class="none">No AI vs AI matches watched yet.</p>`;
   else {
@@ -6175,7 +6623,7 @@ function confirmReset(btn, label, action) {
   }, 1000));
 }
 function doResetStats() {
-  stats.play = { games: 0, wins: 0, kills: 0, caps: 0, time: 0, most: 0, fastest: {} };
+  stats.play = { games: 0, wins: 0, kills: 0, caps: 0, time: 0, most: 0, fastest: {}, gDiff: {}, wDiff: {} };
   stats.watch = { matches: 0, byColor: [0, 0, 0, 0, 0], byStyle: {}, appColor: [0, 0, 0, 0, 0], appStyle: {} };
   save('ice-stats', stats); renderStats(); renderRecord();
 }
@@ -6184,7 +6632,8 @@ function doResetChallenges() {
   for (const k of Object.keys(bests)) delete bests[k];
   save('ice-ladder', ladder); save('ice-bests', bests); renderLadder(); updateLadderBlurb();
 }
-function clearEffects() { parts.length = 0; pulses.length = 0; texts.length = 0; banners.length = 0; lastGT = 0; combo = 0; shakeAmp = 0; flash = null; }
+function clearEffects() {
+  ftReset(); parts.length = 0; pulses.length = 0; texts.length = 0; banners.length = 0; lastGT = 0; combo = 0; shakeAmp = 0; flash = null; }
 // The options a match is built from. The menu preview and the real game both use exactly these, seed included.
 function optsFor(key) {
   const c = settings[key], watch = key === 'spec', classic = key === 'classic', shape = classic ? 'continent' : shapeFor(c);
@@ -6312,13 +6761,14 @@ const CODA = {
   loss:     ['It\'ll be here when you\'re ready.', 'Worth another look.']
 };
 function endCoda() {
-  const win = G.result === 'win', hard = G.diffName === 'hard' || G.diffName === 'brutal';
+  const win = G.result === 'win', hard = G.diffName === 'hard' || G.diffName === 'brutal' || G.diffName === 'deadly';
   const pool = win ? (hard ? CODA.winHard : CODA.win) : G.t < 150 ? CODA.lossEarly : G.peak >= 0.4 * G.nodes.length ? CODA.lossBig : CODA.loss;
   return pool[(G.seed >>> 0) % pool.length];
 }
 function showEnd() {
   mode = 'over';
   const P = G.teams[PLAYER], N = G.nodes.length, t = $('endTitle'), sub = $('endSub');
+  let unlockNote = '';
   if (watching) {                                   // spectated matches go into the AI vs AI stats, not your record
     const w = G.winner, T = G.teams[w];
     t.innerHTML = `<span class="sw" data-s="${TEAM_SLOT[w]}" style="background:${TEAM_COLORS[w]}"></span>${TEAM_NAMES[w]} took the map`;
@@ -6332,6 +6782,12 @@ function showEnd() {
       p.games++; if (win) p.wins++;
       p.kills += P.kills; p.caps += G.playerCaps; p.time += G.t; p.most = Math.max(p.most, G.peak);
       if (win && (!p.fastest[G.sizeName] || G.t < p.fastest[G.sizeName])) p.fastest[G.sizeName] = Math.round(G.t);
+      if (DIFF_LABEL[G.diffName] && G.diffName !== 'random') { p.gDiff[G.diffName] = (p.gDiff[G.diffName] || 0) + 1; if (win) p.wDiff[G.diffName] = (p.wDiff[G.diffName] || 0) + 1; }
+      if (win && curModeKey === 'classic' && G.sizeName === 'large') {          // the way to Deadly: win a Classic match on Large against Brutal; beat Deadly there and it joins Custom and Spectate
+        if (G.diffName === 'brutal' && !unlocks.deadly) { unlocks.deadly = true; unlockNote = 'Deadly unlocked. Find it under AI strength in Classic.'; }
+        else if (G.diffName === 'deadly' && !unlocks.deadlyCustom) { unlocks.deadly = unlocks.deadlyCustom = true; unlockNote = 'You beat Deadly. It is now in Custom and Spectate.'; }
+        save('ice-unlocks', unlocks); syncSeg();
+      }
     }
     if (win) {
       t.innerHTML = `<span class="sw" data-s="${TEAM_SLOT[PLAYER]}" style="background:${TEAM_COLORS[PLAYER]}"></span>The map is ${TEAM_NAMES[PLAYER].toLowerCase()}`;
@@ -6357,6 +6813,7 @@ function showEnd() {
   if (!watching && !G.practice && !G.scenarioId && G.endReason !== 'crown') {      // a normal match: one more line under the stats
     const c = document.createElement('span'); c.className = 'coda'; c.textContent = endCoda(); sub.appendChild(c);
   }
+  if (unlockNote) { const u = document.createElement('span'); u.className = 'coda'; u.textContent = unlockNote; sub.appendChild(u); }
   nextScen = null; let challengeMoments = null;
   if (G.practice) {                                 // a lesson: a tick instead of stars or highlights
     const L = PRACTICE.find(x => x.id === G.practice);
@@ -6425,6 +6882,7 @@ function armBack() {
   } catch (e) {}
 }
 function onBack() {
+  if (mode === 'ending') { END.skip = true; return true; }
   if (!$('end').hidden) { leaveToMenu(); return true; }
   if (mode === 'play') { pause(); return true; }
   if (!$('menu').hidden && stack.length > 1) { back(); return true; }
@@ -6482,6 +6940,7 @@ function selCheck() {                              // a selection ends when its 
   if (selBase != null && mode === 'play') { if (G && selG === G && !selGhost) selGhost = { id: selBase, t: performance.now() }; selBase = null; }        // ends on its own: show the ring closing
   return false;
 }
+
 function handleTap(px, py) {
   if (mode !== 'play' || !G || G.over) return;
   audioOn();
@@ -6510,7 +6969,7 @@ function handleTap(px, py) {
   const r = command(PLAYER, n.id, settings.send, from == null ? undefined : t => atBase(t, from));
   lastFromSel = r && from != null ? n.id : -1;
   if (r) {
-    G._orders = (G._orders | 0) + 1; buzz('tap'); if (isHearth()) heTap(r.moved);
+    G._orders = (G._orders | 0) + 1; buzz('tap'); orderTap(r.moved);
     uiFx.push({ k: 'go', x: n.x, y: n.y, b: now });
     if (r.edges.length) hl.push({ edges: r.edges, b: now });
     if (dbl) {
@@ -6623,6 +7082,7 @@ cv.addEventListener('contextmenu', e => e.preventDefault());
 document.querySelectorAll('.seg[data-mode]').forEach(seg => seg.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   const m = seg.dataset.mode, key = seg.dataset.key, c = settings[m];
+  if (key === 'diff') { const lk = diffLock(m, b.dataset.v); if (lk) { lockHint(m, lk); return; } }     // a locked strength explains itself and changes nothing
   const was = c[key]; c[key] = b.dataset.v;
   if (key === 'size' && m !== 'classic' && was !== c.size) c.ot = c.size === 'large' || c.size === 'huge';   // Overtime follows the size you pick, and stays yours to change
   if (key === 'size' || key === 'shape') c.seed = rnd32();   // tapping a size (even the one already chosen) or a new shape rolls a new map
@@ -6884,6 +7344,200 @@ function perfTick(nowMs, simMs, drawMs) {
     `${window.__perf.troops} troops  ${parts.length} sparks  dpr ${dpr.toFixed(2)}`;
   Object.assign(a, { n: 0, sim: 0, draw: 0, worst: 0, t0: nowMs });
 }
+// ---- the final tune: the last capture of a match, as a sound that builds, peaks and fades under the summary card ----
+// When you are down to your last base (loss) or one base from owning the map (win), a gauge follows that base's health: it rises while the base
+// is being worn down, and eases back down if the attack stops or is beaten off. When the match really ends, the tune peaks, trails off, and the
+// summary card fades in under it. A loss with troops still alive peaks at the fall of the last base, then holds a thin tail until they are gone.
+const FT = { g: 0, phase: 'idle', kind: null, node: -1, atk: -9, next: 0, holdAt: -9, tailUntil: 0 };
+const END = { el: 0, tOver: 0, skip: false };
+const END_BEAT = 2.5;                                     // seconds from the last blow to the card starting to fade in
+const FTS = {};                                           // one voice set per sound style: pulse(g,t,kind), drone(g,dt,release), peak(kind,t,hold), hold(t), end(kind,t), relief(t), holdIv
+const ftGauge = () => (mode === 'play' && (FT.phase === 'build' || FT.phase === 'hold')) ? (FT.phase === 'hold' ? 0.5 : FT.g) : 0;
+const ftAudioOK = () => !!(AC && settings.sound && soundGain() && AC.state === 'running');
+function ftReset() {
+  FT.g = 0; FT.phase = 'idle'; FT.kind = null; FT.node = -1; FT.atk = -9; FT.next = 0; FT.holdAt = -9;
+  const v = FTS[settings.tone]; if (v && v.drone && AC) { try { v.drone(0, 0, true); } catch (_) { /* a missing voice must never stop a match */ } }
+}
+function ftEligible() { return mode === 'play' && !watching && !G.autoplay && !G.scenarioId && !G.practice && !coach; }
+function ftStep(dt) {                                      // the gauge, every frame of a match you are playing
+  if (!ftEligible()) { FT.g = Math.max(0, FT.g - 2 * dt); return; }
+  const P = G.teams[PLAYER], N = G.nodes.length, v = FTS[settings.tone];
+  if (P.bases === 0 && P.alive) {                          // the last base has fallen, troops are still out there
+    if (FT.phase !== 'hold') { FT.phase = 'hold'; FT.kind = 'loss'; FT.holdAt = -9; if (v && ftAudioOK()) { try { v.peak('loss', AC.currentTime + 0.02, true); } catch (_) {} } if (v && v.drone) v.drone(0, 0, true); }
+    FT.g = 1; return;
+  }
+  if (FT.phase === 'hold') {                               // a base won back: the tune lifts away
+    FT.phase = 'idle'; FT.g = 0; FT.node = -1;
+    if (v && ftAudioOK()) { try { v.relief(AC.currentTime + 0.02); } catch (_) {} }
+  }
+  let kind = null, node = null;
+  if (P.bases === 1) { kind = 'loss'; node = G.nodes.find(n => n.owner === PLAYER); }
+  else if (P.bases >= 2 && N - P.bases === 1) { kind = 'win'; node = G.nodes.find(n => n.owner !== PLAYER); }
+  if (!node) { FT.node = -1; FT.kind = null; FT.g = Math.max(0, FT.g - 1.2 * dt); if (FT.g < 0.02) FT.phase = 'idle'; return; }
+  if (FT.node !== node.id || FT.kind !== kind) { FT.node = node.id; FT.kind = kind; FT.g = 0; FT.atk = -9; }
+  let pres = 0; for (let k = 1; k < node.pres.length; k++) if (kind === 'loss' ? k !== PLAYER + 1 : k === PLAYER + 1) pres += node.pres[k];
+  if (G.t - node.lastHitT < 0.3 && pres > 0) FT.atk = G.t;                       // someone is working on it right now
+  const f = node.hp / node.maxHp, live = G.t - FT.atk < 1.2, target = live ? Math.max(0, Math.min(1, (0.55 - f) / 0.55)) : 0;
+  if (target > FT.g) FT.g = Math.min(target, FT.g + 1.4 * dt); else FT.g = Math.max(target, FT.g - (live ? 0.5 : 0.7) * dt);
+  FT.phase = FT.g > 0.04 ? 'build' : 'idle';
+}
+function ftTick(dt) {                                      // the sound side of the gauge: pulses and layers, a few times a second
+  const v = FTS[settings.tone]; if (!v || !AC) return;
+  const ok = ftAudioOK() && (mode === 'play' || mode === 'paused');
+  const g = ok && mode === 'play' && FT.phase !== 'hold' ? FT.g : 0;
+  if (v.drone) v.drone(g, dt, false);
+  if (!ok || mode !== 'play') return;
+  const t = AC.currentTime + 0.02;
+  if (FT.phase === 'hold') { if (t - FT.holdAt > (v.holdIv || 1.8)) { FT.holdAt = t; v.hold(t); } return; }
+  if (g > 0.04 && t >= FT.next && v.pulse) FT.next = t + v.pulse(g, t, FT.kind);
+}
+function ftBegin() {                                       // the match just ended: an elimination or a conquest gets the ending, everything else goes straight to the card
+  if (watching || G.autoplay || G.scenarioId || G.practice || coach || G.endReason === 'crown' || G.endReason === 'objective') return false;
+  const hold = FT.phase === 'hold', v = FTS[settings.tone], kind = G.result === 'win' ? 'win' : 'loss';
+  mode = 'ending'; END.el = 0; END.tOver = G.t; END.skip = false;
+  for (const f of G.fx) if (G.t - f.b < 0.5) f.ftq = 1;                       // the last capture and knockout are the tune's peak, not a second cue
+  if (v && ftAudioOK()) { try { const t = AC.currentTime + 0.02; if (hold) v.end(kind, t); else v.peak(kind, t, false); } catch (_) {} }
+  if (v && v.drone) v.drone(0, 0, true);
+  FT.phase = 'tail'; FT.g = 0; FT.tailUntil = performance.now() + 4800;
+  showEnd(); mode = 'ending'; show('end', false);          // stats, unlocks and the card are done now, so leaving during the beat loses nothing; the card just waits hidden
+  $('end').style.opacity = '0';
+  return true;
+}
+function endNow() {                                        // the beat is over (or tapped through): the card fades in over the tail of the tune
+  if (mode !== 'ending') return;
+  mode = 'over'; show('end', true); endAt = performance.now(); try { $('bAgain').focus({ preventScroll: true }); } catch (_) {}
+  const tt = G.t; G.t = END.tOver; try { drawTimeline(pickMoments()); } catch (_) {} G.t = tt;
+  const e = $('end'); e.style.opacity = '0'; e.style.transition = 'opacity .9s ease';
+  requestAnimationFrame(() => requestAnimationFrame(() => { e.style.opacity = '1'; }));
+  setTimeout(() => { e.style.transition = ''; e.style.opacity = ''; }, 1100);
+}
+for (const evn of ['pointerdown', 'pointerup', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'click', 'keydown']) {
+  document.addEventListener(evn, e => {                    // during the ending the match is over: any tap or key skips the wait, and nothing reaches the map or the card
+    if (mode !== 'ending') return;
+    e.stopPropagation(); if (e.cancelable) e.preventDefault();
+    if ((evn === 'pointerdown' || evn === 'keydown') && END.el > 0.3) END.skip = true;
+  }, true);
+}
+FTS.simple = {                                            // dry and clear: one low double beat that quickens, then falling notes over one deep one (win: the same, turned up and major)
+  holdIv: 1.8,
+  pulse(g, t, kind) {
+    const w = kind === 'win', deg = Math.min(4, Math.floor(g * 5)), m = (w ? 52 : 45) + (w ? [0, 4, 7, 9, 12] : [0, 3, 5, 8, 10])[deg], a = 0.022 + 0.04 * g;
+    spNote(t, m, 0.22, a, 0); spNote(t + 0.14, m, 0.18, a * 0.7, 0);
+    return 1.05 - 0.72 * g;
+  },
+  peak(kind, t, hold) {
+    if (kind === 'win') { [57, 61, 64, 69, 76].forEach((m, i) => spNote(t + i * 0.14, m, 0.5, 0.062, 0)); spNote(t, 45, 1.8, 0.072, 0); spNote(t + 0.7, 52, 1.4, 0.04, 0); return; }
+    [64, 60, 57, 52, 45].forEach((m, i) => spNote(t + i * 0.2, m, 0.55, 0.062, 0)); spNote(t, 33, 2.2, 0.08, 0); spNote(t + 1.1, 40, 1.4, 0.04, 0);
+  },
+  hold(t) { spNote(t, 45, 0.9, 0.035, 0); },
+  end(kind, t) { spNote(t, 40, 1.6, 0.06, 0); spNote(t, 33, 2.2, 0.07, 0); },
+  relief(t) { spNote(t, 57, 0.5, 0.04, 0); spNote(t + 0.18, 64, 0.7, 0.04, 0); }
+};
+const FTH = { n: null, kind: null };                      // Hearth's low layer: a few warm notes behind a lowpass, with a tremor that quickens as the base gives way
+function ftHearthLayer(g, rel) {
+  const N = HE.nodes, c = AC ? AC.currentTime : 0;
+  if (FTH.n && (FTH.n.N !== N || rel || FTH.kind !== FT.kind)) {
+    const o = FTH.n; try { o.g.gain.cancelScheduledValues(c); o.g.gain.setTargetAtTime(0.0001, c, 0.25); } catch (_) {} setTimeout(() => { try { for (const x of o.oscs) x.stop(); o.out.disconnect(); } catch (_) {} }, 1600); FTH.n = null;
+  }
+  if (rel || !N || g < 0.03) { if (FTH.n) FTH.n.g.gain.setTargetAtTime(0.0001, c, 0.25); return; }
+  if (!FTH.n) {
+    FTH.kind = FT.kind; const w = FT.kind === 'win', fs = w ? [73.42, 110, 146.83, 220] : [73.42, 110, 174.61], o = { N, oscs: [], g: AC.createGain(), lp: AC.createBiquadFilter(), lfo: AC.createOscillator(), ld: AC.createGain(), out: AC.createGain() };
+    o.g.gain.value = 0.0001; o.lp.type = 'lowpass'; o.lp.frequency.value = 400; o.lp.Q.value = 0.7;
+    o.lfo.frequency.value = 3; o.ld.gain.value = 0; o.lfo.connect(o.ld); o.ld.connect(o.g.gain); o.lfo.start();
+    for (const f of fs) { const x = AC.createOscillator(); x.frequency.value = f; x.connect(o.lp); x.start(); o.oscs.push(x); }
+    o.oscs.push(o.lfo); o.lp.connect(o.g); o.g.connect(o.out); heSend(N, o.out, -22, 0, 0.3); FTH.n = o;
+  }
+  const o = FTH.n, lvl = 0.07 * Math.pow(g, 1.4);
+  o.g.gain.setTargetAtTime(lvl, c, 0.3); o.lp.frequency.setTargetAtTime(350 + 800 * g, c, 0.3);
+  o.lfo.frequency.setTargetAtTime(3 + 3 * g, c, 0.3); o.ld.gain.setTargetAtTime(lvl * 0.35, c, 0.3);
+}
+FTS.hearth = {                                            // warm and low: a swelling dark chord and a wooden heartbeat; the peak is the capture chord turned over
+  holdIv: 2.2,
+  drone(g, dt, rel) { try { ftHearthLayer(g, rel); } catch (_) { /* a missing layer must never stop a match */ } },
+  pulse(g, t, kind) {
+    const N = HE.nodes; if (!N) return 1; const w = kind === 'win';
+    heNote(N, t, w ? 146.83 : 110, 0.45 + 0.45 * g, 1.6); if (g > 0.35) heNote(N, t + 0.17, w ? 220 : 98, 0.3 + 0.4 * g, 1.2);
+    return 1.5 - 0.95 * g;
+  },
+  peak(kind, t, hold) {
+    const N = HE.nodes; if (!N) return; const w = kind === 'win', lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = w ? 3000 : 1400;
+    (w ? [[146.83, 0, 1, 0.22, 1.0], [220, 0.06, 0.85, 0.22, 1.0], [293.66, 0.12, 0.6, 0.22, 1.0], [369.99, 0.18, 0.4, 0.22, 1.0], [440, 0.24, 0.22, 0.25, 0.9]]
+       : [[73.42, 0, 1, 0.35, 1.0], [110, 0.08, 0.85, 0.4, 1.0], [174.61, 0.16, 0.6, 0.4, 1.0], [261.63, 0.26, 0.28, 0.45, 0.9]]).forEach(([f, d, a, att, rel]) => heSwell(N, t + d, f, att, rel, a).connect(lp));
+    heSend(N, lp, -24, 0, 0.45);
+  },
+  hold(t) { const N = HE.nodes; if (N) heNote(N, t, 73.42, 0.6, 3); },
+  end(kind, t) { const N = HE.nodes; if (!N) return; const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1100; [[73.42, 0, 0.9, 0.3, 1.0], [110, 0.1, 0.6, 0.3, 1.0]].forEach(([f, d, a, att, rel]) => heSwell(N, t + d, f, att, rel, a).connect(lp)); heSend(N, lp, -25, 0, 0.45); },
+  relief(t) { const N = HE.nodes; if (N) { heNote(N, t, 220, 0.5, 1.4); heNote(N, t + 0.2, 329.63, 0.4, 1.4); } }
+};
+FTS.drift = {                                             // soft and spare: plucks with space between them that sink (win: climb), a low bell as it gets close, a long knell at the end
+  holdIv: 2.4,
+  pulse(g, t, kind) {
+    const N = DR.nodes; if (!N) return 1; const w = kind === 'win', a = 0.028 + 0.05 * g;
+    if (w) { drPluck(N, t, drMidi(6 + Math.floor(g * 4)), a, -0.1, 1.0); drPluck(N, t + 0.26, drMidi(9 + Math.floor(g * 4)), a * 0.9, 0.1, 1.0); }
+    else { drPluck(N, t, drMidi(9 - Math.floor(g * 2)), a, -0.1, 1.0); drPluck(N, t + 0.28, drMidi(6 - Math.floor(g * 2)), a * 0.85, 0.1, 1.0); if (g > 0.55) drBell(N, t + 0.02, 0.025 + 0.06 * (g - 0.55), 0); }
+    return 2.0 - 1.2 * g;
+  },
+  peak(kind, t, hold) {
+    const N = DR.nodes; if (!N) return;
+    if (kind === 'win') { for (let i = 0; i < 5; i++) drPluck(N, t + i * 0.2, drMidi(6 + 2 * i), 0.072 - 0.006 * i, (i - 2) * 0.12, 1.2); drBell(N, t + 0.04, 0.075, 0); for (const [f, a] of [[146.83, 0.07], [220, 0.05]]) { const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = f; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + 0.5); g.gain.exponentialRampToValueAtTime(0.0001, t + 3.4); o.connect(g); g.connect(N.dry); g.connect(N.rev); o.start(t); o.stop(t + 3.5); } return; }
+    drKnell(N, t); for (let i = 0; i < 5; i++) drPluck(N, t + i * 0.24, drMidi(Math.max(0, 11 - 2 * i)), 0.075 - 0.007 * i, 0, 1.3); drBell(N, t + 0.04, 0.09, 0);
+  },
+  hold(t) { const N = DR.nodes; if (N) drPluck(N, t, drMidi(3), 0.04, 0, 1.4); },
+  end(kind, t) { const N = DR.nodes; if (!N) return; drKnell(N, t); drPluck(N, t + 0.1, drMidi(2), 0.06, 0, 1.4); },
+  relief(t) { const N = DR.nodes; if (N) { drPluck(N, t, drMidi(7), 0.05, 0, 1.0); drPluck(N, t + 0.24, drMidi(10), 0.05, 0, 1.0); } }
+};
+FTS.chip = {                                              // four channels, nothing more: a stepping arpeggio on pulse 2 with a triangle thump (win: major), then every channel takes the floor for the fall
+  holdIv: 1.8,
+  pulse(g, t, kind) {
+    const N = CH.nodes; if (!N) return 1; const w = kind === 'win', sc = w ? [60, 64, 67, 69, 72] : [57, 60, 62, 63, 65], k = Math.min(4, Math.floor(g * 5));
+    const c = chClaim(N, 'p2', t, 0.3, 3, 0); if (c) { c.list.push(chPulse(N, t, sc[k], 0.09, 'p25', 0.04 + 0.04 * g, 0)); c.list.push(chPulse(N, t + 0.12, sc[Math.max(0, k - 1)], 0.09, 'p25', 0.035 + 0.03 * g, 0)); }
+    if (g > 0.3) { const r = chClaim(N, 'tri', t, 0.16, 3, 0); if (r) r.list.push(chTri(N, t, w ? 48 : 38, 0.14, 0.1 + 0.08 * g)); }
+    return 0.8 - 0.55 * g;
+  },
+  peak(kind, t, hold) {
+    const N = CH.nodes; if (!N) return; const w = kind === 'win';
+    const a = chClaim(N, 'p1', t, 3.6, 5, 0), b = chClaim(N, 'p2', t, 3.6, 5, 0), r = chClaim(N, 'tri', t, 3.8, 5, 0), z = chClaim(N, 'nz', t, 0.5, 5, 0);
+    for (let i = 0; i < 12; i++) {
+      const m = w ? 60 + [0, 4, 7, 12, 16, 19, 24, 28, 31, 36, 40, 43][i] : 84 - [0, 2, 3, 5, 7, 8, 10, 12, 14, 15, 17, 19][i];
+      if (a) a.list.push(chPulse(N, t + i * 0.1, m, 0.085, 'p25', 0.045, 0)); if (b) b.list.push(chPulse(N, t + 0.05 + i * 0.1, m - 12, 0.08, 'p12', 0.03, 0));
+    }
+    if (a) a.list.push(chPulse(N, t + 1.3, w ? 79 : 52, 2.0, 'p50', 0.05, 0)); if (b) b.list.push(chPulse(N, t + 1.3, w ? 72 : 45, 2.0, 'p12', 0.035, 0));
+    if (r) r.list.push(chTri(N, t + 1.2, w ? 36 : 33, 2.4, 0.22)); if (z) z.list.push(chNoise(N, t, 0.3, 0.1, 900, true, 0));
+  },
+  hold(t) { const N = CH.nodes; if (!N) return; const r = chClaim(N, 'tri', t, 0.9, 3, 0); if (r) r.list.push(chTri(N, t, 33, 0.8, 0.12)); },
+  end(kind, t) { const N = CH.nodes; if (!N) return; const r = chClaim(N, 'tri', t, 2.2, 5, 0), a = chClaim(N, 'p2', t, 2.2, 5, 0); if (r) r.list.push(chTri(N, t, 33, 2.0, 0.2)); if (a) a.list.push(chPulse(N, t, 45, 1.6, 'p12', 0.04, 0)); },
+  relief(t) { const N = CH.nodes; if (!N) return; const a = chClaim(N, 'p1', t, 0.4, 4, 0); if (a) { a.list.push(chPulse(N, t, 64, 0.1, 'p25', 0.05, 0)); a.list.push(chPulse(N, t + 0.12, 69, 0.2, 'p25', 0.05, 0)); } }
+};
+FTS.cosmos = {                                            // slow and wide: the pad opens, the sonar beats on the slot clock (see csSlot); the peak is the knockout swell with the bloom turned over
+  holdIv: 2.5,
+  hold(t) { const N = CS.nodes; if (N) csPing(N, t, csMidi(0), 0.03, 0, 3.0); },
+  peak(kind, t, hold) {
+    const N = CS.nodes; if (!N) return;
+    if (kind === 'win') { csBloom(N, t, 9, 0.125, 0); csBloom(N, t + 0.5, 11, 0.09, 0); [11, 13, 16].forEach((d, i) => csPing(N, t + 0.4 + i * CS_STEP * 2, csMidi(d), 0.08, 0, 2.6)); return; }
+    csSink(N, t); csEbb(N, t + 0.1, 6, 0.06, 0); [9, 6, 3].forEach((d, i) => csPing(N, t + 0.6 + i * CS_STEP * 2, csMidi(d), 0.04, 0, 2.6));
+  },
+  end(kind, t) { const N = CS.nodes; if (!N) return; csSink(N, t); csEbb(N, t + 0.1, 4, 0.05, 0); },
+  relief(t) { const N = CS.nodes; if (N) csBloom(N, t, 9, 0.03, 0); }
+};
+FTS.floe = {                                              // ice: low groans under the lake that tighten, a crack now and then (win: glass notes climbing); the peak is the ice giving way, or ringing out
+  holdIv: 2.6,
+  pulse(g, t, kind) {
+    const N = FL.nodes; if (!N) return 1.5;
+    if (kind === 'win') { [1, 1.25, 1.5, 2].slice(0, 2 + Math.floor(g * 3)).forEach((r, i) => flTink(N, t + i * 0.13, 1150 * r, 0.03 + 0.03 * g, (i - 1) * 0.2, 1.2, 0, true)); return 1.6 - 1.0 * g; }
+    flGroan(N, t, 1.1, 0.012 + 0.035 * g, 0, 150, 100); if (g > 0.4) flCrack(N, t + 0.5, 0.5 - 0.4 * g, 0.02 + 0.04 * g, 0); if (g > 0.7) flTink(N, t + 0.8, 700, 0.025, 0, 1.3, 1500, true);
+    return 1.8 - 1.1 * g;
+  },
+  peak(kind, t, hold) {
+    const N = FL.nodes; if (!N) return;
+    if (kind === 'win') { flFreeze(N, t, true, 0, flShare()); [1, 1.25, 1.5, 1.88, 2.25, 2.5, 3].forEach((r, i) => flTink(N, t + 0.15 + i * 0.12, 1000 * r, 0.043, (i - 3) * 0.14, 1.5, 0, true)); flTink(N, t + 1.1, 3000, 0.03, 0, 1.8, 0, true); flBoom(N, t, 0.05, 0, false); return; }
+    flGroan(N, t, 3.0, 0.1, 0, 160, 38); flBoom(N, t + 0.04, 0.14, 0, true);
+    for (let i = 0; i < 6; i++) flCrack(N, t + 0.1 + i * 0.3 + Math.random() * 0.1, 0.15 + Math.random() * 0.4, 0.055, (Math.random() - 0.5) * 1.0);
+    [1500, 1130, 880, 660, 520].forEach((f, i) => flTink(N, t + 0.5 + i * 0.3, f, 0.04, 0, 1.4, 1800, true));
+  },
+  hold(t) { const N = FL.nodes; if (N) flGroan(N, t, 1.6, 0.022, 0, 130, 80); },
+  end(kind, t) { const N = FL.nodes; if (N) flGive(N, t); },
+  relief(t) { const N = FL.nodes; if (N) { flTink(N, t, 880, 0.03, 0, 1.2, 0, true); flTink(N, t + 0.22, 1320, 0.03, 0, 1.2, 0, true); } }
+};
 function frame(nowMs) {
   const dt = Math.min(0.1, (nowMs - last) / 1000); last = nowMs;
   const tSim = performance.now();
@@ -6898,16 +7552,18 @@ function frame(nowMs) {
     }
     if (n >= 16) acc = 0;
     if (G.over) {
-      if (mode === 'play') { hud(); showEnd(); }
+      if (mode === 'play') { hud(); if (!ftBegin()) showEnd(); }
       else setTimeout(() => { if (mode === 'demo') startDemo(); }, 1800);
     }
   }
+  if (G && mode === 'ending') { G.t += dt; END.el += dt; if (END.skip || END.el >= END_BEAT) endNow(); }
+  if (G && mode === 'play' && !G.over) ftStep(dt);
   const tDraw = performance.now();
   if (coach) coachRing();
   stepFling(dt);
   if (G && fogOn()) computeFog();
   if (G) playSfx(nowMs, dt);
-  if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); floeTick(); heTick(); mixTick(); }
+  if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); floeTick(); heTick(); mixTick(); if (G) ftTick(dt); }
   const fsw = G ? fogSwap() : null;                 // under fog, bases out of sight are drawn as last seen
   const gap = mode === 'paused' ? 250 : mode === 'demo' ? 28 : 0;      // F2: nothing moves while paused (4 a second is plenty for the slow decoration); the demo behind the menus shows at about 30 a second
   if (!gap || drawDirty || nowMs - lastDrawAt >= gap) {
@@ -6933,7 +7589,7 @@ if (PERF) { window.__own = (id, o) => { G.nodes[id].owner = o; }; window.__tick 
 if (PERF) window.__chip = () => ({ on: !!CH.nodes, busy: CH.nodes ? Object.values(CH.nodes.ch).filter(c => c.off > AC.currentTime).length : 0 });   // sound-test hook
 if (PERF) window.__hearth = () => ({ on: !!HE.nodes, v: HE.v, I: HE.I, Is: HE.Is, rr: HE.rr, phrases: HE.phrases, caps: HE.caps, losses: HE.losses, taps: HE.taps, rcaps: HE.rcaps, rskip: HE.rskip, snaps: HE.snaps, drop: HE.drop, gain: HE.nodes ? HE.nodes.out.gain.value : 0 });   // sound-test hook
 if (PERF) window.__floe = () => ({ on: !!FL.nodes, v: FL.v, gain: FL.nodes ? FL.nodes.out.gain.value : 0 });   // sound-test hook
-if (PERF) { window.__wfr = watchFrameRate; window.__qs = () => ({ quality, ceilQ, calmSince, slowSince, start: startQ(), aq: AQ() }); window.__qset = q => { quality = q; layout(); }; window.__box = () => ({ box: boxUV(), view: mapView(), s0, W, H, rot }); window.__ios = () => IOS; window.__ir = () => ({ dr: DR.ir && DR.ir.duration, cs: CS.ir && CS.ir.duration, fl: Object.fromEntries(Object.entries(FL.ir).map(([k, v]) => [k, v.duration])), nodes: { dr: DR.nodes && DR.nodes.tier, cs: CS.nodes && CS.nodes.tier, fl: FL.nodes && FL.nodes.tier } }); window.__aq = () => AQ(); window.__hwset = ms => { HW.list = [ms, ms, ms]; HW.ms = ms; HW.done = true; save('ice-hw', { v: 3, list: HW.list }); if (qualFix < 0 && mode !== 'play') { quality = startQ(); layout(); } syncQual(); }; window.__hw = () => ({ ms: HW.ms, done: HW.done, tier: hwTier(), quality, aq: AQ(), audFix }); }
+if (PERF) { window.__core = { newGame, update, command, setLock, upgrade, getG: () => G, atBase, STEP }; window.__wfr = watchFrameRate; window.__qs = () => ({ quality, ceilQ, calmSince, slowSince, start: startQ(), aq: AQ() }); window.__qset = q => { quality = q; layout(); }; window.__box = () => ({ box: boxUV(), view: mapView(), s0, W, H, rot }); window.__ios = () => IOS; window.__ir = () => ({ dr: DR.ir && DR.ir.duration, cs: CS.ir && CS.ir.duration, fl: Object.fromEntries(Object.entries(FL.ir).map(([k, v]) => [k, v.duration])), nodes: { dr: DR.nodes && DR.nodes.tier, cs: CS.nodes && CS.nodes.tier, fl: FL.nodes && FL.nodes.tier } }); window.__aq = () => AQ(); window.__hwset = ms => { HW.list = [ms, ms, ms]; HW.ms = ms; HW.done = true; save('ice-hw', { v: 3, list: HW.list }); if (qualFix < 0 && mode !== 'play') { quality = startQ(); layout(); } syncQual(); }; window.__hw = () => ({ ms: HW.ms, done: HW.done, tier: hwTier(), quality, aq: AQ(), audFix }); }
 if (PERF) window.__validate = id => validateStaticMap(typeof id === 'string' ? STATIC_MAPS[id] : id);
 if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; updateView(); };          // tests: where a world point lands on screen
 requestAnimationFrame(frame);
