@@ -372,6 +372,9 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
 .modes { display: grid; gap: 8px; }
 .mode { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 12px 14px; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.35); }
 .mode b { font-size: 16px; font-weight: 600; }
+.mode .lk { display: none; width: 8px; height: 10px; margin-left: 6px; vertical-align: -1px; }
+.mode.lockd { opacity: .6; }
+.mode.lockd .lk { display: inline-block; }
 .mode span { font-size: 12.5px; color: var(--dim); line-height: 1.35; }
 .catrow { display: grid; grid-template-columns: 78px 1fr auto; gap: 10px; align-items: center; text-align: left; min-height: 48px; padding: 8px 12px; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.35); }
 .catrow span { font-size: 13px; color: var(--dim); }
@@ -549,7 +552,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.8.1</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.8.3</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -564,7 +567,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
       <button class="mode" id="mClassic" data-go="scrClassic"><b>Classic</b><span>The standard match. Choose your team, map size, and AI strength.</span></button>
       <button class="mode" id="mCustom" data-go="scrCustom"><b>Custom</b><span>Set up your own match: Enemies, Map, Special Bases and Rule Modifiers.</span></button>
       <button class="mode" id="mSpec" data-go="scrSpectate"><b>Spectate</b><span>Setup match and watch the AI play against itself.</span></button>
-      <button class="mode" id="mLadder"><b>Challenge Maps</b><span id="ladderBlurb">Fixed maps with special rules and goals. Earn stars to unlock more maps.</span></button>
+      <button class="mode" id="mLadder"><b>Challenge Maps<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></b><span id="ladderBlurb">Fixed maps with special rules and goals. Earn stars to unlock more maps.</span></button>
     </div>
   </section>
 
@@ -574,7 +577,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
       <div class="opt"><span>Your team</span><div class="seg swatches" data-mode="classic" data-key="color"><button data-v="blue" aria-label="Blue"><i style="background:#3577ff"></i></button><button data-v="red" aria-label="Red"><i style="background:#f2433c"></i></button><button data-v="green" aria-label="Green"><i style="background:#2db857"></i></button><button data-v="yellow" aria-label="Yellow"><i style="background:#ffcd30"></i></button><button data-v="purple" aria-label="Purple"><i style="background:#a656ff"></i></button></div></div>
       <div class="opt"><span>Map size</span><div class="seg" data-mode="classic" data-key="size"><button data-v="small">Small</button><button data-v="medium">Medium</button><button data-v="large">Large</button></div></div>
       <p class="blurb" id="classicSize"></p>
-      <div class="opt"><span>AI strength</span><div class="seg" data-mode="classic" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button><button data-v="deadly">Deadly<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button></div></div>
+      <div class="opt"><span>AI strength</span><div class="seg" data-mode="classic" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button><button data-v="deadly">Deadly<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button></div></div>
       <p class="blurb" id="classicDiff"></p>
     </div>
     <button id="startClassic" class="primary big" data-start="classic">Start</button>
@@ -596,7 +599,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Enemies</h2></header>
     <div class="opts">
       <div class="opt"><span>Rivals</span><div class="seg tight" data-mode="custom" data-key="opp"><button data-v="auto">Auto</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
-      <div class="opt"><span>AI strength</span><div class="seg tight" data-mode="custom" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button><button data-v="deadly">Deadly<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button><button data-v="random">Random</button></div></div>
+      <div class="opt"><span>AI strength</span><div class="seg tight" data-mode="custom" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button><button data-v="deadly">Deadly<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button><button data-v="random">Random</button></div></div>
       <div class="opt"><span>Personality</span><div class="seg tight" data-mode="custom" data-key="persona"><button data-v="mixed">Mixed</button><button data-v="aggressive">Aggressive</button><button data-v="sturdy">Sturdy</button><button data-v="adaptive">Adaptive</button></div></div>
       <p class="hintline" id="hintEnemies"></p>
     </div>
@@ -616,7 +619,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Spectate</h2></header>
     <div class="opts">
       <div class="opt"><span>Colors</span><div class="seg tight" data-mode="spec" data-key="opp"><button data-v="auto">Auto</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button></div></div>
-      <div class="opt"><span>AI strength</span><div class="seg tight" data-mode="spec" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal</button><button data-v="deadly">Deadly<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button><button data-v="random">Random</button></div></div>
+      <div class="opt"><span>AI strength</span><div class="seg tight" data-mode="spec" data-key="diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="brutal">Brutal<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button><button data-v="deadly">Deadly<svg class="lk" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg></button><button data-v="random">Random</button></div></div>
       <div class="opt wide2"><span>Shape</span><div class="seg tight" data-mode="spec" data-key="shape"><button data-v="random">Random</button><button data-v="continent">Continent</button><button data-v="islands">Islands</button><button data-v="ring">Ring</button><button data-v="river">River</button></div></div>
       <div class="opt"><span>Size</span><div class="seg tight" data-mode="spec" data-key="size"><button data-v="small">Small</button><button data-v="medium">Medium</button><button data-v="large">Large</button><button data-v="huge">Huge</button></div></div>
       <div class="opt"><span>Special bases <button class="info" id="infoSpec" data-go="scrSpecials" aria-label="What are special bases?">i</button></span><div class="seg" data-mode="spec" data-key="special"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
@@ -1285,7 +1288,7 @@ function newGame(opts) {
   });
   if (opts.diff === 'random') {                         // every rival rolls its own strength, once, and keeps it
     for (const T of G.teams) if (T.active && (opts.watch || T.i !== PLAYER)) {
-      const r = rng(), name = r < 0.22 ? 'easy' : r < 0.6 ? 'normal' : r < 0.87 ? 'hard' : 'brutal';
+      const r = rng(), name = r < 0.22 ? 'easy' : r < 0.6 ? 'normal' : r < 0.87 || !unlocks.brutalCustom ? 'hard' : 'brutal';
       T.diff = DIFF[name]; T.diffName = name;
     }
   }
@@ -2292,7 +2295,12 @@ const rnd32 = () => (Math.random() * 4294967296) >>> 0;
 const MODS_OFF = { blitz: false, glass: false, noup: false, koth: false, fog: false };
 // Classic, Custom and Spectate each keep their own settings, so nothing bleeds from one mode into another.
 // Saves from before the split seed all three once, then they go their own ways.
-const unlocks = (() => { const r = load('ice-unlocks', {}); return { deadly: r.deadly === true || r.deadlyCustom === true, deadlyCustom: r.deadlyCustom === true, tiers: r.tiers === true }; })();   // kept apart from Stats, so resetting Stats never locks Deadly again
+const unlocks = (() => {
+  const r = load('ice-unlocks', {}), dl = r.deadly === true || r.deadlyCustom === true, T = r.tiers === true;
+  const perfOpen = /[?&]perf\b/.test(location.search) && localStorage.getItem('ice-unlocks') === null;      // test pages with no saved unlocks start with the new locks open
+  return { deadly: dl || T, deadlyCustom: r.deadlyCustom === true || T, tiers: T,
+    brutal: r.brutal === true || r.brutalCustom === true || T || perfOpen, brutalCustom: r.brutalCustom === true || T || perfOpen, challenge: r.challenge === true || T || perfOpen };   // nothing is carried over from earlier builds
+})();   // kept apart from Stats, so resetting Stats never locks Deadly again
 const DIFFS = ['easy', 'normal', 'hard', 'brutal'], DIFFS_ALL = [...DIFFS, 'deadly'], PERSONAS = ['mixed', 'aggressive', 'sturdy', 'adaptive'], SHAPE_CHOICES = ['random', ...SHAPES];
 // One setup (Classic, Custom or Spectate) from whatever was saved: every field ends up as something the menus understand.
 // `old` is the pre-split save, where these settings sat at the top level; damaged saves simply fall back to defaults.
@@ -2304,6 +2312,7 @@ function cleanProfile(kind, p, old) {
     seed: Number.isInteger(p.seed) && p.seed > 0 ? p.seed : 0
   };
   if (c.diff === 'deadly' && !(kind === 'classic' ? unlocks.deadly : unlocks.deadlyCustom)) c.diff = 'brutal';   // a saved Deadly that is not unlocked (damaged save) goes back to Brutal
+  if (c.diff === 'brutal' && !(kind === 'classic' ? unlocks.brutal : unlocks.brutalCustom)) c.diff = 'hard';                                                        // and a Brutal that is not unlocked goes back to Hard
   if (kind !== 'spec') c.color = oneOf(p.color ?? old.color, COLOR_KEYS, 'blue');
   if (kind !== 'classic') {
     const mods = isObj(p.mods) ? p.mods : isObj(old.mods) ? old.mods : {};
@@ -6335,8 +6344,8 @@ function renderSpecials() {
 }
 const SIZE_LABEL = { small: 'Small', medium: 'Medium', large: 'Large', huge: 'Huge' }, DIFF_LABEL = { easy: 'Easy', normal: 'Normal', hard: 'Hard', brutal: 'Brutal', deadly: 'Deadly', random: 'Random' };
 // Deadly shows in every strength bar. Until it is earned it wears a padlock, and tapping it says how to earn it.
-const LOCK_TEXT = { classic: 'Locked. Beat Brutal on a Large map in Classic to unlock Deadly.', other: 'Locked. Beat Deadly on a Large map in Classic to add it here.' };
-const diffLock = (m, v) => v !== 'deadly' ? '' : m === 'classic' ? (unlocks.deadly ? '' : LOCK_TEXT.classic) : (unlocks.deadlyCustom ? '' : LOCK_TEXT.other);
+const LOCK_TEXT = { brutal: 'Locked. Win a Classic match on a Large map against Hard to unlock Brutal.', brutalOther: 'Locked. Beat Brutal in Classic, on any map size, to add it here.', classic: 'Locked. Beat Brutal on a Large map in Classic to unlock Deadly.', other: 'Locked. Beat Deadly in Classic, on any map size, to add it here.' };
+const diffLock = (m, v) => v === 'brutal' ? (m === 'classic' ? (unlocks.brutal ? '' : LOCK_TEXT.brutal) : (unlocks.brutalCustom ? '' : LOCK_TEXT.brutalOther)) : v !== 'deadly' ? '' : m === 'classic' ? (unlocks.deadly ? '' : LOCK_TEXT.classic) : (unlocks.deadlyCustom ? '' : LOCK_TEXT.other);
 const lockHint = (m, text) => { $(m === 'classic' ? 'classicDiff' : m === 'spec' ? 'hintSpec' : 'hintEnemies').textContent = text; };
 function syncSeg() {
   document.querySelectorAll('.seg[data-mode]').forEach(seg => {
@@ -6399,6 +6408,8 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '48.8.3', t: 'Locks, fine-tuned', b: ['Beating Brutal in Classic, on any map size, now adds it to Custom and Spectate. Beating Deadly in Classic, on any map size, does the same for Deadly. Opening a stronger level in Classic still takes a win on a Large map against the one below it.', 'Brutal and Challenge Maps now start locked for everyone, including players from earlier builds.'] },
+  { v: '48.8.2', t: 'Earn your way up', b: ['Brutal is now locked behind a padlock. Win a Classic match on a Large map against Hard to open it. Deadly still needs a win over Brutal on Large.', 'Challenge Maps are locked until you win a Classic match, on any map and any strength.'] },
   { v: '48.8.1', t: 'Easier to read, softer sound', b: ['The picked option in every menu is now much easier to spot: a stronger fill and a clear underline, and the small grey text is brighter.', 'Sound now fades in when the game starts and fades out when you leave the app, instead of cutting in and out with a crackle.'] },
   { v: '48.8', t: 'A tidier Settings', b: ['Settings is shorter: volume, sound style and visual style, with Accessibility (color options, team shapes and haptics) one tap away. About has its own page.', 'New: Reset all data, at the bottom of Settings. It takes three taps and clears your stats, challenge stars and unlocks, so Deadly locks again. Reset stats keeps the unlocks, as before.', 'Gone: the Menu sound switch (turn the volume down instead), the Screen setting (the game follows your phone\'s rotation lock) and the Hear it button for the upgrade chime.'] },
   { v: '48.7.1', t: 'Deadly bites harder', b: ['Deadly rivals now build troops 30% and upgrades 50% faster (Brutal is 18% and 20%). They also play tighter. A rival answers one threatened base at a time, and leaves a base alone if help cannot get there before it falls. It hits a base you hold thinly, and a close neighbor, earlier than before.', 'A rival that is down to a few bases and far behind stops sending small raids. It gathers its troops and goes for one big hit instead.', 'Brutal rivals now also go after a base you hold with a thin defense sooner. Deadly is still locked until you beat Brutal on a Large map in Classic.'] },
@@ -6539,7 +6550,11 @@ function renderLadder() {
   }
   $('ladder').innerHTML = h;
 }
-function updateLadderBlurb() { $('ladderBlurb').textContent = `Fixed maps with special rules and goals. Earn stars to unlock more maps. ${totalStars()} of ${SCENARIOS.length * 3} stars.`; }
+function updateLadderBlurb() {
+  const lk = !unlocks.challenge, b = $('mLadder');
+  b.classList.toggle('lockd', lk); if (lk) b.setAttribute('aria-disabled', 'true'); else b.removeAttribute('aria-disabled');
+  $('ladderBlurb').textContent = lk ? 'Locked. Win a match in Classic to unlock Challenge Maps.' : `Fixed maps with special rules and goals. Earn stars to unlock more maps. ${totalStars()} of ${SCENARIOS.length * 3} stars.`;
+}
 function openBrief(id) {
   const c = SCENARIOS.find(x => x.id === id); briefId = id;
   $('briefTitle').textContent = c.name; $('briefDesc').textContent = c.desc + (c.rule ? ' ' + c.rule : '');
@@ -6598,7 +6613,7 @@ function renderStats() {
   const p = stats.play, w = stats.watch, dash = '–';
   const tile = (v, l) => `<div class="tile"><b>${v}</b><span>${l}</span></div>`;
   const fast = k => p.fastest[k] ? fmt(p.fastest[k]) : dash;
-  const strengthRows = () => ['easy', 'normal', 'hard', 'brutal', 'deadly'].map(k => { const g = p.gDiff[k] || 0, wn = p.wDiff[k] || 0; return `<div class="prow"><span>${DIFF_LABEL[k]}</span><b>${k === 'deadly' && !unlocks.deadly ? 'Locked' : g ? wn + ' of ' + g + ' won' : dash}</b></div>`; }).join('');
+  const strengthRows = () => ['easy', 'normal', 'hard', 'brutal', 'deadly'].map(k => { const g = p.gDiff[k] || 0, wn = p.wDiff[k] || 0; return `<div class="prow"><span>${DIFF_LABEL[k]}</span><b>${(k === 'deadly' && !unlocks.deadly) || (k === 'brutal' && !unlocks.brutal) ? 'Locked' : g ? wn + ' of ' + g + ' won' : dash}</b></div>`; }).join('');
   let h = `<h3>Your games</h3><div class="tiles">
     ${tile(p.games, 'Played')}${tile(p.wins, 'Won')}${tile(p.games ? Math.round(100 * p.wins / p.games) + '%' : dash, 'Win rate')}
     ${tile(p.most || dash, 'Most bases held')}${tile(p.kills.toLocaleString(), 'Troops knocked out')}
@@ -6792,10 +6807,14 @@ function showEnd() {
       p.kills += P.kills; p.caps += G.playerCaps; p.time += G.t; p.most = Math.max(p.most, G.peak);
       if (win && (!p.fastest[G.sizeName] || G.t < p.fastest[G.sizeName])) p.fastest[G.sizeName] = Math.round(G.t);
       if (DIFF_LABEL[G.diffName] && G.diffName !== 'random') { p.gDiff[G.diffName] = (p.gDiff[G.diffName] || 0) + 1; if (win) p.wDiff[G.diffName] = (p.wDiff[G.diffName] || 0) + 1; }
-      if (win && curModeKey === 'classic' && G.sizeName === 'large') {          // the way to Deadly: win a Classic match on Large against Brutal; beat Deadly there and it joins Custom and Spectate
-        if (G.diffName === 'brutal' && !unlocks.deadly) { unlocks.deadly = true; unlockNote = 'Deadly unlocked. Find it under AI strength in Classic.'; }
-        else if (G.diffName === 'deadly' && !unlocks.deadlyCustom) { unlocks.deadly = unlocks.deadlyCustom = true; unlockNote = 'You beat Deadly. It is now in Custom and Spectate.'; }
-        save('ice-unlocks', unlocks); syncSeg();
+      if (win && curModeKey === 'classic') {                                    // the way in. Classic wins only (Brutal and Deadly are locked everywhere else until earned).
+        const got = [], D = G.diffName, big = G.sizeName === 'large';
+        if (!unlocks.challenge) { unlocks.challenge = true; got.push('Challenge Maps unlocked. Find them on the main menu.'); }
+        if (big && ['hard', 'brutal', 'deadly'].includes(D) && !unlocks.brutal) { unlocks.brutal = true; got.push('Brutal unlocked. Find it under AI strength.'); }
+        if (big && ['brutal', 'deadly'].includes(D) && !unlocks.deadly) { unlocks.deadly = true; got.push('Deadly unlocked. Find it under AI strength in Classic.'); }
+        if (['brutal', 'deadly'].includes(D) && !unlocks.brutalCustom) { unlocks.brutal = unlocks.brutalCustom = true; got.push('You beat Brutal. It is now in Custom and Spectate.'); }
+        if (D === 'deadly' && !unlocks.deadlyCustom) { unlocks.deadly = unlocks.deadlyCustom = true; got.push('You beat Deadly. It is now in Custom and Spectate.'); }
+        if (got.length) { unlockNote = got.join(' '); save('ice-unlocks', unlocks); syncSeg(); updateLadderBlurb(); }
       }
     }
     if (win) {
@@ -7151,20 +7170,20 @@ $('bReset').addEventListener('click', () => confirmReset($('bReset'), 'Reset sta
 const allReset = { n: 0, t: 0 };
 function doResetAll() {
   doResetStats(); doResetChallenges();
-  unlocks.deadly = false; unlocks.deadlyCustom = false; unlocks.tiers = false; save('ice-unlocks', unlocks);
-  for (const k of ['classic', 'custom', 'spec']) if (settings[k] && settings[k].diff === 'deadly') settings[k].diff = 'brutal';           // a Deadly that is locked again cannot stay picked
+  unlocks.deadly = false; unlocks.deadlyCustom = false; unlocks.tiers = false; unlocks.brutal = false; unlocks.brutalCustom = false; unlocks.challenge = false; save('ice-unlocks', unlocks); updateLadderBlurb();
+  for (const k of ['classic', 'custom', 'spec']) if (settings[k] && (settings[k].diff === 'deadly' || settings[k].diff === 'brutal')) settings[k].diff = 'hard';           // a Deadly that is locked again cannot stay picked
   save('ice-settings', settings); syncSeg(); syncAllText();
 }
-// Unlock everything (hidden Picture quality screen): two taps. Deadly in Classic and Custom, and every challenge tier. No stars are awarded.
+// Unlock everything (hidden Picture quality screen): two taps. Brutal, Deadly (Classic and Custom), Challenge Maps and every challenge tier. No stars are awarded.
 const allUnlock = { n: 0, t: 0 };
 $('bUnlockAll').addEventListener('click', () => {
   const b = $('bUnlockAll'); clearTimeout(allUnlock.t); allUnlock.n++;
   if (allUnlock.n >= 2) {
-    allUnlock.n = 0; unlocks.deadly = unlocks.deadlyCustom = unlocks.tiers = true; save('ice-unlocks', unlocks);
-    syncSeg(); syncAllText(); if (typeof renderLadder === 'function') renderLadder();
+    allUnlock.n = 0; unlocks.deadly = unlocks.deadlyCustom = unlocks.tiers = unlocks.brutal = unlocks.brutalCustom = unlocks.challenge = true; save('ice-unlocks', unlocks);
+    syncSeg(); syncAllText(); updateLadderBlurb(); if (typeof renderLadder === 'function') renderLadder();
     b.textContent = 'Everything unlocked'; allUnlock.t = setTimeout(() => { b.textContent = 'Unlock everything'; }, 2500); return;
   }
-  b.textContent = 'Tap again to unlock Deadly and every challenge tier';
+  b.textContent = 'Tap again to unlock Brutal, Deadly and all challenges';
   allUnlock.t = setTimeout(() => { allUnlock.n = 0; b.textContent = 'Unlock everything'; }, 3000);
 });
 $('bResetAll').addEventListener('click', () => {
@@ -7186,7 +7205,7 @@ $('statsBtn').addEventListener('click', () => {
   if (!$('mm').hidden && rectsClash($('mm'), $('stats'))) setMinimap(false);          // opening the panel over the minimap puts the minimap away
 });
 syncSeg(); syncGlobalSeg(); syncAllText(); renderMods(); renderSettingsHint(); renderSpecials();
-$('mLadder').addEventListener('click', () => { renderLadder(); go('scrLadder'); });
+$('mLadder').addEventListener('click', () => { if (!unlocks.challenge) return; renderLadder(); go('scrLadder'); });
 $('ladder').addEventListener('click', e => { const b = e.target.closest('.chcard'); if (b) openBrief(b.dataset.c); });
 $('bBriefStart').addEventListener('click', () => startGame(false, briefId));
 document.querySelectorAll('[data-start]').forEach(b => b.addEventListener('click', () => { const k = b.dataset.start; startGame(k === 'spec', null, k); }));
