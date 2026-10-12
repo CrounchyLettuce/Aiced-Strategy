@@ -552,7 +552,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.8.3</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.8.4</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -1288,7 +1288,8 @@ function newGame(opts) {
   });
   if (opts.diff === 'random') {                         // every rival rolls its own strength, once, and keeps it
     for (const T of G.teams) if (T.active && (opts.watch || T.i !== PLAYER)) {
-      const r = rng(), name = r < 0.22 ? 'easy' : r < 0.6 ? 'normal' : r < 0.87 || !unlocks.brutalCustom ? 'hard' : 'brutal';
+      const r = rng(), name = opts.noDeadly ? (r < 0.22 ? 'easy' : r < 0.6 ? 'normal' : r < 0.87 || opts.noBrutal ? 'hard' : 'brutal')
+        : (r < 0.2 ? 'easy' : r < 0.55 ? 'normal' : r < 0.78 ? 'hard' : r < 0.9 ? (opts.noBrutal ? 'hard' : 'brutal') : 'deadly');      // Deadly joins the pool (about 10%) once it is open in Custom and Spectate
       T.diff = DIFF[name]; T.diffName = name;
     }
   }
@@ -6408,6 +6409,7 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '48.8.4', t: 'Random strength fixed', b: ['Custom and Spectate would not start, and showed no map behind the menu, when AI strength was set to Random. That broke in 48.8.2 and 48.8.3 and is fixed now.', 'The Randomize button no longer rolls Brutal until you have unlocked it there. Once Deadly is open in Custom and Spectate, Randomize and Random strength can roll it too, about one time in ten.'] },
   { v: '48.8.3', t: 'Locks, fine-tuned', b: ['Beating Brutal in Classic, on any map size, now adds it to Custom and Spectate. Beating Deadly in Classic, on any map size, does the same for Deadly. Opening a stronger level in Classic still takes a win on a Large map against the one below it.', 'Brutal and Challenge Maps now start locked for everyone, including players from earlier builds.'] },
   { v: '48.8.2', t: 'Earn your way up', b: ['Brutal is now locked behind a padlock. Win a Classic match on a Large map against Hard to open it. Deadly still needs a win over Brutal on Large.', 'Challenge Maps are locked until you win a Classic match, on any map and any strength.'] },
   { v: '48.8.1', t: 'Easier to read, softer sound', b: ['The picked option in every menu is now much easier to spot: a stronger fill and a clear underline, and the small grey text is brighter.', 'Sound now fades in when the game starts and fades out when you leave the app, instead of cutting in and out with a crackle.'] },
@@ -6661,7 +6663,7 @@ function clearEffects() {
 // The options a match is built from. The menu preview and the real game both use exactly these, seed included.
 function optsFor(key) {
   const c = settings[key], watch = key === 'spec', classic = key === 'classic', shape = classic ? 'continent' : shapeFor(c);
-  return { size: c.size, diff: c.diff, seed: seedOf(c), shape, teams: teamsFor(key), watch,
+  return { size: c.size, diff: c.diff, seed: seedOf(c), shape, teams: teamsFor(key), watch, noBrutal: !unlocks.brutalCustom, noDeadly: !unlocks.deadlyCustom,
     specials: !classic && c.special === 'on', persona: classic ? 'mixed' : c.persona,
     overtime: otActive(key),
     mods: classic ? {} : Object.assign({}, c.mods, { fog: c.mods.fog && !watch }) };
@@ -7135,7 +7137,7 @@ function rollCustom() {
   const pickW = (items, w) => { let r = Math.random() * w.reduce((a, b) => a + b, 0); for (let i = 0; i < items.length; i++) if ((r -= w[i]) < 0) return items[i]; return items[items.length - 1]; };
   const uni = k => { const v = vals(k); return v[(Math.random() * v.length) | 0]; };
   c.size = uni('size'); c.shape = uni('shape'); c.persona = uni('persona'); c.seed = rnd32();
-  c.diff = pickW(DIFFS, [0.2, 0.35, 0.3, 0.15]);
+  c.diff = unlocks.deadlyCustom ? pickW(DIFFS_ALL, [0.17, 0.3, 0.28, 0.15, 0.1]) : unlocks.brutalCustom ? pickW(DIFFS, [0.2, 0.35, 0.3, 0.15]) : pickW(DIFFS.slice(0, 3), [0.2, 0.35, 0.3]);       // Brutal and Deadly are only rolled once they are open here
   c.opp = c.size === 'small' ? pickW(['auto', '1', '2'], [0.3, 0.3, 0.4]) : pickW(['auto', '1', '2', '3', '4'], [0.25, 0.2, 0.25, 0.2, 0.1]);
   c.special = Math.random() < 0.7 ? 'on' : 'off';
   c.mods = Object.assign({}, MODS_OFF); let on = 0;
