@@ -194,7 +194,9 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
   #scrSettings .seg.five button:nth-child(-n+3) { border-top: 0; }
 }
 @media (orientation: landscape) and (max-height: 430px) { #scrSettings .seg.five button { min-height: 32px; height: 32px; } }
-.seg button[aria-pressed="true"] { color: var(--ink); background: var(--blue-soft); box-shadow: inset 0 -2px 0 var(--blue); }
+.seg button[aria-pressed="true"] { color: #fff; font-weight: 700; background: rgba(53,119,255,.42); box-shadow: inset 0 0 0 1.5px var(--blue), inset 0 -3px 0 var(--blue); }
+#menu { --dim: #c0c0c8; --faint: rgba(255,255,255,.36); --hair: rgba(255,255,255,.22); }     /* 48.8.1: the clearer menu look is built in (it was the High contrast setting) */
+#menu .modrow[aria-pressed="true"] { background: rgba(53,119,255,.34); }
 .seg button .lk { display: none; width: 8px; height: 10px; margin-left: 4px; vertical-align: -1px; }
 .seg button.lockd { opacity: .6; }
 .seg button.lockd .lk { display: inline-block; }
@@ -228,6 +230,8 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .aboutcard { margin: 0; padding: 10px 12px; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.45); max-height: max(120px, calc(100vh - 230px)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 @media (orientation: landscape) and (max-height: 430px) { .aboutcard { max-height: max(110px, calc(100vh - 190px)); padding: 8px 10px; } .aboutcard.about { font-size: 11.5px; line-height: 1.35; } }
 .aboutcard[hidden] { display: none; }
+.aboutpage { margin: 0; font-size: 14px; line-height: 1.55; color: var(--dim); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; max-height: calc(100vh - 150px); }
+@media (orientation: landscape) and (max-height: 430px) { .aboutpage { font-size: 12px; line-height: 1.4; max-height: calc(100vh - 100px); } }
 
 .about { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--dim); }
 .about b { color: var(--ink); font-weight: 500; }
@@ -423,11 +427,11 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
 }
 /* short landscape phones: Settings goes two across so everything stays on screen; the tuning panel just tightens up */
 @media (orientation: landscape) and (max-height: 430px) {
-  #scrSettings { width: min(100%, 660px); gap: 4px; }
-  #scrSettings .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
-  #scrSettings .opt { flex-direction: column; align-items: stretch; gap: 0; }
-  #scrSettings .opt > span:first-child { flex: none; font-size: 11.5px; }
-  #scrSettings .seg button { min-height: 36px; height: 36px; }
+  #scrSettings, #scrAccess { width: min(100%, 660px); gap: 4px; }
+  #scrSettings .opts, #scrAccess .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
+  #scrSettings .opt, #scrAccess .opt { flex-direction: column; align-items: stretch; gap: 0; }
+  #scrSettings .opt > span:first-child, #scrAccess .opt > span:first-child { flex: none; font-size: 11.5px; }
+  #scrSettings .seg button, #scrAccess .seg button { min-height: 36px; height: 36px; }
   #scrSettings #vol { height: 34px; }
 }
 .hintline { grid-column: 1 / -1; margin: 2px 0 0; font-size: 12px; line-height: 1.35; color: var(--dim); min-height: 2.7em; }
@@ -541,12 +545,11 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
         <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 42 43 24 33.5 6 43Z" fill="#3577ff"/></svg>
         <div class="mt"><h1>Aiced</h1><span class="tag" id="stratTag">Strategy</span></div>
       </div>
-      <div class="rec"><span id="rec"></span><button class="ibtn" id="aboutBtn" aria-label="About" aria-expanded="false">i</button></div>
-      <p class="about aboutcard" id="aboutCard" hidden>Aiced Strategy has been built exclusively using Claude AI. I understand the complicated emotions regarding AI, so I have poured as much of myself into this as a person possibly could- but it should be known that every line of code, the UI, menus, all of it was built with Claude. I contributed only my thoughts. This game was inspired by an old mobile game called ICE. It was a simplistic strategy game about sending troops to bases, tactically working your way through the map and enemies until the entire match is yours. Simple upgrades, simple controls, but a deeply satisfying gameplay loop, with a cute appearance and audio that scratched my brain in a fun way as a bonus. This game was built with all of that in mind, I hope you enjoy it for what it is.</p>
+      <div class="rec"><span id="rec"></span><button class="ibtn" id="aboutBtn" data-go="scrAbout" aria-label="About">i</button></div>
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.7.1</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.8.1</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -634,15 +637,26 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Settings</h2></header>
     <div class="opts">
       <div class="opt"><span>Volume</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"></div>
-      <div class="opt"><span>Menu sound</span><div class="seg tight" data-glob="menuSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
       <div class="opt stack"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="hearth">Hearth</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button><button data-v="floe">Floe</button></div></div>
-      <div class="opt"><span>Upgrade chime</span><div class="seg tight" id="chimeRow"><button id="bChime" aria-label="Hear the chime for an earned upgrade point">Hear it</button></div></div>
       <div class="opt stack"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="ember">Ember</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button><button data-v="rime">Rime</button></div></div>
-      <div class="opt"><span>Colors</span><div class="seg tight wrap" data-glob="colors"><button data-v="standard">Standard</button><button data-v="safe">Color-safe</button><button data-v="contrast">High contrast</button></div></div>
-      <div class="opt"><span>Team symbols</span><div class="seg tight" data-glob="symbols"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
-      <div class="opt" id="rowHaptics"><span>Haptics</span><div class="seg tight" data-glob="haptics"><button data-v="off">Off</button><button data-v="light">Light</button><button data-v="normal">Normal</button></div></div>
-      <div class="opt"><span>Screen</span><div class="seg tight" data-glob="screen"><button data-v="auto">Auto</button><button data-v="landscape">Landscape</button><button data-v="portrait">Portrait</button></div></div>
       <p class="hintline" id="hintSettings"></p>
+    </div>
+    <button class="ghost big2" data-go="scrAccess">Accessibility</button>
+    <button id="bResetAll" class="ghost small">Reset all data</button>
+  </section>
+
+  <section class="screen" id="scrAbout" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>About</h2></header>
+    <p class="aboutpage" id="aboutText">Aiced Strategy has been built exclusively using Claude AI. I understand the complicated emotions regarding AI, so I have poured as much of myself into this as a person possibly could- but it should be known that every line of code, the UI, menus, all of it was built with Claude. I contributed only my thoughts. This game was inspired by an old mobile game called ICE. It was a simplistic strategy game about sending troops to bases, tactically working your way through the map and enemies until the entire match is yours. Simple upgrades, simple controls, but a deeply satisfying gameplay loop, with a cute appearance and audio that scratched my brain in a fun way as a bonus. This game was built with all of that in mind, I hope you enjoy it for what it is.</p>
+  </section>
+
+  <section class="screen" id="scrAccess" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Accessibility</h2></header>
+    <div class="opts">
+      <div class="opt"><span>Color options</span><div class="seg tight wrap" data-glob="colors"><button data-v="standard">Standard</button><button data-v="safe">Color-safe</button><button data-v="contrast">High contrast</button></div></div>
+      <div class="opt"><span>Team shapes</span><div class="seg tight" data-glob="symbols"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
+      <div class="opt" id="rowHaptics"><span>Haptics</span><div class="seg tight" data-glob="haptics"><button data-v="off">Off</button><button data-v="light">Light</button><button data-v="normal">Normal</button></div></div>
+      <p class="hintline" id="hintAccess"></p>
     </div>
   </section>
 
@@ -650,7 +664,6 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Challenges</h2></header>
     <p class="specintro" id="ladderIntro">Every map has three star goals: the first is the objective, the other two are bonuses. Earn stars to unlock new tiers.</p>
     <div id="ladder" class="ladder"></div>
-    <button id="bResetCh" class="ghost small">Reset challenges</button>
   </section>
 
   <section class="screen brief" id="scrBrief" hidden>
@@ -687,14 +700,11 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
     <p class="specintro">Auto lowers the picture quality by itself if your phone struggles. Lower levels make the picture less sharp and draw fewer particles, stars and snowflakes. Pick a level to hold it there, even if the game slows down.</p>
     <div class="seg tight five" id="qualRow"><button data-q="-1">Auto</button><button data-q="0">Full</button><button data-q="1">High</button><button data-q="2">Medium</button><button data-q="3">Low</button></div>
     <p class="specintro" id="qualNow" role="status" aria-live="polite"></p>
-    <p class="specintro">Selection ring (test): New is the style-shaped ring with a gauge for how much you send. Old is the dashed circle.</p>
-    <div class="seg tight" id="ringRow"><button data-r="new">New</button><button data-r="old">Old</button></div>
-    <p class="specintro">Chip sound speed (test): New plays fewer, slower notes in a fight (up to about 5 a second). Old is the earlier speed.</p>
-    <div class="seg tight" id="chipRow"><button data-c="new">New</button><button data-c="old">Old</button></div>
     <p class="specintro">Sound weight: Full is the whole sound. Light and Lite use a shorter echo, fewer notes at once and fewer layers, for slower phones. Auto follows the picture level.</p>
     <div class="seg tight" id="audRow"><button data-a="-1">Auto</button><button data-a="0">Full</button><button data-a="1">Light</button><button data-a="2">Lite</button></div>
     <p class="specintro" id="hwNow" role="status" aria-live="polite"></p>
     <button id="hwRun" class="ghost small">Run the phone check again</button>
+    <button id="bUnlockAll" class="ghost small">Unlock everything</button>
   </section>
 
   <section class="screen wide" id="scrHelp" hidden>
@@ -2282,7 +2292,7 @@ const rnd32 = () => (Math.random() * 4294967296) >>> 0;
 const MODS_OFF = { blitz: false, glass: false, noup: false, koth: false, fog: false };
 // Classic, Custom and Spectate each keep their own settings, so nothing bleeds from one mode into another.
 // Saves from before the split seed all three once, then they go their own ways.
-const unlocks = (() => { const r = load('ice-unlocks', {}); return { deadly: r.deadly === true || r.deadlyCustom === true, deadlyCustom: r.deadlyCustom === true }; })();   // kept apart from Stats, so resetting Stats never locks Deadly again
+const unlocks = (() => { const r = load('ice-unlocks', {}); return { deadly: r.deadly === true || r.deadlyCustom === true, deadlyCustom: r.deadlyCustom === true, tiers: r.tiers === true }; })();   // kept apart from Stats, so resetting Stats never locks Deadly again
 const DIFFS = ['easy', 'normal', 'hard', 'brutal'], DIFFS_ALL = [...DIFFS, 'deadly'], PERSONAS = ['mixed', 'aggressive', 'sturdy', 'adaptive'], SHAPE_CHOICES = ['random', ...SHAPES];
 // One setup (Classic, Custom or Spectate) from whatever was saved: every field ends up as something the menus understand.
 // `old` is the pre-split save, where these settings sat at the top level; damaged saves simply fall back to defaults.
@@ -2333,8 +2343,8 @@ if (settings.tone === 'felt') settings.tone = 'soft'; else if (settings.tone ===
 if (settings.tone === 'bright' || settings.tone === 'soft') settings.tone = 'simple';                                // Build 36: the two became Simple
 if (settings.tone === 'overdrive') settings.tone = 'hearth';                                                         // Build 48.2: Overdrive was replaced by Hearth
 if (!['simple', 'hearth', 'drift', 'chip', 'cosmos', 'floe'].includes(settings.tone)) settings.tone = 'simple';
-if (!['auto', 'landscape', 'portrait'].includes(settings.screen)) settings.screen = 'auto';
-if (!['on', 'off'].includes(settings.menuSound)) settings.menuSound = 'on';
+settings.screen = 'auto';                                                                                            // 48.8: the Screen setting is gone, Auto (follow the phone's rotation lock) is baked in
+settings.menuSound = 'on';                                                                                           // 48.8: the Menu sound switch is gone; a saved Off must not silence the menus with nothing to turn it back on (the volume slider does the muting)
 if (settings.visual === 'spark') settings.visual = 'classic';
 if (settings.visual === 'overload') settings.visual = 'ember';                                                        // Build 48.1.5: Overload was replaced by Ember                                                        // Build 36: Spark was folded into Classic
 if (!['classic', 'ember', 'atlas', 'pixel', 'nebula', 'rime'].includes(settings.visual)) settings.visual = 'classic';
@@ -3808,7 +3818,7 @@ function draw(now) {
 }
 
 // ---- the selection ring: bigger, brighter, and a gauge that fills to show how much of your army a tap will send (100 / 50 / 25 %), in each style's own shape ----
-let ringNew = (() => { try { const v = JSON.parse(localStorage.getItem('ice-ringtest')); return !(v && v.v === 'old'); } catch (e) { return true; } })();   // temporary Old/New switch (hidden quality screen)
+const ringNew = true;                              // the style-shaped selection ring (the Old/New test switch is gone)
 function hexFrac(g, x, y, r, f) {                     // the first f of a hexagon's edges, from the top, clockwise
   const p = []; for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + i * Math.PI / 3; p.push([x + Math.cos(a) * r, y + Math.sin(a) * r]); }
   let left = Math.max(0, Math.min(1, f)) * 6; g.beginPath(); g.moveTo(p[0][0], p[0][1]);
@@ -4966,22 +4976,25 @@ const pick = a => a[(Math.random() * a.length) | 0];
 const MASTER_BOOST = 2;                              // +6 dB: a 70% slider now sounds like the old 100%
 const soundGain = () => settings.sound ? MASTER_BOOST * Math.pow(settings.volume / 100, 2) : 0;
 const cutoff = () => ({ simple: 1500, hearth: 7000, drift: 6500, chip: 7000, cosmos: 5200, floe: 4800 })[settings.tone] || 1500;
-let kickT = 0, lostSince = 0, lostToast = false;
+let kickT = 0, lostSince = 0, lostToast = false, hushed = false;
 function audioKick() {                                // the phone can pause or interrupt web audio (a text, another app, the screen): ask for the sound back
-  if (!AC || !settings.sound || document.hidden) return;
-  try { const p = AC.resume(); if (p && p.catch) p.catch(() => {}); } catch (_) {}
+  if (!AC || !settings.sound || document.hidden || hushed) return;
+  try { master.gain.setTargetAtTime(soundGain(), AC.currentTime, 0.06); const p = AC.resume(); if (p && p.catch) p.catch(() => {}); } catch (_) {}
 }
 function audioHush() {                               // the page is hidden: the frame loop that fades the sustained beds has stopped, so stop the whole sound until we are back
+  hushed = true;
   if (!AC || AC.state !== 'running') return;
-  try { const p = AC.suspend(); if (p && p.catch) p.catch(() => {}); } catch (_) {}
+  try { master.gain.cancelScheduledValues(AC.currentTime); master.gain.setTargetAtTime(0, AC.currentTime, 0.015); } catch (_) {}      // fade out first, then stop: no crackle
+  setTimeout(() => { if (hushed && AC && AC.state === 'running') { try { const p = AC.suspend(); if (p && p.catch) p.catch(() => {}); } catch (_) {} } }, 90);
 }
 function audioOn() {
+  hushed = false;                                    // any tap or key means we are back
   try {
     if (!AC) {
       const Ctor = window.AudioContext || window.webkitAudioContext; if (!Ctor) return;
       AC = new Ctor();
       AC.onstatechange = () => { if (AC && AC.state !== 'running') setTimeout(audioKick, 300); };
-      master = AC.createGain(); master.gain.value = soundGain();
+      master = AC.createGain(); master.gain.value = 0; master.gain.setTargetAtTime(soundGain(), AC.currentTime + 0.05, 0.12);      // fade in, no click at launch
       bus = AC.createBiquadFilter(); bus.type = 'lowpass'; bus.frequency.value = cutoff(); bus.Q.value = 0.5;
       pbus = AC.createBiquadFilter(); pbus.type = 'lowpass'; pbus.frequency.value = cutoff(); pbus.Q.value = 0.5;
       mlp = AC.createBiquadFilter(); mlp.type = 'lowpass'; mlp.Q.value = 0.7; mg = AC.createGain();
@@ -5431,7 +5444,7 @@ function chCrunchVar(c) {                              // three crunches (never 
   let i = (Math.random() * 3) | 0; if (i === CH2.v) i = (i + 1) % 3; CH2.v = i;
   return Object.assign({ g, thump }, pick3[i]);
 }
-let chipNew = (() => { try { const v = JSON.parse(localStorage.getItem('ice-chiptest')); return !(v && v.v === 'old'); } catch (e) { return true; } })();   // temporary Old/New switch (hidden quality screen)
+const chipNew = true;                              // Chip's calmer note speed (the Old/New test switch is gone)
 const CH = { nodes: null, waves: null, metal: null, tri: null };
 function chWaves() {                                  // pulse waves at 12.5%, 25% and 50% duty: the old consoles' three tones
   if (CH.waves && CH.waves.ac === AC) return CH.waves;
@@ -6169,7 +6182,6 @@ function syncSound() {
     pbus.frequency.setTargetAtTime(cutoff(), AC.currentTime, 0.02);
   }
 }
-$('bChime').addEventListener('click', () => { audioOn(); ptsPreview(); });
 let lastPreview = 0, lastPreviewTone = '';
 // ---- menu voice, retreat and order taps: the three small cues every sound style answers in its own way ----
 // Menu voice: tapping a button or moving through the menus. It plays at full level (past the menu muffle, like the previews), is a few tens
@@ -6287,8 +6299,6 @@ function previewSound() {                       // a sample bleep and bloop so y
 }
 
 {
-  $('aboutBtn').addEventListener('click', () => { const c = $('aboutCard'); c.hidden = !c.hidden; $('aboutBtn').setAttribute('aria-expanded', String(!c.hidden)); });
-document.addEventListener('click', e => { const c = $('aboutCard'); if (!c.hidden && !e.target.closest('#aboutBtn, #aboutCard')) { c.hidden = true; $('aboutBtn').setAttribute('aria-expanded', 'false'); } });
 }
 
 // ---- screens ----
@@ -6367,7 +6377,7 @@ function touchHint(m, key) {
   hintKey[el] = key; renderHints(m);
 }
 let settingsKey = 'tone';
-function renderSettingsHint() { const I = SETTINGS_INFO[settingsKey]; $('hintSettings').textContent = settingsKey === 'volume' ? I.v : I[settings[settingsKey]]; }
+function renderSettingsHint() { const I = SETTINGS_INFO[settingsKey]; $('hintSettings').textContent = $('hintAccess').textContent = settingsKey === 'volume' ? I.v : I[settings[settingsKey]]; }
 function syncText(m) {
   const c = settings[m], t = teamsFor(m);
   if (m === 'classic') {
@@ -6389,6 +6399,8 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '48.8.1', t: 'Easier to read, softer sound', b: ['The picked option in every menu is now much easier to spot: a stronger fill and a clear underline, and the small grey text is brighter.', 'Sound now fades in when the game starts and fades out when you leave the app, instead of cutting in and out with a crackle.'] },
+  { v: '48.8', t: 'A tidier Settings', b: ['Settings is shorter: volume, sound style and visual style, with Accessibility (color options, team shapes and haptics) one tap away. About has its own page.', 'New: Reset all data, at the bottom of Settings. It takes three taps and clears your stats, challenge stars and unlocks, so Deadly locks again. Reset stats keeps the unlocks, as before.', 'Gone: the Menu sound switch (turn the volume down instead), the Screen setting (the game follows your phone\'s rotation lock) and the Hear it button for the upgrade chime.'] },
   { v: '48.7.1', t: 'Deadly bites harder', b: ['Deadly rivals now build troops 30% and upgrades 50% faster (Brutal is 18% and 20%). They also play tighter. A rival answers one threatened base at a time, and leaves a base alone if help cannot get there before it falls. It hits a base you hold thinly, and a close neighbor, earlier than before.', 'A rival that is down to a few bases and far behind stops sending small raids. It gathers its troops and goes for one big hit instead.', 'Brutal rivals now also go after a base you hold with a thin defense sooner. Deadly is still locked until you beat Brutal on a Large map in Classic.'] },
   { v: '48.7', t: 'Deadly', b: ['A new strength above Brutal. It stays locked until you beat Brutal on a Large map in Classic, and the padlock tells you so. Deadly rivals are not stronger than Brutal ones: they build at the same speed. They are smarter. They pick on close neighbors early, notice an army walking up to a base, pull a garrison that cannot be saved back to a stronger base, and raid weak bases with small groups.', 'Beat Deadly on a Large map in Classic and it joins Custom and Spectate. Stats now show how many games you won against each strength.'] },
   { v: '48.6', t: 'Rivals that get stuck', b: ['On Huge maps an Easy rival could sit on its one base for the whole match: its army was full, but its own rules wanted more troops than the army can hold, so it never attacked. A full-strength rival now attacks with everything when it clearly outnumbers the base in front of it. And a rival that keeps failing to take the same base now sends a bigger force each time (up to everything it has nearby), so the last base of a long match falls.', 'Phones with a forced dark theme (some Samsung browsers) no longer recolor the troop bar, so Yellow and the other team colors look right.'] },
@@ -6455,8 +6467,6 @@ const QNAMES = ['Full', 'High', 'Medium', 'Low'];
 function syncQual() {
   for (const b of $('qualRow').children) b.setAttribute('aria-pressed', String(+b.dataset.q === qualFix));
   $('qualNow').textContent = qualFix < 0 ? 'Auto: the game picks the level.' : 'Held at ' + QNAMES[qualFix] + ' (' + Math.round(QUALITY[qualFix] * 100) + '% sharpness).';
-  for (const b of $('ringRow').children) b.setAttribute('aria-pressed', String((b.dataset.r === 'new') === ringNew));
-  for (const b of $('chipRow').children) b.setAttribute('aria-pressed', String((b.dataset.c === 'new') === chipNew));
   for (const b of $('audRow').children) b.setAttribute('aria-pressed', String(+b.dataset.a === audFix));
   $('hwNow').textContent = 'Phone check: ' + (HW.done ? HW.ms.toFixed(1) + ' ms (last readings ' + HW.list.map(x => x.toFixed(0)).join(', ') + ')' : 'not run yet') + (HW.mem ? ', ' + HW.mem + ' GB memory' : '') + (HW.cores ? ', ' + HW.cores + ' cores' : '') + '. Auto starts at ' + QNAMES[[0, 2, 3][hwTier()]] + '. Now: picture ' + QNAMES[quality] + ', sound ' + ['Full', 'Light', 'Lite'][AQ()] + '.';
   $('qualNote').hidden = qualFix < 0; $('qualNote').textContent = qualFix < 0 ? '' : 'Picture quality held at ' + QNAMES[qualFix];
@@ -6473,8 +6483,6 @@ function runPhoneCheck() {                            // the speed test: on ever
 }
 $('hwRun').addEventListener('click', () => runPhoneCheck());
 setTimeout(() => { if (!PERF) runPhoneCheck(); }, 1500);          // the test pages skip it, so a busy test machine cannot change their picture level;
-for (const b of $('chipRow').children) b.addEventListener('click', () => { chipNew = b.dataset.c === 'new'; save('ice-chiptest', { v: chipNew ? 'new' : 'old' }); syncQual(); });
-for (const b of $('ringRow').children) b.addEventListener('click', () => { ringNew = b.dataset.r === 'new'; save('ice-ringtest', { v: ringNew ? 'new' : 'old' }); syncQual(); });
 {                                                     // four taps on "Strategy" within two seconds open it
   let taps = [];
   const fourTaps = () => { const t = performance.now(); taps = taps.filter(x => t - x < 2000); taps.push(t); if (taps.length >= 4) { taps = []; go('scrQual'); } };
@@ -6489,6 +6497,7 @@ function showScreen(id) {
   if (HINT_START[id]) hintKey[HINT_START[id][0]] = HINT_START[id][1];
   if (m) { syncSeg(); syncText(m); buildPreview(m); }
   if (id === 'scrSettings') { settingsKey = 'tone'; syncGlobalSeg(); renderSettingsHint(); }
+  if (id === 'scrAccess') { settingsKey = 'colors'; syncGlobalSeg(); renderSettingsHint(); }
   if (id === 'scrPlay') updateLadderBlurb();
   if (id === 'scrStats') renderStats();
   if (id === 'scrNews') { renderNews(); $('updMsg').textContent = ''; }
@@ -6514,7 +6523,7 @@ const ladder = {}, bests = {};
 const TIERS = [{ need: 0 }, { need: 3 }, { need: 8 }, { need: 14 }];                     // stars needed to open each tier
 const starsOfId = id => ladder[id] || [false, false, false];
 const totalStars = () => SCENARIOS.reduce((a, c) => a + starsOfId(c.id).filter(Boolean).length, 0);
-const isOpen = c => totalStars() >= TIERS[c.tier - 1].need;
+const isOpen = c => unlocks.tiers || totalStars() >= TIERS[c.tier - 1].need;
 const starSvg = on => `<svg viewBox="0 0 12 12" class="${on ? 'on' : ''}"><path d="M6 .8l1.6 3.5 3.8.4-2.8 2.6.8 3.8L6 9.2 2.6 11.1l.8-3.8L.6 4.7l3.8-.4z"/></svg>`;
 function bestText(c) {
   const b = bests[c.id]; if (!b) return 'Not completed yet';
@@ -6523,7 +6532,7 @@ function bestText(c) {
 function renderLadder() {
   let h = '';
   for (let t = 1; t <= TIERS.length; t++) {
-    const need = TIERS[t - 1].need, open = totalStars() >= need, more = need - totalStars();
+    const need = TIERS[t - 1].need, open = unlocks.tiers || totalStars() >= need, more = need - totalStars();
     h += `<div class="tier"><span>Tier ${t}</span><span>${open ? '' : `Earn ${more} more ${more === 1 ? 'star' : 'stars'} to unlock`}</span></div>`;
     for (const c of SCENARIOS.filter(x => x.tier === t))
       h += `<button class="chcard${open ? '' : ' locked'}" data-c="${c.id}"><b>${c.name}</b><span class="d">${c.desc}</span><span class="best">${bestText(c)}</span><span class="stars">${starsOfId(c.id).map(starSvg).join('')}</span></button>`;
@@ -6899,7 +6908,7 @@ window.addEventListener('popstate', e => {
     try { history.go(-backPos); } catch (e) { draining = false; }
   }
 });
-for (const ev of ['pointerup', 'keydown']) document.addEventListener(ev, () => setTimeout(() => { armBack(); if (settings.sound && (settings.menuSound !== 'off' || mode === 'play')) audioOn(); }, 0), true);
+for (const ev of ['pointerdown', 'pointerup', 'touchend', 'keydown']) document.addEventListener(ev, () => setTimeout(() => { armBack(); if (settings.sound && (settings.menuSound !== 'off' || mode === 'play')) audioOn(); }, 0), true);
 
 // ---- input ----
 let infoNode = null, infoTimer = 0;
@@ -7138,7 +7147,32 @@ $('bAgain').addEventListener('click', () => { if (performance.now() - endAt < 45
 $('bNext').addEventListener('click', () => { if (performance.now() - endAt < 450) return; startGame(false, nextScen); });
 $('bMenu').addEventListener('click', () => { if (performance.now() - endAt < 450) return; leaveToMenu(); });
 $('bReset').addEventListener('click', () => confirmReset($('bReset'), 'Reset stats', doResetStats));
-$('bResetCh').addEventListener('click', () => confirmReset($('bResetCh'), 'Reset challenges', doResetChallenges));
+// Reset all data (Settings): three taps, each within 3 s of the last. Clears stats, challenge stars and bests, and the unlocks (Deadly locks again). Reset stats alone keeps the unlocks on purpose.
+const allReset = { n: 0, t: 0 };
+function doResetAll() {
+  doResetStats(); doResetChallenges();
+  unlocks.deadly = false; unlocks.deadlyCustom = false; unlocks.tiers = false; save('ice-unlocks', unlocks);
+  for (const k of ['classic', 'custom', 'spec']) if (settings[k] && settings[k].diff === 'deadly') settings[k].diff = 'brutal';           // a Deadly that is locked again cannot stay picked
+  save('ice-settings', settings); syncSeg(); syncAllText();
+}
+// Unlock everything (hidden Picture quality screen): two taps. Deadly in Classic and Custom, and every challenge tier. No stars are awarded.
+const allUnlock = { n: 0, t: 0 };
+$('bUnlockAll').addEventListener('click', () => {
+  const b = $('bUnlockAll'); clearTimeout(allUnlock.t); allUnlock.n++;
+  if (allUnlock.n >= 2) {
+    allUnlock.n = 0; unlocks.deadly = unlocks.deadlyCustom = unlocks.tiers = true; save('ice-unlocks', unlocks);
+    syncSeg(); syncAllText(); if (typeof renderLadder === 'function') renderLadder();
+    b.textContent = 'Everything unlocked'; allUnlock.t = setTimeout(() => { b.textContent = 'Unlock everything'; }, 2500); return;
+  }
+  b.textContent = 'Tap again to unlock Deadly and every challenge tier';
+  allUnlock.t = setTimeout(() => { allUnlock.n = 0; b.textContent = 'Unlock everything'; }, 3000);
+});
+$('bResetAll').addEventListener('click', () => {
+  const b = $('bResetAll'); clearTimeout(allReset.t); allReset.n++;
+  if (allReset.n >= 3) { allReset.n = 0; doResetAll(); b.textContent = 'All data reset'; allReset.t = setTimeout(() => { b.textContent = 'Reset all data'; }, 2500); return; }
+  b.textContent = allReset.n === 1 ? 'Tap again to reset everything' : 'Once more: this cannot be undone';
+  allReset.t = setTimeout(() => { allReset.n = 0; b.textContent = 'Reset all data'; }, 3000);
+});
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
 document.querySelectorAll('#menu .back').forEach(b => b.addEventListener('click', back));
 $('bPause').addEventListener('click', pause);
@@ -7201,7 +7235,10 @@ document.addEventListener('click', e => {                // ...and if the browse
   const b = e.target.closest && e.target.closest('#hud button');
   if (b && b._pc && performance.now() - b._pc < 700) { b._pc = 0; e.stopImmediatePropagation(); e.preventDefault(); }
 }, true);
-document.addEventListener('visibilitychange', () => { if (document.hidden) { resetPtrs(); pause(); audioHush(); } else audioKick(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { resetPtrs(); pause(); audioHush(); } else { hushed = false; audioKick(); } });
+for (const ev of ['pagehide', 'freeze']) window.addEventListener(ev, audioHush);                // the app is being closed or frozen: stop the sound now, don't wait for the hidden event
+document.addEventListener('freeze', audioHush);
+window.addEventListener('pageshow', () => { hushed = false; audioKick(); });
 if (IOS) {                                            // everything below runs on iPhone and iPad only
   for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, e => e.preventDefault(), { passive: false });     // Safari ignores "no zoom" in the viewport tag; this stops a two-finger pinch zooming the page
   const wake = () => {                                // sound only starts after a touch, and Safari can leave it "suspended" or "interrupted": a touch wakes it with a silent blip
@@ -7209,7 +7246,6 @@ if (IOS) {                                            // everything below runs o
     try { AC.resume(); const b = AC.createBuffer(1, 1, 22050), src = AC.createBufferSource(); src.buffer = b; src.connect(AC.destination); src.start(0); } catch (_) {}
   };
   for (const ev of ['touchend', 'click']) document.addEventListener(ev, wake, { capture: true, passive: true });
-  window.addEventListener('pageshow', audioKick);     // coming back to the game from the app switcher
   const fix = () => { for (const ms of [60, 250, 700]) setTimeout(layout, ms); };      // Safari reports the new screen size late after turning the phone or when the toolbars move
   window.addEventListener('orientationchange', fix);
   if (window.visualViewport) window.visualViewport.addEventListener('resize', fix);
