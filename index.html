@@ -185,6 +185,14 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .seg button:first-child { border-left: 0; }
 .seg.five button { flex: 1 1 0; min-width: 0; padding: 0 2px; font-size: 13px; }
 .opt.stack { flex-direction: column; align-items: stretch; gap: 6px; } .opt.stack > span { flex: none; }
+#scrSettings .opt.stack > span { font-weight: 700; font-size: 13.5px; color: var(--ink); }
+#scrSettings .opt.sep { border-top: 1px solid var(--hair); padding-top: 12px; margin-top: 2px; }
+.screen:not(.side) .hintline { background: rgba(0,0,0,.7); padding: 6px 9px; border-radius: 4px; }
+.hintline, .blurb { box-sizing: border-box; }
+#unlockPop { z-index: 30; background: rgba(0,0,0,.78); }
+#unlockPop .screen { background: rgba(10,10,14,.94); border: 1px solid var(--faint); border-radius: 6px; padding: 18px 16px; gap: 12px; }
+#unlockPop h2 { margin: 0; font-size: 18px; }
+#unlockPop ul { margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.4; }
 @media (max-width: 340px) { #scrSettings .seg.five button { font-size: 11px; padding: 0 1px; } }
 /* six style chips: one row when there is room, otherwise a 3 x 2 block (both rows are laid out the same way, so each sound/visual pair stays lined up) */
 @media (max-width: 480px), (orientation: landscape) and (max-height: 430px) {
@@ -226,10 +234,11 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .updrow .ghost { flex: none; }
 #newsBody { display: flex; flex-direction: column; gap: 14px; }
 #newsBody h3 { margin: 0 0 6px; font-size: 14px; font-weight: 500; color: var(--ink); }
-#newsBody h3 span { color: var(--dim); font-weight: 400; }
 .aboutcard { margin: 0; padding: 10px 12px; border: 1px solid var(--faint); border-radius: 4px; background: rgba(0,0,0,.45); max-height: max(120px, calc(100vh - 230px)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 @media (orientation: landscape) and (max-height: 430px) { .aboutcard { max-height: max(110px, calc(100vh - 190px)); padding: 8px 10px; } .aboutcard.about { font-size: 11.5px; line-height: 1.35; } }
 .aboutcard[hidden] { display: none; }
+.linkbtn { margin-left: auto; background: none; border: 0; color: var(--ink); font: inherit; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; padding: 0 4px; cursor: pointer; }
+#privacyText p { margin: 0 0 10px; }
 .aboutpage { margin: 0; font-size: 14px; line-height: 1.55; color: var(--dim); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; max-height: calc(100vh - 150px); }
 @media (orientation: landscape) and (max-height: 430px) { .aboutpage { font-size: 12px; line-height: 1.4; max-height: calc(100vh - 100px); } }
 
@@ -352,7 +361,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
 .chcard .d { grid-column: 1; font-size: 12.5px; color: var(--dim); line-height: 1.35; }
 .chcard .stars { grid-row: 1 / span 3; grid-column: 2; display: flex; gap: 3px; }
 .chcard.fresh { border-color: var(--blue); box-shadow: inset 0 0 0 1px var(--blue); }
-.chcard.locked { pointer-events: none; background: rgba(0,0,0,.2); border-color: #26262b; }
+.chcard.locked { pointer-events: none; background: rgba(0,0,0,.35); border-color: #26262b; }     /* same backing as an open card, or the map shows through and reads brighter */
 .chcard.locked b, .chcard.locked .d, .chcard.locked .best { color: #4a4a50; }
 .chcard.locked .stars svg { stroke: #34343a; }
 .chcard:active { background: rgba(40,40,44,.8); }
@@ -552,7 +561,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 48.8.4</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 49</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -641,7 +650,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
     <div class="opts">
       <div class="opt"><span>Volume</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"></div>
       <div class="opt stack"><span>Sound style</span><div class="seg tight five" data-glob="tone"><button data-v="simple">Simple</button><button data-v="hearth">Hearth</button><button data-v="drift">Drift</button><button data-v="chip">Chip</button><button data-v="cosmos">Cosmos</button><button data-v="floe">Floe</button></div></div>
-      <div class="opt stack"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="ember">Ember</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button><button data-v="rime">Rime</button></div></div>
+      <div class="opt stack sep"><span>Visual style</span><div class="seg tight five" data-glob="visual"><button data-v="classic">Classic</button><button data-v="ember">Ember</button><button data-v="atlas">Atlas</button><button data-v="pixel">Pixel</button><button data-v="nebula">Nebula</button><button data-v="rime">Rime</button></div></div>
       <p class="hintline" id="hintSettings"></p>
     </div>
     <button class="ghost big2" data-go="scrAccess">Accessibility</button>
@@ -649,8 +658,19 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
   </section>
 
   <section class="screen" id="scrAbout" hidden>
-    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>About</h2></header>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>About</h2><button class="linkbtn" data-go="scrPrivacy">Privacy Policy</button></header>
     <p class="aboutpage" id="aboutText">Aiced Strategy has been built exclusively using Claude AI. I understand the complicated emotions regarding AI, so I have poured as much of myself into this as a person possibly could- but it should be known that every line of code, the UI, menus, all of it was built with Claude. I contributed only my thoughts. This game was inspired by an old mobile game called ICE. It was a simplistic strategy game about sending troops to bases, tactically working your way through the map and enemies until the entire match is yours. Simple upgrades, simple controls, but a deeply satisfying gameplay loop, with a cute appearance and audio that scratched my brain in a fun way as a bonus. This game was built with all of that in mind, I hope you enjoy it for what it is.</p>
+  </section>
+
+  <section class="screen" id="scrPrivacy" hidden>
+    <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Privacy Policy</h2></header>
+    <div class="aboutpage" id="privacyText">
+      <p><b>Aiced Strategy</b><br>Developer: SpamPromptStudios<br>Contact: aicedstrategy@gmail.com</p>
+      <p>Aiced Strategy collects, shares and sends no personal data. It has no accounts, ads or analytics, and it does not connect to the internet.</p>
+      <p>Your settings, unlocks and stats stay on your device only. Uninstalling the game, or using Reset all data in Settings, deletes them.</p>
+      <p>The only permission it asks for is vibration, for the optional haptics setting.</p>
+      <p>Last updated: October 13, 2026</p>
+    </div>
   </section>
 
   <section class="screen" id="scrAccess" hidden>
@@ -752,6 +772,9 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
 <div id="info" class="panel" hidden></div>
 <div id="pvCard" hidden><canvas id="pvMap" aria-label="A map of the match you are setting up"></canvas></div>
 <div id="perf" hidden></div>
+<div id="unlockPop" class="overlay" role="dialog" aria-modal="true" aria-labelledby="unlockT" hidden>
+  <div class="screen"><h2 id="unlockT">Unlocked</h2><ul id="unlockList"></ul><button id="bUnlockOk" class="primary big">Got it</button></div>
+</div>
 <div id="toast" role="status" aria-live="polite"><i id="toastSw"></i><span id="toastT"></span></div>
 
 <script>
@@ -1733,10 +1756,15 @@ function overtimeStep() {
   G.log.push({ t: G.t, k: 'overtime' });
   G.fx.push({ k: 'overtime', c: G.nodes[id].owner, x: G.nodes[id].x, y: G.nodes[id].y, b: G.t });
 }
+function crownUnderAttack(n) {                        // an enemy is standing on the base and hurting it right now
+  if (n.owner < 0 || G.t - n.lastHitT > 1) return false;
+  for (let k = 1; k < n.pres.length; k++) if (k !== n.owner + 1 && n.pres[k] > 0) return true;
+  return false;
+}
 function kothStep(dt) {                               // whoever holds the crown banks the seconds
   if (!G.mods.koth || G.crown < 0) return;
-  const o = G.nodes[G.crown].owner, o2 = G.crown2 >= 0 ? G.nodes[G.crown2].owner : o;
-  if (o >= 0 && o2 === o) G.teams[o].hill += dt;       // with two crowns you only bank time while you hold both
+  const a = G.nodes[G.crown], b = G.crown2 >= 0 ? G.nodes[G.crown2] : a, o = a.owner, o2 = b.owner;
+  if (o >= 0 && o2 === o && !crownUnderAttack(a) && !crownUnderAttack(b)) G.teams[o].hill += dt;       // with two crowns you only bank time while you hold both; the clock stands still, it does not reset, while either is under attack
 }
 function quakeStep() {                                // Aftershock: every so often the biggest color's sturdiest base is cracked open
   if (!G.quake || G.t < G.nextQuake) return;
@@ -2353,6 +2381,7 @@ if (settings.tone === 'felt') settings.tone = 'soft'; else if (settings.tone ===
 if (settings.tone === 'bright' || settings.tone === 'soft') settings.tone = 'simple';                                // Build 36: the two became Simple
 if (settings.tone === 'overdrive') settings.tone = 'hearth';                                                         // Build 48.2: Overdrive was replaced by Hearth
 if (!['simple', 'hearth', 'drift', 'chip', 'cosmos', 'floe'].includes(settings.tone)) settings.tone = 'simple';
+delete settings.woods;                                                                                               // 48.9.7: the night-woods trial is gone
 settings.screen = 'auto';                                                                                            // 48.8: the Screen setting is gone, Auto (follow the phone's rotation lock) is baked in
 settings.menuSound = 'on';                                                                                           // 48.8: the Menu sound switch is gone; a saved Off must not silence the menus with nothing to turn it back on (the volume slider does the muting)
 if (settings.visual === 'spark') settings.visual = 'classic';
@@ -3056,13 +3085,19 @@ function atlasLive(now, nodes, near) {
   }
   ctx.setLineDash([]);
 }
+const ATLAS_COURSES = 48;                                          // most plotted courses drawn per color: a big order shows a stable sample of them, not one dashed line per troop
+function courseStep(list) {                                        // draw every k-th troop (by id, so the sample does not flicker as troops come and go)
+  let c = 0; for (const t of list) if (t.path.length) c++;
+  return Math.max(1, Math.ceil(c / ATLAS_COURSES));
+}
 function drawAtlasFront(now) {
   const nodes = G.nodes;
   ctx.lineWidth = Math.max(1, 1 / V.s); ctx.setLineDash([1.5, 5]);   // plotted courses: from marching troops to where they're going
   for (let team = 0; team < 5; team++) {
     if (!G.teams[team].active || (!watching && team !== PLAYER)) continue;    // yours, or everyone's when you're only watching
     ctx.strokeStyle = hexA(colorOf(team), 0.36); ctx.beginPath(); let any = false;
-    for (const t of BUCKETS[team + 1]) if (t.path.length) { const d = nodes[t.path[t.path.length - 1]]; ctx.moveTo(t.x, t.y); ctx.lineTo(d.x, d.y); any = true; }
+    const ck = courseStep(BUCKETS[team + 1]);
+    for (const t of BUCKETS[team + 1]) if (t.path.length && (ck === 1 || t.id % ck === 0)) { const d = nodes[t.path[t.path.length - 1]]; ctx.moveTo(t.x, t.y); ctx.lineTo(d.x, d.y); any = true; }
     if (any) ctx.stroke();
   }
   ctx.setLineDash([]); ctx.lineWidth = Math.max(1.2, 1.3 / V.s);
@@ -4777,7 +4812,7 @@ let lastChimePrev = 0;
 function ptsPreview() {                                // the "Hear it" button in Settings: the chime of the style you have picked, at full level
   const now = performance.now();
   if (!AC || AC.state !== 'running' || !soundGain() || now - lastChimePrev < 900) return;
-  lastChimePrev = now; previewing = true;
+  lastChimePrev = now; pvNew(); previewing = true;
   try {
     const t = AC.currentTime + 0.05; let N = null, off = null;
     switch (settings.tone) {
@@ -4955,7 +4990,15 @@ let AC = null, master = null, lim = null, bus = null, mlp = null, mg = null, pbu
 // menu stage (pbus), so a style is always auditioned at full level.
 const tune = { vol: 30, cut: 500, fade: 0.5 };         // menu volume against a match, muffle cutoff, fade time: fixed (they used to live in a hidden panel)
 let previewing = false, mixMenu = null;
-const outBus = () => previewing ? pbus : bus;
+let pvCur = null;                                          // the stage the current preview plays through; a new preview fades the last one away
+function pvNew() {
+  if (!AC) return null; const t = AC.currentTime, old = pvCur;
+  if (old) { try { old.gain.cancelScheduledValues(t); old.gain.setTargetAtTime(0.0001, t, 0.04); } catch (_) { /* already gone */ } setTimeout(() => { try { old.disconnect(); } catch (_) {} }, 800); }
+  pvCur = AC.createGain(); pvCur.gain.value = 1; pvCur.connect(pbus);
+  if (PERF) (window.__pvAll = window.__pvAll || []).push(pvCur);
+  return pvCur;
+}
+const outBus = () => previewing ? (pvCur || pbus) : bus;
 const awatch = () => watching || mode === 'demo';                // the match behind the menus is AI vs AI: nobody's hits are "yours"
 const bgHidden = () => mode === 'demo' && pvOnly;               // setup screens run the match unseen, for the ears only
 const ftLive = () => FT.phase === 'tail' && FT.tailUntil > performance.now();                  // the tune's tail is still ringing
@@ -4997,6 +5040,10 @@ function audioHush() {                               // the page is hidden: the 
   try { master.gain.cancelScheduledValues(AC.currentTime); master.gain.setTargetAtTime(0, AC.currentTime, 0.015); } catch (_) {}      // fade out first, then stop: no crackle
   setTimeout(() => { if (hushed && AC && AC.state === 'running') { try { const p = AC.suspend(); if (p && p.catch) p.catch(() => {}); } catch (_) {} } }, 90);
 }
+function suspendIfOff() {                            // sound switched off: stop the audio device after the fade, so it is not kept awake for nothing
+  if (!AC || settings.sound) return;
+  setTimeout(() => { if (AC && !settings.sound && AC.state === 'running') { try { const p = AC.suspend(); if (p && p.catch) p.catch(() => {}); } catch (_) {} } }, 150);
+}
 function audioOn() {
   hushed = false;                                    // any tap or key means we are back
   try {
@@ -5013,6 +5060,7 @@ function audioOn() {
       mixMenu = menuMix(); applyMix(true);
     }
     if (AC.state !== 'running') audioKick();
+    suspendIfOff();
   } catch (e) { AC = null; }
 }
 function screenPan(x, y) {
@@ -5050,7 +5098,6 @@ const lostMine = f => !awatch() && f.from === PLAYER && f.c !== PLAYER;       //
 function playSfx(nowMs, dt) {
   let ev = G.sfx; G.sfx = [];
   if (fogOn()) ev = ev.filter(e => seenXY(e.x, e.y));     // you can't hear fights you can't see
-  if (ev.length) G.heard = true;                             // the first fight has happened (the menu match skips ahead until then)
   if (!bgHidden()) vfxHits(ev);                              // sparks only when the match can be seen
   // how much fighting is going on right now (hits per second, smoothed); "Low hum" swells with it
   shotRate += (ev.length / Math.max(dt, 1 / 120) - shotRate) * (1 - Math.exp(-dt / 1.2));
@@ -5705,8 +5752,9 @@ function csSlot(N, t, heat) {
     N.voices.forEach(([a, b], i) => { a.frequency.setTargetAtTime(hz(ch[i]), t, 1.2); b.frequency.setTargetAtTime(hz(ch[i]) * 2, t, 1.2); });
   }
   if (N.voices) {                                     // the pads only swell with the fighting, and fade away when it stops
-    const lift = Math.min(1, Math.max(heat * 1.8, fc ? fc.g * 0.9 : 0));
-    N.padG.gain.setTargetAtTime(0.0001 + 0.085 * lift * lift, t, 1.6); N.padLP.frequency.setTargetAtTime(600 + 2400 * lift, t, 1.6);
+    const fallen = (FT.phase === 'tail' && G.result === 'lose') || (FT.phase === 'hold' && FT.kind === 'loss');     // the last base has fallen: the pad drops away so the losing tune is what you hear
+    const lift = fallen ? 0 : Math.min(1, Math.max(heat * 1.8, fc ? fc.g * 0.9 : 0)), tc = fallen ? 0.45 : 1.6;
+    N.padG.gain.setTargetAtTime(0.0001 + 0.085 * lift * lift, t, tc); N.padLP.frequency.setTargetAtTime(600 + 2400 * lift, t, tc);
   }
   const share = (awatch() ? Math.max(...G.teams.map(T => T.bases)) : G.teams[PLAYER].bases) / G.nodes.length;
   const centre = 7 + Math.round(share * 7);           // the pings sit higher the more ground you hold
@@ -5948,7 +5996,7 @@ const HE_RIVAL_DB = -29;                               // a rival's capture: the
 const HE_RIVAL_PHRASE = false;                         // true = a rival's capture also throws a crackle phrase (it did in 48.2)
 const HE_BUDGET = [22, 15, 10];                        // crackle ticks allowed in any one second, by quality tier
 const HE_PITCH = [98, 98, 110, 98, 123.5, 110];        // the tap's note walks through these
-const HE = { nodes: null, I: 0, Is: 0, rr: 0, crr: 0, cnt: 0, crk: 0, at: 0, last: {}, own: null, lead: -9, og: null, phAt: -9, tapT: -9, tapN: 0, v: 0, bank: null, ir: null, phrases: 0, caps: 0, losses: 0, taps: 0, duck: -9, winT: -9, winN: 0, rc: [], rcaps: 0, rskip: 0, snaps: 0, drop: 0 };
+const HE = { nodes: null, I: 0, Is: 0, rr: 0, crr: 0, cnt: 0, crk: 0, at: 0, last: {}, own: null, lead: -9, og: null, phAt: -9, tapT: -9, tapN: 0, v: 0, bank: null, ir: null, phrases: 0, caps: 0, losses: 0, taps: 0, duck: -9, winT: -9, winN: 0, rc: [], rcaps: 0, rskip: 0, snaps: 0, drop: 0, prev: null };
 const isHearth = () => settings.tone === 'hearth';
 const heDb = d => Math.pow(10, d / 20);
 const heExp = m => -m * Math.log(1 - Math.random());
@@ -6159,8 +6207,14 @@ function heTick() {
   }
   if (HE.own) for (const n of G.nodes) HE.own[n.id] = n.owner;
 }
+function hePreviewStop() {                               // a new preview, or a new choice, silences the one before it
+  const P = HE.prev; if (!P) return; HE.prev = null; const t = AC.currentTime;
+  try { P.out.gain.cancelScheduledValues(t); P.out.gain.setTargetAtTime(0.0001, t, 0.08); for (const o of P.srcs) o.stop(t + 0.6); } catch (_) { /* already stopped */ }
+  setTimeout(() => { try { P.out.disconnect(); } catch (_) {} }, 1500);
+}
 function hePreview() {                                   // a few taps, a crackle, the chord and the low note of a loss, over the bed
-  const N = heBuild(true), t = AC.currentTime + 0.05;
+  hePreviewStop();
+  const N = heBuild(true), t = AC.currentTime + 0.05; HE.prev = N;
   N.bed.gain.value = 0.75;
   [[0.1, 0], [0.55, 2], [1.0, 4]].forEach(([d, i]) => heNote(N, t + d, HE_PITCH[i], 0.9, 1));
   hePhrase(N, t + 1.6, 3, -0.2, false, 0.55);
@@ -6168,7 +6222,7 @@ function hePreview() {                                   // a few taps, a crackl
   heLoss(N, t + 5.0);
   heKnock(N, t + 8.4);
   N.out.gain.setTargetAtTime(0.0001, t + 11.4, 0.6); for (const o of N.srcs) o.stop(t + 13);
-  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 22000);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} if (HE.prev === N) HE.prev = null; }, 22000);
 }
 
 function syncRivals() {
@@ -6191,6 +6245,7 @@ function syncSound() {
     bus.frequency.setTargetAtTime(cutoff(), AC.currentTime, 0.02);
     pbus.frequency.setTargetAtTime(cutoff(), AC.currentTime, 0.02);
   }
+  suspendIfOff();
 }
 let lastPreview = 0, lastPreviewTone = '';
 // ---- menu voice, retreat and order taps: the three small cues every sound style answers in its own way ----
@@ -6227,17 +6282,15 @@ function mvPulse(t, midi, dur, peak) {                    // Chip's pulse note: 
   o.connect(g); g.connect(pbus); o.start(t); o.stop(t + dur + 0.02);
 }
 function mvChip(t, back) { const a = chMidi(7), b = chMidi(10); mvPulse(t, back ? b : a, 0.04, 0.026); mvPulse(t + 0.045, back ? a : b, 0.05, 0.026); }
-function mvCosmos(t, back) {                               // a quiet ping with a short echo, then gone
+function mvCosmos(t, back) {                               // one quiet ping, no echo, then gone
   const out = AC.createGain(); out.gain.value = CS_LEVEL; out.connect(pbus);
   const c0 = AC.currentTime; if (MV.cs) { try { MV.cs.gain.cancelScheduledValues(c0); MV.cs.gain.setTargetAtTime(0, c0, 0.06); } catch (_) {} } MV.cs = out;
-  const dl = AC.createDelay(1), fb = AC.createGain(), lp = AC.createBiquadFilter(), dg = AC.createGain();
-  dl.delayTime.value = 0.32; fb.gain.value = 0.36; lp.type = 'lowpass'; lp.frequency.value = 2200; dg.gain.value = 0.5; dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(dg); dg.connect(out);
   const f = hz(csMidi(back ? 6 : 11)), o = AC.createOscillator(), o2 = AC.createOscillator(), g = AC.createGain(), g2 = AC.createGain(), pk = 0.035;
   o.frequency.value = f; o2.frequency.value = f * 2.76;
   g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(pk, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
   g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime(pk * 0.2, t + 0.003); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-  o.connect(g); o2.connect(g2); g2.connect(g); g.connect(out); g.connect(dl); o.start(t); o2.start(t); o.stop(t + 1); o2.stop(t + 1);
-  setTimeout(() => { try { out.disconnect(); dl.disconnect(); } catch (_) {} }, 4500);
+  o.connect(g); o2.connect(g2); g2.connect(g); g.connect(out); o.start(t); o2.start(t); o.stop(t + 1); o2.stop(t + 1);
+  setTimeout(() => { try { out.disconnect(); } catch (_) {} }, 2000);
 }
 function mvFloe(t, back) {                                 // one soft glass note, no echo, cut off short so quick tapping never piles up
   const P = flp(), out = AC.createGain(); out.gain.value = FL_LEVEL * P.lvl; out.connect(pbus);
@@ -6294,7 +6347,7 @@ function previewSound() {                       // a sample bleep and bloop so y
   if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < gap && lastPreviewTone === settings.tone) return;
   const fresh = lastPreviewTone !== settings.tone;
   lastPreview = now; lastPreviewTone = settings.tone;
-  previewing = true;                                  // a preview is always heard at full level, not through the menu mix
+  const myPv = pvNew(); previewing = true;                                  // a preview is always heard at full level, not through the menu mix
   try {
     if (isHearth()) { hePreview(); return; }
     if (settings.tone === 'drift') { driftPreview(); return; }
@@ -6304,8 +6357,8 @@ function previewSound() {                       // a sample bleep and bloop so y
     const f = hz(ROOT[PLAYER] - 12 + pick(PENTA));
     tone(f, f * 0.94, 0.1, 0.055, 'sine', 0, 0.018); tone(f * 2, f * 1.88, 0.07, 0.009, 'sine', 0, 0.012);
   } finally { previewing = false; }
-  setTimeout(() => { if (AC) { previewing = true; try { const b = hz(45 + pick(PENTA)); tone(b * 1.4, b, 0.2, 0.08, 'sine', 0, 0.02); } finally { previewing = false; } } }, 120);
-  if (fresh && settings.tone === 'simple') setTimeout(() => { if (AC && AC.state === 'running') { previewing = true; try { spLose(AC.currentTime + 0.02, 0); } finally { previewing = false; } } }, 500);   // choosing Simple also plays its lose-a-base cue
+  setTimeout(() => { if (AC && pvCur === myPv) { previewing = true; try { const b = hz(45 + pick(PENTA)); tone(b * 1.4, b, 0.2, 0.08, 'sine', 0, 0.02); } finally { previewing = false; } } }, 120);
+  if (fresh && settings.tone === 'simple') setTimeout(() => { if (AC && AC.state === 'running' && pvCur === myPv) { previewing = true; try { spLose(AC.currentTime + 0.02, 0); } finally { previewing = false; } } }, 500);   // choosing Simple also plays its lose-a-base cue
 }
 
 {
@@ -6409,46 +6462,15 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
-  { v: '48.8.4', t: 'Random strength fixed', b: ['Custom and Spectate would not start, and showed no map behind the menu, when AI strength was set to Random. That broke in 48.8.2 and 48.8.3 and is fixed now.', 'The Randomize button no longer rolls Brutal until you have unlocked it there. Once Deadly is open in Custom and Spectate, Randomize and Random strength can roll it too, about one time in ten.'] },
-  { v: '48.8.3', t: 'Locks, fine-tuned', b: ['Beating Brutal in Classic, on any map size, now adds it to Custom and Spectate. Beating Deadly in Classic, on any map size, does the same for Deadly. Opening a stronger level in Classic still takes a win on a Large map against the one below it.', 'Brutal and Challenge Maps now start locked for everyone, including players from earlier builds.'] },
-  { v: '48.8.2', t: 'Earn your way up', b: ['Brutal is now locked behind a padlock. Win a Classic match on a Large map against Hard to open it. Deadly still needs a win over Brutal on Large.', 'Challenge Maps are locked until you win a Classic match, on any map and any strength.'] },
-  { v: '48.8.1', t: 'Easier to read, softer sound', b: ['The picked option in every menu is now much easier to spot: a stronger fill and a clear underline, and the small grey text is brighter.', 'Sound now fades in when the game starts and fades out when you leave the app, instead of cutting in and out with a crackle.'] },
-  { v: '48.8', t: 'A tidier Settings', b: ['Settings is shorter: volume, sound style and visual style, with Accessibility (color options, team shapes and haptics) one tap away. About has its own page.', 'New: Reset all data, at the bottom of Settings. It takes three taps and clears your stats, challenge stars and unlocks, so Deadly locks again. Reset stats keeps the unlocks, as before.', 'Gone: the Menu sound switch (turn the volume down instead), the Screen setting (the game follows your phone\'s rotation lock) and the Hear it button for the upgrade chime.'] },
-  { v: '48.7.1', t: 'Deadly bites harder', b: ['Deadly rivals now build troops 30% and upgrades 50% faster (Brutal is 18% and 20%). They also play tighter. A rival answers one threatened base at a time, and leaves a base alone if help cannot get there before it falls. It hits a base you hold thinly, and a close neighbor, earlier than before.', 'A rival that is down to a few bases and far behind stops sending small raids. It gathers its troops and goes for one big hit instead.', 'Brutal rivals now also go after a base you hold with a thin defense sooner. Deadly is still locked until you beat Brutal on a Large map in Classic.'] },
-  { v: '48.7', t: 'Deadly', b: ['A new strength above Brutal. It stays locked until you beat Brutal on a Large map in Classic, and the padlock tells you so. Deadly rivals are not stronger than Brutal ones: they build at the same speed. They are smarter. They pick on close neighbors early, notice an army walking up to a base, pull a garrison that cannot be saved back to a stronger base, and raid weak bases with small groups.', 'Beat Deadly on a Large map in Classic and it joins Custom and Spectate. Stats now show how many games you won against each strength.'] },
-  { v: '48.6', t: 'Rivals that get stuck', b: ['On Huge maps an Easy rival could sit on its one base for the whole match: its army was full, but its own rules wanted more troops than the army can hold, so it never attacked. A full-strength rival now attacks with everything when it clearly outnumbers the base in front of it. And a rival that keeps failing to take the same base now sends a bigger force each time (up to everything it has nearby), so the last base of a long match falls.', 'Phones with a forced dark theme (some Samsung browsers) no longer recolor the troop bar, so Yellow and the other team colors look right.'] },
-  { v: '48.5.2', t: 'Auto picture steps back up', b: ['On Auto, the picture (and the sound weight that follows it) now steps back up after the phone has run smoothly for about 25 seconds, instead of staying low for the whole session once a busy fight had pushed it down. It never goes above the level your phone check picked, and if it steps up and then has to step down again within 20 seconds it stays at the lower level.'] },
-  { v: '48.5.1', t: 'The minimap opens at once', b: ['The minimap now opens the moment you tap the map button. Before, it waited a moment in case you were double-tapping.'] },
-  { v: '48.5', t: 'Lighter on your battery', b: ['While the game is paused, and behind the menus, the game now does far less drawing, so the phone stays cooler and the battery lasts longer.', 'Rime, Atlas and Nebula keep their backgrounds ready instead of drawing them again every frame, so they run smoother on slower phones.'] },
-  { v: '48.4.1', t: 'Buttons work with two thumbs', b: ['A button on the screen now responds even while your other finger is holding or dragging the map. Before, it could ignore the tap.'] },
-  { v: '48.4', t: 'A new layout for the buttons', b: ['Speed, Sound and Pause now sit together at the top right, with Pause in the corner. How much of your army each tap sends is now three buttons on the right edge (25, 50 and 100 percent), and the one you picked stays lit. The map button moved to the bottom left, above the upgrade panel.', 'The full view of the map now backs away a little when it has to, so no base is hidden behind a button.'] },
-  { v: '48.3', t: 'A sound for every capture', b: ['In Hearth, a rival taking a base now has a sound too: your capture chord, muffled and quieter. The crackle stays calmer when many fights happen at once.', 'When you leave the app, the sound now stops instead of holding one note.', 'In Ember, bases nobody owns yet are easier to spot, and they now show cracks and a health ring when they are attacked.'] },
-  { v: '48.2', t: 'Ember and Hearth', b: ['Hearth is a new sound style, made to go with Ember: a low warm hum that grows with the fighting, crackles when a base is hit hard, a soft tap when you send troops, and a chord when you take a base. It replaces Overdrive.', 'If you had Overdrive picked, you now have Hearth.'] },
-  { v: '48.1.6', t: 'Check for update tells the truth', b: ['The Check for update button used to say you had the newest build even when a newer one was out. It now checks the website itself, and reloads straight into the new build when there is one.'] },
-  { v: '48.1.5', t: 'Ember', b: ['A new look called Ember takes the place of Overload. Every base is a small fire: it burns in its team color, cracks open with orange light as it takes damage, and a thin ring around it shows how much health is left. A capture is the new color catching fire.', 'If you had Overload picked, you now have Ember.'] },
-  { v: '48.1.4', t: 'Fewer lost taps', b: ['A tap that slides a few pixels still counts. A tap made while another finger is still on the screen now counts too, and a stray touch can no longer jam the controls.', 'When your selected base is lost or the selection runs out, the ring now visibly closes. A base under your finger now beats the arrow beside it. After a match ends, the first moment of taps cannot press Play again by accident.'] },
-  { v: '48.1.3', t: 'A word at the end', b: ['After a normal match there is now one short line under the result.'] },
-  { v: '48.1.1', t: 'More room around the map', b: ['The full view (double tap the map button) now leaves a little more room around the map on every size, so the outermost bases are not hard against the edge of the screen.'] },
-  { v: '48.1', t: 'Maps no longer depend on your screen', b: ['A map seed now gives the same map on every device. The map is built by the game\'s own rules, and the screen only decides how much of it you see.', 'You can move the camera until the outermost base on each side reaches the middle of the screen, and the full view (double tap the map button) fits those outermost bases to the screen.'] },
-  { v: '47.1.14', t: 'Ready for iPhone, and the AI strength in Spectate', b: ['Spectate now shows how strong the AI is, in one word next to the troop count, like your own matches do.', 'iPhone and iPad: the game now blocks the pinch zoom of the page itself, wakes the sound on the first touch, and fixes the screen size after turning the phone. There is a hint on this page for putting the game on the Home Screen.'] },
-  { v: '47.1.13', t: 'Made for slower phones', b: ['The game now checks how fast your phone is the first time it opens, and starts a slower phone on a lighter picture and a lighter sound. Auto still steps down by itself if the game slows.', 'The sound has a lighter version too: a shorter echo and fewer notes at once, with the same feel. It follows the picture level on Auto.'] },
-  { v: '47.1.12', t: 'Smoother Rime when zoomed out', b: ['The frost background no longer slows the game down when you zoom all the way out and pan around. Zoomed in it is still drawn as sharp lines.'] },
-  { v: '47.1.11', t: 'A tidier What\'s new', b: ['Check for update is at the top of this page, and only the newest four builds show. A button opens the older ones.', 'The flash for an earned upgrade point reaches further and is brighter in every style, so you can see it when you are watching the troops and not the corner. It also fades out instead of cutting off.', 'The strength of the rivals (Easy, Normal, Hard, Brutal or Random) shows next to your troop count in every match you play.', 'The selection ring is bigger, so it sits outside the swirl of troops around a base, and its share gauge is easier to read: the part you send is bright and thick with a dot at its end, and the rest is dim.', 'Rime\'s frost looks like cracked ice again: the cracks bend, their tips thin out, and there is a faint haze behind the main ones. Still sharp when you zoom in.'] },
-  { v: '47.1.10', t: 'A sound for upgrade points, and a calmer Chip', b: ['Earning an upgrade point now plays a soft two-note chime in your sound style, in that style\'s own key. Settings has a Hear it button for it.', 'Chip plays fewer, slower notes in a fight, so the scale no longer rushes.'] },
-  { v: '47.1.9', t: 'Sharper Rime frost', b: ['The cracked-ice background in Rime is drawn as fine lines now, so it stays sharp when you zoom in.', 'The frost fades in from the edge of the map and the hard edge is gone.', 'Every new match now starts with the send share back at 100%, so a 50% or 25% setting from the last game cannot surprise you.', 'The end-of-match card shows the build number and how you finished (your Health, Speed and Damage, time played, troops knocked out, most bases held).'] },
-  { v: '47.1.8', t: 'A clearer selection ring', b: ['The ring around a selected base is bigger and brighter, in the shape of your visual style, and fills like a clock hand to show how much of your army a tap will send.', 'Selecting a base gives a short double buzz.', 'A tap on empty space clears your selection and you can see it go: the ring closes in with a small tick.', 'You can now slide the map around even when fully zoomed out.', 'The wins-in-games line is gone from the main menu. Stats still has it.'] },
-  { v: '47.1.7', t: 'A flash for upgrade points', b: ['When you earn an upgrade point, your upgrade panel now bursts with light that matches your visual style, so you remember to spend it. Points that come close together share one burst.', 'If your phone is set to remove animations, you get a short soft glow instead.'] },
-  { v: '47.1.6', t: 'A small fix', b: ['In a match, the No upgrades line now says what the rule does: nobody earns XP and every skill stays at level 0.'] },
-  { v: '47.1.5', t: 'Tester tools and small touches', b: ['New: this What\'s new page, opened from the icon beside the build number, with a dot when there is a build you have not read about yet.', 'New: a Check for update button below. It looks for a newer build and reloads into it.', 'How to Play has a capital P, and its Guided match card has a permanent blue border so it is easy to spot (it says Completed once you have beaten it).'] },
-  { v: '47.1.1', t: 'Sound fix', b: ['Sound now comes back by itself if your phone pauses it (a text, another app). Before, it could stay silent until you tapped a base.', 'If it cannot come back, a short message tells you to tap the screen.'] },
-  { v: '47.1 and 47', t: 'Smarter rivals, tougher bases', b: ['Brutal rivals now keep troops home when you march at them, answer small raids, and strike any base you leave empty. Hard rivals do a lighter version. Easy and Normal play as before.', 'Health now also makes your bases tougher to break, and the rivals benefit too.', 'Hard rivals pick on you a little less.'] }
+  { v: '49', t: 'Build 49', b: ['Deadly: a new strength above Brutal. Enemies play smarter, think harder, and will prioritize taking you out quickly. They respond quickly and intelligently to threats, and capitalize on your mistakes.', 'Unlocks: Challenge Mode is now locked-win a single match of Classic at any difficulty/map size to unlock it. Win a match on Large/Hard to unlock Brutal, and win a match on Large/Brutal to unlock Deadly. Win any match on Brutal/Deadly to unlock them in custom/Spectate modes', 'Reset Data: in "Settings", there is a "Reset All Data" button, tap it three times in quick succession to delete data, unlocked items will be reset. This cannot be undone. UI readability also improved', 'Ember & Hearth: a new style pair, bases burn like small fires, troops will crackle when fighting. A chord plays when you take a base, with a deeper tone chord playing when you lose one. (Check all the styles for updated visuals/sounds!)', 'Win/Loss Tunes: The end of a match ends less abruptly; a slight beat will begin playing as the final base is captured, peaks at the moment of capture, and fades afterwards while the summary card settles in.', 'UI Layout: New in-match UI, making the more important buttons sit near your thumbs. Percentage tool is bottom-right, minimap is bottom-left above skills. Fixes made for multi-tap support, overall latency improved.', 'Maps/Rivals: Map generation fixed, and shy enemies on "Huge" maps no longer stay at home base indefinitely', 'General Optimizations in-game and menus'] },
+  { v: '48', t: 'Build 48', b: ['Smarter rivals: Brutal rivals keep troops home when you march at them, answer small raids and strike any base you leave empty (Hard does a lighter version), and health makes bases tougher to break.', 'Easier to read: a bigger, clearer selection ring, a bright flash and a soft chime when you earn an upgrade point, and sharper frost in Rime.', 'Made for slower phones: the game checks your phone the first time it opens and starts on a lighter picture and sound. It also runs on iPhone and iPad, and Spectate shows how strong the AI is.', 'For testers: this What\'s new page and a Check for update button, and the sound now comes back by itself if your phone pauses it.'] }
 ];
 const NEWS_SHOWN = 4; let newsAll = false;             // the newest four builds show; a button opens the older ones
 function renderNews() {
   const box = $('newsBody'); box.textContent = '';
   for (const e of newsAll ? NEWS : NEWS.slice(0, NEWS_SHOWN)) {
-    const d = document.createElement('div'), h = document.createElement('h3'), sp = document.createElement('span'), ul = document.createElement('ul');
-    h.textContent = e.t + ' '; sp.textContent = e.v; h.appendChild(sp); ul.className = 'how';
+    const d = document.createElement('div'), h = document.createElement('h3'), ul = document.createElement('ul');
+    h.textContent = e.t; ul.className = 'how';
     for (const line of e.b) { const li = document.createElement('li'); li.textContent = line; ul.appendChild(li); }
     d.appendChild(h); d.appendChild(ul); box.appendChild(d);
   }
@@ -6503,6 +6525,27 @@ setTimeout(() => { if (!PERF) runPhoneCheck(); }, 1500);          // the test pa
   document.querySelector('#scrSettings h2').addEventListener('click', fourTaps);          // also from the Settings title, so it can be opened in the middle of a match
 }
 syncQual();
+function fitHint(id, texts) {                        // one standard height per hint box: the tallest thing it can say at this width, so switching options never makes the box jump
+  const el = $(id); if (!el || !el.offsetParent) return;
+  const keep = el.textContent; el.style.minHeight = '0px'; let mx = 0;
+  for (const t of texts) { el.textContent = t; mx = Math.max(mx, el.offsetHeight); }
+  el.textContent = keep; el.style.minHeight = Math.ceil(mx) + 'px';
+}
+function fitHints() {
+  const rv = n => n === 1 ? 'rival' : 'rivals', V = o => Object.values(o), lock = V(LOCK_TEXT), diff = V(DIFF_INFO), pers = V(PERSONA_INFO);
+  const sizeA = [], sizeB = [], opp = [];
+  for (const k in SIZE_BASES) {
+    for (let n = 1; n <= 4; n++) sizeA.push(`You and ${n} ${rv(n)} on a map of ${SIZE_BASES[k]}.${k === 'large' ? ' Large matches can run long.' : ''} Tap a size again for a new map.`);
+    for (let t = 2; t <= 5; t++) sizeB.push(`${SIZE_LABEL[k]}: ${SIZE_BASES[k]}, ${t} colors.${k === 'huge' ? HUGE_NOTE : ''} Tap a size again for a new map.`);
+  }
+  for (let t = 2; t <= 5; t++) opp.push(`Auto: ${t - 1} ${rv(t - 1)}, based on map size.`, `${t - 1} ${rv(t - 1)} against you.`, `Auto: ${t} colors, based on map size.`, `${t} colors fight it out.`);
+  const acc = ['colors', 'symbols', 'haptics', 'screen'], flat = keys => keys.flatMap(k => V(SETTINGS_INFO[k]));
+  fitHint('classicSize', sizeA); fitHint('classicDiff', [...diff, ...lock]);
+  fitHint('hintEnemies', [...diff, ...pers, ...opp, ...lock]); fitHint('hintMap', [...V(SHAPE_INFO), ...V(SPECIAL_INFO), ...sizeB]);
+  fitHint('hintSpec', [...diff, ...pers, ...opp, ...V(SHAPE_INFO), ...V(SPECIAL_INFO), ...sizeB, ...lock]);
+  fitHint('hintSettings', flat(Object.keys(SETTINGS_INFO).filter(k => !acc.includes(k)))); fitHint('hintAccess', flat(acc));
+}
+let fitT = 0; window.addEventListener('resize', () => { clearTimeout(fitT); fitT = setTimeout(fitHints, 150); });
 function showScreen(id) {
   for (const sc of document.querySelectorAll('#menu .screen')) sc.hidden = sc.id !== id;
   const m = SCREEN_MODE[id];
@@ -6515,11 +6558,12 @@ function showScreen(id) {
   if (id === 'scrStats') renderStats();
   if (id === 'scrNews') { renderNews(); $('updMsg').textContent = ''; }
   if (id === 'scrQual') syncQual();
+  fitHints();
   placePreview();
   const f = $(id).querySelector('.primary, .back, button'); if (f) f.focus({ preventScroll: true });
 }
 function go(id) { stack.push(id); showScreen(id); armBack(); }
-function back() { if (stack.length > 1) { stack.pop(); showScreen(stack[stack.length - 1]); return true; } return false; }
+function back() { if (!$('unlockPop').hidden) { closeUnlockPop(); return true; } if (stack.length > 1) { stack.pop(); showScreen(stack[stack.length - 1]); return true; } return false; }
 function resetStack(root) { stack = [root]; showScreen(root); }
 // ---- the challenge ladder ----
 let curScen = null, briefId = null, nextScen = null, curPrac = null, coach = null;
@@ -6791,6 +6835,15 @@ function endCoda() {
   const pool = win ? (hard ? CODA.winHard : CODA.win) : G.t < 150 ? CODA.lossEarly : G.peak >= 0.4 * G.nodes.length ? CODA.lossBig : CODA.loss;
   return pool[(G.seed >>> 0) % pool.length];
 }
+const pendingUnlocks = (() => { let r = []; try { r = JSON.parse(localStorage.getItem('ice-pending')); } catch (_) {} return Array.isArray(r) ? r.filter(x => typeof x === 'string' && x.length < 200).slice(0, 8) : []; })();
+function showUnlockPop() {                            // the main menu is up: say what was earned since the last time, once
+  if (!pendingUnlocks.length || mode === 'play' || mode === 'paused' || mode === 'ending') return;
+  const ul = $('unlockList'); ul.textContent = '';
+  for (const t of pendingUnlocks) { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); }
+  $('unlockPop').hidden = false; try { $('bUnlockOk').focus({ preventScroll: true }); } catch (_) {}
+}
+function closeUnlockPop() { pendingUnlocks.length = 0; save('ice-pending', pendingUnlocks); $('unlockPop').hidden = true; }
+$('bUnlockOk').addEventListener('click', closeUnlockPop);
 function showEnd() {
   mode = 'over';
   const P = G.teams[PLAYER], N = G.nodes.length, t = $('endTitle'), sub = $('endSub');
@@ -6811,12 +6864,12 @@ function showEnd() {
       if (DIFF_LABEL[G.diffName] && G.diffName !== 'random') { p.gDiff[G.diffName] = (p.gDiff[G.diffName] || 0) + 1; if (win) p.wDiff[G.diffName] = (p.wDiff[G.diffName] || 0) + 1; }
       if (win && curModeKey === 'classic') {                                    // the way in. Classic wins only (Brutal and Deadly are locked everywhere else until earned).
         const got = [], D = G.diffName, big = G.sizeName === 'large';
-        if (!unlocks.challenge) { unlocks.challenge = true; got.push('Challenge Maps unlocked. Find them on the main menu.'); }
+        if (!unlocks.challenge) { unlocks.challenge = true; got.push('Challenge Maps unlocked. Find them in the Play menu.'); }
         if (big && ['hard', 'brutal', 'deadly'].includes(D) && !unlocks.brutal) { unlocks.brutal = true; got.push('Brutal unlocked. Find it under AI strength.'); }
         if (big && ['brutal', 'deadly'].includes(D) && !unlocks.deadly) { unlocks.deadly = true; got.push('Deadly unlocked. Find it under AI strength in Classic.'); }
         if (['brutal', 'deadly'].includes(D) && !unlocks.brutalCustom) { unlocks.brutal = unlocks.brutalCustom = true; got.push('You beat Brutal. It is now in Custom and Spectate.'); }
         if (D === 'deadly' && !unlocks.deadlyCustom) { unlocks.deadly = unlocks.deadlyCustom = true; got.push('You beat Deadly. It is now in Custom and Spectate.'); }
-        if (got.length) { unlockNote = got.join(' '); save('ice-unlocks', unlocks); syncSeg(); updateLadderBlurb(); }
+        if (got.length) { pendingUnlocks.push(...got); save('ice-pending', pendingUnlocks); save('ice-unlocks', unlocks); syncSeg(); updateLadderBlurb(); }     // announced on the next main menu, not on the card
       }
     }
     if (win) {
@@ -6896,7 +6949,7 @@ function toMenu() {
   coachEnd();
   hideInfo(); watching = false; hudEl.classList.remove('watch');
   show('end', false); hudEl.hidden = true;
-  startDemo(); resetCam(); layout(); renderRecord(); resetStack('scrHome'); show('menu', true);
+  startDemo(); resetCam(); layout(); renderRecord(); resetStack('scrHome'); show('menu', true); showUnlockPop();
 }
 
 // ---- Android back gesture: steps back through the menus, pauses a running game, never dumps you out mid-match ----
@@ -7416,6 +7469,14 @@ function ftReset() {
   const v = FTS[settings.tone]; if (v && v.drone && AC) { try { v.drone(0, 0, true); } catch (_) { /* a missing voice must never stop a match */ } }
 }
 function ftEligible() { return mode === 'play' && !watching && !G.autoplay && !G.scenarioId && !G.practice && !coach; }
+function ftCrown() {                                      // King of the hill: the holder's last 15 seconds on the clock, as a gauge
+  if (!G.mods.koth || G.crown < 0) return null;
+  const o = G.nodes[G.crown].owner, o2 = G.crown2 >= 0 ? G.nodes[G.crown2].owner : o;
+  if (o < 0 || o2 !== o) return null;                      // only whoever is banking the seconds right now; a lost hill lets the tension go
+  const best = G.teams[o]; if (!best || !best.active) return null;
+  const left = G.kothTarget - best.hill, W = 15; if (left > W) return null;
+  return { kind: best.i === PLAYER ? 'win' : 'loss', g: Math.max(0, Math.min(1, 1 - left / W)) };
+}
 function ftStep(dt) {                                      // the gauge, every frame of a match you are playing
   if (!ftEligible()) { FT.g = Math.max(0, FT.g - 2 * dt); return; }
   const P = G.teams[PLAYER], N = G.nodes.length, v = FTS[settings.tone];
@@ -7427,6 +7488,13 @@ function ftStep(dt) {                                      // the gauge, every f
     FT.phase = 'idle'; FT.g = 0; FT.node = -1;
     if (v && ftAudioOK()) { try { v.relief(AC.currentTime + 0.02); } catch (_) {} }
   }
+  const kc = ftCrown();
+  if (kc) {                                                // the crown is about to decide the match: it takes the gauge
+    if (FT.node !== -2 || FT.kind !== kc.kind) { FT.node = -2; FT.kind = kc.kind; FT.g = 0; FT.atk = -9; }
+    if (kc.g > FT.g) FT.g = Math.min(kc.g, FT.g + 1.4 * dt); else FT.g = Math.max(kc.g, FT.g - 0.7 * dt);
+    FT.phase = FT.g > 0.04 ? 'build' : 'idle'; return;
+  }
+  if (FT.node === -2) { FT.node = -1; FT.kind = null; }     // the crown clock stepped back (the leader lost the hill): the gauge falls away
   let kind = null, node = null;
   if (P.bases === 1) { kind = 'loss'; node = G.nodes.find(n => n.owner === PLAYER); }
   else if (P.bases >= 2 && N - P.bases === 1) { kind = 'win'; node = G.nodes.find(n => n.owner !== PLAYER); }
@@ -7449,7 +7517,7 @@ function ftTick(dt) {                                      // the sound side of 
   if (g > 0.04 && t >= FT.next && v.pulse) FT.next = t + v.pulse(g, t, FT.kind);
 }
 function ftBegin() {                                       // the match just ended: an elimination or a conquest gets the ending, everything else goes straight to the card
-  if (watching || G.autoplay || G.scenarioId || G.practice || coach || G.endReason === 'crown' || G.endReason === 'objective') return false;
+  if (watching || G.autoplay || G.scenarioId || G.practice || coach || G.endReason === 'objective') return false;
   const hold = FT.phase === 'hold', v = FTS[settings.tone], kind = G.result === 'win' ? 'win' : 'loss';
   mode = 'ending'; END.el = 0; END.tOver = G.t; END.skip = false;
   for (const f of G.fx) if (G.t - f.b < 0.5) f.ftq = 1;                       // the last capture and knockout are the tune's peak, not a second cue
@@ -7571,6 +7639,7 @@ FTS.cosmos = {                                            // slow and wide: the 
   peak(kind, t, hold) {
     const N = CS.nodes; if (!N) return;
     if (kind === 'win') { csBloom(N, t, 9, 0.125, 0); csBloom(N, t + 0.5, 11, 0.09, 0); [11, 13, 16].forEach((d, i) => csPing(N, t + 0.4 + i * CS_STEP * 2, csMidi(d), 0.08, 0, 2.6)); return; }
+    if (N.padG) { N.padG.gain.cancelScheduledValues(t); N.padG.gain.setTargetAtTime(0.0001, t, 0.3); N.padLP.frequency.setTargetAtTime(600, t, 0.3); }
     csSink(N, t); csEbb(N, t + 0.1, 6, 0.06, 0); [9, 6, 3].forEach((d, i) => csPing(N, t + 0.6 + i * CS_STEP * 2, csMidi(d), 0.04, 0, 2.6));
   },
   end(kind, t) { const N = CS.nodes; if (!N) return; csSink(N, t); csEbb(N, t + 0.1, 4, 0.05, 0); },
@@ -7595,12 +7664,13 @@ FTS.floe = {                                              // ice: low groans und
   end(kind, t) { const N = FL.nodes; if (N) flGive(N, t); },
   relief(t) { const N = FL.nodes; if (N) { flTink(N, t, 880, 0.03, 0, 1.2, 0, true); flTink(N, t + 0.22, 1320, 0.03, 0, 1.2, 0, true); } }
 };
+let pauseDrawMs = 8;                                 // how long one paused draw takes (smoothed), which sets how often the pause screen redraws
 function frame(nowMs) {
   const dt = Math.min(0.1, (nowMs - last) / 1000); last = nowMs;
   const tSim = performance.now();
   const running = (mode === 'play') || (mode === 'demo' && !reduceMotion);   // behind setup screens it runs unseen, for the ears
   if (G && running && !G.over) {
-    acc += dt * (mode === 'demo' ? (G.heard || G.t > 60 ? 0.85 : 5) : speedMul);   // behind the menus the opening skirmishes are skipped quickly, so there is something to hear
+    acc += dt * (mode === 'demo' ? 0.85 : speedMul);   // behind the menus the match plays from its very first second, a little slower than a real game
     let n = 0;
     while (acc >= STEP && n < 16) {
       update(STEP);
@@ -7622,10 +7692,12 @@ function frame(nowMs) {
   if (G) playSfx(nowMs, dt);
   if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); floeTick(); heTick(); mixTick(); if (G) ftTick(dt); }
   const fsw = G ? fogSwap() : null;                 // under fog, bases out of sight are drawn as last seen
-  const gap = mode === 'paused' ? 250 : mode === 'demo' ? 28 : 0;      // F2: nothing moves while paused (4 a second is plenty for the slow decoration); the demo behind the menus shows at about 30 a second
+  const gap = mode === 'paused' ? Math.min(250, Math.max(33, pauseDrawMs * 4)) : mode === 'demo' ? 28 : 0;      // paused: the slow decoration (snow, stars, drift) moves at up to about 30 a second, but never uses more than about a quarter of the time, so a slow phone backs off toward the old 4 a second; the demo behind the menus shows at about 30 a second
   if (!gap || drawDirty || nowMs - lastDrawAt >= gap) {
     drawDirty = false; lastDrawAt = nowMs;
+    const td0 = performance.now();
     try { draw(nowMs / 1000); if (mode === 'play' || mode === 'paused') drawMinimap(); } finally { fogRestore(fsw); }
+    if (mode === 'paused') pauseDrawMs += (performance.now() - td0 - pauseDrawMs) * 0.3;               // a smoothed cost of one paused draw
   } else fogRestore(fsw);
   perfTick(nowMs, tDraw - tSim, performance.now() - tDraw);
   if (!(PERF && window.__noWatch)) watchFrameRate(dt * 1000, nowMs);
@@ -7633,7 +7705,7 @@ function frame(nowMs) {
   requestAnimationFrame(frame);
 }
 
-syncLook(); syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout();
+syncLook(); syncSeg(); syncCtrl(); syncSound(); syncRivals(); renderRecord(); startDemo(); layout(); showUnlockPop();
 if (PERF) window.__audio = () => ({ AC, master, lim, mg, mlp, bus, pbus });   // lets the ?perf mode measure output levels
 if (PERF) window.__dbg = () => ({ mode, pvOnly, stack: stack.slice(), backPos, draining, t: G ? G.t : 0, over: G ? G.over : null, parts: parts.length, fx: G ? G.fx.length : 0, pvOwners: pvOwners ? pvOwners.length : 0, hasG: !!G });
 if (PERF) { window.__chimes = () => PF.chimes.slice(); window.__aud = () => ({ ac: AC, lim, master }); window.__chipnew = () => ({ chipNew }); window.__award = n => { const P = G.teams[PLAYER]; for (let i = 0; i < n; i++) { P.earned++; P.points++; } }; window.__pf = () => ({ starts: PF.starts, strength: PF.strength, parts: PF.ps.length, fx: PF.fx.length, glow: $('upg').classList.contains('ptsGlow'), shown: !!PF.cv && PF.cv.style.display !== 'none', style: settings.visual }); }
