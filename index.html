@@ -561,7 +561,7 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 49</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 49.1</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2" data-go="scrSettings">Settings</button>
@@ -820,7 +820,7 @@ const C = {
   hp: 10, dps: 4.2, spd: 46, hpPer: .15, dmgPer: .15, spdPer: .10,
   range: 30, engage: 60, leash: 58, presenceR: 60,
   orbitMin: 16, orbitMax: 32, spawnEvery: 2.0, capBase: 8, capPer: 12,
-  startTroops: 6, peace: 20, maxLvl: 10, cell: 36, maxPoints: 30,
+  startTroops: 6, settle: 20, maxLvl: 10, cell: 36, maxPoints: 30,
   atkEvery: 0.55,                       // seconds between shots
   baseHP: 1000, baseDpsCap: 110, baseRange: 40, baseRegen: 12, regenDelay: 4, flipHP: 0.3,
   neutralHP: 1.1, neutralDmg: 1.0, neutralRespawn: 7,
@@ -849,7 +849,7 @@ const DIFF = {
   //   def.late: a base with nobody left defending it is draining; if the help cannot get there before the base falls it is left alone (the retreat has the garrison already)
   //   last: LAST STAND. A rival down to `bases` bases or fewer, with under `share` of the biggest rival's army, after `after` s: no small raids, attacks only with a gathered force of at least `min` strength and `troops` troops (x1.25 margin), and the rest of its troops mass up instead
   //   sliver: small raids on weak bases (extra: shots on top of Brutal's, maxDef: weakest defense it hits, cap: share of the army, keep: troops left at the source)
-  deadly: { interval: [0.8, 1.2], margin: 1.1,  frac: .88, spawn: 1.30, playerBias: .5,  xp: 1.5, smart: 2,
+  deadly: { interval: [0.8, 1.2], margin: 1.1,  frac: .88, spawn: 1.30, playerBias: .5,  xp: 1.5, smart: 2, surge: { until: 45, mult: 2 },
     dly: { prey: { ratio: 1.6, bonus: 4 }, near: 3, bold: 0.7, def: { hold: 5, stick: 1.5, ratio: 2, late: 1 }, last: { bases: 4, share: 0.5, after: 90, min: 8, troops: 6 },  mass: { until: 240, rival: 2 }, retreat: { min: 3, ratio: 2 }, warn: { r: 400, min: 3, dwell: .8, value: .5, big: 6, ratio: .3, cap: .3, real: .4, hold: 10 }, sliver: { extra: 1, maxDef: 7, cap: .25, keep: 3 } } }
 };
 // AI personalities. hp/spd/dmg: how strongly it pulls toward each upgrade. pref: how much extra it wants each kind of special base.
@@ -992,6 +992,7 @@ const SIZES = {
   large:   { n: [42, 50], area: 1420000, teams: 5, capPer: 8 },
   huge:    { n: [64, 76], area: 2200000, teams: 5, capPer: 6 }
 };
+const HEAD_POINTS = 10;                               // Head start: upgrade points every color begins with
 const OPENING_DEFENDERS = 7; // every base next to a starting base gets the same garrison
 // ---- static maps: hand-made layouts (bases, links, who starts where) that a challenge can use instead of a generated map ----
 // { id, w, h, size ('small'..'huge': army cap and nothing else), nodes: [[x, y]...], edges: [[a, b]...], starts: [base id per color in play, you first],
@@ -1248,7 +1249,7 @@ function newGame(opts) {
   const rng = mulberry32(seed);
   const fixed = opts.fixedMap || (opts.map ? STATIC_MAPS[opts.map] : null);          // a hand-made map, or null for a generated one
   const spec = SIZES[opts.size || (fixed && fixed.size)] || SIZES.medium;
-  const mods = Object.assign({ blitz: false, glass: false, noup: false, koth: false, fog: false }, opts.mods || {});
+  const mods = Object.assign({ blitz: false, glass: false, noup: false, koth: false, fog: false, head: false, bounty: false }, opts.mods || {});
   const baseHP = C.baseHP * (mods.glass ? 0.5 : 1) * (opts.hpMul || 1);
   // which colors are in this match: you (team 0) plus a random pick of the others, or any colors when only AIs play
   const nTeams = Math.max(2, Math.min(5, opts.teams || (fixed ? fixed.starts.length : spec.teams)));
@@ -1294,7 +1295,7 @@ function newGame(opts) {
     bridges: new Set((m.bridges || []).map(([a, b]) => a < b ? a + '-' + b : b + '-' + a)),
     diff: D, diffName: opts.diff || 'normal', sizeName: opts.size || (fixed && fixed.size) || 'medium', active,
     capPer: spec.capPer,
-    teams: TEAM_COLORS.map((c, i) => ({ i, active: active.includes(i), alive: active.includes(i), xp: 0, points: (i === PLAYER && opts.startPoints) || 0, earned: 0,
+    teams: TEAM_COLORS.map((c, i) => ({ i, active: active.includes(i), alive: active.includes(i), xp: 0, points: (i === PLAYER && opts.startPoints) || (mods.head && !mods.noup ? HEAD_POINTS : 0), earned: 0,
       lv: { hp: 0, spd: 0, dmg: 0 }, kills: 0, bases: 0, count: 0, beacons: 0, forges: 0, hill: 0, mem: null,
       aiT: 1.2 + rng() * 2, target: null, sent: 0, avoid: -1, avoidUntil: 0,
       diff: D, diffName: opts.diff || 'normal', style: styleFor(opts.persona, rng) })),
@@ -1674,7 +1675,7 @@ function spawnStep(dt) {
   for (const n of G.nodes) {
     if (n.owner < 0) continue;
     const T = G.teams[n.owner];
-    n.spawnT -= dt * (n.owner === PLAYER && !G.autoplay ? 1 : G.teams[n.owner].diff.spawn) * (n.kind === 'forge' ? SPECIALS.forge.spawn : 1) * (G.mods.blitz ? 2 : 1);
+    n.spawnT -= dt * (n.owner === PLAYER && !G.autoplay ? 1 : G.teams[n.owner].diff.spawn) * (n.kind === 'forge' ? SPECIALS.forge.spawn : 1) * (G.mods.blitz ? 2 : 1) * (!(n.owner === PLAYER && !G.autoplay) && T.diff.surge && G.t < T.diff.surge.until ? T.diff.surge.mult : 1);   // surge: Deadly rivals' opening burst
     if (n.spawnT <= 0) {
       n.spawnT += C.spawnEvery;
       if (T.count < capOf(n.owner)) {
@@ -1722,7 +1723,7 @@ function sampleHistory(force) {
   // a lead change only counts once someone has been out in front on their own for 5 seconds
   const mx = Math.max(...b), cand = b.filter(x => x === mx).length === 1 ? b.indexOf(mx) : -1;
   if (cand !== G.leadCand) { G.leadCand = cand; G.leadSince = G.t; }
-  else if (cand >= 0 && cand !== G.leader && G.t - G.leadSince >= 5 && G.t > C.peace) {
+  else if (cand >= 0 && cand !== G.leader && G.t - G.leadSince >= 5 && G.t > C.settle) {
     G.leader = cand; G.log.push({ t: G.leadSince, k: 'lead', a: cand });
   }
 }
@@ -1931,6 +1932,8 @@ function aiThink(team) {
   if (!T.alive || !T.count) return;
   aiSpend(team);
   const sm = D.smart || 0, S = statArrays();
+  let bounty = null;                                    // BOUNTY: the colour with strictly the most bases is the only rival this one will attack
+  if (G.mods.bounty) { let mx = -1, who = -1, tie = false; for (const U of G.teams) if (U.alive) { if (U.bases > mx) { mx = U.bases; who = U.i; tie = false; } else if (U.bases === mx) tie = true; } if (!tie && who >= 0 && who !== team) bounty = who; }
   if (!G._ai || G._ai.N !== N) G._ai = { N, pres: new Float64Array(N * 6), mine: new Float64Array(N), committed: new Float64Array(N) };
   const P6 = G._ai.pres.fill(0), mine = G._ai.mine.fill(0), committed = G._ai.committed.fill(0);
   const pr2 = (C.presenceR * 1.2) ** 2;
@@ -2121,13 +2124,14 @@ function aiThink(team) {
     const front = new Set();
     for (const n of nodes) if (n.owner === team || mine[n.id] > 0)
       for (const v of n.adj) if (nodes[v].owner !== team) front.add(v);
+    if (bounty !== null) { let any = false; for (const v of front) { const o = nodes[v].owner; if (o < 0 || o === bounty) { any = true; break; } } if (!any) bounty = null; }   // stuck (only the others' bases in reach): they fight each other
     const MS = (D.dly && D.dly.mass && G.t < D.dly.mass.until) ? D.dly.mass : null;   // DEADLY: early on, nearby rivals are the preferred target
     const full = T.count >= capOf(team) * ((D.dly && D.dly.bold) || 0.9);
     const margin = (full ? Math.max(1.05, D.margin * 0.8) : D.margin) * (T.style.margin || 1) * (lastStand ? 1.25 : 1), frac = full || lastStand ? 0.95 : D.frac;
     let armyAll4 = 0; for (let i = 0; i < N; i++) armyAll4 += mine[i];
     for (const v of front) {
       const o = nodes[v].owner;
-      if (o >= 0 && G.t < C.peace) continue;              // opening ceasefire: neutrals only
+      if (bounty !== null && o >= 0 && o !== bounty) continue;   // BOUNTY: only the leader's bases (and neutrals) are targets
       if (v === T.avoid && G.t < T.avoidUntil) continue;  // just got bounced off this one
       const def = enemyAt(v), rt = routeTable(team, v);
       let need = Math.max(5, def * margin + 1.2) / frac, fr = frac;
@@ -2184,7 +2188,7 @@ function aiThink(team) {
   } // end primary
 
   // 5b. smart rivals punish a vacant or lightly held base next to them with just enough troops, without waiting for the main attack to finish
-  if (sm && G.t >= C.peace && !lastStand) {
+  if (sm && G.t >= C.settle && !lastStand) {
     const idleAt = new Float64Array(N);
     for (const t of G.troops) if (t.team === team && !t.path.length) idleAt[t.home] += S.st[ti];
     let shots = 0;
@@ -2193,6 +2197,7 @@ function aiThink(team) {
     for (const nv of nodes) {
       if (shots >= sm + (SL ? SL.extra : 0)) break;
       const v = nv.id; if (nv.owner === team) continue;
+      if (bounty !== null && nv.owner >= 0 && nv.owner !== bounty) continue;
       const def = enemyAt(v); if (def > (SL ? SL.maxDef : 5)) continue;
       if (v === T.target || (v === T.avoid && G.t < T.avoidUntil)) continue;
       const need = Math.max(5, def * D.margin + 3);
@@ -2207,7 +2212,7 @@ function aiThink(team) {
 
   // 6. a second front: once the army is big, troops sitting idle at home raid the softest target elsewhere,
   //    so big maps don't grind down to one attack at a time. Raids retreat by the same rule as main attacks.
-  if (T.count < (sm ? 30 : 60) || G.t < C.peace || lastStand) { T.raid = null; return; }
+  if (T.count < (sm ? 30 : 60) || G.t < C.settle || lastStand) { T.raid = null; return; }
   const idle = t => t.team === team && !t.path.length && nodes[t.home].owner === team && t.home !== T.target;
   if (T.raid != null) {
     const v = T.raid;
@@ -2228,6 +2233,7 @@ function aiThink(team) {
     for (const v of n.adj) {
       const o = nodes[v].owner;
       if (o === team || v === T.target || (v === T.avoid && G.t < T.avoidUntil)) continue;
+      if (bounty !== null && o >= 0 && o !== bounty) continue;
       const def = enemyAt(v), avail = idleStr * 0.65;
       if (avail < def * D.margin * (T.style.margin || 1) + 2) continue;
       const sc = (avail - def) / (def + 2) + (o === NEUTRAL ? 0.5 : 0) + (1 - nodes[v].hp / nodes[v].maxHp) * 0.6 + G.rng() * 0.3;
@@ -2321,7 +2327,7 @@ function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch 
 const COLOR_KEYS = ['blue', 'red', 'green', 'yellow', 'purple'];
 const settings = load('ice-settings', { send: 1, sound: true, rivals: false, volume: 75, tone: 'simple' });
 const rnd32 = () => (Math.random() * 4294967296) >>> 0;
-const MODS_OFF = { blitz: false, glass: false, noup: false, koth: false, fog: false };
+const MODS_OFF = { blitz: false, glass: false, noup: false, koth: false, fog: false, head: false, bounty: false };
 // Classic, Custom and Spectate each keep their own settings, so nothing bleeds from one mode into another.
 // Saves from before the split seed all three once, then they go their own ways.
 const unlocks = (() => {
@@ -2367,6 +2373,8 @@ const MODS = [
   { k: 'glass', n: 'Glass', d: 'Troops and bases have half health, so fights end quickly.' },
   { k: 'noup', n: 'No upgrades', d: 'No XP and no upgrade points.' },
   { k: 'koth', n: 'King of the hill', d: 'A crown sits on a base near the middle. Hold it for 90 seconds in total to win.' },
+  { k: 'head', n: 'Head start', d: 'Every color begins with 10 upgrade points to spend. Does nothing with No upgrades.' },
+  { k: 'bounty', n: 'Bounty', d: 'Rivals leave each other alone and hunt whoever has the most bases. Needs two or more rivals.' },
   { k: 'fog', n: 'Fog of war', d: 'You only see near your own bases and troops, and the AI does too. Not available in Spectate.' }
 ];
 function otActive(mode) { const c = settings[mode]; return mode !== 'classic' && c.ot === true; }
@@ -6462,6 +6470,7 @@ const HINT_START = { scrEnemies: ['hintEnemies', 'diff'], scrMap: ['hintMap', 's
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '49.1', t: 'Build 49.1', b: ['Head start: a new modifier. Every color begins with 10 upgrade points.', 'Bounty: a new modifier. Rivals stop fighting each other and hunt whoever has the most bases.', 'Deadly: its rivals build troops twice as fast for the first 45 seconds.', 'The rivals no longer hold back for the first 20 seconds (it made no measurable difference).'] },
   { v: '49', t: 'Build 49', b: ['Deadly: a new strength above Brutal. Enemies play smarter, think harder, and will prioritize taking you out quickly. They respond quickly and intelligently to threats, and capitalize on your mistakes.', 'Unlocks: Challenge Mode is now locked-win a single match of Classic at any difficulty/map size to unlock it. Win a match on Large/Hard to unlock Brutal, and win a match on Large/Brutal to unlock Deadly. Win any match on Brutal/Deadly to unlock them in custom/Spectate modes', 'Reset Data: in "Settings", there is a "Reset All Data" button, tap it three times in quick succession to delete data, unlocked items will be reset. This cannot be undone. UI readability also improved', 'Ember & Hearth: a new style pair, bases burn like small fires, troops will crackle when fighting. A chord plays when you take a base, with a deeper tone chord playing when you lose one. (Check all the styles for updated visuals/sounds!)', 'Win/Loss Tunes: The end of a match ends less abruptly; a slight beat will begin playing as the final base is captured, peaks at the moment of capture, and fades afterwards while the summary card settles in.', 'UI Layout: New in-match UI, making the more important buttons sit near your thumbs. Percentage tool is bottom-right, minimap is bottom-left above skills. Fixes made for multi-tap support, overall latency improved.', 'Maps/Rivals: Map generation fixed, and shy enemies on "Huge" maps no longer stay at home base indefinitely', 'General Optimizations in-game and menus'] },
   { v: '48', t: 'Build 48', b: ['Smarter rivals: Brutal rivals keep troops home when you march at them, answer small raids and strike any base you leave empty (Hard does a lighter version), and health makes bases tougher to break.', 'Easier to read: a bigger, clearer selection ring, a bright flash and a soft chime when you earn an upgrade point, and sharper frost in Rime.', 'Made for slower phones: the game checks your phone the first time it opens and starts on a lighter picture and sound. It also runs on iPhone and iPad, and Spectate shows how strong the AI is.', 'For testers: this What\'s new page and a Check for update button, and the sound now comes back by itself if your phone pauses it.'] }
 ];
@@ -6609,7 +6618,7 @@ function openBrief(id) {
   go('scrBrief');
 }
 // ---- rules in the stats drop-down: the challenge's goals with live status, or whatever modifiers are on ----
-const MOD_SHORT = { blitz: 'Faster troops, spawns and sieges', glass: 'Half health for troops and bases', noup: 'Nobody earns XP. Every skill stays at level 0.', koth: 'Hold the crown 90 s in total to win', fog: 'You only see near your own units' };
+const MOD_SHORT = { blitz: 'Faster troops, spawns and sieges', glass: 'Half health for troops and bases', noup: 'Nobody earns XP. Every skill stays at level 0.', koth: 'Hold the crown 90 s in total to win', fog: 'You only see near your own units', head: 'Everyone starts with 10 upgrade points', bounty: 'Rivals hunt whoever leads' };
 let hasRules = false, rulesCache = '', peekUntil = 0;
 function goalState(g, P) {
   switch (g.k) {
