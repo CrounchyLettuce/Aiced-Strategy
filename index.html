@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Aiced">
-<title>Aiced Logger</title>
+<title>Aiced Strategy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -191,7 +191,7 @@ html:root[data-colors="contrast"] #mm { background: rgba(0,0,0,.9); border-color
 .opt.stack { flex-direction: column; align-items: stretch; gap: 6px; } .opt.stack > span { flex: none; }
 #scrSettings .opt.stack > span { font-weight: 700; font-size: 13.5px; color: var(--ink); }
 #scrSettings .opt.sep { border-top: 1px solid var(--hair); padding-top: 12px; margin-top: 2px; }
-.screen:not(.side) .hintline { background: rgba(0,0,0,.7); padding: 6px 9px; border-radius: var(--rc); }
+.screen .hintline { background: rgba(0,0,0,.7); padding: 6px 9px; border-radius: var(--rc); }
 .hintline, .blurb { box-sizing: border-box; }
 #unlockPop { z-index: 30; background: rgba(0,0,0,.78); }
 #unlockPop .screen { background: rgba(10,10,14,.94); border: 1px solid var(--faint); border-radius: var(--rk); padding: 18px 16px; gap: 12px; }
@@ -450,54 +450,11 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
 .mode:active { background: rgba(40,40,44,.8); }
 .blurb { margin: -5px 0 0 108px; font-size: 12px; line-height: 1.35; color: var(--dim); min-height: 1.35em; }
 .chcard .best { grid-column: 1; font-size: 11.5px; color: var(--dim); }
-.screen.side { background: rgba(0,0,0,.74); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); border: 1px solid var(--hair); border-radius: var(--rk); padding: 12px 14px; }
-@media (orientation: portrait) { .screen.side { margin: auto 0 0 0; width: 100%; } }
 @media (orientation: landscape) {
-  .screen.side { margin: auto auto auto 6px; width: min(56%, 460px); }
-  .screen.side.cols { width: min(70%, 640px); }
-  .screen.side.cols .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
-  .screen.side.cols .opt { flex-direction: column; align-items: stretch; gap: 4px; }
-  .screen.side.cols .opt > .seg, .screen.side.cols .opt > .modbtn { flex: 0 0 auto; }
-  .screen.side.cols .opt > span { flex: 0 0 auto; font-size: 11.5px; }
-  .screen.side.cols .opt > span.hasnote { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .screen.side.cols .opt > span.hasnote em { margin-top: 0; text-align: right; font-size: 10px; }
-  .screen.side.cols .seg button, .screen.side.cols .modbtn, .screen.side.cols select { min-height: 40px; height: 40px; }
-  .screen.side.cols { padding: 8px 12px; gap: 8px; }
-  .screen.side.cols .opts { row-gap: 5px; }
-  .screen.side.cols header { min-height: 34px; }
-  .screen.side.cols .seg button, .screen.side.cols .modbtn, .screen.side.cols select { min-height: 36px; height: 36px; font-size: 13px; }
-  .screen.side.cols .primary.big { min-height: 46px; }
-  .screen.side.cols .blurb { margin: 0; grid-column: 1 / -1; }
   #scrPlay { width: min(100%, 800px); max-height: 100%; overflow-y: auto; }          /* 49.3: wide enough for the Resume card's summary; scrolls on a very short screen */
   .mode.resume { padding: 10px 14px; gap: 10px; }
   .mode.resume canvas { width: 80px; height: 48px; }
   .modes { grid-template-columns: 1fr 1fr; }
-}
-@media (orientation: landscape) and (max-height: 400px) {      /* short screens (a browser's toolbars eat height): same screens, tighter */
-  .screen.side { padding: 7px 12px; gap: 6px; }
-  .screen.side header { min-height: 32px; }
-  .screen.side .back { width: 34px; height: 34px; }
-  .screen.side h2 { font-size: 18px; }
-  .screen.side .opts { gap: 6px; }
-  .screen.side .seg button, .screen.side .modbtn, .screen.side select { min-height: 36px; height: 36px; font-size: 13px; }
-  .screen.side .catrow { min-height: 38px; padding: 4px 12px; }
-  .screen.side .blurb { font-size: 11px; line-height: 1.25; min-height: 1.25em; margin-top: -3px; }
-  .screen.side .primary.big { min-height: 42px; font-size: 16px; }
-  .screen.side .swatches button i { width: 15px; height: 15px; }
-  .screen.side.cols { padding: 5px 10px; gap: 5px; }
-  .screen.side.cols .seg button, .screen.side.cols .modbtn, .screen.side.cols select { min-height: 32px; height: 32px; font-size: 12.5px; }
-  .screen.side.cols .opt > span { font-size: 10.5px; line-height: 1.1; }
-  .screen.side.cols .opts { row-gap: 3px; }
-  .screen.side.cols header { min-height: 30px; }
-  .screen.side.cols .primary.big { min-height: 38px; }
-}
-@media (orientation: landscape) and (max-height: 430px) {      /* Spectate has the most options: it tightens up a little earlier than the rest */
-  .screen.side.cols { padding: 5px 10px; gap: 5px; }
-  .screen.side.cols .seg button, .screen.side.cols .modbtn, .screen.side.cols select { min-height: 34px; height: 34px; font-size: 12.5px; }
-  .screen.side.cols .opt > span { font-size: 10.5px; line-height: 1.1; }
-  .screen.side.cols .opts { row-gap: 3px; }
-  .screen.side.cols header { min-height: 30px; }
-  .screen.side.cols .primary.big { min-height: 40px; }
 }
 /* short landscape phones: Settings goes two across so everything stays on screen; the tuning panel just tightens up */
 @media (orientation: landscape) and (max-height: 430px) {
@@ -523,15 +480,6 @@ body:has(#menu:not([hidden])) :is(#coach, #coachRing, #coachArrow) { visibility:
 #pvCard[hidden] { display: none; }
 #pvMap { display: block; }
 @media (orientation: landscape) and (max-height: 430px) { .hintline { font-size: 11px; line-height: 1.3; min-height: 2.6em; } .spec { padding: 6px 10px; } .spec span { font-size: 12px; } }
-@media (orientation: portrait) {
-  .screen.side .opt { flex-direction: column; align-items: stretch; gap: 5px; }
-  .screen.side .opt > span { flex: none; }
-  .screen.side .opt > span.hasnote { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .screen.side .opt > span.hasnote em { margin-top: 0; text-align: right; }
-  .screen.side .opt > .info { align-self: flex-end; margin: -2px 0 0; }
-  .screen.side .blurb { margin-left: 0; }
-}
-@media (orientation: landscape) and (max-height: 400px) { .screen.side.cols .hintline { min-height: 1.3em; } .screen.side.cols .seg button, .screen.side.cols .modbtn { min-height: 30px; height: 30px; } }
 #info { position: fixed; z-index: 4; width: 232px; padding: 10px 12px; pointer-events: none; display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; line-height: 1.35; }
 #info[hidden] { display: none; }
 #info .ih { display: flex; align-items: center; gap: 8px; }
@@ -784,7 +732,7 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 49.9.10 LOGGER</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 50</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2 shopbtn" id="bShop" data-go="scrShop">Shop<i id="shopDot"></i></button>
@@ -943,12 +891,12 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
       <li><b>Goal.</b> Take every base.</li>
       <li><b>Look around.</b> Pinch and drag to move. The map button opens a minimap, and a double-tap on it shows everything. Press and hold any base to see what it is.</li>
       <li><b>Send troops.</b> Tap a base within your reach and troops from all your connected bases head there.</li>
-      <li><b>Send amount.</b> The 25%, 50% and 100% buttons in the bottom right set how many go. Set it to 50% and tap two targets far apart to fight on two fronts.</li>
-      <li><b>Send from one base.</b> Tap one of your bases to select it. A ring around it fills to show how much will leave. Then tap where it should go. At 25%, a base with 80 troops sends 20.</li>
-      <li><b>Regroup.</b> Tap the selected base again. Your chosen share of troops from all connected bases gathers there.</li>
-      <li><b>Lock on.</b> Double-tap a target and every new troop heads there until it's yours, whether or not it likes the idea.</li>
+      <li><b>Send amount.</b> The 25%, 50% and 100% buttons in the bottom right set how many go on every order. Set it to 50% and tap two targets far apart to fight on two fronts.</li>
+      <li><b>Send from one base.</b> Tap one of your bases to select it. A ring fills around it to show how many will leave. Then tap where they should go. At 25%, a base with 80 troops will send 20.</li>
+      <li><b>Regroup.</b> When a selection ring is up, tap the selected base again. Your chosen share of troops from all connected bases gathers there.</li>
+      <li><b>Lock on.</b> Double-tap a target and your chosen amount heads there, with new troops following as they spawn. They keep coming until the base is taken, even if the fight is going badly.</li>
       <li><b>Take a base.</b> Beat its defenders, then wear the base down. Land the final blow and it's yours.</li>
-      <li><b>Grow.</b> Every base you claim adds to your army.</li>
+      <li><b>Grow.</b> Every base you claim raises your army limit and spawns troops of its own, until your army is full. Troops that fall are replaced by new spawns. Lose a base and your limit drops.</li>
       <li><b>Get stronger.</b> Defeating troops fills an XP bar. A full bar gives you 1 skill point to spend on Health, Speed or Damage.</li>
       <li><b>Special bases.</b> Fortress: more health. Forge: more troops. Beacon: more XP. Relay: faster troops.</li>
     </ul>
@@ -970,7 +918,6 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
     <button id="bResume" class="primary big">Resume</button>
     <button class="ghost big2" data-go="scrSettings">Settings</button>
     <button id="bPauseSave" class="ghost big2" hidden>Save and quit</button>
-    <button id="bLogP" class="ghost big2">Save match log</button>
     <button id="bQuit" class="ghost big2">Quit to menu</button>
   </section>
 </div>
@@ -997,7 +944,7 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
         <div id="endRivals" class="endriv" hidden></div>
       </div>
     </div>
-    <div class="btns"><button id="bAgain" class="primary">Play again</button><button id="bNext" class="ghost" hidden>Next</button><button id="bMenu" class="ghost">Menu</button><button id="bLog" class="ghost">Save log</button></div>
+    <div class="btns"><button id="bAgain" class="primary">Play again</button><button id="bNext" class="ghost" hidden>Next</button><button id="bMenu" class="ghost">Menu</button></div>
     <div class="seg endtabs" id="endTabs" role="tablist" aria-label="Match summary">
       <button id="etResult" role="tab" aria-selected="true" data-p="epResult">Result</button>
       <button id="etMoments" role="tab" aria-selected="false" tabindex="-1" data-p="epMoments">Moments</button>
@@ -1022,11 +969,6 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
 
 <script>
 "use strict";
-/* LOGGER BUILD: separate save space. Every 'ice-' key is stored as 'ice-L-', so this page never touches the real game's saves on the same address. */
-(() => { const P = 'ice-L-', g = Storage.prototype.getItem, s = Storage.prototype.setItem, r = Storage.prototype.removeItem;   // LOGGER BUILD
-  const m = k => { k = String(k); return k.startsWith('ice-') && !k.startsWith(P) ? P + k.slice(4) : k; };   // LOGGER BUILD
-  Storage.prototype.getItem = function (k) { return g.call(this, m(k)); }; Storage.prototype.setItem = function (k, v) { return s.call(this, m(k), v); }; Storage.prototype.removeItem = function (k) { return r.call(this, m(k)); };   // LOGGER BUILD
-})();   // LOGGER BUILD
 // ================= ICE core (no DOM) =================
 // Pure game simulation: no drawing, no sound, no page. Everything the screen shows is read from G.
 //   constants .......... team colors/palette, tuning numbers (C), difficulty (DIFF), AI personalities, map sizes
@@ -1503,7 +1445,6 @@ let G = null;
 
 function newGame(opts) {
   opts = opts || {};
-  try { window.__xlOpts = JSON.parse(JSON.stringify(opts, (k, v) => typeof v === 'function' ? undefined : v)); } catch (_) { window.__xlOpts = null; }
   if (opts.scenario) opts = Object.assign({}, scenarioOpts(opts.scenario), opts);
   const seed = opts.seed != null ? opts.seed : (Math.random() * 4294967296) >>> 0;
   const rng = mulberry32(seed);
@@ -1981,7 +1922,7 @@ function spawnStep(dt) {
 }
 
 // lock-on: fresh troops head straight for the locked base
-function setLock(team, nodeId) { G.lock[team] = nodeId; /* LOGGER BUILD */ if (team === PLAYER && window.__xlLock) window.__xlLock(nodeId == null ? -1 : nodeId); }
+function setLock(team, nodeId) { G.lock[team] = nodeId; }
 function sendTo(t, target) {
   let c = G._rtCache;
   if (!c || c.team !== t.team || c.target !== target || c.step !== G.step) {
@@ -6279,7 +6220,6 @@ for (const b of upBtns) {
 function buy(k) {
   if (mode !== 'play' || !G || watching) return;
   if (upgrade(PLAYER, k)) {
-    xlEv('buy', k);
    
     buzz('buy');
     const b = upBtns.find(x => x.dataset.k === k);
@@ -8809,7 +8749,6 @@ function previewSound() {                       // a sample bleep and bloop so y
 
 // ---- screens ----
 const show = (id, on) => { $(id).hidden = !on; if (id === 'menu') { if (!on) pvOnly = false; placePreview(); } };   // the preview card belongs to the menu: it goes when the menu does
-const SIZE_BASES = { small: 'about 20 bases', medium: 'about 30 bases', large: 'about 45 bases', huge: 'about 70 bases' };
 // 49.8.10 (WC, Henry's decision): the hint under the size buttons is just the clause for the chosen size; the base count and the colour count are on the preview, and 'Tap again for a new map.' is a caption by the heading (head.html)
 const SIZE_CLAUSE = { small: 'Quick and close. Not much room to hide.', medium: 'Some room to grow, but rivals are always nearby.', large: 'Room for each team to gather strength, so plan ahead.', huge: 'Land enough for every team to dig in. Expect long, tough fights.' };
 const DIFF_INFO = { easy: 'Takes its time, and doesn\'t always know what to do with it.', normal: 'Builds steadily, and stays busy until you\'re within reach.', hard: 'Quick on its feet, and it guards what it holds.', brutal: 'A fast thinker and a risk taker. Leave a base open and it\'s gone.',
@@ -9451,20 +9390,6 @@ function pickMoments() {
   keep.forEach(e => { e.w = weight[e.k] + ((you(e.a) || you(e.b)) ? 1.5 : 0); });
   return keep.sort((a, b) => b.w - a.w).slice(0, 5).sort((a, b) => a.t - b.t);
 }
-function momentText(e) {
-  const you = i => i === PLAYER && !watching;
-  const who = i => i == null || i < 0 ? 'Someone' : you(i) ? 'You' : TEAM_NAMES[i];
-  const whose = i => you(i) ? 'your' : TEAM_NAMES[i] + "'s";
-  if (e.k === 'overtime') return 'Overtime: a crown rose';
-  if (e.k === 'crown') return `${who(e.a)} took the crown`;
-  if (e.k === 'home') return `${who(e.a)} took ${whose(e.b)} home base`;
-  if (e.k === 'out') {
-    if (you(e.b)) return e.a != null && e.a >= 0 ? `You were knocked out by ${TEAM_NAMES[e.a]}` : 'You were knocked out';
-    return e.a != null && e.a >= 0 ? `${who(e.a)} knocked out ${TEAM_NAMES[e.b]}` : `${TEAM_NAMES[e.b]} was knocked out`;
-  }
-  if (e.k === 'lead') return `${who(e.a)} took the lead`;
-  return `${who(e.a)} pulled back from a losing fight`;
-}
 function momentTeam(e) { if (e.k === 'overtime') return -1; const i = e.k === 'out' && (e.a == null || e.a < 0) ? e.b : e.a; return i == null ? -1 : i; }
 function momentColor(e) { return e.k === 'overtime' ? '#ffcd30' : colorOf(momentTeam(e)); }
 function drawTimeline(moments) {
@@ -9613,7 +9538,7 @@ function showUnlockPop() {                            // the main menu is up: sa
 function closeUnlockPop() { pendingUnlocks.length = 0; save('ice-pending', pendingUnlocks); $('unlockPop').hidden = true; }
 $('bUnlockOk').addEventListener('click', closeUnlockPop);
 function showEnd() {
-  mode = 'over'; xlFinish();
+  mode = 'over';
   if (resumedFromSlot) { resumedFromSlot = false; dropSave(); }                // the saved match has been played out
   const P = G.teams[PLAYER], N = G.nodes.length, t = $('endTitle'), sub = $('endSub');
   let unlockNote = '', shopLine = '';
@@ -9810,7 +9735,7 @@ function refreshInfo() { if (infoNode) { renderInfo(); positionInfo(); } }
 function longPress(g) {                              // press and hold on a base: what is it?
   if (gest !== g || g.kind !== 'tap' || ptrs.size !== 1 || mode !== 'play' || !G) return;
   const n = pickNode(g.sx, g.sy); if (!n) return;
-  g.kind = 'held'; hover = null; showInfo(n); xlEv('info', n.id);
+  g.kind = 'held'; hover = null; showInfo(n);
   buzz('press');
 }
 const atBase = (t, id) => { const b = G.nodes[id]; return t.team === PLAYER && (Math.hypot(t.x - b.x, t.y - b.y) < 60 || (t.home === id && !t.path.length)); };   // troops standing at (or just leaving) a base
@@ -9821,65 +9746,6 @@ function selCheck() {                              // a selection ends when its 
   return false;
 }
 
-
-// ---- XL: test-only match logger (LOGGER BUILD, never ships) ----
-const XL = { log: null, g: null, lastSnap: 0, saved: 0 };
-function xlOwners() { return G.nodes.map(n => n.owner === NEUTRAL ? '-' : n.owner).join(''); }
-function xlNew() {
-  XL.g = G; XL.lastSnap = -999; XL.saved = performance.now();
-  XL.log = {
-    build: 'Build 49.9.10 LOGGER', resumedAt: G.t > 1 ? +G.t.toFixed(1) : 0, started: new Date().toISOString(), ua: navigator.userAgent,
-    view: [innerWidth, innerHeight, devicePixelRatio], quality: quality, qualFix: qualFix,
-    opts: window.__xlOpts || null, seed: G.seed, size: G.sizeName, diff: G.diffName, shape: G.shape, mods: G.mods,
-    teams: G.teams.map(T => ({ i: T.i, active: !!T.active, style: T.style && T.style.name })),
-    nodes: G.nodes.map(n => [Math.round(n.x), Math.round(n.y), n.kind || '', n.owner]), edges: G.edges,
-    starts: G.nodes.filter(n => n.owner >= 0).map(n => [n.owner, n.id]),
-    ev: [], snaps: [], result: null
-  };
-}
-function xlEv(k, ...a) { if (XL.log && XL.g === G && mode === 'play' && !watching) XL.log.ev.push([G.step, k, ...a]); }
-// AI orders (LOGGER BUILD): every command() a rival issues is logged as ['ai', team, target, moved, sent, cands, sourceBases]; no per-troop positions
-const _xlCmd = command;   // LOGGER BUILD
-command = function (team, target, frac, filter, maxCost) {   // LOGGER BUILD
-  const live = team !== PLAYER && XL.log && XL.g === G, before = live ? G.troops.filter(t => t.team === team).map(t => [t, t.path]) : null;   // LOGGER BUILD
-  const r = _xlCmd(team, target, frac, filter, maxCost === undefined ? Infinity : maxCost);   // LOGGER BUILD
-  if (live && r) xlEv('ai', team, target, r.moved, r.sent, r.cands, new Set(before.filter(b => b[0].path !== b[1]).map(b => b[0].home)).size);   // LOGGER BUILD
-  return r;   // LOGGER BUILD
-};   // LOGGER BUILD
-function xlSnap() {
-  const P = G.teams[PLAYER], tg = new Set();
-  for (const t of G.troops) if (t.team === PLAYER && t.path.length) { const d = t.path[t.path.length - 1]; if (G.nodes[d].owner !== PLAYER) tg.add(d); }
-  XL.log.snaps.push([G.step, +G.t.toFixed(1), G.teams.map(T => T.bases), G.teams.map(T => T.count), P.points, [P.lv.hp, P.lv.spd, P.lv.dmg],
-    +cam.z.toFixed(2), Math.round(cam.cu), Math.round(cam.cv), $('mm').hidden ? 0 : 1, selBase == null ? -1 : selBase, G.lock[PLAYER] == null ? -1 : G.lock[PLAYER],
-    [...tg], speedMul, xlOwners()]);
-}
-function xlTick() {
-  if (!G || mode !== 'play' || watching || G.over) return;
-  if (XL.g !== G) xlNew();
-  if (G.step - XL.lastSnap >= 60) { XL.lastSnap = G.step; xlSnap(); }
-  if (performance.now() - XL.saved > 10000) xlSave();
-}
-function xlSave() { XL.saved = performance.now(); try { if (XL.log) localStorage.setItem('ice-xlog-cur', JSON.stringify(XL.log)); } catch (_) {} }
-function xlFinish() {
-  if (watching || !XL.log || XL.g !== G) return;
-  xlSnap(); XL.log.result = { result: G.result, t: +G.t.toFixed(2), step: G.step, bases: G.teams.map(T => T.bases), kills: G.teams.map(T => T.kills), peak: G.peak, orders: G._orders | 0 };
-  xlSave();
-}
-function xlPre(n, from) {
-  const garr = G.troops.filter(t => n.owner >= 0 && t.team === n.owner && t.home === n.id && !t.path.length).length;
-  const avail = from == null ? G.troops.filter(t => t.team === PLAYER).length : G.troops.filter(t => atBase(t, from)).length;
-  return [n.owner, Math.round(n.hp), garr, avail, from == null ? -1 : +(G.t - selT).toFixed(2)];
-}
-function xlDownload() {
-  let L = XL.log; if (!L) { try { L = JSON.parse(localStorage.getItem('ice-xlog-cur')); } catch (_) {} }
-  if (!L) { toast('No match log yet.', '#fff'); return; }
-  const stamp = (L.started || '').replace(/[-:T]/g, '').slice(0, 12);
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(L)], { type: 'application/json' }));
-  a.download = `aiced_log_${L.seed}_${L.size}_${L.diff}_${stamp}.json`; document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-}
-window.__xlLock = id => xlEv('lock', id);
-$('bLog').addEventListener('click', xlDownload); $('bLogP').addEventListener('click', () => { xlSave(); xlDownload(); });
 function handleTap(px, py) {
   if (mode !== 'play' || !G || G.over) return;
   audioOn();
@@ -9888,7 +9754,7 @@ function handleTap(px, py) {
   const n = pickNode(px, py);
   if (!n) for (const a of arrowHits) if ((a.x - px) ** 2 + (a.y - py) ** 2 < 30 * 30) { centerOn(a.n.x, a.n.y); return; }      // a base under the finger wins over an arrow beside it
   if (!n) {                                          // a tap on empty space clears the selection, and now you can see it: the ring collapses and the phone ticks
-    if (selValid()) { selGhost = { id: selBase, t: performance.now() }; buzz('tap'); xlEv('clr', selBase); }
+    if (selValid()) { selGhost = { id: selBase, t: performance.now() }; buzz('tap'); }
     selBase = null; lastTap = { id: -1, t: 0 }; return;
   }
   const nowMs = performance.now(), now = nowMs / 1000;
@@ -9896,18 +9762,16 @@ function handleTap(px, py) {
   lastTap = { id: dbl ? -1 : n.id, t: nowMs };
   let from = null;
   if (selValid()) {
-    if (n.id === selBase && nowMs - selAt < 450) { selFlash = nowMs; xlEv('bnc', n.id); return; }                              // a second tap right after selecting is a bounce, not a regroup
+    if (n.id === selBase && nowMs - selAt < 450) { selFlash = nowMs; return; }                              // a second tap right after selecting is a bounce, not a regroup
     if (n.id !== selBase) from = selBase; selBase = null;
   }                                  // a base was selected: this tap sends from it (or, on the same base, regroups)
   else if (n.owner === PLAYER && !dbl && G.troops.some(t => atBase(t, n.id))) {
-    selBase = n.id; selG = G; selT = G.t; selAt = nowMs; selFlash = nowMs; buzz('sel'); xlEv('sel', n.id);                                                                    // select: the next tap says where
+    selBase = n.id; selG = G; selT = G.t; selAt = nowMs; selFlash = nowMs; buzz('sel');                                                                    // select: the next tap says where
     if (!selHinted) { selHinted = true; toast('Selected. Tap where these troops should go. Tap here again to regroup.', TEAM_COLORS[PLAYER], PLAYER); }
     return;
   }
   if (dbl && lastFromSel === n.id) { lastFromSel = -1; setLock(PLAYER, n.id); return; }                         // double-tap after a send from a selection: just lock on
-  const _pre = xlPre(n, from);
   const r = command(PLAYER, n.id, settings.send, from == null ? undefined : t => atBase(t, from));
-  xlEv('o', from == null ? -1 : from, n.id, settings.send, dbl ? 1 : 0, r ? r.moved : -1, r ? r.cands : 0, r ? r.sent : 0, _pre);
   lastFromSel = r && from != null ? n.id : -1;
   if (r) {
     G._orders = (G._orders | 0) + 1; buzz('tap'); orderTap(r.moved);
@@ -10112,7 +9976,7 @@ $('bResetAll').addEventListener('click', () => {
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
 document.querySelectorAll('#menu .back').forEach(b => b.addEventListener('click', back));
 $('bPause').addEventListener('click', pause);
-$('bSpeed').addEventListener('click', () => { if (mode !== 'play') return; const sp = speeds(); speedMul = sp[(sp.indexOf(speedMul) + 1) % sp.length]; xlEv('spd', speedMul); syncCtrl(); });
+$('bSpeed').addEventListener('click', () => { if (mode !== 'play') return; const sp = speeds(); speedMul = sp[(sp.indexOf(speedMul) + 1) % sp.length]; syncCtrl(); });
 $('statsBtn').addEventListener('click', () => {
   if (!watching && !hasRules) return;
   if (statsHold) { setMinimap(false); layout(); return; }                   // the panel was folded for the minimap: tapping it puts the minimap away and the panel back
@@ -10141,7 +10005,7 @@ $('vol').addEventListener('input', () => {
   settingsKey = 'volume'; renderSettingsHint();
 });
 $('bSound').addEventListener('click', () => { settings.sound = !settings.sound; save('ice-settings', settings); audioOn(); syncSound(); });
-function setSend(f) { if (mode !== 'play' || !SENDS.includes(f)) return; settings.send = f; save('ice-settings', settings); xlEv('pct', f); syncCtrl(); }
+function setSend(f) { if (mode !== 'play' || !SENDS.includes(f)) return; settings.send = f; save('ice-settings', settings); syncCtrl(); }
 document.querySelectorAll('#sendTri button').forEach(b => b.addEventListener('click', () => setSend(+b.dataset.send)));
 
 window.addEventListener('keydown', e => {
@@ -10600,7 +10464,6 @@ let pauseDrawMs = 8;                                 // how long one paused draw
 function frame(nowMs) {
   const dt = Math.min(0.1, (nowMs - last) / 1000); last = nowMs;
   const tSim = performance.now();
-  xlTick();
   const running = (mode === 'play') || (mode === 'demo' && !reduceMotion);   // behind setup screens it runs unseen, for the ears
   if (G && running && !G.over) {
     acc += dt * (mode === 'demo' ? 0.85 : speedMul);   // behind the menus the match plays from its very first second, a little slower than a real game
@@ -10654,7 +10517,7 @@ if (PERF) window.__hearth = () => ({ on: !!HE.nodes, v: HE.v, I: HE.I, Is: HE.Is
 if (PERF) window.__rn = () => ({ on: !!RN.nodes, v: RN.v, heat: RN.heat, ft: RN.ft, plinks: RN.plinks, thunks: RN.thunks, hum: !!RN.hum, fade: RN.fadeAt });   // sound-test hook
 if (PERF) window.__mb = () => ({ on: !!MB.nodes, v: MB.v, ticks: MB.ticks, ft: MB.ft, quiet: MB.quietUntil });   // sound-test hook
 if (PERF) window.__floe = () => ({ on: !!FL.nodes, v: FL.v, gain: FL.nodes ? FL.nodes.out.gain.value : 0 });   // sound-test hook
-if (PERF) { window.__xl = () => XL.log; window.__xlDl = xlDownload; window.__core = { newGame, update, command, setLock, upgrade, getG: () => G, atBase, STEP }; window.__wfr = watchFrameRate; window.__qs = () => ({ quality, ceilQ, calmSince, slowSince, start: startQ(), aq: AQ() }); window.__qset = q => { quality = q; layout(); }; window.__box = () => ({ box: boxUV(), view: mapView(), s0, W, H, rot }); window.__ios = () => IOS; window.__ir = () => ({ dr: DR.ir && DR.ir.duration, cs: CS.ir && CS.ir.duration, fl: Object.fromEntries(Object.entries(FL.ir).map(([k, v]) => [k, v.duration])), nodes: { dr: DR.nodes && DR.nodes.tier, cs: CS.nodes && CS.nodes.tier, fl: FL.nodes && FL.nodes.tier } }); window.__aq = () => AQ(); window.__hwset = ms => { HW.list = [ms, ms, ms]; HW.ms = ms; HW.done = true; save('ice-hw', { v: 3, list: HW.list }); if (qualFix < 0 && mode !== 'play') { quality = startQ(); layout(); } syncQual(); }; window.__hw = () => ({ ms: HW.ms, done: HW.done, tier: hwTier(), quality, aq: AQ(), audFix }); }
+if (PERF) { window.__core = { newGame, update, command, setLock, upgrade, getG: () => G, atBase, STEP }; window.__wfr = watchFrameRate; window.__qs = () => ({ quality, ceilQ, calmSince, slowSince, start: startQ(), aq: AQ() }); window.__qset = q => { quality = q; layout(); }; window.__box = () => ({ box: boxUV(), view: mapView(), s0, W, H, rot }); window.__ios = () => IOS; window.__ir = () => ({ dr: DR.ir && DR.ir.duration, cs: CS.ir && CS.ir.duration, fl: Object.fromEntries(Object.entries(FL.ir).map(([k, v]) => [k, v.duration])), nodes: { dr: DR.nodes && DR.nodes.tier, cs: CS.nodes && CS.nodes.tier, fl: FL.nodes && FL.nodes.tier } }); window.__aq = () => AQ(); window.__hwset = ms => { HW.list = [ms, ms, ms]; HW.ms = ms; HW.done = true; save('ice-hw', { v: 3, list: HW.list }); if (qualFix < 0 && mode !== 'play') { quality = startQ(); layout(); } syncQual(); }; window.__hw = () => ({ ms: HW.ms, done: HW.done, tier: hwTier(), quality, aq: AQ(), audFix }); }
 if (PERF) window.__ev = s => eval(s);                  // tests: run a line inside the game's own scope
 if (PERF) window.__validate = id => validateStaticMap(typeof id === 'string' ? STATIC_MAPS[id] : id);
 if (PERF) window.__setCam = (cu, cv, z) => { cam.cu = cu; cam.cv = cv; if (z) cam.z = z; updateView(); };          // tests: where a world point lands on screen
