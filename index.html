@@ -148,6 +148,9 @@ body:has(#end:not([hidden])) #hud { opacity: 0; transition: opacity .25s; }
 .back svg { width: 16px; height: 16px; }
 .big { min-height: 56px; border-radius: var(--rc); font-size: 18px; font-weight: 600; }
 .big2 { min-height: 50px; border-radius: var(--rc); font-size: 16px; font-weight: 600; }
+#bSetStyles small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 500; color: var(--dim); }
+#bSetStyles small[hidden] { display: none; }
+#bSetStyles:disabled { opacity: .5; cursor: default; }      /* 50.0.14: greyed out in a challenge that sets its own style pair */
 .small { min-height: 44px; border-radius: var(--rc); font-size: 14px; color: var(--dim); }
 .mark { display: flex; align-items: center; gap: 14px; }
 .mark svg { width: 44px; height: 44px; flex: none; }
@@ -733,7 +736,7 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 50.0.6</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 50.1</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2 shopbtn" id="bShop" data-go="scrShop">Shop<i id="shopDot"></i></button>
@@ -811,7 +814,7 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
       <p class="hintline" id="hintSettings" hidden></p>
     </div>
     <button class="ghost big2" data-go="scrAccess">Accessibility</button>
-    <button id="bSetStyles" class="ghost big2">Styles</button>
+    <button id="bSetStyles" class="ghost big2"><span>Styles</span><small id="setStylesOff" hidden>Unavailable on this map</small></button>
     <button id="bResetAll" class="ghost small">Reset all data</button>
   </section>
 
@@ -1074,24 +1077,22 @@ const SPECIAL_KINDS = Object.keys(SPECIALS);
 // objective types: conquest (take every base), crown (King of the hill), hold (n bases, secs in a row),
 // forges (hold every Forge for secs), survive (secs). Star goals are checked once you've won.
 const ALONE_AI = { interval: [9999, 9999], margin: 99, spawn: 0.6, firstThink: 9999 };         // T1_M1's own rival: builds a little, never attacks (a copy, so the tutorial can change)
-const CROWN_AI = { smart: 1, spawn: 0.6, margin: 2.6, interval: [6, 9] };         // T1_M2's rival (50.0.6): awake from the first seconds (50.0.5 slept for 75 s and a rush killed it unseen); slow, patient, punishes an empty base
+const CROWN_AI = { smart: 0, spawn: 0.3, margin: 2.6, interval: [6, 9], crownMargin: 1.0, crownFrac: 1 };         // T1_M2's rival (50.0.7, draft 3 "take the crown back"): starts next to the crown and goes for it at once (crownMargin, crownFrac), slow to build and patient about everything else so a newcomer can still catch up
+const LOADED_AI = { smart: 1, spawn: 0.3, margin: 2.6, interval: [6, 9] };         // T1_M3's rival (50.0.9, Bases Loaded): punishes an empty base next to it (smart 1), slow to build and patient, so sending everything down one road costs bases but a newcomer can still win
 const SCENARIOS = [
-  { id: 'alone', tier: 1, name: 'Land Rush', desc: 'Grow fast.',
-    size: 'small', teams: 2, shape: 'continent', map: 'alone', diff: 'easy', seed: 9001, fair: true, mods: {}, specials: true, aiTune: ALONE_AI,
-    objective: { type: 'hold', n: 12, secs: 45, text: 'Hold 12 bases for 45 seconds' },
-    stars: [{ k: 'win', t: 'Hold 12 bases for 45 seconds' }, { k: 'time', v: 210, t: 'Win in under 3:30' }, { k: 'ko', t: 'Capture the rival before you win' }] },
-  { id: 'crown-duel', tier: 1, name: 'Crown Duel', desc: 'Two colors, one crown.',
-    size: 'small', teams: 2, shape: 'continent', map: 'crown-duel', diff: 'easy', seed: 9002, fair: true, mods: { koth: true }, kothTarget: 60, specials: false, aiTune: CROWN_AI,
-    objective: { type: 'crown', text: 'Hold the crown for 60 seconds' },
-    stars: [{ k: 'win', t: 'Hold the crown for 60 seconds' }, { k: 'time', v: 210, t: 'Win in under 3:30' }, { k: 'noloss', t: 'Win without losing a base' }] },
-  { id: 'first-blood', tier: 1, name: 'First blood', desc: 'A head-to-head on a small map. Take every base.',
-    size: 'small', teams: 2, shape: 'continent', diff: 'easy', seed: 4101, fair: true, mods: {}, specials: false,
+  { id: 'alone', tier: 1, name: 'Land Rush', desc: 'Look at alllll thooose bases.',      // 50.0.14: Tier 1 text from Henry and WC (spelling deliberate)
+    size: 'small', teams: 2, shape: 'continent', map: 'alone', diff: 'easy', seed: 9001, fair: true, mods: {}, specials: true, aiTune: ALONE_AI, rule: "Take a base and it'll make troops for you. Take another, and you can see where this is going. Godspeed.",
+    objective: { type: 'hold', n: 12, secs: 45, text: 'Hold 12 bases for 45 seconds straight' },
+    stars: [{ k: 'win', t: 'Hold 12 bases for 45 seconds straight' }, { k: 'time', v: 210, t: 'Win in under 3:30' }, { k: 'ko', t: 'Capture all rival bases before you win' }] },   // star 3's line holds because this rival never sends troops, so taking its bases knocks it out
+  { id: 'crown-duel', tier: 1, name: 'Hot Seat', desc: 'Two colors, one crown.',
+    size: 'small', teams: 2, shape: 'continent', map: 'crown-duel', diff: 'easy', seed: 9002, fair: true, mods: { koth: true }, kothTarget: 60, kothRival: 150, specials: false, aiTune: CROWN_AI, rule: "The rival has the better seat. You'll have to build the better army.",      // 50.0.14: renamed from Crown Duel (that name is banked for a later level)
+    objective: { type: 'crown', text: 'Hold the crown for a total of 60 seconds' },
+    stars: [{ k: 'win', t: 'Hold the crown for a total of 60 seconds' }, { k: 'time', v: 180, t: 'Win in under 3:00' }, { k: 'hillcap', v: 10, t: 'Win before the rival banks 10 seconds on the crown' }] },
+  { id: 'bases-loaded', tier: 1, name: 'Border Dispute', desc: 'Neither side has any paperwork.',      // 50.0.14: renamed from Bases Loaded
+    size: 'small', teams: 2, shape: 'continent', map: 'bases-loaded', diff: 'easy', seed: 9003, fair: true, mods: {}, specials: false, aiTune: LOADED_AI, forcePair: 'atlas', rule: 'Two roads, and the rival is waiting at the end of both. If only you could be in two places at once...',
     objective: { type: 'conquest', text: 'Take every base' },
-    stars: [{ k: 'win', t: 'Take every base' }, { k: 'time', v: 240, t: 'Win in under 4:00' }, { k: 'noloss', t: 'Win without losing a base' }] },
-  { id: 'crown-rush', tier: 1, name: 'Crown rush', desc: 'Two colors race for a crown in the middle of a ring.',
-    size: 'small', teams: 2, shape: 'ring', diff: 'normal', seed: 7134, fair: true, mods: { koth: true }, specials: false,
-    objective: { type: 'crown', text: 'Hold the crown for 90 seconds' },
-    stars: [{ k: 'win', t: 'Hold the crown for 90 seconds' }, { k: 'time', v: 180, t: 'Win in under 3:00' }, { k: 'bases', v: 8, t: 'Finish with 8 or more bases' }] },
+    stars: [{ k: 'win', t: 'Take every base' }, { k: 'time', v: 270, t: 'Win in under 4:30' }, { k: 'time', v: 55, t: 'Win in under 0:55' }] },   // 50.0.12: stars from Henry's runs (0:50 to 0:56 at his best; 3:19 and 3:57 handicapped); star 3 was 0:52 in 50.0.11
+  // 50.0.10: the old Tier 1 maps First blood and Crown rush are retired (Henry, Oct 27); their entries are kept in src5009\core.js
   { id: 'iron-wall', tier: 2, name: 'Iron wall', desc: 'Islands, bridges and two rivals. Build a territory and hold it.',
     size: 'medium', teams: 3, shape: 'islands', diff: 'hard', seed: 7065, fair: true, mods: {}, specials: true, aiTune: { margin: 1.4, spawn: 1.02, playerBias: 0.25 },
     objective: { type: 'hold', n: 12, secs: 120, text: 'Hold 12 bases for 2 minutes' },
@@ -1162,7 +1163,7 @@ function scenarioOpts(id) {
   const c = SCENARIOS.find(x => x.id === id); if (!c) return {};
   return { scenarioId: c.id, map: c.map, size: c.size, teams: c.teams, shape: c.shape, diff: c.diff, seed: c.seed, mods: c.mods, specials: c.specials,
     specialKinds: c.specialKinds, surround: c.surround, playerTroops: c.playerTroops, fair: c.fair, persona: c.persona, objective: c.objective, stars: c.stars,
-    aiTune: c.aiTune, hpMul: c.hpMul, fogScale: c.fogScale, quake: c.quake, crowns: c.crowns, kothTarget: c.kothTarget };
+    aiTune: c.aiTune, hpMul: c.hpMul, fogScale: c.fogScale, quake: c.quake, crowns: c.crowns, kothTarget: c.kothTarget, kothRival: c.kothRival };
 }
 function starMet(g) {
   const P = G.teams[PLAYER];
@@ -1173,6 +1174,7 @@ function starMet(g) {
     case 'nostat': return P.lv[g.v] === 0;
     case 'bases': return P.bases >= g.v;
     case 'ko': return G.teams.some(T => T.i !== PLAYER && T.active && !T.alive);
+    case 'hillcap': return G.teams.every(T => T.i === PLAYER || !T.active || T.hill < g.v);   // 50.0.7: no rival banked this much crown time
   }
   return false;
 }
@@ -1182,6 +1184,7 @@ function evalStars() {                                // [objective done, second
   return out;
 }
 const KOTH_TARGET = 90;                               // seconds a color must hold the crown, in total, to win
+function kothGoal(i) { return G.kothRival && i !== PLAYER ? G.kothRival : G.kothTarget; }   // 50.0.7: a challenge can give its rivals a longer crown clock than yours (kothRival); 0 everywhere else, so every other match is unchanged
 const FOG_BASE_R = 180, FOG_TROOP_R = 95;             // how far a base / a troop sees under fog of war
 const UPG = ['hp', 'spd', 'dmg'];
 // map sizes: base count, world size (bases keep the same spacing), and how much each base adds to your army limit
@@ -1200,7 +1203,7 @@ const OPENING_DEFENDERS = 7; // every base next to a starting base gets the same
 // { id, w, h, size ('small'..'huge': army cap and nothing else), nodes: [[x, y]...], edges: [[a, b]...], starts: [base id per color in play, you first],
 //   optional: bridges [[a, b]...], shape, deco, specials { baseId: 'fortress'|'forge'|'beacon'|'relay' }, crown: baseId }
 // Draw them with tools/maps/mapmaker.html; validateStaticMap() lists whatever is wrong with one.
-const STATIC_MAPS = { 'crown-duel': {"id": "crown-duel", "w": 1300, "h": 700, "size": "small", "nodes": [[110, 350], [240, 195], [240, 505], [350, 350], [480, 235], [480, 465], [420, 85], [420, 615], [1190, 350], [1060, 195], [1060, 505], [950, 350], [820, 235], [820, 465], [880, 85], [880, 615], [650, 350], [650, 70], [650, 630]], "edges": [[0, 1], [0, 2], [0, 3], [1, 3], [2, 3], [1, 4], [2, 5], [3, 4], [3, 5], [1, 6], [2, 7], [6, 4], [7, 5], [4, 16], [5, 16], [6, 17], [7, 18], [8, 9], [8, 10], [8, 11], [9, 11], [10, 11], [9, 12], [10, 13], [11, 12], [11, 13], [9, 14], [10, 15], [14, 12], [15, 13], [12, 16], [13, 16], [14, 17], [15, 18]], "starts": [0, 8], "shape": "continent", "crown": 16, "garrison": {"1": 7, "2": 7, "3": 7, "4": 11, "5": 11, "6": 12, "7": 12, "9": 7, "10": 7, "11": 7, "12": 11, "13": 11, "14": 12, "15": 12, "16": 20, "17": 14, "18": 14}}, alone: {"id": "alone", "w": 1300, "h": 700, "size": "small", "nodes": [[110, 350], [260, 220], [260, 480], [290, 350], [430, 130], [610, 95], [790, 130], [430, 570], [610, 605], [790, 570], [470, 350], [640, 290], [810, 350], [960, 190], [960, 350], [960, 510], [1100, 260], [1100, 440], [1210, 350], [640, 410]], "edges": [[0, 1], [0, 2], [0, 3], [1, 3], [2, 3], [1, 4], [4, 5], [5, 6], [2, 7], [7, 8], [8, 9], [3, 10], [10, 11], [11, 12], [6, 13], [9, 15], [12, 14], [13, 14], [14, 15], [13, 16], [14, 16], [14, 17], [15, 17], [16, 18], [17, 18], [10, 19], [19, 12]], "starts": [0, 18], "specials": {"5": "beacon", "8": "forge", "16": "fortress", "18": "fortress"}, "shape": "continent", "allowStartSpecials": true, "garrison": {"4": 12, "5": 14, "6": 18, "7": 12, "8": 14, "9": 18, "10": 12, "11": 14, "12": 22, "13": 24, "14": 24, "15": 24, "19": 14, "16": 20, "17": 12, "18": 24}, "owned": {"16": 1}}, surrounded: {"id": "surrounded", "w": 1308, "h": 734, "size": "medium", "nodes": [[654, 367], [95, 85], [250, 95], [420, 110], [105, 255], [300, 250], [505, 265], [1213, 85], [1058, 95], [888, 110], [1203, 255], [1008, 250], [803, 265], [95, 649], [250, 639], [420, 624], [105, 479], [300, 484], [505, 469], [1213, 649], [1058, 639], [888, 624], [1203, 479], [1008, 484], [803, 469], [654, 115], [654, 619]], "edges": [[1, 2], [2, 3], [1, 4], [2, 5], [4, 5], [5, 6], [3, 6], [6, 0], [3, 25], [6, 25], [7, 8], [8, 9], [7, 10], [8, 11], [10, 11], [11, 12], [9, 12], [12, 0], [9, 25], [12, 25], [13, 14], [14, 15], [13, 16], [14, 17], [16, 17], [17, 18], [15, 18], [18, 0], [15, 26], [18, 26], [19, 20], [20, 21], [19, 22], [20, 23], [22, 23], [23, 24], [21, 24], [24, 0], [21, 26], [24, 26], [4, 16], [10, 22]], "starts": [0, 1, 7, 19, 13]} };
+const STATIC_MAPS = { 'bases-loaded': {"id": "bases-loaded", "w": 1300, "h": 700, "size": "small", "nodes": [[110, 350], [230, 210], [370, 130], [520, 100], [230, 490], [370, 570], [520, 600], [400, 350], [1190, 350], [1070, 210], [930, 130], [780, 100], [1070, 490], [930, 570], [780, 600], [900, 350]], "edges": [[0, 1], [1, 2], [2, 3], [0, 4], [4, 5], [5, 6], [0, 7], [7, 2], [7, 5], [8, 9], [9, 10], [10, 11], [8, 12], [12, 13], [13, 14], [8, 15], [15, 10], [15, 13], [3, 11], [6, 14]], "starts": [0, 8], "shape": "continent", "garrison": {"1": 6, "2": 6, "3": 12, "4": 6, "5": 6, "6": 12, "7": 6, "9": 6, "10": 6, "11": 12, "12": 6, "13": 6, "14": 12, "15": 6, "0": 10, "8": 10}, "owned": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "9": 1, "10": 1, "11": 1, "12": 1, "13": 1, "14": 1, "15": 1}}, 'crown-duel': {"id": "crown-duel", "w": 1300, "h": 700, "size": "small", "nodes": [[110, 350], [240, 195], [240, 505], [350, 350], [480, 235], [480, 465], [420, 85], [420, 615], [1190, 350], [1060, 195], [1060, 505], [950, 350], [820, 235], [820, 465], [880, 85], [880, 615], [650, 350], [650, 70], [650, 630]], "edges": [[0, 1], [0, 2], [0, 3], [1, 3], [2, 3], [1, 4], [2, 5], [3, 4], [3, 5], [1, 6], [2, 7], [6, 4], [7, 5], [4, 16], [5, 16], [6, 17], [7, 18], [8, 9], [8, 10], [8, 11], [9, 11], [10, 11], [9, 12], [10, 13], [11, 12], [11, 13], [9, 14], [10, 15], [14, 12], [15, 13], [12, 16], [13, 16], [14, 17], [15, 18]], "starts": [0, 8], "shape": "continent", "crown": 16, "garrison": {"1": 7, "2": 7, "3": 7, "4": 11, "5": 11, "6": 12, "7": 12, "9": 7, "10": 7, "11": 7, "12": 6, "13": 6, "14": 12, "15": 12, "16": 14, "17": 14, "18": 14}, "owned": {"12": 1, "13": 1}}, alone: {"id": "alone", "w": 1300, "h": 700, "size": "small", "nodes": [[110, 350], [260, 220], [260, 480], [290, 350], [430, 130], [610, 95], [790, 130], [430, 570], [610, 605], [790, 570], [470, 350], [640, 290], [810, 350], [960, 190], [960, 350], [960, 510], [1100, 260], [1100, 440], [1210, 350], [640, 410]], "edges": [[0, 1], [0, 2], [0, 3], [1, 3], [2, 3], [1, 4], [4, 5], [5, 6], [2, 7], [7, 8], [8, 9], [3, 10], [10, 11], [11, 12], [6, 13], [9, 15], [12, 14], [13, 14], [14, 15], [13, 16], [14, 16], [14, 17], [15, 17], [16, 18], [17, 18], [10, 19], [19, 12]], "starts": [0, 18], "specials": {"5": "beacon", "8": "forge", "16": "fortress", "18": "fortress"}, "shape": "continent", "allowStartSpecials": true, "garrison": {"4": 12, "5": 14, "6": 18, "7": 12, "8": 14, "9": 18, "10": 12, "11": 14, "12": 22, "13": 24, "14": 24, "15": 24, "19": 14, "16": 20, "17": 12, "18": 24}, "owned": {"16": 1}}, surrounded: {"id": "surrounded", "w": 1308, "h": 734, "size": "medium", "nodes": [[654, 367], [95, 85], [250, 95], [420, 110], [105, 255], [300, 250], [505, 265], [1213, 85], [1058, 95], [888, 110], [1203, 255], [1008, 250], [803, 265], [95, 649], [250, 639], [420, 624], [105, 479], [300, 484], [505, 469], [1213, 649], [1058, 639], [888, 624], [1203, 479], [1008, 484], [803, 469], [654, 115], [654, 619]], "edges": [[1, 2], [2, 3], [1, 4], [2, 5], [4, 5], [5, 6], [3, 6], [6, 0], [3, 25], [6, 25], [7, 8], [8, 9], [7, 10], [8, 11], [10, 11], [11, 12], [9, 12], [12, 0], [9, 25], [12, 25], [13, 14], [14, 15], [13, 16], [14, 17], [16, 17], [17, 18], [15, 18], [18, 0], [15, 26], [18, 26], [19, 20], [20, 21], [19, 22], [20, 23], [22, 23], [23, 24], [21, 24], [24, 0], [21, 26], [24, 26], [4, 16], [10, 22]], "starts": [0, 1, 7, 19, 13]} };
 function validateStaticMap(mp) {
   const bad = [], isN = v => typeof v === 'number' && isFinite(v);
   if (!mp || typeof mp !== 'object') return ['not a map'];
@@ -1242,7 +1245,7 @@ function validateStaticMap(mp) {
     if (mp.owned) for (const [id, j] of Object.entries(mp.owned)) {
       if (!(id in P)) bad.push('owned base ' + id + ' is not there');
       else if (S.includes(+id)) bad.push('owned base ' + id + ' is already a start');
-      if (!Number.isInteger(j) || j < 1 || j >= S.length) bad.push('owned base ' + id + ' names a team that is not in play');
+      if (!Number.isInteger(j) || j < 0 || j >= S.length) bad.push('owned base ' + id + ' names a team that is not in play');   // 50.0.9: 0 (you) is allowed; Bases Loaded starts you on eight bases
     }
     if (mp.crown != null && (!Number.isInteger(mp.crown) || mp.crown < 0 || mp.crown >= N || S.includes(mp.crown))) bad.push('crown must be a base that is not a start');
   }
@@ -1506,7 +1509,7 @@ function newGame(opts) {
   G = {
     t: 0, step: 0, nodes, edges: m.edges, troops: [], nextId: 1, rng, seed,
     shape: m.shape || 'continent', deco: m.deco || null,
-    mods, baseHP, crown: -1, crown2: -1, kothTarget: opts.kothTarget || KOTH_TARGET, fogScale: opts.fogScale || 1, quake: opts.quake || 0, nextQuake: opts.quake || 0, endReason: null,
+    mods, baseHP, crown: -1, crown2: -1, kothTarget: opts.kothTarget || KOTH_TARGET, kothRival: opts.kothRival || 0, fogScale: opts.fogScale || 1, quake: opts.quake || 0, nextQuake: opts.quake || 0, endReason: null,
     overtimeOn: !!opts.overtime && !opts.scenarioId, maxedT: null, otCrown: false,
     scenarioId: opts.scenarioId || null, practice: opts.practice || null, obj: opts.objective || { type: 'conquest' }, starGoals: opts.stars || null,
     os: { hold: 0, forges: 0, surv: 0 }, playerLosses: 0,
@@ -2049,7 +2052,7 @@ function objStep(dt) {                                // progress toward a chall
 function checkEnd() {
   const N = G.nodes.length, P = G.teams[PLAYER], o = G.obj;
   const owner = G.teams.find(T => T.bases === N);
-  const king = G.mods.koth && G.crown >= 0 ? G.teams.find(T => T.hill >= G.kothTarget) : null;
+  const king = G.mods.koth && G.crown >= 0 ? G.teams.find(T => T.hill >= kothGoal(T.i)) : null;
   let w = owner || king, reason = owner ? 'conquest' : 'crown';
   if (!w && P.alive && ((o.type === 'hold' && G.os.hold >= o.secs) || (o.type === 'forges' && G.os.forges >= o.secs) || (o.type === 'survive' && G.os.surv >= o.secs))) { w = P; reason = 'objective'; }
   if (w) { G.over = true; G.winner = w.i; G.result = w.i === PLAYER ? 'win' : 'lose'; G.endReason = reason; }
@@ -2415,7 +2418,8 @@ function aiThink(team) {
       if (bAllow && o >= 0 && !bAllow[o]) continue;   // BOUNTY: only the allowed colours (and neutrals) are targets
       if (v === T.avoid && G.t < T.avoidUntil) continue;  // just got bounced off this one
       const def = enemyAt(v), rt = routeTable(team, v);
-      let need = Math.max(5, def * margin + 1.2) / frac, fr = frac;
+      const cB = nodes[v].crown && D.crownMargin, cf = cB ? (D.crownFrac || frac) : frac;   // 50.0.7: a challenge rival can be bolder about the crown alone (crownMargin, crownFrac); no other rival has them
+      let need = Math.max(5, def * (cB ? D.crownMargin : margin) + 1.2) / cf, fr = cf;
       const fl = (T.fail && T.fail.v === v && G.t - T.fail.t < 150) ? T.fail.n : 0;   // failed attacks on this very base: ask for x1.5 more each time
       if (fl) need *= Math.pow(1.5, fl);
       let R = gatherRadius(rt, need);
@@ -2429,7 +2433,7 @@ function aiThink(team) {
       let sc = (avail - def) / (def + 2) - R / (1500 / ((D.dly && D.dly.near) || 1));    // nearer targets win ties
       sc += (seen && !seen[v] ? 0 : (1 - nodes[v].hp / nodes[v].maxHp)) * 0.8;
       if (nodes[v].kind) sc += ((T.style.pref || {})[nodes[v].kind] || 0.6) * 0.8;   // each personality has its favorites
-      if (nodes[v].crown) sc += 1.0 + 2.2 * (o >= 0 && o !== team ? G.teams[o].hill / G.kothTarget : 0);   // and everyone chases whoever is close to winning
+      if (nodes[v].crown) sc += 1.0 + 2.2 * (o >= 0 && o !== team ? G.teams[o].hill / kothGoal(o) : 0);   // and everyone chases whoever is close to winning
       if (hopCrown && hopCrown[v] >= 0) sc += 1.6 * Math.max(0, 1 - hopCrown[v] / 7);                         // and heads for it: bases on the way count extra
       if (o === NEUTRAL) sc += 0.6;
       else {
@@ -2562,8 +2566,10 @@ const SHOP_TEXT = {
   endToken: n => n === 1 ? 'You earned a token. Spend it in the Shop.' : `You earned ${n} tokens. Spend them in the Shop.`,
   starTokens: n => `New stars: +${n} ${n === 1 ? 'token' : 'tokens'} for the Shop.`,
   starsAtStart: n => `The Shop is open. Your challenge stars earned you ${n} ${n === 1 ? 'token' : 'tokens'}. Find it on the main menu.`,
-  visualName: { classic: 'Classic', ember: 'Ember', atlas: 'Atlas', pixel: 'Pixel', nebula: 'Nebula', rime: 'Rime', clockwork: 'Brass', neon: 'Neon', ink: 'Ink', sand: 'Sand' },
-  soundName: { simple: 'Simple', hearth: 'Hearth', drift: 'Drift', chip: 'Chip', cosmos: 'Cosmos', floe: 'Floe', musicbox: 'Springs', rain: 'Synth', tide: 'Tide', bowl: 'Bowl' },
+  /*STYLE:P1*/
+  visualName: { classic: 'Classic', ember: 'Ember', atlas: 'Atlas', pixel: 'Pixel', nebula: 'Nebula', rime: 'Rime', clockwork: 'Brass', neon: 'Neon', ink: 'Ink', sand: 'Sand', velvet: 'Velvet' },
+  /*STYLE:P2*/
+  soundName: { simple: 'Simple', hearth: 'Hearth', drift: 'Drift', chip: 'Chip', cosmos: 'Cosmos', floe: 'Floe', musicbox: 'Springs', rain: 'Synth', tide: 'Tide', bowl: 'Bowl', chamber: 'Strings' },
   blurb: {
     classic: 'Simple, gently glowing shapes and soft tones. Where everyone starts.',
     ember: 'Embers in the evening. A warm hum and the crackle of logs.',
@@ -2574,6 +2580,8 @@ const SHOP_TEXT = {
     clockwork: 'Gears turning with time, winding up a hidden music box.',     // 49.4: placeholder words for Henry and WC
     neon: 'Glowing signs under gentle rain. The hum of the future is in the air.',     // 49.5: placeholder words for Henry and WC
     ink: 'Ink bleeding into warm paper. Muffled piano keys, and a slow tide beneath them.',     // 49.6: placeholder words for Henry and WC
+    /*STYLE:P3*/
+    chamber: 'Strings drawn tight over velvet. Somewhere, a cello is still warming up.',     // SC pitch; final words by Henry and WC
     sand: 'A pale sand garden, raked and empty. Singing bowls and wooden notes.' }     // 49.7: placeholder words for Henry and WC     // 49.5: placeholder words for Henry and WC
 };
 // Prices and earning. Only Classic earns: a win pays size x strength, a loss pays the size only; quits, Custom and Spectate pay nothing.
@@ -2583,8 +2591,13 @@ const SHOP = { one: 3, pair: 5, curve: [1, 2, 2, 3, 3, 4, 4, 5],
 // The pairs, in Shop order. A new pair is one more line here (plus its name and blurb above, and the style itself).
 const SHOP_PAIRS = [{ id: 'classic', v: 'classic', s: 'simple', free: true }, { id: 'ember', v: 'ember', s: 'hearth' }, { id: 'atlas', v: 'atlas', s: 'drift' },
   { id: 'pixel', v: 'pixel', s: 'chip' }, { id: 'nebula', v: 'nebula', s: 'cosmos' }, { id: 'rime', v: 'rime', s: 'floe' },
-  { id: 'clockwork', v: 'clockwork', s: 'musicbox' }, { id: 'neon', v: 'neon', s: 'rain' }, { id: 'ink', v: 'ink', s: 'tide' }, { id: 'sand', v: 'sand', s: 'bowl' }];          // 49.4, 49.5, 49.6, 49.7
+  /*STYLE:P4*/
+  { id: 'clockwork', v: 'clockwork', s: 'musicbox' }, { id: 'neon', v: 'neon', s: 'rain' }, { id: 'ink', v: 'ink', s: 'tide' }, { id: 'sand', v: 'sand', s: 'bowl' }, { id: 'chamber', v: 'velvet', s: 'chamber' }];          // 49.4, 49.5, 49.6, 49.7
+// 50.1, the line-drawing slot: a look may draw the lines between bases itself. LINE_STYLE[<look key>] = { seg(A, B, f), after(lw, team, kind) }, both optional.
+// seg adds one line (or the first f of it, from A) to the current path; after runs right after each batch is stroked (team -1 = nobody's; kind 'idle', 'held' or 'out').
+const LINE_STYLE = {};
 let shopReal = null;      // while the Shop is open: the styles you actually have selected (the map may be showing a preview)
+let forcedReal = null;    // 50.0.13: while a challenge with `forcePair` is on screen: your own styles (the match shows the level's pair, owned or not)
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 const $ = id => document.getElementById(id);
 const field = $('field'), hudEl = $('hud');
@@ -2651,7 +2664,7 @@ function load(k, d) {
   try { const v = JSON.parse(localStorage.getItem(k)); return Object.assign({}, d, isObj(v) ? v : {}); }
   catch (e) { return Object.assign({}, d); }
 }
-function save(k, v) { if (k === 'ice-settings' && shopReal) v = Object.assign({}, v, shopReal); try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }     // a Shop preview is never saved
+function save(k, v) { if (k === 'ice-settings' && (shopReal || forcedReal)) v = Object.assign({}, v, forcedReal, shopReal); try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }     // a Shop preview is never saved
 const COLOR_KEYS = ['blue', 'red', 'green', 'yellow', 'purple'];
 const settings = load('ice-settings', { send: 1, sound: true, rivals: false, volume: 75, tone: 'simple' });
 const rnd32 = () => (Math.random() * 4294967296) >>> 0;
@@ -2731,13 +2744,15 @@ settings.sound = settings.sound !== false; settings.rivals = settings.rivals ===
 if (settings.tone === 'felt') settings.tone = 'soft'; else if (settings.tone === 'hum') settings.tone = 'drift';     // retired profiles move to their closest relative
 if (settings.tone === 'bright' || settings.tone === 'soft') settings.tone = 'simple';                                // Build 36: the two became Simple
 if (settings.tone === 'overdrive') settings.tone = 'hearth';                                                         // Build 48.2: Overdrive was replaced by Hearth
-if (!['simple', 'hearth', 'drift', 'chip', 'cosmos', 'floe', 'musicbox', 'rain', 'tide', 'bowl'].includes(settings.tone)) settings.tone = 'simple';
+/*STYLE:P6*/
+if (!SHOP_PAIRS.some(q => q.s === settings.tone)) settings.tone = 'simple';     // 50.1: the Shop's pair list is the one list of sounds
 delete settings.woods;                                                                                               // 48.9.7: the night-woods trial is gone
 settings.screen = 'auto';                                                                                            // 48.8: the Screen setting is gone, Auto (follow the phone's rotation lock) is baked in
 settings.menuSound = 'on';                                                                                           // 48.8: the Menu sound switch is gone; a saved Off must not silence the menus with nothing to turn it back on (the volume slider does the muting)
 if (settings.visual === 'spark') settings.visual = 'classic';
 if (settings.visual === 'overload') settings.visual = 'ember';                                                        // Build 48.1.5: Overload was replaced by Ember                                                        // Build 36: Spark was folded into Classic
-if (!['classic', 'ember', 'atlas', 'pixel', 'nebula', 'rime', 'clockwork', 'neon', 'ink', 'sand'].includes(settings.visual)) settings.visual = 'classic';
+/*STYLE:P5*/
+if (!SHOP_PAIRS.some(q => q.v === settings.visual)) settings.visual = 'classic';     // 50.1: the Shop's pair list is the one list of looks; a new pair is allowed once it is in SHOP_PAIRS
 // The Shop's save: tokens, progress toward the next one, how many have been earned by playing, stars already paid for, and what you own.
 // Kept apart from Stats like the unlocks, so resetting Stats never takes styles away. Test pages (?perf) with no Shop save own everything.
 const shop = (() => {
@@ -3390,7 +3405,8 @@ function drawFogOverlay() {
   const fs = Math.min(1, 1 / (dpr * 1.5)) * dpr * 0.5, fw = Math.max(1, Math.round(cv.width / dpr * fs)), fh = Math.max(1, Math.round(cv.height / dpr * fs));
   if (fogCv.width !== fw || fogCv.height !== fh) { fogCv.width = fw; fogCv.height = fh; }
   const x = fogCx; x.globalCompositeOperation = 'source-over'; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, fw, fh);
-  x.fillStyle = isInk() ? 'rgba(206,201,193,0.9)' : isSand() ? 'rgba(120,104,80,0.88)' : 'rgba(0,0,0,0.8)'; x.fillRect(0, 0, fw, fh);        // Ink: the unseen part of the page is paper-coloured haze, not black
+  /*STYLE:V1*/
+  x.fillStyle = isInk() ? 'rgba(206,201,193,0.9)' : isStrings() ? SG_FOG : isSand() ? 'rgba(120,104,80,0.88)' : 'rgba(0,0,0,0.8)'; x.fillRect(0, 0, fw, fh);        // Ink: the unseen part of the page is paper-coloured haze, not black
   x.globalCompositeOperation = 'destination-out';
   for (let i = 0; i < fogN; i += 3) { const p = toScreen(fogSrc[i], fogSrc[i + 1]), r = fogSrc[i + 2] * V.s * fs * 1.12 / dpr * dpr; x.drawImage(fogSprite, p.x * fs - r, p.y * fs - r, r * 2, r * 2); }
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.save(); ctx.beginPath(); ctx.rect(F.x * dpr, F.y * dpr, F.w * dpr, F.h * dpr); ctx.clip();
@@ -3430,7 +3446,9 @@ function vfxHits(ev) {                               // sparks where hits land, 
   if (isClock()) { if (!reduceMotion) clockHits(ev); return; }
   if (isNeon()) { if (!reduceMotion) neonHits(ev); return; }
   if (isInk()) { if (!reduceMotion) inkHits(ev); return; }
+  /*STYLE:V2*/
   if (isSand()) { if (!reduceMotion) sandHits(ev); return; }
+  if (isStrings()) { if (!reduceMotion) sgHits(ev); return; }
   if (!fxOn()) return;
   const OV = isOver(), LT = isClassic(), NB = isNebula(), RM = isRime(), EM = isEmber(), mult = OV ? 3 : 1;
   let budget = OV ? 16 : LT ? 6 : 10, numbers = 0;
@@ -3505,7 +3523,8 @@ function trailPath(arr, len, w) {                   // a thin wedge behind every
 }
 const PB = [];                                        // reusable particle batches: [color][brightness step]
 function drawParts() {
-  ctx.globalCompositeOperation = isInk() || isSand() ? 'source-over' : 'lighter';     // ink on paper is laid down, never added like light
+  /*STYLE:V3*/
+  ctx.globalCompositeOperation = isInk() || isSand() || (isStrings() && SG_SURFACE) ? 'source-over' : 'lighter';     // ink on paper is laid down, never added like light
   const colors = [];
   for (const p of parts) {
     if (!inV(p.x, p.y)) continue;
@@ -3682,7 +3701,7 @@ function drawAtlasFront(now) {
   }
 }
 function drawCrown(n, now) {                         // a gold crown over the base, and the holder's progress as a ring
-  const holder = n.owner, frac = holder >= 0 ? Math.min(1, G.teams[holder].hill / G.kothTarget) : 0;
+  const holder = n.owner, frac = holder >= 0 ? Math.min(1, G.teams[holder].hill / kothGoal(holder)) : 0;
   ctx.save(); ctx.translate(n.x, n.y);
   if (frac > 0) {
     ctx.lineWidth = 2.4; ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.arc(0, 0, 22, 0, Math.PI * 2); ctx.stroke();
@@ -3701,7 +3720,9 @@ function drawDeco(now) {
   if (isClock()) { drawClockDeco(D); return; }
   if (isNeon()) { drawNeonDeco(D); return; }
   if (isInk()) { drawInkDeco(D); return; }
+  /*STYLE:V4*/
   if (isSand()) { drawSandDeco(D); return; }
+  if (isStrings() && drawStringsDeco(D) !== false) return;
   if (D.kind === 'river') {
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.strokeStyle = 'rgba(70,120,200,0.07)'; ctx.lineWidth = D.hw * 1.7; ctx.beginPath();
@@ -3730,7 +3751,8 @@ function bridgeTies() {                              // crossties along every br
 }
 function drawBridges() {                             // crossties along every bridge, so chokepoints read at a glance
   if (!G.bridges.size) return;
-  ctx.strokeStyle = isSand() ? 'rgba(90,72,50,0.5)' : isInk() ? 'rgba(60,52,45,0.5)' : 'rgba(255,255,255,0.34)'; ctx.lineWidth = isInk() ? 1.1 : 1.5; ctx.beginPath();
+  /*STYLE:V5*/
+  ctx.strokeStyle = isStrings() ? SG_TIE : isSand() ? 'rgba(90,72,50,0.5)' : isInk() ? 'rgba(60,52,45,0.5)' : 'rgba(255,255,255,0.34)'; ctx.lineWidth = isInk() ? 1.1 : 1.5; ctx.beginPath();
   const T = bridgeTies();
   for (let i = 0; i < T.length; i += 4) { if (!inV(T[i], T[i + 1])) continue; ctx.moveTo(T[i], T[i + 1]); ctx.lineTo(T[i + 2], T[i + 3]); }
   ctx.stroke();
@@ -3738,39 +3760,51 @@ function drawBridges() {                             // crossties along every br
 function drawEdges(now) {
   const nodes = G.nodes, lw = Math.max(1.4, 1.1 / V.s) * (HC ? 1.35 : 1);
   const slow = reduceMotion ? 0 : -now * 3, fast = reduceMotion ? 0 : -now * 9;
-  const inner = EDGE_IN, out = EDGE_OUT, NB = isNebula(), RM = isRime(), EM = isEmber(), CK = isClock(), NO = isNeon(), IK_ = isInk(), SD_ = isSand(), DASH = SD_ ? [0.1, 6] : IK_ ? [0.1, 3.6] : NB || RM || NO ? [] : EM ? [2, 6] : CK ? [0.1, 4.4] : [5, 7];
+  /*STYLE:V6*/ /*STYLE:L0*/
+  const inner = EDGE_IN, out = EDGE_OUT, NB = isNebula(), RM = isRime(), EM = isEmber(), CK = isClock(), NO = isNeon(), IK_ = isInk(), SD_ = isSand(), LS = LINE_STYLE[settings.visual], LSEG = LS && LS.seg, LAFT = LS && LS.after, SG_ON = isStrings(), DASH = SG_ON ? SG_EDGE.dash : SD_ ? [0.1, 6] : IK_ ? [0.1, 3.6] : NB || RM || NO ? [] : EM ? [2, 6] : CK ? [0.1, 4.4] : [5, 7];
   for (let i = 0; i < 5; i++) { inner[i].length = 0; out[i].length = 0; }
-  ctx.setLineDash(DASH); ctx.lineDashOffset = slow; ctx.lineWidth = SD_ ? lw * 1.7 : IK_ ? lw * 0.75 : NB ? lw * 0.8 : RM ? lw * 0.85 : CK ? lw * 1.6 : NO ? lw * 0.9 : lw;
-  ctx.strokeStyle = SD_ ? (HC ? 'rgba(60,45,28,0.6)' : 'rgba(90,72,50,0.28)') : IK_ ? (HC ? 'rgba(50,44,38,0.7)' : 'rgba(70,62,55,0.45)') : HC ? 'rgba(255,255,255,0.4)' : NB ? 'rgba(190,200,255,0.11)' : RM ? 'rgba(175,215,245,0.18)' : EM ? 'rgba(150,108,84,0.22)' : CK ? 'rgba(210,174,104,0.3)' : NO ? 'rgba(170,150,235,0.2)' : 'rgba(255,255,255,0.17)';
+  /*STYLE:V7*/
+  ctx.setLineDash(DASH); ctx.lineDashOffset = slow; ctx.lineWidth = SG_ON ? lw * SG_EDGE.w : SD_ ? lw * 1.7 : IK_ ? lw * 0.75 : NB ? lw * 0.8 : RM ? lw * 0.85 : CK ? lw * 1.6 : NO ? lw * 0.9 : lw;
+  /*STYLE:V8*/
+  ctx.strokeStyle = SG_ON ? SG_EDGE.idle(HC) : SD_ ? (HC ? 'rgba(60,45,28,0.6)' : 'rgba(90,72,50,0.28)') : IK_ ? (HC ? 'rgba(50,44,38,0.7)' : 'rgba(70,62,55,0.45)') : HC ? 'rgba(255,255,255,0.4)' : NB ? 'rgba(190,200,255,0.11)' : RM ? 'rgba(175,215,245,0.18)' : EM ? 'rgba(150,108,84,0.22)' : CK ? 'rgba(210,174,104,0.3)' : NO ? 'rgba(170,150,235,0.2)' : 'rgba(255,255,255,0.17)';
   ctx.beginPath();
   for (const [a, b] of G.edges) {
     const A = nodes[a], B = nodes[b], oa = A.owner, ob = B.owner;
     if (Math.max(A.x, B.x) < VIS.x0 || Math.min(A.x, B.x) > VIS.x1 || Math.max(A.y, B.y) < VIS.y0 || Math.min(A.y, B.y) > VIS.y1) continue;
-    if (oa < 0 && ob < 0) { if (RM) rimeSeg(A, B, 1); else { ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); } }        // nobody's
+    /*STYLE:L1*/
+    if (oa < 0 && ob < 0) { if (LSEG) LSEG(A, B, 1); else if (RM) rimeSeg(A, B, 1); else { ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); } }        // nobody's
     else if (oa === ob) inner[oa].push(A, B);                                     // inside one color's territory
     else if (ob < 0) out[oa].push(A, B, 1);                                       // a way out: that color's to take
     else if (oa < 0) out[ob].push(B, A, 1);
     else { out[oa].push(A, B, 0.5); out[ob].push(B, A, 0.5); }                    // border between two colors
   }
-  ctx.stroke();
+  /*STYLE:L4*/
+  ctx.stroke(); if (LAFT) LAFT(lw, -1, 'idle');
   for (let i = 0; i < 5; i++) {
     const L = inner[i];
     if (L.length) {
       if (IK_) ctx.setLineDash([]);                  // Ink: ground you hold is joined by a plain pen line
-      ctx.strokeStyle = SD_ ? hexA(saCol(TEAM_COLORS[i]), HC ? 0.85 : 0.6) : IK_ ? hexA(ikHex(TEAM_COLORS[i]), HC ? 0.75 : 0.5) : hexA(TEAM_COLORS[i], HC ? 0.6 : NB ? 0.2 : RM ? 0.36 : EM ? 0.34 : CK ? 0.42 : NO ? 0.42 : 0.28); ctx.lineDashOffset = slow; ctx.beginPath();
-      for (let j = 0; j < L.length; j += 2) { if (RM) rimeSeg(L[j], L[j + 1], 1); else { ctx.moveTo(L[j].x, L[j].y); ctx.lineTo(L[j + 1].x, L[j + 1].y); } }
-      ctx.stroke(); if (IK_) ctx.setLineDash(DASH);
+      /*STYLE:V9*/
+      ctx.strokeStyle = SG_ON ? SG_EDGE.held(TEAM_COLORS[i], HC) : SD_ ? hexA(saCol(TEAM_COLORS[i]), HC ? 0.85 : 0.6) : IK_ ? hexA(ikHex(TEAM_COLORS[i]), HC ? 0.75 : 0.5) : hexA(TEAM_COLORS[i], HC ? 0.6 : NB ? 0.2 : RM ? 0.36 : EM ? 0.34 : CK ? 0.42 : NO ? 0.42 : 0.28); ctx.lineDashOffset = slow; ctx.beginPath();
+      /*STYLE:L2*/
+      for (let j = 0; j < L.length; j += 2) { if (LSEG) LSEG(L[j], L[j + 1], 1); else if (RM) rimeSeg(L[j], L[j + 1], 1); else { ctx.moveTo(L[j].x, L[j].y); ctx.lineTo(L[j + 1].x, L[j + 1].y); } }
+      /*STYLE:L5*/
+      ctx.stroke(); if (LAFT) LAFT(lw, i, 'held'); if (IK_) ctx.setLineDash(DASH);
       if (NO) { ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = hexA(TEAM_COLORS[i], 0.09); ctx.lineWidth = lw * 4.5; ctx.stroke(); ctx.lineWidth = lw * 0.9; ctx.globalCompositeOperation = 'source-over'; }   // Neon: every line glows
     }
     const O = out[i];
     if (O.length) {   // drawn from the owner outward, so the dashes drift toward what they can attack
-      if (IK_) ctx.setLineDash([7, 4]); if (SD_) ctx.setLineDash([4, 5]);              // and its ways out by a dashed one, drifting toward what it can attack
-      ctx.strokeStyle = SD_ ? hexA(saCol(TEAM_COLORS[i]), HC ? 1 : 0.9) : IK_ ? hexA(ikHex(TEAM_COLORS[i]), HC ? 1 : 0.85) : hexA(TEAM_COLORS[i], HC ? 1 : NB ? 0.42 : RM ? 0.85 : EM ? 0.72 : CK ? 0.9 : NO ? 0.9 : 0.6); ctx.lineDashOffset = fast; ctx.lineWidth = SD_ ? lw * 0.95 : lw * (NB ? 1 : RM ? 1.1 : CK ? 1.9 : NO ? 1.1 : 1.25); ctx.beginPath();
+      /*STYLE:V10*/
+      if (IK_) ctx.setLineDash([7, 4]); if (SD_) ctx.setLineDash([4, 5]); if (SG_ON) ctx.setLineDash(SG_EDGE.outDash);              // and its ways out by a dashed one, drifting toward what it can attack
+      /*STYLE:V11*/ /*STYLE:V12*/
+      ctx.strokeStyle = SG_ON ? SG_EDGE.out(TEAM_COLORS[i], HC) : SD_ ? hexA(saCol(TEAM_COLORS[i]), HC ? 1 : 0.9) : IK_ ? hexA(ikHex(TEAM_COLORS[i]), HC ? 1 : 0.85) : hexA(TEAM_COLORS[i], HC ? 1 : NB ? 0.42 : RM ? 0.85 : EM ? 0.72 : CK ? 0.9 : NO ? 0.9 : 0.6); ctx.lineDashOffset = fast; ctx.lineWidth = SG_ON ? lw * SG_EDGE.outW : SD_ ? lw * 0.95 : lw * (NB ? 1 : RM ? 1.1 : CK ? 1.9 : NO ? 1.1 : 1.25); ctx.beginPath();
       for (let j = 0; j < O.length; j += 3) {
         const P = O[j], Q = O[j + 1], f = O[j + 2];
-        if (RM) rimeSeg(P, Q, f); else { ctx.moveTo(P.x, P.y); ctx.lineTo(P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f); }
+        /*STYLE:L3*/
+        if (LSEG) LSEG(P, Q, f); else if (RM) rimeSeg(P, Q, f); else { ctx.moveTo(P.x, P.y); ctx.lineTo(P.x + (Q.x - P.x) * f, P.y + (Q.y - P.y) * f); }
       }
-      ctx.stroke(); ctx.lineWidth = SD_ ? lw * 1.7 : lw; if (IK_ || SD_) ctx.setLineDash(DASH);
+      /*STYLE:V13*/ /*STYLE:L6*/
+      ctx.stroke(); if (LAFT) LAFT(lw, i, 'out'); ctx.lineWidth = SG_ON ? lw * SG_EDGE.w : SD_ ? lw * 1.7 : lw; if (IK_ || SD_ || SG_ON) ctx.setLineDash(DASH);
       if (NO) { ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = hexA(TEAM_COLORS[i], 0.16); ctx.lineWidth = lw * 5; ctx.stroke(); ctx.lineWidth = lw; ctx.globalCompositeOperation = 'source-over'; }   // Neon: the ways out glow brightest
       if (isOver()) {                                // Overload: the same lines again, wide and glowing, on the beat
         ctx.setLineDash([]); ctx.globalCompositeOperation = 'lighter';
@@ -4129,7 +4163,8 @@ function draw(now) {
   const OV = isOver(), dtD = Math.min(0.1, Math.max(0, now - lastDrawT)); lastDrawT = now;
   kick = OV ? beatKick(now) : 0;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = OV ? 'rgba(0,0,0,0.45)' : isAtlas() ? '#04070d' : isNebula() ? '#01020a' : isRime() ? '#030a14' : isEmber() ? '#050302' : isClock() ? CW_BG : isNeon() ? NE_BG : isInk() ? IK_BG : isSand() ? SA_BG : '#000';   // Overload never fully clears, so everything leaves a smear
+  /*STYLE:V14*/
+  ctx.fillStyle = OV ? 'rgba(0,0,0,0.45)' : isAtlas() ? '#04070d' : isNebula() ? '#01020a' : isRime() ? '#030a14' : isEmber() ? '#050302' : isClock() ? CW_BG : isNeon() ? NE_BG : isInk() ? IK_BG : isSand() ? SA_BG : isStrings() ? SG_BG : '#000';   // Overload never fully clears, so everything leaves a smear
   ctx.fillRect(0, 0, cv.width, cv.height);
   if (!G || (mode === 'demo' && pvOnly)) return;      // setup screens show their map in the preview card instead
   const fogD = fogOn();
@@ -4147,7 +4182,8 @@ function draw(now) {
   ctx.beginPath(); ctx.rect(F.x, F.y, F.w, F.h); ctx.clip();
   applyView(sx, sy);
   updateVis();
-  const nodes = G.nodes, SP = isSpark(), CL = isClassic(), NB = isNebula(), RM = isRime(), EM = isEmber(), CK = isClock(), NE_ = isNeon(), IN_ = isInk(), SD_ = isSand(), TCP = IN_ ? ikHex(TEAM_COLORS[PLAYER]) : TEAM_COLORS[PLAYER];
+  /*STYLE:V15*/
+  const nodes = G.nodes, SP = isSpark(), CL = isClassic(), NB = isNebula(), RM = isRime(), EM = isEmber(), CK = isClock(), NE_ = isNeon(), IN_ = isInk(), SD_ = isSand(), SG_ON = isStrings(), TCP = IN_ ? ikHex(TEAM_COLORS[PLAYER]) : TEAM_COLORS[PLAYER];
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   vfxFx(); stepParts();
   if (OV) drawOverloadBg(now, dtD);
@@ -4158,7 +4194,9 @@ function draw(now) {
   else if (CK) { drawClockBack(now); applyView(sx, sy); }
   else if (NE_) { drawNeonBack(now); applyView(sx, sy); }
   else if (IN_) { drawInkBack(now); applyView(sx, sy); }
+  /*STYLE:V16*/
   else if (SD_) { drawSandBack(now); applyView(sx, sy); }
+  else if (SG_ON) { drawStringsBack(now); applyView(sx, sy); }
 
   if (isAtlas()) drawAtlasBack(now);
   if (PERF && window.__bgOnly) { ctx.restore(); return; }          // test hook: only the background, so tests can measure it alone
@@ -4210,7 +4248,9 @@ function draw(now) {
     else if (CK) drawGear(n, c, now);
     else if (NE_) drawNeonBase(n, c, now);
     else if (IN_) drawInkBase(n, c, now);
+    /*STYLE:V17*/
     else if (SD_) drawSandBase(n, c, now);
+    else if (SG_ON) drawStringsBase(n, c, now);
     else if (SP) {                                   // Overload's base: soft glow, a slowly turning frame, a breathing core
       const mv = reduceMotion ? 0 : 1, own = n.owner >= 0, cc = c;
       const br = (1 + 0.07 * Math.sin(now * 2.2 + n.id) * mv) * (OV ? 1 + 0.35 * kick : 1);
@@ -4256,9 +4296,11 @@ function draw(now) {
     } else {
       ctx.fillStyle = NEUTRAL_COLOR; ctx.fillRect(n.x - 5.5, n.y - 5.5, 11, 11);
     }
-    if (n.kind) drawSpecialMark(n, now, (SP || CL || NB || RM || EM || CK || NE_ || IN_ || SD_) && G.t - n.lastHitT < 0.07);
+    /*STYLE:V18*/
+    if (n.kind) drawSpecialMark(n, now, (SP || CL || NB || RM || EM || CK || NE_ || IN_ || SD_ || SG_ON) && G.t - n.lastHitT < 0.07);
     if (n.crown) drawCrown(n, now);
-    if (!EM && !CK && !NE_ && !IN_ && !SD_ && n.hp < n.maxHp - 0.5) {          // (Ember draws its own ring, above the troops; Clockwork's teeth and rim carry it; Neon's segments do)
+    /*STYLE:V19*/
+    if (!EM && !CK && !NE_ && !IN_ && !SD_ && !SG_ON && n.hp < n.maxHp - 0.5) {          // (Ember draws its own ring, above the troops; Clockwork's teeth and rim carry it; Neon's segments do)
       const f = Math.max(0, n.hp / n.maxHp), hit = G.t - n.lastHitT < 0.15;
       ctx.lineWidth = 2.2;
       ctx.strokeStyle = hit ? 'rgba(255,255,255,0.3)' : HC ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)';
@@ -4341,8 +4383,11 @@ function draw(now) {
   if (EM) drawEmberTroops(buckets);
   else if (NE_) drawNeonTroops(buckets);
   else if (IN_) drawInkTroops(buckets);
+  /*STYLE:V20*/
   else if (SD_) drawSandTroops(buckets);
-  for (let b = 0; b < 6 && !EM && !NE_ && !IN_ && !SD_; b++) {
+  else if (SG_ON) drawStringsTroops(buckets);
+  /*STYLE:V21*/
+  for (let b = 0; b < 6 && !EM && !NE_ && !IN_ && !SD_ && !SG_ON; b++) {
     const arr = buckets[b]; if (!arr.length) continue;
     ctx.fillStyle = b === 0 ? (NB && !HC ? '#9097ad' : NEUTRAL_COLOR) : TEAM_COLORS[b - 1];   // Nebula: empty bases' guards a shade dimmer than the stars they guard
     ctx.beginPath();
@@ -4375,7 +4420,9 @@ function draw(now) {
   else if (!reduceMotion && CK) drawClockFx(now);
   else if (!reduceMotion && NE_) drawNeonFx(now);
   else if (!reduceMotion && IN_) drawInkFx(now);
+  /*STYLE:V22*/
   else if (!reduceMotion && SD_) drawSandFx(now);
+  else if (!reduceMotion && SG_ON) drawStringsFx(now);
   else if (!reduceMotion) {
     ctx.lineWidth = 1.1;
     for (const f of G.fx) {
@@ -4418,7 +4465,8 @@ function draw(now) {
     ctx.globalAlpha = 1;
   }
   if (isAtlas()) drawAtlasFront(now);
-  if (SP || CL || NB || RM || EM || NE_ || IN_ || SD_) drawParts();
+  /*STYLE:V23*/
+  if (SP || CL || NB || RM || EM || NE_ || IN_ || SD_ || SG_ON) drawParts();
   for (let i = uiFx.length - 1; i >= 0; i--) {
     const f = uiFx[i], age = now - f.b;
     if (age > 0.5) { uiFx.splice(i, 1); continue; }
@@ -4463,6 +4511,8 @@ function drawSelRing(sn, now, kk, al) {                       // called with the
     g.strokeStyle = hexA('#bfe6ff', 0.4 + 0.3 * flash); g.lineWidth = 1.3 * u; hexFrac(g, hx, hy, R, 1);
     g.strokeStyle = hexA(col, 1); g.lineWidth = 3.2 * u; hexFrac(g, hx, hy, R, f);
     g.fillStyle = hexA('#e8f6ff', 0.85); for (let i = 0; i < 6; i++) { const a = T + i * Math.PI / 3; g.beginPath(); g.arc(hx + Math.cos(a) * R, hy + Math.sin(a) * R, 1.8 * u, 0, TAU); g.fill(); }
+  /*STYLE:V24*/
+  } else if (isStrings()) { sgSelRing(g, hx, hy, R, f, col, u, flash, arc, cap, T, E);
   } else if (isSand()) {                              // a raked ring round the stone: a plain groove, with the share you send raked in your colour and a pebble where it ends
     g.strokeStyle = SA_GROOVE; g.lineWidth = 1.8 * u; arc(R, 0, TAU); g.strokeStyle = SA_RIDGE; g.lineWidth = 1.1 * u; arc(R - 1.6 * u, 0, TAU);
     g.strokeStyle = hexA(saCol(col), 1); g.lineWidth = 3.2 * u; arc(R, T, E); cap(R, '#fff6e4', 2.6);
@@ -5883,6 +5933,262 @@ function drawSandFx(now) {                             // the rake sweeping ring
   ctx.globalAlpha = 1;
 }
 
+/*STYLE:V0*/
+// ---- "Strings" (SC pitch; final words by Henry and WC): the look for Chamber ----
+// Names (Oct 26, Henry with WC): the look is "Velvet" (id velvet), the sound is "Strings" (id chamber). Code names stay Strings (SG, sg) and Chamber (CM, cm).
+// SC, Oct 26 2026 (6_Style Design, Proposals\Orchestral). The inside of an instrument case: deep velvet, and every road a taut string.
+// A string trembles when it is struck (a base hit, a capture) (Henry's pick, r2: from hits only, never from marching); it goes slack
+// when you lose a base and pulls taut again. A base is an ebony peg where its strings meet, with silk in the holder's colour, and one string
+// wound round it clockwise from the top as the health gauge. Troop beads; rosin dust where troops fall; a string snaps where a colour is knocked out.
+// Never: wood grain, gold filigree, notes or staff lines, light blooms. Effects are laid on the velvet (source-over), never added like light.
+const SG_BG = '#1a0a0e';                                 // the velvet, menus included
+const SG_FOG = 'rgba(14,5,8,0.86)';
+const SG_TIE = 'rgba(217,199,166,0.35)';
+const SG_SURFACE = true;
+const SG_NEUTRAL = '#8a7d70';
+const SG_GUT = '#d9c7a6';                                // an unheld string: gut, pale and warm
+const SG_EDGE = {                                        // the strings (drawEdges; their shape comes from sgSeg): unheld gut, held in the holder's colour, ways out dashed like the other styles
+  dash: [], w: 0.9, outDash: [6, 4], outW: 1,
+  idle: HC_ => HC_ ? 'rgba(232,218,190,0.75)' : 'rgba(217,199,166,' + (0.42 + 0.16 * SG.gl).toFixed(3) + ')',   // r4: the gut catches a little light as the bed breathes
+  held: (col, HC_) => hexA(col, HC_ ? 0.95 : 0.78),
+  out: (col, HC_) => hexA(col, HC_ ? 1 : 0.72)
+};
+const SG = { tr: new Map(), slack: new Map(), wind: new Map(), adj: null, adjG: null, bmp: null, bmpK: '', peg: null, pegK: '', grain: null, gl: 0, md: 0, glT: 0,
+  breathe: true };                                       // the look breathes with the bed (Henry, Oct 27; the r4-r5 switch is gone). Only the tests turn it off.
+function sgBreath(now) {                                 // r4: the look borrows the bed's breath (Chamber only): SG.gl how full the swells are, SG.md the chord's mood
+  const on = SG.breathe && typeof CM !== 'undefined' && CM.nodes && isChamber(), dt = Math.min(0.1, Math.max(0, now - SG.glT)); SG.glT = now;
+  const g = on ? CM.glow : 0, m = on ? CM.ph.mood : 0, k = 1 - Math.exp(-dt / 0.5);
+  SG.gl += (g - SG.gl) * k; SG.md += (m - SG.md) * (1 - Math.exp(-dt / 1.5));
+}
+const isStrings = () => settings.visual === 'velvet';
+const sgKey = (A, B) => A.id < B.id ? A.id * 4096 + B.id : B.id * 4096 + A.id;
+function sgAdj() {                                       // each base's neighbours, once per match
+  if (SG.adjG === G && SG.adj) return SG.adj;
+  const m = new Map(); for (const [a, b] of G.edges) { (m.get(a) || m.set(a, []).get(a)).push(b); (m.get(b) || m.set(b, []).get(b)).push(a); }
+  SG.adj = m; SG.adjG = G; SG.tr.clear(); SG.slack.clear(); SG.wind.clear(); return m;
+}
+function sgPluck(A, B, amp, mode, force) {               // set a string trembling; capped, so a big fight never turns the map into a hum of wobbling lines
+  if (reduceMotion) return;
+  const k = sgKey(A, B), r = SG.tr.get(k), cap = quality >= 2 ? 10 : 22;
+  if (!r && SG.tr.size >= cap && !force) return;
+  const left = r ? r.a * Math.exp(-(G.t - r.t0) * 3.2) : 0;
+  if (left > amp * 0.7) return;
+  SG.tr.set(k, { a: amp, t0: G.t, m: mode || 1 + ((Math.random() * 3) | 0), ph: Math.random() * 6.283 });
+}
+function sgSeg(A, B, f) {                                // one string (or the first f of it, from A), as part of the current path: straight when still
+  const k = sgKey(A, B), r = SG.tr.get(k), s = SG.slack.get(k);
+  let amp = 0, sl = 0;
+  if (r) { amp = r.a * Math.exp(-(G.t - r.t0) * 3.2); if (amp < 0.06) { SG.tr.delete(k); amp = 0; } }
+  if (s !== undefined) { const age = G.t - s; if (age > 1.9 || age < 0) SG.slack.delete(k); else { const e = Math.min(1, age / 0.35); sl = age < 0.35 ? e * e * (3 - 2 * e) : age < 0.6 ? 1 : 1 - (age - 0.6) / 1.3; } }
+  if (reduceMotion) amp = sl = 0;
+  if (!amp && !sl) { ctx.moveTo(A.x, A.y); ctx.lineTo(A.x + (B.x - A.x) * f, A.y + (B.y - A.y) * f); return; }
+  const dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy) || 1, flip = A.id > B.id, nx = (flip ? dy : -dy) / L, ny = (flip ? -dx : dx) / L;
+  const S = quality >= 2 ? 10 : 18, w = amp ? Math.sin(G.t * 38 + r.ph) : 0, sag = sl * Math.min(9, L * 0.1), m = r ? r.m : 1;
+  for (let i = 0; i <= S; i++) {
+    const u = i / S * f, uu = flip ? 1 - u : u, off = amp * Math.sin(Math.PI * uu * m) * w + sag * Math.sin(Math.PI * uu);
+    const x = A.x + dx * u + nx * off, y = A.y + dy * u + ny * off;
+    if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+  }
+}
+function sgSheen(lw, team) {                             // r4: a still string looks strung. A thin lit core along every string (High and up), and on held strings a winding
+  if (quality >= 2) return;                              // when zoomed in, like a cello's wound strings. Re-strokes the path drawEdges has just stroked (team -1: the unheld gut)
+  const d = ctx.getLineDash(), lc = ctx.lineCap; ctx.setLineDash([]);
+  const b = 1 + 1.4 * SG.gl;                             // brighter as the bed swells
+  ctx.strokeStyle = team < 0 ? (HC ? 'rgba(255,248,232,0.45)' : 'rgba(255,244,225,' + (0.26 * b).toFixed(3) + ')') : (HC ? 'rgba(255,250,240,0.5)' : 'rgba(255,246,230,' + (0.3 * b).toFixed(3) + ')');
+  const w = ctx.lineWidth; ctx.lineWidth = w * 0.32; ctx.stroke();
+  if (team >= 0 && cam.z >= 1.8) { ctx.lineCap = 'butt'; ctx.setLineDash([w * 0.28, w * 0.5]); ctx.strokeStyle = 'rgba(0,0,0,0.38)'; ctx.lineWidth = w; ctx.stroke(); }
+  ctx.lineWidth = w; ctx.lineCap = lc; ctx.setLineDash(d);
+}
+const sgCol = hex => hex;                                // team colours as they are: they hold on dark velvet, so Color-safe and the palettes stay untouched
+const SG_TILE = 2000;                                     // the velvet's nap repeats every 2000 world units: a seamless tile, so it reaches any screen edge at any zoom (r5)
+function sgVelvet() {                                    // the velvet's slow nap: soft patches baked once (per palette) at low resolution, as a tile that wraps on all four sides
+  const key = paletteMode, lit = paletteMode === 'safe' ? 0.18 : 0.30;   // Color-safe: a dimmer nap, so the magenta keeps 3:1 against it in protan vision (cvd_velvet.py)
+  if (SG.bmp && SG.bmpK === key) return SG.bmp;
+  const T = SG_TILE, S = 0.2, c = document.createElement('canvas'); c.width = c.height = Math.round(T * S);
+  const g = c.getContext('2d'); g.setTransform(S, 0, 0, S, 0, 0); g.fillStyle = SG_BG; g.fillRect(0, 0, T, T);
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const n = Math.round(T * T / 9000);
+  for (let i = 0; i < n; i++) {
+    const x = rnd() * T, y = rnd() * T, r = 50 + rnd() * 150, isLit = rnd() < 0.5, e = 0.4 + rnd() * 0.5, a = rnd() * Math.PI;
+    for (const ox of [-T, 0, T]) for (const oy of [-T, 0, T]) {   // a patch near an edge is drawn again on the far side, so the tile's seams never show
+      const px = x + ox, py = y + oy; if (px + r < 0 || px - r > T || py + r < 0 || py - r > T) continue;
+      const gr = g.createRadialGradient(px, py, 0, px, py, r); gr.addColorStop(0, isLit ? 'rgba(118,36,56,' + lit + ')' : 'rgba(0,0,0,0.36)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = gr; g.beginPath(); g.ellipse(px, py, r, r * e, a, 0, Math.PI * 2); g.fill();
+    }
+  }
+  SG.bmpK = key; return (SG.bmp = c);
+}
+function sgScreenWorld(g) {                              // the whole screen in world units (the box round it), so a fill in world space reaches every edge at any zoom or rotation
+  const inv = g.getTransform().inverse(), d = dpr, P = [[F.x, F.y], [F.x + F.w, F.y], [F.x, F.y + F.h], [F.x + F.w, F.y + F.h]].map(([x, y]) => inv.transformPoint(new DOMPoint(x * d, y * d)));
+  const xs = P.map(p => p.x), ys = P.map(p => p.y), x0 = Math.min(...xs), y0 = Math.min(...ys);
+  return [x0 - 4, y0 - 4, Math.max(...xs) - x0 + 8, Math.max(...ys) - y0 + 8];
+}
+function sgGrain() {                                     // fine nap grain, a small tile laid in screen space
+  if (SG.grain) return SG.grain;
+  const c = document.createElement('canvas'); c.width = c.height = 96; const g = c.getContext('2d'), im = g.createImageData(96, 96), d = im.data;
+  for (let i = 0; i < d.length; i += 4) { const v = Math.random(); d[i] = 120; d[i + 1] = 60; d[i + 2] = 70; d[i + 3] = v < 0.5 ? 0 : Math.round((v - 0.5) * 26); }
+  g.putImageData(im, 0, 0); return (SG.grain = c);
+}
+function drawStringsBack(now) {                          // called with the world transform in place; leaves it in place
+  sgBreath(now); const B = sgVelvet();
+  bgCache(SG_BG, 'strings' + (HC ? 'h' : '') + paletteMode, B, g => {
+    const m = g.getTransform(); g.imageSmoothingEnabled = true;
+    const pat = g.createPattern(B, 'repeat'), k = SG_TILE / B.width, off = (G.seed || 0) % SG_TILE;   // each map starts the nap somewhere else
+    pat.setTransform(new DOMMatrix([k, 0, 0, k, -off, -off * 0.6])); g.fillStyle = pat; g.fillRect(...sgScreenWorld(g));
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (quality <= 1) { g.fillStyle = g.createPattern(sgGrain(), 'repeat'); g.fillRect(F.x, F.y, F.w, F.h); }
+    const vg = g.createRadialGradient(F.x + F.w / 2, F.y + F.h / 2, Math.min(F.w, F.h) * 0.3, F.x + F.w / 2, F.y + F.h / 2, Math.hypot(F.w, F.h) * 0.62);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.45)'); g.fillStyle = vg; g.fillRect(F.x, F.y, F.w, F.h);   // the case's edges, darker (screen space, so it never ends where the map ends)
+    g.setTransform(m);
+  });
+  if (!reduceMotion && quality <= 1 && paletteMode !== 'safe') {   // the nap catching a slow light (not with Color-safe) (one soft gradient over the screen)
+    const sx = W * (0.5 + 0.3 * Math.sin(now * 0.07)), sy = H * (0.4 + 0.2 * Math.cos(now * 0.05)), gr = ctx.createRadialGradient(sx, sy, 0, sx, sy, Math.max(W, H) * 0.5);
+    const md = SG.md, w = Math.max(0, md), c = Math.max(0, -md);   // its colour follows the chord: warmer after your capture, cooler after a loss
+    gr.addColorStop(0, 'rgba(' + Math.round(150 + 60 * w - 70 * c) + ',' + Math.round(62 + 50 * w + 10 * c) + ',' + Math.round(78 - 20 * w + 70 * c) + ',' + (0.10 + 0.08 * SG.gl + 0.05 * (w + c)).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = gr; ctx.fillRect(...sgScreenWorld(ctx));
+  }
+}
+function sgPegSpr(r) {                                   // the ebony peg, drawn once per zoom level and stamped (a gradient per peg per frame spiked the cost in the mock)
+  const m = ctx.getTransform(), k = Math.hypot(m.a, m.b), key = (Math.round(k * 4) / 4) + ':' + r + (HC ? 'h' : '');
+  SG.pegs = SG.pegs || new Map(); if (SG.pegK !== (Math.round(k * 4) / 4) + (HC ? 'h' : '')) { SG.pegs.clear(); SG.pegK = (Math.round(k * 4) / 4) + (HC ? 'h' : ''); }
+  let c = SG.pegs.get(key); if (c) return c;
+  const P = r + 3, S = Math.max(8, Math.ceil(2 * P * k)); c = document.createElement('canvas'); c.width = c.height = S;
+  const g = c.getContext('2d'); g.setTransform(S / (2 * P), 0, 0, S / (2 * P), S / 2, S / 2);
+  g.fillStyle = 'rgba(0,0,0,0.5)'; g.beginPath(); g.arc(1.4, 1.8, r + 0.5, 0, Math.PI * 2); g.fill();
+  const gr = g.createRadialGradient(-r * 0.3, -r * 0.38, 0.5, 0, 0, r); gr.addColorStop(0, HC ? '#7a5a50' : '#5a3f38'); gr.addColorStop(1, '#170c0c');
+  g.fillStyle = gr; g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = 'rgba(232,218,190,0.6)'; g.lineWidth = 0.7; g.beginPath(); g.arc(0, 0, r - 1.5, 0, Math.PI * 2); g.stroke();       // an ivory collar
+  g.strokeStyle = 'rgba(0,0,0,0.6)'; g.lineWidth = 0.6; g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.stroke();
+  g.fillStyle = 'rgba(232,218,190,0.4)'; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2 + 0.2; g.beginPath(); g.arc(Math.cos(a) * (r - 3.2), Math.sin(a) * (r - 3.2), 0.5, 0, Math.PI * 2); g.fill(); }   // inlay pins
+  SG.pegs.set(key, c); return c;
+}
+function drawStringsBase(n, c0, now) {
+  const own = n.owner >= 0, c = own ? sgCol(c0) : SG_NEUTRAL, x = n.x, y = n.y, TAU = Math.PI * 2, T = -Math.PI / 2;
+  let h = Math.max(0, Math.min(1, n.hp / n.maxHp));
+  const r = (n.kind ? 10.5 : own ? 9.5 : 8.5) * (HC ? 1.1 : 1), R = r + 4.5, P = r + 3;   // r4: pegs a size up, so the gauge reads at zoom 1
+  const w0 = SG.wind.get(n.id); if (w0 !== undefined) { const k = (G.t - w0) / 0.8; if (k >= 1 || k < 0) SG.wind.delete(n.id); else if (!reduceMotion) h *= k * k * (3 - 2 * k); }   // a capture winds the string on
+  ctx.setLineDash([]); ctx.globalAlpha = 1; ctx.lineCap = 'round';
+  ctx.strokeStyle = HC ? 'rgba(232,218,190,0.4)' : 'rgba(217,199,166,0.18)'; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.arc(x, y, R, 0, TAU); ctx.stroke();   // where the wound string goes
+  if (own || h < 0.995) {                                // the wound string: health, clockwise from the top (neutral bases too)
+    const a1 = T + TAU * h; ctx.strokeStyle = own ? hexA(c, 1) : hexA(SG_GUT, 0.7); ctx.lineWidth = HC ? 3.6 : 3; ctx.beginPath(); ctx.arc(x, y, R, T, a1); ctx.stroke();
+    if (quality <= 1 && h > 0.02) {                      // the windings: small slants across it
+      ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 0.5; ctx.beginPath();
+      for (let a = T; a < a1 - 0.08; a += 0.2) { ctx.moveTo(x + Math.cos(a) * (R - 1.5), y + Math.sin(a) * (R - 1.5)); ctx.lineTo(x + Math.cos(a + 0.09) * (R + 1.5), y + Math.sin(a + 0.09) * (R + 1.5)); }
+      ctx.stroke();
+    }
+  }
+  ctx.drawImage(sgPegSpr(r), x - P, y - P, 2 * P, 2 * P);
+  if (G.t - n.lastHitT < 0.07) { ctx.fillStyle = 'rgba(255,240,215,0.25)'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  if (n.kind) return;                                    // a special's glyph is drawn on the peg after this
+  if (own) {                                             // silk wound in the holder's colour (the team shape with symbols on)
+    ctx.fillStyle = c; ctx.beginPath();
+    if (SYM) symPath(ctx, symOf(n.owner), x, y, 3.4 * (HC ? 1.1 : 1)); else ctx.arc(x, y, 3.2 * (HC ? 1.15 : 1), 0, TAU);
+    ctx.fill();
+    if (!SYM && quality <= 1) { ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 0.4; ctx.beginPath(); for (let k = -2; k <= 2; k += 1) { ctx.moveTo(x - 2.9, y + k * 1.1); ctx.lineTo(x + 2.9, y + k * 1.1 - 0.6); } ctx.stroke(); }
+  } else if (SYM) { ctx.strokeStyle = SG_GUT; ctx.lineWidth = 0.9; ctx.strokeRect(x - 2.4, y - 2.4, 4.8, 4.8); }
+  ctx.fillStyle = 'rgba(255,248,235,0.7)'; ctx.beginPath(); ctx.arc(x - 1, y - 1.1, 0.9, 0, TAU); ctx.fill();                   // the lit cap
+}
+const SG_STITCH = 'rgba(217,199,166,0.24)', SG_PRESS = 'rgba(0,0,0,0.3)', SG_PAD = 'rgba(118,36,56,0.18)';   // gut-coloured thread, velvet pressed down, a padded pocket
+function sgOffset(L, d) {                                // a polyline moved sideways by d (a seam along each side of a river)
+  return L.map(([x, y], i) => { const a = L[Math.max(0, i - 1)], b = L[Math.min(L.length - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1; return [x - dy / l * d, y + dx / l * d]; });
+}
+function sgPoly(L, closed) { ctx.beginPath(); L.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); if (closed) ctx.closePath(); }
+function sgSoft(h, d) {                                  // an island's outline pushed out by d and rounded into curves, as a path
+  const cx = h.reduce((a, p) => a + p[0], 0) / h.length, cy = h.reduce((a, p) => a + p[1], 0) / h.length, N = h.length;
+  const P = h.map(([x, y]) => { const dx = x - cx, dy = y - cy, l = Math.hypot(dx, dy) || 1; return [x + dx / l * d, y + dy / l * d]; });
+  ctx.beginPath();
+  for (let i = 0; i <= N; i++) { const p = P[i % N], q = P[(i + 1) % N], mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2; i ? ctx.quadraticCurveTo(p[0], p[1], mx, my) : ctx.moveTo(mx, my); }
+  ctx.closePath();
+}
+function drawStringsDeco(D) {                            // terrain the way a case is lined (r4): a river is a channel pressed into the velvet and stitched along both sides,
+  const st = HC ? 'rgba(217,199,166,0.5)' : SG_STITCH;   // islands are padded pockets with a seam round them, the ring an oval compartment, double-stitched. Still: a case does not move
+  ctx.setLineDash([]); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const seam = () => { ctx.strokeStyle = st; ctx.lineWidth = HC ? 1.5 : 1.1; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]); };
+  if (D.kind === 'river') {
+    if (!D._sg) D._sg = [sgOffset(D.line, D.hw * 0.95), sgOffset(D.line, -D.hw * 0.95)];
+    sgPoly(D.line); ctx.strokeStyle = SG_PRESS; ctx.lineWidth = D.hw * 1.9; ctx.stroke();                              // the channel, pressed down
+    ctx.strokeStyle = 'rgba(118,36,56,0.10)'; ctx.lineWidth = D.hw * 0.7; ctx.stroke();                              // its floor catching a little light
+    for (const L of D._sg) { sgPoly(L); seam(); }
+  } else if (D.kind === 'islands') {
+    for (const h of islandHulls()) {
+      sgSoft(h, 10); ctx.fillStyle = SG_PAD; ctx.fill(); ctx.strokeStyle = SG_PRESS; ctx.lineWidth = 5; ctx.stroke();   // the pocket, raised, its edge pressed
+      sgSoft(h, 16); seam();
+    }
+  } else if (D.kind === 'ring') {
+    const el = d => { ctx.beginPath(); ctx.ellipse(D.cx, D.cy, D.rx + d, D.ry + d, 0, 0, Math.PI * 2); };
+    el(0); ctx.strokeStyle = SG_PRESS; ctx.lineWidth = 9; ctx.stroke();
+    el(6); seam(); el(-6); seam();
+  }
+  return true;
+}
+function sgHits(ev) {                                    // a base hit flicks the string the attackers came along; a few troop hits leave rosin dust
+  const adj = sgAdj(); let dust = 4;
+  for (const e of ev) {
+    if (e.base) {
+      const n = G.nodes[e.ni], nb = n && adj.get(n.id); if (!nb || !nb.length) continue;
+      let best = null, bd = -2; const ax = e.x - n.x, ay = e.y - n.y, al = Math.hypot(ax, ay) || 1;
+      for (const j of nb) { const m = G.nodes[j], bx = m.x - n.x, by = m.y - n.y, d = (ax * bx + ay * by) / (al * (Math.hypot(bx, by) || 1)); if (d > bd) { bd = d; best = m; } }
+      if (best) sgPluck(n, best, 1.1 + Math.random() * 0.5);
+    } else if (dust > 0 && e.tx !== undefined && Math.random() < 0.25) { dust--; emit(e.tx, e.ty, '#e8dcc4', 1, 26, 0.45, 0.9, 0, 0, -1, 1); }
+  }
+}
+function drawStringsTroops(buckets) {                    // beads in their colour, with a lit side; a short glint on the string behind each (Full and High only)
+  const sc = HC ? 1.2 : 1, R = 1.7 * sc, hi = quality <= 1;
+  for (let b = 0; b < 6; b++) {
+    const arr = buckets[b]; if (!arr.length) continue;
+    const col = b === 0 ? SG_NEUTRAL : sgCol(TEAM_COLORS[b - 1]);
+    if (hi && b > 0) { ctx.strokeStyle = 'rgba(255,240,215,0.28)'; ctx.lineWidth = 0.9; ctx.beginPath(); for (const t of arr) if (t.path && t.path.length) { ctx.moveTo(t.x - t.nx * 3.2, t.y - t.ny * 3.2); ctx.lineTo(t.x, t.y); } ctx.stroke(); }
+    if (hi) { ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.beginPath(); for (const t of arr) { ctx.moveTo(t.x + 0.5 + R, t.y + 0.7); ctx.arc(t.x + 0.5, t.y + 0.7, R, 0, 6.283); } ctx.fill(); }
+    ctx.fillStyle = col; ctx.beginPath();
+    if (SYM && b > 0) for (const t of arr) troopShape(ctx, symOf(b - 1), t.x, t.y, t.nx, t.ny, 0.84 * sc);
+    else for (const t of arr) { ctx.moveTo(t.x + R, t.y); ctx.arc(t.x, t.y, R, 0, 6.283); }
+    ctx.fill();
+    if (hi && !SYM) { ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); for (const t of arr) { ctx.moveTo(t.x - 0.5 + 0.55, t.y - 0.6); ctx.arc(t.x - 0.5, t.y - 0.6, 0.55, 0, 6.283); } ctx.fill(); }
+  }
+}
+function drawStringsFx(now) {                            // only called when reduceMotion is off. 'pop' rosin dust, 'ring' every string into it sounds (and goes slack if it was yours), 'elim' a string snaps, 'retreat' a loose string drawn back
+  const fogD = fogOn(), adj = sgAdj();
+  ctx.setLineDash([]); ctx.lineCap = 'round';
+  for (const f of G.fx) {
+    const age = G.t - f.b;
+    if (f.x === undefined || (fogD && !seenXY(f.x, f.y))) continue;
+    if (f.k === 'ring' && !f.sg) {                       // first sight of a capture: find its base, ring its strings, wind its gauge
+      f.sg = 1; let n = null, bd = 9; for (const m of G.nodes) { const d = Math.abs(m.x - f.x) + Math.abs(m.y - f.y); if (d < bd) { bd = d; n = m; } }
+      if (n) { SG.wind.set(n.id, G.t); const lost = lostMine(f); for (const j of adj.get(n.id) || []) { const m = G.nodes[j]; if (lost) SG.slack.set(sgKey(n, m), G.t); else sgPluck(n, m, 2.2, 2 + ((Math.random() * 2) | 0), true); } }
+    }
+    if (f.k === 'pop' && age < 0.5) {                    // a troop falls: a puff of pale rosin dust
+      const q = age / 0.5; ctx.fillStyle = 'rgba(240,228,205,' + (0.45 * (1 - q)).toFixed(3) + ')'; ctx.beginPath();
+      for (let i = 0; i < 4; i++) { const a = (f.b * 97 + i * 1.7) % 6.283, d = 1.5 + q * 4; const px = f.x + Math.cos(a) * d, py = f.y + Math.sin(a) * d - q * 2.5; ctx.moveTo(px + 0.6 + q, py); ctx.arc(px, py, 0.6 + q, 0, 6.283); }
+      ctx.fill();
+    } else if (f.k === 'elim' && age < 1.4) {            // a knockout: one string snapping and curling back where they fell
+      const k = Math.min(1, age / 0.5), fade = age < 0.9 ? 1 : 1 - (age - 0.9) / 0.5, r0 = (f.b * 7.3) % 6.283;
+      ctx.globalAlpha = fade; ctx.strokeStyle = sgCol(colorOf(f.c)); ctx.lineWidth = 1.4; ctx.beginPath();
+      for (let s = 0; s <= 48; s++) { const u = s / 48, th = u * (2 + 5 * k) * Math.PI + r0, rr = 42 * (1 - u) * (1 - 0.65 * k) + 4; const x = f.x + Math.cos(th) * rr, y = f.y + Math.sin(th) * rr; if (s) ctx.lineTo(x, y); else ctx.moveTo(x, y); }
+      ctx.stroke(); ctx.globalAlpha = 1;
+    } else if (f.k === 'retreat' && age < 1.1) {         // a rival calls off a fight: a loose length of string drawn back toward home
+      const p = age / 1.1, g = rtSeg(f, p, 40);
+      if (g) { const dx = g[2] - g[0], dy = g[3] - g[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L, a = 2.5 * (1 - p);
+        ctx.globalAlpha = (1 - p) * 0.8; ctx.strokeStyle = sgCol(colorOf(f.c)); ctx.lineWidth = 1.2; ctx.beginPath();
+        for (let s = 0; s <= 12; s++) { const u = s / 12, o = a * Math.sin(u * Math.PI * 3 + age * 20) * Math.sin(u * Math.PI), x = g[0] + dx * u + nx * o, y = g[1] + dy * u + ny * o; if (s) ctx.lineTo(x, y); else ctx.moveTo(x, y); }
+        ctx.stroke(); ctx.globalAlpha = 1; }
+    }
+  }
+}
+function sgSelRing(g, hx, hy, R, f, col, u, flash, arc, cap, T, E) {   // the selection ring: a gut string round the base, the share you send wound on in your colour
+  g.strokeStyle = 'rgba(217,199,166,' + (0.35 + 0.3 * flash).toFixed(3) + ')'; g.lineWidth = 1.1 * u; arc(R, 0, Math.PI * 2);
+  g.strokeStyle = hexA(sgCol(col), 1); g.lineWidth = 3 * u; arc(R, T, E); cap(R, '#f4e8d0', 2.2);
+}
+function sgPfString(g, o, t) {                           // the upgrade point: the panel strung round with a string that rings once, its nodes left standing
+  const amp = 7 * o.gain * Math.exp(-t * 3.5), x0 = PF.M - 6, y0 = PF.M - 6, w = o.pw + 12, h = o.ph + 12, L = 2 * (w + h), K = 10;
+  const pt = s => { s = ((s % L) + L) % L; return s < w ? [x0 + s, y0, 0, -1] : s < w + h ? [x0 + w, y0 + s - w, 1, 0] : s < 2 * w + h ? [x0 + w - (s - w - h), y0 + h, 0, 1] : [x0, y0 + h - (s - 2 * w - h), -1, 0]; };
+  g.globalAlpha = Math.max(0, 1 - t) * 0.9; g.strokeStyle = '#e8dcc4'; g.lineWidth = 1.4; g.lineJoin = 'round'; g.beginPath();
+  for (let i = 0; i <= 160; i++) { const s = i / 160 * L, [x, y, nx, ny] = pt(s), d = amp * Math.sin(K * 2 * Math.PI * s / L) * Math.sin(t * 40); if (i) g.lineTo(x + nx * d, y + ny * d); else g.moveTo(x + nx * d, y + ny * d); }
+  g.stroke(); g.fillStyle = TEAM_COLORS[PLAYER];
+  for (let i = 0; i < 2 * K; i++) { const [x, y] = pt(i * L / (2 * K)); g.beginPath(); g.arc(x, y, 2, 0, Math.PI * 2); g.fill(); }
+  g.globalAlpha = 1;
+}
+
+LINE_STYLE.velvet = { seg: (A, B, f) => sgSeg(A, B, f), after: (lw, team, kind) => { if (kind !== 'out') sgSheen(lw, team); } };     // 50.1: the line-drawing slot
+
 // ---- "Pixel": the battlefield as an 8-bit console would have drawn it ----
 // The world is painted onto a coarse grid of its own (about three world units to a pixel, never finer than two screen pixels or
 // coarser than six), every shape lands on whole pixels, and the grid is then blown up without smoothing, with faint scanlines
@@ -6095,7 +6401,7 @@ function pxBases(now, tk) {
     } else if (own) pxStamp(pxSprite(SYM ? PXM[symOf(n.owner)] : PXM.core, col, true), cx, cy);
     else pxStamp(pxSprite(SYM ? PXM.hollow : PXM.neutral, col, !SYM), cx, cy);
     if (n.crown) {
-      const holder = n.owner, frac = holder >= 0 ? Math.min(1, G.teams[holder].hill / G.kothTarget) : 0;
+      const holder = n.owner, frac = holder >= 0 ? Math.min(1, G.teams[holder].hill / kothGoal(holder)) : 0;
       if (frac > 0) {
         x.fillStyle = 'rgba(255,255,255,0.18)'; x.beginPath(); pxRing(cx, cy, 10, 1, frac, 1); x.fill();
         x.fillStyle = colorOf(holder); x.beginPath(); pxRing(cx, cy, 10, 1, 0, frac); x.fill();
@@ -6278,6 +6584,7 @@ function setClass(el, cls, on) { const k = '_c' + cls; if (el[k] !== on) { el[k]
 // Points that follow each other within 0.9 s join ONE burst (it gets stronger and lasts a little longer; nothing is queued and nothing repeats).
 const PF = { cv: null, g: null, ps: [], fx: [], raf: 0, t2: 0, lastPt: 0, strength: 0, starts: 0, glowT: 0, R: 1, w: 0, h: 0, M: 120, chimes: [] };
 const PF_CAP = 90, PF_Q = [1, 0.7, 0.45, 0.25];
+// 50.1, the burst slot: an entry may carry draw(g, o, f) (and dur, seconds): the burst then adds one 'style' effect drawn by it (o: pw, ph, cx, cy, gain; f: 0 to 1).
 const PF_STYLE = {
   classic:  { n: 34, kind: 'streak', cols: ['#3577ff', '#8fb3ff', '#ffffff'], w: 2.2, v: [130, 290], life: [0.55, 1.0], len: 0.08 },
   overload: { n: 56, kind: 'streak', cols: ['#ffffff', '#ffd24a', '#ff7a3d', '#3577ff'], w: 3.2, v: [200, 420], life: [0.5, 0.95], len: 0.1, add: true, flash: true },
@@ -6286,6 +6593,8 @@ const PF_STYLE = {
   nebula:   { n: 44, kind: 'dust', cols: ['#ffffff', '#cfe0ff', '#ffe6c4', '#b8ccff'], v: [24, 80], life: [1.2, 2.0], flare: true },
   rime:     { n: 22, kind: 'shard', cols: ['#bfe6ff', '#e8f6ff', '#8fd0ff'], v: [90, 220], life: [1.0, 1.5], hex: true },
   clockwork: { n: 22, kind: 'cog', cols: [CW_BRASS, CW_LIGHT, '#b08a48'], v: [80, 200], life: [0.8, 1.3], key: true },
+  /*STYLE:V25*/
+  velvet: { n: 10, kind: 'streak', cols: ['#e8dcc4', '#d9c7a6', '#fff4e0'], w: 1, v: [40, 110], life: [0.5, 0.9], len: 0.03, draw: (g, o, f) => sgPfString(g, o, f), dur: 1.2 },
   sand:     { n: 24, kind: 'streak', cols: ['#e8d4ac', '#c8b088', '#f4e8d0'], w: 1.2, v: [60, 160], life: [0.6, 1.0], len: 0.035 },
   ink:      { n: 18, kind: 'streak', cols: ['#2b2724', '#4a4038', '#6a5e52'], w: 1.4, v: [60, 150], life: [0.6, 1.0], len: 0.04 },
   neon:     { n: 20, kind: 'streak', cols: ['#bfe3ff', '#ffffff', '#8fc8ff'], w: 1.2, v: [70, 170], life: [0.5, 0.9], len: 0.05, add: true, arrow: true },
@@ -6338,6 +6647,8 @@ function ptsChime(N, t) {                              // N: the running (or pre
     case 'floe': { const b = 1150 * (0.9 + 0.45 * share); flTink(N, t, b, 0.055, 0, 0.9, 0, true); flTink(N, t + 0.12, b * 1.5, 0.055, 0, 0.9, 0, true); break; }
     case 'musicbox': mbRatchet(N, t, 2, 0.3, 0); mbTine(N, t + 0.1, 2349.32, 0.05, 0, 0, true); break;      // two ratchet clicks, then one bright tine
     case 'rain': rnTransformer(N, t); break;
+    /*STYLE:S1*/
+    case 'chamber': cmChime(N, t); break;
     case 'bowl': bwBowl(N, t, 1174.66, 0.04, 0, 2.2); bwWood(N, t + 0.12, bwMidi(12), 0.045, 0, 0.9); break;          // a small bowl, and a wooden note above it
     case 'tide': tdKey(N, t, tdMidi(13), 0.05, 0, 1.6); tdKey(N, t + 0.13, tdMidi(16), 0.05, 0, 2.0); break;          // two high keys, a fourth apart                                                                // a transformer hum swells and resolves to one bright tone
     default: {
@@ -6348,8 +6659,10 @@ function ptsChime(N, t) {                              // N: the running (or pre
 }
 function ptsSound() {                                  // an upgrade point was earned in a match you are playing
   if (!AC || !settings.sound || !audible() || awatch() || AC.state !== 'running') return;
-  const N = ({ hearth: HE.nodes, drift: DR.nodes, chip: CH.nodes, cosmos: CS.nodes, floe: FL.nodes, musicbox: MB.nodes, rain: RN.nodes, tide: TD.nodes, bowl: BW.nodes })[settings.tone];
-  if (settings.tone !== 'simple' && !N && ['hearth', 'drift', 'chip', 'cosmos', 'floe', 'musicbox', 'rain', 'tide', 'bowl'].includes(settings.tone)) return;     // that style's sound is not up yet
+  /*STYLE:S2*/
+  const N = ({ hearth: HE.nodes, drift: DR.nodes, chip: CH.nodes, cosmos: CS.nodes, floe: FL.nodes, musicbox: MB.nodes, rain: RN.nodes, tide: TD.nodes, bowl: BW.nodes, chamber: CM.nodes })[settings.tone];
+  /*STYLE:S3*/
+  if (settings.tone !== 'simple' && !N && ['hearth', 'drift', 'chip', 'cosmos', 'floe', 'musicbox', 'rain', 'tide', 'bowl', 'chamber'].includes(settings.tone)) return;     // that style's sound is not up yet
   try { ptsChime(N || null, AC.currentTime + 0.01); PF.chimes.push({ tone: settings.tone, at: performance.now() }); if (PF.chimes.length > 40) PF.chimes.shift(); } catch (e) { /* a missing voice must never stop the game */ }
 }
 let lastChimePrev = 0;
@@ -6367,6 +6680,8 @@ function ptsPreview() {                                // the "Hear it" button i
       case 'floe': N = flBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 6000); break;
       case 'musicbox': N = mbBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 3000); break;
       case 'rain': N = rnBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 3000); break;
+      /*STYLE:S4*/
+      case 'chamber': N = cmBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 4000); break;
       case 'bowl': N = bwBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 6000); break;
       case 'tide': N = tdBuild(false); off = () => setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 5000); break;
     }
@@ -6399,6 +6714,8 @@ function pfSpawn(merged) {
     if (st.hex) add({ k: 'hex', dur: 0.9 });
     if (st.key) add({ k: 'key', dur: 1.0 });
     if (st.arrow) add({ k: 'arrow', dur: 1.1 });
+    /*STYLE:B1*/
+    if (st.draw) add({ k: 'style', dur: st.dur || 1, draw: st.draw });
   }
   if (!PF.raf) { PF.t2 = 0; PF.raf = requestAnimationFrame(pfTick); }
 }
@@ -6418,6 +6735,8 @@ function pfTick(ts) {
     if (t < 0) continue;
     const f = t / o.dur; g.globalCompositeOperation = o.lite ? 'lighter' : 'source-over';
     if (o.k === 'ring') pfRing(g, o, f);
+    /*STYLE:B2*/
+    else if (o.k === 'style') o.draw(g, o, f);
     else if (o.k === 'flare') {                       // Nebula: a small star that blooms on the counter, with diffraction spikes
       const e = 1 - (1 - f) * (1 - f), a = Math.max(0, 1 - f), gr = g.createRadialGradient(o.cx, o.cy, 0, o.cx, o.cy, 56 * o.gain);
       gr.addColorStop(0, 'rgba(207,224,255,' + (0.8 * a).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(207,224,255,0)');
@@ -6531,12 +6850,12 @@ function hud() {
   }
   if (G.mods.koth && G.crown >= 0) {
     $('kothRow').hidden = false;                       // also when Overtime raises a crown mid-match                // the crown race: whoever has banked the most time
-    let lead = null; for (const T of G.teams) if (T.active && (!lead || T.hill > lead.hill)) lead = T;
+    let lead = null; for (const T of G.teams) if (T.active && (!lead || T.hill / kothGoal(T.i) > lead.hill / kothGoal(lead.i))) lead = T;   // 50.0.7: closest to its own target (a challenge rival can need longer)
     const col = lead.hill > 0 ? TEAM_COLORS[lead.i] : '#6a6a70', k = $('kothRow');
-    setText($('kothTxt'), `${Math.floor(lead.hill)} / ${G.kothTarget}`);
+    setText($('kothTxt'), `${Math.floor(lead.hill)} / ${kothGoal(lead.i)}`);
     setStyle(k.querySelector('.sw'), 'background', col); setStyle($('kothFill'), 'background', col);
     const ks = String(lead.hill > 0 ? TEAM_SLOT[lead.i] : -1), ksw = k.querySelector('.sw'); if (ksw.dataset.s !== ks) ksw.dataset.s = ks;
-    setStyle($('kothFill'), 'width', Math.min(100, lead.hill / G.kothTarget * 100).toFixed(1) + '%');
+    setStyle($('kothFill'), 'width', Math.min(100, lead.hill / kothGoal(lead.i) * 100).toFixed(1) + '%');
   }
   renderRules();
   refreshInfo();
@@ -6601,7 +6920,8 @@ const pick = a => a[(Math.random() * a.length) | 0];
 // volume slider is perceptual (squared). "Simple" (the old Bright and Soft, folded together) sits an octave low, rounds off each blip's start and filters the top end
 const MASTER_BOOST = 2;                              // +6 dB: a 70% slider now sounds like the old 100%
 const soundGain = () => settings.sound ? MASTER_BOOST * Math.pow(settings.volume / 100, 2) : 0;
-const cutoff = () => ({ simple: 1500, hearth: 7000, drift: 6500, chip: 7000, cosmos: 5200, floe: 4800, musicbox: 7000, rain: 6000, tide: 5200, bowl: 6000 })[settings.tone] || 1500;
+/*STYLE:S5*/
+const cutoff = () => ({ simple: 1500, hearth: 7000, drift: 6500, chip: 7000, cosmos: 5200, floe: 4800, musicbox: 7000, rain: 6000, tide: 5200, bowl: 6000, chamber: 5200 })[settings.tone] || 1500;
 let kickT = 0, lostSince = 0, lostToast = false, hushed = false;
 function audioKick() {                                // the phone can pause or interrupt web audio (a text, another app, the screen): ask for the sound back
   if (!AC || !settings.sound || document.hidden || hushed) return;
@@ -6686,7 +7006,9 @@ function playSfx(nowMs, dt) {
   if (isMusicBox()) { musicboxHits(ev); return; }
   if (isRain()) { rainHits(ev); return; }
   if (isTide()) { tideHits(ev); return; }
+  /*STYLE:S6*/
   if (isBowl()) { bowlHits(ev); return; }
+  if (isChamber()) { cmHits(ev); return; }
   if (isHearth()) { heHits(ev); return; }
   if (nowMs - lastBloop > 150) {              // base hits: a low, round bloop that drops in pitch
     const e = h.baseMine || h.base;
@@ -7725,6 +8047,262 @@ function mvBowl(t, back) {                             // one soft wooden note, 
   setTimeout(() => { try { out.disconnect(); } catch (_) {} }, 1200);
 }
 
+/*STYLE:S0*/
+// ---- "Chamber" (SC pitch; final words by Henry and WC): the sound for Strings ----
+// Names (Oct 26, Henry with WC): the look is "Velvet" (id velvet), the sound is "Strings" (id chamber). Code names stay Strings (SG, sg) and Chamber (CM, cm).
+// SC, Oct 26 2026 (6_Style Design, Proposals\Orchestral). A small orchestra in an empty hall at night. Every sound is made here, live: no recordings.
+// No slot clock and no chord pad (the break from Cosmos, Tide and Bowl): every hit plays the moment it happens, within per-second budgets,
+// and the bed breathes: sections swell and fade one at a time, never held (r1's held bed was a constant voice under 85% of a match; Henry
+// picked B "Breathing" in r2). r3: the breathing follows the match. The hotter the fighting, the more and the higher the sections;
+// your capture brightens the chord, your lost base darkens it, and the mood drifts home to D minor over half a minute.
+// Henry's picks from the mocks: Ensemble strings, solo plucks (muffled, soft start, rounder), warm horn for a capture, plucks + harmonic for
+// an upgrade point, the timpani roll + one soft stroke for a knockout, a loss ending that starts as one cello and grows.
+// Rules kept: nothing heard as a beat, no steady noise bed, the body sits at 150 to 500 Hz (phones lose what is under), yours loudest.
+const CM_LEVEL = 0.7;                                    // set by the loudness test against Cosmos (t_chamber.py: 1.0 read -30.9 dB vs Cosmos -34.1), not by ear
+const CM_CHORD = [62, 65, 69, 72, 74, 76];               // D minor with a ninth: what the plucks pick from, never a tune
+const CM_BED_K = 0.4, CM_END_K = 0.55;
+const CM_PV = [0.032, 0.03, 0.025, 0.021, 0.021], CM_PCAP = [5, 4, 3];   // the bed's five voices (cello up to the top line): levels; most voices at Full / Light / Lite
+const CM_MOOD = {                                        // the chords the bed picks from, by mood
+  home: [[50, 57, 62, 65, 69], [50, 57, 64, 65, 69], [50, 58, 62, 67, 70]],                         // D minor, D minor with the ninth, G minor over D
+  bright: [[57, 60, 65, 69, 72], [50, 58, 62, 65, 69], [52, 55, 60, 64, 67], [52, 57, 61, 64, 69]],   // F over A, B flat with the seventh, C over E, A over E
+  dark: [[50, 58, 62, 65, 70], [50, 55, 62, 67, 70], [50, 56, 62, 65, 68]] };                         // B flat over D (the B flat rubbing), G minor low, D diminished
+const CM_END = { loss: [[50, 0], [57, 0.3], [65, 0.5], [70, 0.68], [74, 0.82]], win: [[50, 0], [57, 0.25], [62, 0.45], [66, 0.6], [69, 0.7], [76, 0.85]] };   // the ending's voices, joining as the gauge rises; the loss has the B flat rubbing the A, the win the F sharp
+const CM_END_P = { 50: 0.1, 57: 0.07, 62: 0.05, 65: 0.05, 66: 0.04, 69: 0.045, 70: 0.04, 74: 0.03, 76: 0.03 };
+const CM = { sws: [], glow: 0, ph: { sw: [], br: [], chord: 0, chordT: 0, mood: 0, cur: null, ev: -99 }, nodes: null, heat: 0, ks: {}, ksR: 0, ir: null, irT: -1, nb: null, hit: { mine: 0, other: 0, bMine: 0, bOn: 0, bFar: 0 }, rcap: [], ch: [], ft: 0, ftKind: null, idleT: 0 };
+const isChamber = () => settings.tone === 'chamber';
+const cmPick = a => a[(Math.random() * a.length) | 0];
+function cmIR() {                                        // the hall: a long tail that darkens as it fades, a few early reflections; shorter at Light and Lite
+  if (CM.ir && CM.ir.sampleRate === AC.sampleRate && CM.irT === AQ()) return CM.ir;
+  const sr = AC.sampleRate, secs = 3.2 * AQ_IR[AQ()], len = Math.floor(sr * secs); CM.ir = AC.createBuffer(2, len, sr); CM.irT = AQ();
+  for (let c = 0; c < 2; c++) {
+    const d = CM.ir.getChannelData(c); let lp = 0;
+    for (let i = 0; i < len; i++) { const tt = i / sr, k = 0.55 - 0.45 * (tt / secs); lp += (Math.random() * 2 - 1 - lp) * k; d[i] = lp * Math.exp(-tt * 2.1 / AQ_IR[AQ()]) * Math.min(1, tt / 0.03) * 0.9; }
+    [0.019, 0.031, 0.047, 0.063].forEach((e, j) => { const i = Math.floor((e + c * 0.004) * sr); if (i < len) d[i] += 0.35 / (j + 1); });
+  }
+  return CM.ir;
+}
+function cmNoise() {
+  if (CM.nb && CM.nb.sampleRate === AC.sampleRate) return CM.nb;
+  const b = AC.createBuffer(1, AC.sampleRate, AC.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  return (CM.nb = b);
+}
+function cmBuild(withBed) {                              // withBed: the in-match engine; without: a short-lived one for previews and the chime
+  const t = AC.currentTime, N = { oscs: new Set(), tier: AQ(), bed: withBed };
+  N.out = AC.createGain(); N.out.gain.value = 0.0001; N.out.gain.setTargetAtTime(CM_LEVEL, t, withBed ? 0.8 : 0.01); N.out.connect(outBus());
+  N.dry = AC.createGain(); N.dry.gain.value = 0.7; N.dry.connect(N.out);
+  N.rev = AC.createConvolver(); N.rev.buffer = cmIR(); const rg = AC.createGain(); rg.gain.value = 0.42; N.rev.connect(rg); rg.connect(N.out);
+  N.wet = AC.createGain(); N.wet.gain.value = 1; N.wet.connect(N.rev);
+  N.bed = { dry: AC.createGain(), wet: AC.createGain() }; N.bed.dry.connect(N.dry); N.bed.wet.connect(N.wet);   // the bed's own bus, so the ending can duck it
+  return N;
+}
+function cmRoute(N, node, pan, wet, bus) {
+  let n = node; const B = bus || N;
+  if (AC.createStereoPanner && pan) { const p = AC.createStereoPanner(); p.pan.value = Math.max(-1, Math.min(1, pan)); node.connect(p); n = p; }
+  n.connect(B.dry); const w = AC.createGain(); w.gain.value = wet == null ? 0.5 : wet; n.connect(w); w.connect(B.wet);
+}
+function cmEnv(g, t, att, peak, hold, rel) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + att); g.gain.setValueAtTime(peak, t + att + hold); g.gain.exponentialRampToValueAtTime(0.0001, t + att + hold + rel); return t + att + hold + rel; }
+function cmSaws(f, into, vibDepth, t, end) {             // the Ensemble voice: two or three slightly detuned saws (two at Light and Lite), one shared vibrato
+  const vib = AC.createOscillator(), vd = AC.createGain(), list = [vib]; vib.frequency.value = 5.2 + Math.random() * 0.4; vd.gain.value = vibDepth; vib.connect(vd);
+  (AQ() >= 1 ? [-7, 7] : [-9, 0, 8]).forEach(det => { const s = AC.createOscillator(), sg = AC.createGain(); s.type = 'sawtooth'; s.frequency.value = f; s.detune.value = det; sg.gain.value = AQ() >= 1 ? 0.42 : 0.34; vd.connect(s.detune); s.connect(sg); sg.connect(into); list.push(s); });
+  list.forEach(o => { o.start(t); if (end) o.stop(end + 0.05); });
+  return list;
+}
+function cmBow(N, t, midi, peak, o) {                    // one bowed note: o = { att, hold, rel, pan, accent, slide (cents), slideAt, slideDur, wet }
+  o = o || {}; const f = hz(midi), att = o.att != null ? o.att : 0.7, hold = o.hold != null ? o.hold : 1, rel = o.rel != null ? o.rel : 1.2;
+  const g = AC.createGain(), lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 0.6; peak *= 1.4;
+  let end;
+  if (o.accent) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.035); g.gain.exponentialRampToValueAtTime(peak * 0.32, t + 0.28); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28 + rel); end = t + 0.3 + rel; }
+  else end = cmEnv(g, t, att, peak, hold, rel);
+  lp.frequency.setValueAtTime(Math.min(3600, f * 4), t); lp.frequency.linearRampToValueAtTime(Math.min(4200, f * 6), t + Math.max(0.05, att)); lp.connect(g);
+  const oscs = cmSaws(f, lp, 9, t, end);
+  if (o.slide) oscs.slice(1).forEach(s => { const a = t + (o.slideAt || 0); s.detune.setValueAtTime(s.detune.value, a); s.detune.linearRampToValueAtTime(s.detune.value + o.slide, a + (o.slideDur || 1)); });
+  cmRoute(N, g, o.pan || 0, o.wet != null ? o.wet : 0.55, o.bus);
+  return end;
+}
+function cmKS(midi) {                                    // a plucked string (Karplus-Strong), computed once per pitch: started soft (the "rounder" pick)
+  if (CM.ksR !== AC.sampleRate) { CM.ks = {}; CM.ksR = AC.sampleRate; }
+  const key = Math.round(midi); if (CM.ks[key]) return CM.ks[key];
+  const sr = AC.sampleRate, f = hz(key), N = Math.max(2, Math.round(sr / f)), len = Math.floor(sr * 1.1), b = AC.createBuffer(1, len, sr), d = b.getChannelData(0), line = new Float32Array(N);
+  let lp = 0; for (let i = 0; i < N; i++) { lp += (Math.random() * 2 - 1 - lp) * 0.18; line[i] = lp; }
+  const loss = Math.pow(0.5, 1 / (f * 0.28)); let p = 0;
+  for (let i = 0; i < len; i++) { const cur = line[p]; line[p] = (cur + line[(p + 1) % N]) * 0.5 * loss; d[i] = cur; p = (p + 1) % N; }
+  let m = 0; for (let i = 0; i < len; i++) m = Math.max(m, Math.abs(d[i])); for (let i = 0; i < len; i++) d[i] /= (m || 1);
+  return (CM.ks[key] = { b, rate: f / (sr / N) });
+}
+function cmPluck(N, t, midi, peak, pan) {                // a solo pizzicato: muffled, no snap at the start (Henry's r1 pick: 3)
+  const k = cmKS(midi), s = AC.createBufferSource(), g = AC.createGain(), lp = AC.createBiquadFilter(), body = AC.createBiquadFilter();
+  s.buffer = k.b; s.playbackRate.value = k.rate; lp.type = 'lowpass'; lp.frequency.value = Math.min(1900, hz(midi) * 2.2);
+  body.type = 'peaking'; body.frequency.value = 420; body.Q.value = 1; body.gain.value = 4;
+  peak *= 0.8 * 0.62 * 1.35; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.012);
+  s.connect(lp); lp.connect(body); body.connect(g); cmRoute(N, g, pan || 0, 0.45); s.start(t); s.stop(t + 1.1);
+}
+function cmHorn(N, t, midi, dur, peak, o) {              // a horn, stopped (muted): a soft, closed sound
+  o = o || {}; const f = hz(midi), s = AC.createOscillator(), s2 = AC.createOscillator(), g = AC.createGain(), lp = AC.createBiquadFilter(), sg = AC.createGain();
+  s.type = 'sawtooth'; s2.type = 'triangle'; s.frequency.value = f; s2.frequency.value = f; s2.detune.value = 3; sg.gain.value = 0.6; lp.type = 'lowpass'; lp.Q.value = 0.8;
+  lp.frequency.setValueAtTime(f * 1.2, t); lp.frequency.linearRampToValueAtTime(Math.min(2600, f * 1.6), t + 0.09); lp.frequency.linearRampToValueAtTime(Math.min(2000, f * 1.2), t + dur);
+  s.connect(sg); sg.connect(lp); s2.connect(lp); lp.connect(g);
+  const end = cmEnv(g, t, o.att || 0.055, peak, Math.max(0.05, dur - 0.3), 0.9); cmRoute(N, g, o.pan || 0, 1.1);
+  s.start(t); s2.start(t); s.stop(end + 0.05); s2.stop(end + 0.05); return end;
+}
+function cmHarm(N, t, midi, peak, pan) {                 // a violin harmonic: high, soft, a little glassy but held by a bow
+  const f = hz(midi), a = AC.createOscillator(), b = AC.createOscillator(), bg = AC.createGain(), g = AC.createGain(), lp = AC.createBiquadFilter(), vib = AC.createOscillator(), vd = AC.createGain();
+  a.type = 'triangle'; b.type = 'sawtooth'; a.frequency.value = b.frequency.value = f; b.detune.value = 5; bg.gain.value = 0.25; lp.type = 'lowpass'; lp.frequency.value = Math.min(2000, f * 2.6);
+  vib.frequency.value = 4.8; vd.gain.value = 8; vib.connect(vd); vd.connect(a.detune); vd.connect(b.detune);
+  a.connect(lp); b.connect(bg); bg.connect(lp); lp.connect(g); const end = cmEnv(g, t, 0.08 * 1.4, peak * 0.9, 0.25, 1.1); cmRoute(N, g, pan || 0, 0.8);
+  [a, b, vib].forEach(o => { o.start(t); o.stop(end + 0.05); });
+}
+function cmTimp(N, t, midi, peak, pan) {                 // a timpani stroke: a drum with a pitch, its partials spread inharmonically
+  const f = hz(midi);
+  [[1, 1, 2.0], [1.5, 0.55, 1.3], [1.98, 0.38, 0.9], [2.44, 0.22, 0.6], [2.92, 0.14, 0.45]].forEach(([r, a, dec], i) => {
+    if (AQ() >= 2 && i >= 3) return;                    // Lite: three partials
+    const s = AC.createOscillator(), g = AC.createGain(); s.frequency.setValueAtTime(f * r * 1.02, t); s.frequency.exponentialRampToValueAtTime(f * r, t + 0.08);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak * a, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + dec);
+    s.connect(g); cmRoute(N, g, pan || 0, 0.5); s.start(t); s.stop(t + dec + 0.05);
+  });
+  const nz = AC.createBufferSource(), nl = AC.createBiquadFilter(), ng = AC.createGain(); nz.buffer = cmNoise(); nl.type = 'lowpass'; nl.frequency.value = 900;
+  ng.gain.setValueAtTime(peak * 0.4, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.04); nz.connect(nl); nl.connect(ng); cmRoute(N, ng, pan || 0, 0.3); nz.start(t, Math.random() * 0.9); nz.stop(t + 0.06);
+}
+function cmStand(dest, t, peak, freq, wet) {             // a bow tapping the music stand
+  const nz = AC.createBufferSource(), bp = AC.createBiquadFilter(), g = AC.createGain(), s = AC.createOscillator(), sg = AC.createGain(), F = freq || 2200;
+  nz.buffer = cmNoise(); bp.type = 'bandpass'; bp.frequency.value = F; bp.Q.value = 3; g.gain.setValueAtTime(peak, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.018);
+  s.frequency.setValueAtTime(F * 0.55, t); s.frequency.exponentialRampToValueAtTime(F * 0.36, t + 0.03); sg.gain.setValueAtTime(peak * 0.7, t); sg.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
+  nz.connect(bp); bp.connect(g); s.connect(sg);
+  if (dest.dry) { cmRoute(dest, g, 0, wet == null ? 0.25 : wet); cmRoute(dest, sg, 0, wet == null ? 0.25 : wet); } else { g.connect(dest); sg.connect(dest); }
+  nz.start(t, Math.random() * 0.9); nz.stop(t + 0.03); s.start(t); s.stop(t + 0.05);
+}
+// ---- the events ----
+function cmTake(N, t, oct, k, pan) { [62, 66, 69].forEach((m, i) => cmHorn(N, t + i * 0.03, m + oct, 1.0, 0.035 * k * 1.4, { pan, att: 0.25 })); }     // a capture: a soft horn chord, no call (r0's call read as medieval)
+function cmLost(N, t, pan) { [[65, 0.055], [69, 0.05], [74, 0.04]].forEach(([m, p], i) => cmBow(N, t + i * 0.05, m, p, { att: 0.12, hold: 0.5, rel: 1.4, slide: -300, slideAt: 0.3, slideDur: 1.3, pan: (pan || 0) + (i - 1) * 0.25 })); }   // the strings sigh down
+function cmKO(N, t) {                                    // the timpani roll, swelling, and one soft stroke at the end (Henry: the first part of the r0 knockout, on its own)
+  let tt = t; for (let i = 0; i < 17; i++) { cmTimp(N, tt, 50, 0.012 + 0.06 * (i / 17) ** 1.5, i % 2 ? 0.05 : -0.05); tt += 0.065 + Math.random() * 0.02; }
+  cmTimp(N, tt + 0.03, 50, 0.1, 0);
+}
+function cmChime(N, t) { if (!N) return; cmPluck(N, t, 69, 0.24, 0.1); cmPluck(N, t + 0.16, 74, 0.255, 0.1); cmHarm(N, t + 0.3, 86, 0.045, 0.1); }   // an upgrade point: two plucks, then a harmonic
+function cmTap(N, t, k) { cmStand(N, t, 0.12, 2200 + 200 * (k || 0)); }      // your order was sent: a bow on the stand
+function cmRetreat(N, t, pan) { cmPluck(N, t, 69, 0.1, pan); cmPluck(N, t + 0.22, 64, 0.08, pan); }
+function cmHits(ev) {                                    // troop and base hits play the moment they happen, inside three budgets: yours full, a rival hitting yours lighter, rivals among themselves faint
+  const N = CM.nodes; if (!N) return;
+  const now = AC.currentTime, w = awatch(); let bDone = false, pDone = false;
+  for (const e of ev) {
+    const pan = screenPan(e.x, e.y), t = now + 0.01 + Math.random() * 0.04;
+    if (e.base) {
+      if (bDone) continue;
+      const n = G.nodes[e.ni], mine = isMine(e), on = !w && n && n.owner === PLAYER;
+      if (mine && now - CM.hit.bMine > 0.45) { CM.hit.bMine = now; cmBow(N, t, cmPick([50, 57]), 0.08, { accent: true, rel: 0.7, pan: pan * 0.6 }); bDone = true; }
+      else if (on && now - CM.hit.bOn > 0.9) { CM.hit.bOn = now; cmBow(N, t, cmPick([50, 57]), 0.05, { accent: true, rel: 0.6, pan: pan * 0.6 }); bDone = true; }
+      else if (!mine && !on && now - CM.hit.bFar > (w ? 0.7 : 2.5)) { CM.hit.bFar = now; cmBow(N, t, cmPick([50, 57]), w ? 0.06 : 0.025, { accent: true, rel: 0.6, pan: pan * 0.6, wet: 0.9 }); bDone = true; }
+    } else {
+      if (pDone) continue;
+      if (isMine(e)) { if (now - CM.hit.mine > 0.2) { CM.hit.mine = now; cmPluck(N, t, cmPick(CM_CHORD), 0.26, pan); pDone = true; } }
+      else if (now - CM.hit.other > (w ? 0.3 : 1.1)) { CM.hit.other = now; cmPluck(N, t, cmPick(CM_CHORD) - (w ? 0 : 12), w ? 0.18 : 0.1, pan); pDone = true; }
+    }
+    if (bDone && pDone) break;
+  }
+}
+function cmVoice(N, midi, kind, pan, bus) {                   // a held voice that lives until it is let go: a bed section or an ending voice
+  const t = AC.currentTime, f = hz(midi), g = AC.createGain(), lp = AC.createBiquadFilter(); g.gain.value = 0.0001; lp.type = 'lowpass'; lp.Q.value = 0.6;
+  let oscs;
+  if (kind === 'c') {                                    // clarinet: mostly odd harmonics
+    const s = AC.createOscillator(), re = new Float32Array(9), im = new Float32Array([0, 1, 0.04, 0.42, 0.03, 0.22, 0.02, 0.1, 0.01]);
+    s.setPeriodicWave(AC.createPeriodicWave(re, im)); s.frequency.value = f; lp.frequency.value = Math.min(3200, f * 5); s.connect(lp); s.start(t); oscs = [s];
+  } else if (kind === 'h') {                             // horn, stopped
+    const s = AC.createOscillator(), s2 = AC.createOscillator(), sg = AC.createGain(); s.type = 'sawtooth'; s2.type = 'triangle'; s.frequency.value = s2.frequency.value = f; s2.detune.value = 3; sg.gain.value = 0.6 * 0.8;
+    lp.frequency.value = Math.min(2000, f * 1.6); s.connect(sg); sg.connect(lp); s2.connect(lp); s.start(t); s2.start(t); oscs = [s, s2];
+  } else { lp.frequency.value = Math.min(4200, f * 5); oscs = cmSaws(f, lp, 9, t, 0); }
+  lp.connect(g); cmRoute(N, g, pan || 0, 0.55, bus);
+  oscs.forEach(o => N.oscs.add(o));
+  return { g, oscs, midi, lvl: 0, k: kind === 'b' ? 1.4 : 1 };
+}
+function cmLetGo(N, v, t, rel) {                         // fade a held voice out and stop it
+  try { v.g.gain.cancelScheduledValues(t); v.g.gain.setTargetAtTime(0.0001, t, (rel || 2.2) / 3); } catch (_) {}
+  v.oscs.forEach(o => { try { o.stop(t + (rel || 2.2) + 0.6); } catch (_) {} N.oscs.delete(o); });
+}
+function cmBedOn() { return !(G.over || CM.ft > 0.04 || FT.phase === 'hold' || FT.phase === 'tail'); }   // no new bed while the ending plays
+function cmSwell(N, t, i, ch, k, att) {                  // one section's swell: up, held a moment, down; returns when it has faded
+  const m = ch[i], hold = 1.5 + Math.random() * 2, a = att || 2.6;
+  CM.sws.push({ t, a, h: hold, e: t + a + hold + 3.6, k: (k || 1) * (0.6 + 0.1 * i) });   // for the look (Strings breathes with these, r4)
+  return cmBow(N, t, m, CM_PV[i] * 1.1 * (k || 1), { att: att || 2.6, hold, rel: 3.6, pan: (m - 62) / 40, bus: N.bed, wet: 0.65 });
+}
+function cmMoodChord(P) {                                // a chord from the mood's set, never the one playing
+  const set = CM_MOOD[P.mood > 0.3 ? 'bright' : P.mood < -0.3 ? 'dark' : 'home'], pick = set.filter(c => c !== P.cur);
+  return (P.cur = cmPick(pick.length ? pick : set));
+}
+function cmBedFollow(N, now, dt) {                       // the bed: sections swell and fade one at a time, each on its own slow cycle, led by the match
+  const P = CM.ph, h = CM.heat;
+  P.mood *= Math.exp(-dt / 30);                          // drifts home over about half a minute
+  if (!P.cur || now - P.chordT > 9) { P.chordT = now; cmMoodChord(P); }
+  P.br = P.br.filter(e => e > now);
+  if (!cmBedOn()) return;
+  const n = Math.min(2 + Math.round(h * 3), CM_PCAP[AQ()]), most = 1 + Math.round(h * 2);   // calm: the cello and a viola, one at a time; hot: up to the violins, three at once
+  for (let i = 0; i < n; i++) {                          // low to high: the higher the strings, the hotter the fight
+    if ((P.sw[i] || 0) > now || P.br.length >= most || now < (P.gap || 0)) continue;
+    const end = cmSwell(N, now + 0.05, i, P.cur);
+    P.br.push(end); P.sw[i] = end + 5 + Math.random() * 13; P.gap = now + (1.5 + Math.random() * 3) * (1.3 - 0.6 * h);
+    break;
+  }
+}
+function cmBedEvent(N, now, why) {                       // your capture lifts the bed to a bright chord, answered high; your lost base darkens it, answered low
+  const P = CM.ph; if (!N || !cmBedOn()) return;
+  P.mood = why === 'take' ? 1 : -1;
+  if (now - P.ev < 5) return; P.ev = now;               // a run of captures moves the mood but answers once every 5 s
+  P.chordT = now; const ch = cmMoodChord(P), i = why === 'take' ? Math.min(4, CM_PCAP[AQ()] - 1) : 0;
+  const end = cmSwell(N, now + 0.6, i, ch, 1.15, 1.4); P.br.push(end); P.sw[i] = end + 4;
+}
+function cmBed(N, dt) {                                  // the bed's heat, its duck under the ending, and the breathing
+  const now = AC.currentTime, raw = 1 - Math.exp(-shotRate / 30);
+  CM.heat += (raw - CM.heat) * (1 - Math.exp(-dt / 2));
+  const fallen = (FT.phase === 'tail' && G.result === 'lose') || FT.phase === 'hold', duck = fallen ? 0.0001 : 1 - 0.75 * Math.min(1, CM.ft * 1.5);
+  if (Math.abs(duck - (N.bed.k == null ? 1 : N.bed.k)) > 0.01) { N.bed.k = duck; [N.bed.dry, N.bed.wet].forEach(g => g.gain.setTargetAtTime(duck, now, 0.6)); }
+  cmBedFollow(N, now, dt);
+  let g = 0; CM.sws = CM.sws.filter(w => w.e > now);     // the bed's breath, 0 to 1, for Strings to borrow: each swell's envelope, summed (higher sections weigh a little more)
+  for (const w of CM.sws) { const u = now - w.t; if (u > 0) g += w.k * (u < w.a ? u / w.a : u < w.a + w.h ? 1 : Math.max(0, 1 - (u - w.a - w.h) / 3.6)); }
+  CM.glow = Math.min(1, g * duck / 1.6);
+}
+function cmEnding(N) {                                   // the last-base gauge: one cello, the others joining as it rises (FTS.chamber.drone sets CM.ft)
+  const now = AC.currentTime, kind = CM.ftKind === 'win' ? 'win' : 'loss', list = CM_END[kind];
+  if (CM.ch.kind && CM.ch.kind !== kind) { CM.ch.forEach(v => cmLetGo(N, v, now, 1.2)); CM.ch = []; }
+  CM.ch.kind = kind;
+  list.forEach(([m, at], i) => {
+    const want = CM.ft > 0.04 && CM.ft >= at; let v = CM.ch[i];
+    if (want && !v) { v = CM.ch[i] = cmVoice(N, m, 'b', (m - 62) / 40); v.g.gain.setTargetAtTime(CM_END_P[m] * CM_END_K * 1.4, now, i ? 0.35 : 0.55); }
+    else if (!want && v) { cmLetGo(N, v, now, 1.2); CM.ch[i] = null; }
+  });
+}
+function cmTick() {                                 // every frame: build the engine when wanted, run the bed, catch captures and knockouts
+  const want = AC && AC.state === 'running' && settings.sound && isChamber() && audible() && G && (!G.over || ftLive());
+  if (!want || (CM.nodes && CM.nodes.tier !== AQ())) {
+    if (CM.nodes) { const N = CM.nodes, t = AC.currentTime; CM.nodes = null; CM.ch = []; CM.glow = 0; CM.sws = []; N.out.gain.cancelScheduledValues(t); N.out.gain.setTargetAtTime(0.0001, t, 0.5); for (const o of N.oscs) { try { o.stop(t + 3); } catch (_) {} } setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 7000); }
+    if (!want) { CM.rcap.length = 0; return; }
+  }
+  if (!CM.nodes) { CM.nodes = cmBuild(true); CM.ch = []; CM.idleT = performance.now(); CM.ph = { sw: [], br: [], chord: 0, chordT: AC.currentTime, mood: 0, cur: null, ev: -99 }; }
+  const N = CM.nodes, now = AC.currentTime, ms = performance.now(), dt = Math.min(0.1, (ms - CM.idleT) / 1000); CM.idleT = ms;
+  cmBed(N, dt); cmEnding(N);
+  for (const f of G.fx) {                                // captures, knockouts and retreats arrive as effects; mark each one so it plays once
+    if (f.cm) continue; f.cm = 1; if (f.ftq) continue;
+    if (fogOn() && f.x !== undefined && !seenXY(f.x, f.y)) continue;
+    const pan = f.x !== undefined ? screenPan(f.x, f.y) : 0;
+    if (f.k === 'ring') {
+      if (lostMine(f)) { cmLost(N, now + 0.02, pan); cmBedEvent(N, now, 'lost'); }
+      else if (!awatch() && f.c === PLAYER) { cmTake(N, now + 0.02, 0, 1, pan); cmBedEvent(N, now, 'take'); }
+      else { CM.rcap = CM.rcap.filter(x => now - x < 2); if (CM.rcap.length < 3) { CM.rcap.push(now); cmTake(N, now + 0.02, -12, awatch() ? 0.8 : 0.45, pan - 0.2); } }   // a rival's: lower, further back, at most three in two seconds
+    } else if (f.k === 'elim') cmKO(N, now + 0.02);
+    else if (f.k === 'retreat') { if (rtOK('cm', 2.5)) cmRetreat(N, now + 0.02, pan); }
+  }
+}
+function cmPreview() {                              // plucks, the warm horn, and the strings sighing down (the law: the preview includes the lose-a-base cue)
+  const N = cmBuild(false), t = AC.currentTime + 0.05;
+  [0, 0.3, 0.55].forEach((d, i) => cmPluck(N, t + d, [69, 74, 65][i], 0.26, (i - 1) * 0.4));
+  cmTake(N, t + 1.0, 0, 1, 0);
+  cmLost(N, t + 2.4, 0);
+  setTimeout(() => { try { N.out.disconnect(); } catch (_) {} }, 7500);
+}
+function mvChamber(t, back) {                            // the menu voice: a bow tapping the stand, softer than the order tap
+  const out = AC.createGain(); out.gain.value = CM_LEVEL; out.connect(pbus);
+  const c0 = AC.currentTime; if (MV.cm) { try { MV.cm.gain.cancelScheduledValues(c0); MV.cm.gain.setTargetAtTime(0, c0, 0.05); } catch (_) {} } MV.cm = out;
+  cmStand(out, t, 0.06, back ? 1400 : 1700);
+  setTimeout(() => { try { out.disconnect(); } catch (_) {} }, 600);
+}
+
 // ---- "Floe" and "Floe-1": ice for Rime ----
 // Nothing is on a grid, nothing plays by itself, and a faint wind is the only bed. A troop hit is a soft glass note (a few
 // inharmonic partials, a rounded start, a slow fade) on a calm minor ladder: yours higher, the others lower and duller. A base hit is the falling chirp
@@ -8703,7 +9281,8 @@ function menuVoice(kind) {                                 // kind: 'tap' or 'ba
   if (mode !== 'play' && settings.menuSound === 'off') return;
   audioOn(); if (!AC || AC.state !== 'running') return;
   const ms = performance.now(); if (ms - MV.t < 70) return; MV.t = ms;
-  const f = { hearth: mvHearth, drift: mvDrift, chip: mvChip, cosmos: mvCosmos, floe: mvFloe, musicbox: mvMusicbox, rain: mvRain, tide: mvTide, bowl: mvBowl }[settings.tone] || mvSimple;
+  /*STYLE:S7*/
+  const f = { hearth: mvHearth, drift: mvDrift, chip: mvChip, cosmos: mvCosmos, floe: mvFloe, musicbox: mvMusicbox, rain: mvRain, tide: mvTide, bowl: mvBowl, chamber: mvChamber }[settings.tone] || mvSimple;
   try { f(AC.currentTime + 0.005, kind === 'back'); } catch (e) { /* a missing voice must never stop the menus */ }
 }
 document.addEventListener('click', e => {                   // every button in the menus and on the play screen's rail; the map, the upgrade panel and the sound-style row have sounds of their own
@@ -8738,6 +9317,8 @@ function orderTap(moved) {                                 // your order was sen
     else if (isFloe()) { if (FL.nodes) flTink(FL.nodes, t, 780 + 120 * k, 0.04, 0, 0.6, 2200, true); }
     else if (isMusicBox()) { if (MB.nodes) mbTick(MB.nodes, t, 3600 + 300 * k, 0.32, 0, 0.009); }      // one ratchet click
     else if (isRain()) { if (RN.nodes) rnSplash(RN.nodes, t, k); }
+    /*STYLE:S8*/
+    else if (isChamber()) { if (CM.nodes) cmTap(CM.nodes, t, k); }
     else if (isBowl()) { if (BW.nodes) bwWood(BW.nodes, t, bwMidi(3 + Math.round(k * 2)), 0.045, 0, 0.6); }     // one soft wooden note
     else if (isTide()) { if (TD.nodes) tdKey(TD.nodes, t, tdMidi(4 + Math.round(k * 2)), 0.045, 0, 0.8); }     // one soft key                                      // a small footstep splash
     else if (settings.tone === 'simple' || !settings.tone) mvNoteOn(t, hz(72), hz(71), 0.06, 0.04 + 0.01 * k, 0);
@@ -8745,7 +9326,8 @@ function orderTap(moved) {                                 // your order was sen
 }
 function previewSound() {                       // a sample bleep and bloop so you can hear the setting
   const now = performance.now();
-  const gap = ({ hearth: 11000, drift: 3300, chip: 3200, cosmos: 4400, floe: 5400, musicbox: 4600, rain: 5000, tide: 4400, bowl: 4600 })[settings.tone] || 140;
+  /*STYLE:S9*/
+  const gap = ({ hearth: 11000, drift: 3300, chip: 3200, cosmos: 4400, floe: 5400, musicbox: 4600, rain: 5000, tide: 4400, bowl: 4600, chamber: 5200 })[settings.tone] || 140;
   if (!AC || AC.state !== 'running' || !soundGain() || now - lastPreview < gap && lastPreviewTone === settings.tone) return;
   const fresh = lastPreviewTone !== settings.tone;
   lastPreview = now; lastPreviewTone = settings.tone;
@@ -8759,7 +9341,9 @@ function previewSound() {                       // a sample bleep and bloop so y
     if (isMusicBox()) { musicboxPreview(); return; }
     if (isRain()) { rainPreview(); return; }
     if (isTide()) { tidePreview(); return; }
+    /*STYLE:S10*/
     if (isBowl()) { bowlPreview(); return; }
+    if (isChamber()) { cmPreview(); return; }
     const f = hz(ROOT[PLAYER] - 12 + pick(PENTA));
     tone(f, f * 0.94, 0.1, 0.055, 'sine', 0, 0.018); tone(f * 2, f * 1.88, 0.07, 0.009, 'sine', 0, 0.012);
   } finally { previewing = false; }
@@ -8853,6 +9437,7 @@ const SCREEN_MODE = { scrClassic: 'classic', scrCustom: 'custom', scrSpectate: '
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
+  { v: '50.1', t: 'Build 50.1', b: ['A new style pair, Velvet + Strings. Every road is a string over a deep velvet case, it trembles when struck, and a small string section plays along with the fight.', 'Challenge Maps, Tier 1 rebuilt: three new levels, Land Rush, Hot Seat and Border Dispute, each built around one idea.', 'Some challenge levels bring their own look and sound. Border Dispute plays in Atlas + Drift.', 'The rules box at the start of a challenge now closes with a tap.'] },     // 50.1: DC's pitch, edited by Henry
   { v: '50', t: 'Build 50', b: ['The Shop is open. Earn tokens by winning in Classic and by earning stars in Challenge Maps, then spend them on new looks and sounds.', 'Nine new style pairs, from a fire seen from afar to a sand garden with singing bowls. Classic and Simple stay free.', 'Save and quit. Leave a match whenever you like, and Resume match on the Play menu picks it up where you left it.', 'The game rolls a new map every time you open it.', 'Two new modifiers: Head start and Bounty.', 'Menus share one look, and How to Play now lives in the Play menu. Its written rules are rewritten, finally explaining the percentage-selection-tool.', 'Setup is one screen now: a map you can pan and zoom, with a deck of options you pull up over it.', 'A new match summary with three tabs: Result, Moments and Stats, each showing a variety of details.', 'The Stats screen is rebuilt: your record, your last ten matches, your fastest win on each map size, and how you\'ve done against each AI strength.', 'Modifiers that can\'t work together are greyed out, and they explain why.'] },
   { v: '49', t: 'Build 49', b: ['Deadly: a new strength above Brutal. Enemies play smarter, think harder, and will prioritize taking you out quickly. They respond quickly and intelligently to threats, and capitalize on your mistakes.', 'Unlocks: Challenge Mode is now locked-win a single match of Classic at any difficulty/map size to unlock it. Win a match on Large/Hard to unlock Brutal, and win a match on Large/Brutal to unlock Deadly. Win any match on Brutal/Deadly to unlock them in custom/Spectate modes', 'Reset Data: in "Settings", there is a "Reset All Data" button, tap it three times in quick succession to delete data, unlocked items will be reset. This cannot be undone. UI readability also improved', 'Ember & Hearth: a new style pair, bases burn like small fires, troops will crackle when fighting. A chord plays when you take a base, with a deeper tone chord playing when you lose one. (Check all the styles for updated visuals/sounds!)', 'Win/Loss Tunes: The end of a match ends less abruptly; a slight beat will begin playing as the final base is captured, peaks at the moment of capture, and fades afterwards while the summary card settles in.', 'UI Layout: New in-match UI, making the more important buttons sit near your thumbs. Percentage tool is bottom-right, minimap is bottom-left above skills. Fixes made for multi-tap support, overall latency improved.', 'Maps/Rivals: Map generation fixed, and shy enemies on "Huge" maps no longer stay at home base indefinitely', 'General Optimizations in-game and menus'] },
   { v: '48', t: 'Build 48', b: ['Smarter rivals: Brutal rivals keep troops home when you march at them, answer small raids and strike any base you leave empty (Hard does a lighter version), and health makes bases tougher to break.', 'Easier to read: a bigger, clearer selection ring, a bright flash and a soft chime when you earn an upgrade point, and sharper frost in Rime.', 'Made for slower phones: the game checks your phone the first time it opens and starts on a lighter picture and sound. It also runs on iPhone and iPad, and Spectate shows how strong the AI is.', 'For testers: this What\'s new page and a Check for update button, and the sound now comes back by itself if your phone pauses it.'] }
@@ -8960,7 +9545,8 @@ function showScreen(id) {
   pvOnly = !!m;                                       // setup screens show the map as a preview behind the deck, not the live world
   if (isDeck) dkEnter(id);
   if (m) { syncSeg(); syncText(m); buildPreview(m); }
-  if (id === 'scrSettings') { settingsKey = 'volume'; syncGlobalSeg(); renderSettingsHint(); }
+  if (id === 'scrSettings') { $('bSetStyles').disabled = !!forcedReal; $('setStylesOff').hidden = !forcedReal;      // 50.0.14: in a challenge that sets its own pair, Styles shows greyed out with a reason (was hidden in 50.0.13)
+    settingsKey = 'volume'; syncGlobalSeg(); renderSettingsHint(); }
   if (id === 'scrAccess') { settingsKey = 'colors'; syncGlobalSeg(); renderSettingsHint(); }
   if (id === 'scrPlay') { updateLadderBlurb(); refreshResume(); }
   if (id === 'scrStats') renderStats();
@@ -9001,6 +9587,19 @@ function shopStarSync() {                           // every challenge star pays
   const tot = SCENARIOS.reduce((a, c) => a + starsOfId(c.id).filter(Boolean).length, 0);
   if (tot <= shop.stars) return 0;
   const g = tot - shop.stars; shop.stars = tot; shop.tok += g; saveShop(); return g;
+}
+function forceStyles(pairId) {                     // 50.0.13: a challenge can name a style pair (`forcePair` in SCENARIOS) that every player sees, owned or not; null puts yours back
+  const P = pairId && SHOP_PAIRS.find(x => x.id === pairId);
+  if (!P) { releaseStyles(); return; }
+  if (!forcedReal) forcedReal = { visual: settings.visual, tone: settings.tone };
+  if (settings.visual !== P.v) applyStyle('visual', P.v);
+  if (settings.tone !== P.s) applyStyle('tone', P.s, true);
+}
+function releaseStyles() {                          // leaving a forced challenge: your own pair comes back (it was never saved over, see save())
+  const r = forcedReal; if (!r) return;
+  forcedReal = null;
+  if (settings.visual !== r.visual) applyStyle('visual', r.visual);
+  if (settings.tone !== r.tone) applyStyle('tone', r.tone, true);
 }
 function openShop(ownedOnly) {
   shopOwnedOnly = ownedOnly; shopReal = { visual: settings.visual, tone: settings.tone };
@@ -9161,6 +9760,7 @@ function goalState(g, P) {
     case 'nostat': return P.lv[g.v] > 0 ? { s: 'fail', n: 'missed' } : { s: 'pending', n: '' };
     case 'bases': return { s: P.bases >= g.v ? 'ok' : 'pending', n: `${P.bases}/${g.v}` };
     case 'ko': return G.teams.some(T => T.i !== PLAYER && T.active && !T.alive) ? { s: 'ok', n: '' } : { s: 'pending', n: '' };
+    case 'hillcap': { let h = 0; for (const T of G.teams) if (T.i !== PLAYER && T.active) h = Math.max(h, T.hill); return h >= g.v ? { s: 'fail', n: 'missed' } : { s: 'pending', n: `${Math.floor(h)}/${g.v} s` }; }
   }
   return { s: 'pending', n: '' };
 }
@@ -9372,6 +9972,7 @@ function startGame(watch, scen, modeKey, prac, resume) {
   else if (curPrac) newGame(practiceOpts(curPrac));          // a practice lesson: tiny map, a rival that never attacks
   else if (curScen) newGame({ scenario: curScen });          // fixed map and rules: the same every attempt
   else { newGame(PERF && window.__fixedOnce ? Object.assign(optsFor(curModeKey), { fixedMap: window.__fixedOnce, teams: 0 }) : optsFor(curModeKey)); cfg.seed = rnd32(); save('ice-settings', settings); }   // play the previewed map, then roll the next one
+  { const sc = !watching && !curPrac && G.scenarioId ? SCENARIOS.find(x => x.id === G.scenarioId) : null; forceStyles(sc && sc.forcePair); }      // 50.0.13: a level's own pair, or yours
   for (let i = 0; i < 5; i++) for (const c of rivalCells[i]) c.style.display = G.teams[i].active ? '' : 'none';   // only colors in play
   setMinimap(false); fling.vx = fling.vy = 0;
   G.autoplay = watching;
@@ -9609,7 +10210,7 @@ function showEnd() {
   if (G.endReason === 'crown') {                    // a King of the hill finish
     const w = G.winner, you = !watching && w === PLAYER;
     t.innerHTML = `<span class="sw" data-s="${TEAM_SLOT[w]}" style="background:${TEAM_COLORS[w]}"></span>${END_TEXT.head.crown(you, TEAM_NAMES[w])}`;
-    sub.textContent = END_TEXT.sum.crown(you, TEAM_NAMES[w], G.crown2 >= 0, G.kothTarget, fmt(G.t), G.teams[w].bases, G.nodes.length);
+    sub.textContent = END_TEXT.sum.crown(you, TEAM_NAMES[w], G.crown2 >= 0, kothGoal(w), fmt(G.t), G.teams[w].bases, G.nodes.length);
   }
   if (G.diffName === 'random' && !G.scenarioId) {   // the secret rolls, revealed
     const list = G.teams.filter(T => T.active && (watching || T.i !== PLAYER)).map(T => `${TEAM_NAMES[T.i]} ${DIFF_LABEL[T.diffName]}`).join(', ');
@@ -9693,7 +10294,7 @@ $('endTabs').addEventListener('keydown', e => {
   endTab(n.dataset.p); n.focus(); e.preventDefault();
 });
 function toMenu() {
-  coachEnd();
+  coachEnd(); releaseStyles();
   hideInfo(); watching = false; hudEl.classList.remove('watch');
   show('end', false); hudEl.hidden = true;
   startDemo(); resetCam(); layout(); renderRecord(); resetStack('scrHome'); show('menu', true); showUnlockPop();
@@ -9742,7 +10343,7 @@ function renderInfo() {
     (blind ? `<div class="il">Out of sight. Showing what you last saw.</div>` :
       `<div class="ib"><i style="width:${Math.round(100 * n.hp / n.maxHp)}%;background:${col}"></i></div>` +
       `<div class="il">Health ${Math.round(n.hp)} / ${n.maxHp} &middot; Defenders ${def}</div>`) +
-    (sp ? `<div>${sp.text}</div>` : '') + (n.crown ? `<div>${G.crown2 >= 0 ? 'Hold both crowns' : 'Hold the crown'} for ${G.kothTarget} seconds in total to win.</div>` : '');
+    (sp ? `<div>${sp.text}</div>` : '') + (n.crown ? `<div>${G.crown2 >= 0 ? 'Hold both crowns' : 'Hold the crown'} for ${kothGoal(PLAYER)} seconds in total to win.${G.kothRival ? ` Rivals need ${G.kothRival}.` : ''}</div>` : '');
 }
 function positionInfo() {
   const el = $('info'), p = toScreen(infoNode.x, infoNode.y), w = 232, h = el.offsetHeight || 90;
@@ -9976,7 +10577,8 @@ function doResetAll() {
   unlocks.deadly = false; unlocks.deadlyCustom = false; unlocks.tiers = false; unlocks.brutal = false; unlocks.brutalCustom = false; unlocks.challenge = false; save('ice-unlocks', unlocks); updateLadderBlurb();
   for (const k of ['classic', 'custom', 'spec']) if (settings[k] && (settings[k].diff === 'deadly' || settings[k].diff === 'brutal')) settings[k].diff = 'hard';           // a Deadly that is locked again cannot stay picked
   shop.tok = 0; shop.prog = 0; shop.n = 0; shop.stars = 0; for (const P of SHOP_PAIRS) { shop.own['v:' + P.v] = shop.own['s:' + P.s] = !!P.free; } saveShop(); syncShopDot();     // 49.2: tokens and styles too
-  if (settings.visual !== 'classic') applyStyle('visual', 'classic'); if (settings.tone !== 'simple') applyStyle('tone', 'simple', true);
+  if (forcedReal) forcedReal = { visual: 'classic', tone: 'simple' };     // 50.0.13: reset inside a forced challenge: the match keeps its pair, you get the free pair back when you leave
+  else { if (settings.visual !== 'classic') applyStyle('visual', 'classic'); if (settings.tone !== 'simple') applyStyle('tone', 'simple', true); }
   save('ice-settings', settings); syncSeg(); syncAllText();
 }
 // Unlock everything (hidden Picture quality screen): two taps. Brutal, Deadly (Classic and Custom), Challenge Maps and every challenge tier. No stars are awarded.
@@ -10005,6 +10607,8 @@ $('bSpeed').addEventListener('click', () => { if (mode !== 'play') return; const
 $('statsBtn').addEventListener('click', () => {
   if (!watching && !hasRules) return;
   if (statsHold) { setMinimap(false); layout(); return; }                   // the panel was folded for the minimap: tapping it puts the minimap away and the panel back
+  const peeking = performance.now() < peekUntil; peekUntil = 0;             // 50.0.12: a tap ends a challenge's opening peek at its rules; if only the peek held the panel open, the tap just closes it
+  if (peeking && !(watching ? watchRivals : settings.rivals)) { syncRivals(); layout(); return; }
   if (watching) watchRivals = !watchRivals;
   else { settings.rivals = !settings.rivals; save('ice-settings', settings); }
   syncRivals(); layout();
@@ -10228,7 +10832,7 @@ function ftCrown() {                                      // King of the hill: t
   const o = G.nodes[G.crown].owner, o2 = G.crown2 >= 0 ? G.nodes[G.crown2].owner : o;
   if (o < 0 || o2 !== o) return null;                      // only whoever is banking the seconds right now; a lost hill lets the tension go
   const best = G.teams[o]; if (!best || !best.active) return null;
-  const left = G.kothTarget - best.hill, W = 15; if (left > W) return null;
+  const left = kothGoal(best.i) - best.hill, W = 15; if (left > W) return null;
   return { kind: best.i === PLAYER ? 'win' : 'loss', g: Math.max(0, Math.min(1, 1 - left / W)) };
 }
 function ftStep(dt) {                                      // the gauge, every frame of a match you are playing
@@ -10423,6 +11027,27 @@ FTS.bowl = {                                            // the ending, on Cosmos
   end(kind, t) { const N = BW.nodes; if (!N) return; bwSink(N, t); },
   relief(t) { const N = BW.nodes; if (N) bwBowl(N, t, 587.33, 0.035, 0, 3.5); }
 };
+/*STYLE:S13*/
+FTS.chamber = {                                         // the ending: one cello while the last base wears down, the others joining as it goes (cmEnding); the peak is everyone sighing down (a loss) or landing on a bright open chord (a win)
+  holdIv: 2.6,
+  drone(g, dt, rel) { CM.ft = rel ? 0 : g; if (!rel) CM.ftKind = FT.kind || 'loss'; },
+  hold(t) { const N = CM.nodes; if (N) cmBow(N, t, 50, 0.03, { att: 0.8, hold: 0.6, rel: 1.4 }); },      // your last base is gone, troops still out: the cello, alone, now and then
+  peak(kind, t) {
+    const N = CM.nodes; if (!N) return;
+    const held = CM.ch.filter(Boolean); CM.ch = []; CM.ft = 0;                  // the ending takes the voices that were growing, so drone(release) does not cut them
+    if (kind === 'win') {
+      const have = new Set(held.map(v => v.midi));
+      CM_END.win.forEach(([m], i) => { if (!have.has(m)) cmBow(N, t + 0.1 + i * 0.12, m, CM_END_P[m] * CM_END_K, { att: 0.5, hold: 2.2, rel: 2.0, pan: (m - 62) / 40 }); });
+      held.forEach(v => { v.g.gain.setTargetAtTime(CM_END_P[v.midi] * CM_END_K * 1.4, t, 0.3); cmLetGo(N, v, t + 2.6, 2.0); });
+      cmHorn(N, t + 0.4, 62, 2.4, 0.05 * CM_END_K, { pan: -0.2, att: 0.4 });     // the win has the horn and the F sharp; the loss has neither (all of it inside the 4.8 s tail)
+      return;
+    }
+    if (held.length) held.forEach(v => { v.oscs.forEach(o => { if (o.detune && o.type === 'sawtooth') { o.detune.setValueAtTime(o.detune.value, t + 0.4); o.detune.linearRampToValueAtTime(o.detune.value - 100, t + 2.6); } }); cmLetGo(N, v, t + 0.6, 2.6); });
+    else [[50, 0.1], [57, 0.07], [65, 0.05], [70, 0.04]].forEach(([m, p], i) => cmBow(N, t + i * 0.08, m, p * CM_END_K, { att: 0.3, hold: 0.8, rel: 2.4, slide: -100, slideAt: 0.9, slideDur: 2.2, pan: (m - 62) / 40 }));   // no build-up heard: the group, sighing down at once
+  },
+  end(kind, t) { const N = CM.nodes; if (!N) return; cmBow(N, t, 50, 0.07 * CM_END_K, { att: 0.2, hold: 0.8, rel: 2.4, slide: -100, slideAt: 0.6, slideDur: 2 }); cmBow(N, t, 57, 0.05 * CM_END_K, { att: 0.2, hold: 0.6, rel: 2.2, slide: -100, slideAt: 0.6, slideDur: 2 }); },
+  relief(t) { const N = CM.nodes; if (N) { cmPluck(N, t, 69, 0.18, 0); cmPluck(N, t + 0.2, 74, 0.18, 0); } }      // a base won back: two plucks up
+};
 FTS.floe = {                                              // ice: low groans under the lake that tighten, a crack now and then (win: glass notes climbing); the peak is the ice giving way, or ringing out
   holdIv: 2.6,
   pulse(g, t, kind) {
@@ -10511,7 +11136,8 @@ function frame(nowMs) {
   stepFling(dt);
   if (G && fogOn()) computeFog();
   if (G) playSfx(nowMs, dt);
-  if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); floeTick(); musicboxTick(); rainTick(); tideTick(); bowlTick(); heTick(); mixTick(); if (G) ftTick(dt); }
+  /*STYLE:S11*/
+  if (AC) { odTick(); driftClock(); chipTick(); cosmosTick(); floeTick(); musicboxTick(); rainTick(); tideTick(); bowlTick(); cmTick(); heTick(); mixTick(); if (G) ftTick(dt); }
   const fsw = G ? fogSwap() : null;                 // under fog, bases out of sight are drawn as last seen
   const gap = mode === 'paused' ? Math.min(250, Math.max(33, pauseDrawMs * 4)) : mode === 'demo' ? 28 : 0;      // paused: the slow decoration (snow, stars, drift) moves at up to about 30 a second, but never uses more than about a quarter of the time, so a slow phone backs off toward the old 4 a second; the demo behind the menus shows at about 30 a second
   if (!gap || drawDirty || nowMs - lastDrawAt >= gap) {
