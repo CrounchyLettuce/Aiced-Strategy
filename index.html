@@ -743,7 +743,7 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 50.4.0</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 50.4.1</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2 shopbtn" id="bShop" data-go="scrShop">Shop<i id="shopDot"></i></button>
@@ -2796,7 +2796,8 @@ let dpr = 1, V = { s: 1, ex: 0, ey: 0, rot: false };
 let F = { x: 0, y: 0, w: 1, h: 1 }, FI = { w: 1, h: 1 }, s0 = 1, rot = false, tall = false, cam = { z: 1, cu: W / 2, cv: H / 2 }, arrowHits = [];
 let drawDirty = true, lastDrawAt = 0;                   // F2: paused and the menu demo draw less often; drawDirty asks for a redraw at once
 let FIT_K = 1;                                         // FIT_K: how far the whole-battlefield view backs away to clear the HUD
-const zmax = () => 3 * Math.max(1, Math.max(W, H) / 1000);      // 50.1.2: the long side, so a tall map zooms like a wide one
+const zmax = () => 4.5 * Math.max(1, Math.max(W, H) / 1000);    // 50.1.2: the long side, so a tall map zooms like a wide one. 50.4.1: 3 -> 4.5, 1.5x closer (Henry, Nov 1 16:25)
+const zmaxV = () => zmax() / FIT_K;                             // 50.4.1 (ledger 24): the deepest zoom counted from the plain fit, so a bigger HUD (a whole view backed further away) can't cap how close you get
 let mode = 'demo', speedMul = 1, last = performance.now(), acc = 0;
 let watching = false, watchRivals = true;   // watching: an AI-only match you spectate
 let endAt = 0;                                          // when the end card appeared (its buttons wait a moment, so last taps on the map cannot press them)
@@ -3106,8 +3107,10 @@ function layout() {
   hudEl.classList.toggle('rotv', tall);
   applyHudSize();
   if (!hudEl.hidden) placeMapButton();
+  const keep = G && (mode === 'play' || mode === 'paused') && cam.z > 1.0001 ? V.s : 0;      // 50.4.1 (ledger 24, Henry's pick A): a zoomed view keeps its real size through a HUD size change or a turn; the whole view re-fits
   refitHud();
   s0 = fitScale();
+  if (keep) cam.z = keep / s0;
   updateView();
 }
 function paintMap(x, w, h, live, u) {                // the map as a diagram: terrain, lines and bases (the setup preview; `live` is always false since the minimap went, 50.4.0)
@@ -3400,7 +3403,7 @@ function placeMapButton() {                           // the map button (bottom 
 function resetCam() { const B = boxUV(); cam = { z: 1, cu: (B.u0 + B.u1) / 2, cv: (B.v0 + B.v1) / 2 }; }
 function updateView() {
   s0 = fitScale();
-  cam.z = Math.min(zmax(), Math.max(1, cam.z));
+  cam.z = Math.min(zmaxV(), Math.max(1, cam.z));
   const s = s0 * cam.z;
   // The centre of the camera may reach the outermost base on each side and go no further (also at the full view), so a base on the edge can be
   // brought to the middle of the view, clear of the HUD. The map button puts the whole map back in the middle.
@@ -3413,7 +3416,7 @@ function updateView() {
 }
 function zoomAround(px, py, z) {          // keep the point under (px, py) fixed while zooming
   const au = cam.cu + (px - (F.x + F.w / 2)) / V.s, av = cam.cv + (py - (F.y + F.h / 2)) / V.s;
-  cam.z = Math.min(zmax(), Math.max(1, z));
+  cam.z = Math.min(zmaxV(), Math.max(1, z));
   const s = s0 * cam.z;
   cam.cu = au - (px - (F.x + F.w / 2)) / s; cam.cv = av - (py - (F.y + F.h / 2)) / s;
   updateView();
@@ -12028,7 +12031,7 @@ const SCREEN_MODE = { scrClassic: 'classic', scrCustom: 'custom', scrSpectate: '
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
-  { v: '50.4.0', t: 'Build 50.4', b: ['The minimap is gone. The map button now shows the whole map in one tap, and a second tap takes you back to where you were.'] },
+  { v: '50.4.1', t: 'Build 50.4', b: ['The minimap is gone. The map button now shows the whole map in one tap, and a second tap takes you back to where you were.', 'You can zoom in further than before, and changing the HUD size or turning your phone no longer changes your zoom.'] },
   { v: '50.3.26', t: 'Build 50.3', b: ['Atlas + Drift are reworked. Atlas is a surveyor\'s chart with pieces of its own, and Drift is the sea the battle is fought on, growing rougher with the fighting.', 'Ink + Tide are reworked too: a calmer, darker page that reads even zoomed out, with Tide built around a piano\'s sustain pedal. Neon\'s river is water now.', 'Zooming is smoother on most looks, and Leadlight, Black Iron, Ember and Pixel run smoother on slower phones.', 'Special bases have new icons, so you can tell what each one does at a glance, upright and readable at any zoom. Ember\'s team symbols are burned in, so they show at any health.', 'All thirteen sounds are evened out, so on a phone none plays much louder or quieter than the rest, endings included.'] },     // 50.3.1 on: DC's summary, Henry's OK Nov 1 (50.1's size); fold later 50.3.x items into these lines
   { v: '50.2', t: 'Build 50.2', b: ['Maps are landmasses now. Every map has its own coastline with rivers, rings and islands inside it, and every color starts with a fair share of the land.', 'The map no longer turns when your phone does, and on the setup screen it stays put while you pull up the deck.', 'Two new style pairs, Black Iron + Hollow and Leadlight + Bellows, and the space around the land has its own look in each style.', 'Panning is smoother in most styles, a long list of flashes is gone, and Drift and Cosmos come through on a phone speaker.', 'Smaller things: HUD size in Settings, a page counter in the Shop, and Reset all data on a screen of its own.'] },     // 50.1.1 to 50.2.15 (shipped labelled Build 50.3): DC's summary, Henry's OK Nov 1
   { v: '50.1', t: 'Build 50.1', b: ['A new style pair, Velvet + Strings. Every road is a string stretched over a deep velvet case. It trembles when struck, and a small string section plays along with the fight.', 'Challenge Maps\' Tier 1 is rebuilt around three new levels, Land Rush, Hot Seat and Border Dispute. Each one is built around a single idea, so you learn one thing at a time.', 'Some challenge levels now bring their own look and sound, so each one feels like a place of its own. Border Dispute plays in Atlas + Drift.', 'The rules box at the start of a challenge closes with a tap, so you can get straight to the map.'] },     // 50.1: DC's pitch, edited by Henry
@@ -13103,8 +13106,8 @@ function mapBack(v) { wholeBack = v; const on = String(!!v); if ($('bMap').getAt
 $('bMap').addEventListener('click', () => {
   const now = performance.now(); if (now - mapTapT < 350) return; mapTapT = now;
   fling.vx = fling.vy = 0;
-  if (wholeBack && atWhole()) { cam = { z: wholeBack.z, cu: wholeBack.cu, cv: wholeBack.cv }; mapBack(null); }
-  else { mapBack(atWhole() ? null : { z: cam.z, cu: cam.cu, cv: cam.cv }); resetCam(); }
+  if (wholeBack && atWhole()) { cam = { z: wholeBack.vs / s0, cu: wholeBack.cu, cv: wholeBack.cv }; mapBack(null); }      // 50.4.1: the way back keeps its real size (V.s), whatever the HUD did meanwhile
+  else { mapBack(atWhole() ? null : { vs: V.s, cu: cam.cu, cv: cam.cv }); resetCam(); }
   updateView();
 });
 cv.addEventListener('contextmenu', e => e.preventDefault());
@@ -13301,7 +13304,7 @@ function renderPractice() {
 }
 const lvSum = T => T.lv.hp + T.lv.spd + T.lv.dmg;
 const COACH_TESTS = {
-  zoom: () => cam.z >= Math.min(coach.z0 + 0.3, zmax() - 0.02),
+  zoom: () => cam.z >= Math.min(coach.z0 + 0.3, zmaxV() - 0.02),
   pan: () => { const c = coach.c0, ww = viewSize()[0]; return !!c && Math.hypot(cam.cu - c.cu, cam.cv - c.cv) > ww * 0.06; },
   whole: () => cam.z <= 1.02,
   sent: () => G.troops.some(t => t.team === PLAYER && t.path.length > 0),
@@ -13860,4 +13863,4 @@ if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWor
 </script>
 </body>
 </html>
-<!-- Aiced build 50.4.0, from source sha256 56f7bfa374df4544 -->
+<!-- Aiced build 50.4.1, from source sha256 930c096bd31aa1ad -->
