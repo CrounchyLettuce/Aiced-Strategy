@@ -435,11 +435,48 @@ body:has(#menu:not([hidden])) :is(#coach, .cRing, .cArrow) { visibility: hidden;
 .brief p.note { font-size: 12.5px; }      /* 50.5.14: the star gate, said under the goals */
 .moments .st { color: #ffcd30; font-size: 14px; }
 #endGoals { margin: 8px 0 6px; }
+/* 50.6.4: the challenge ladder as tier cards on a strip, the Shop's way (Henry picked option A, Nov 5): one card per tier, its neighbours peeking, arrows and dots under it */
+#menu:has(#scrLadder:not([hidden])) { overflow-x: hidden; }
+.ldeck { width: 100%; display: flex; flex-direction: column; align-items: center; }
+#ladder { position: relative; width: 100vw; margin: 0 calc(50% - 50vw); overflow: clip; touch-action: pan-y; }      /* the strip spans the screen and clips there: the peeking cards end at its edge, and nothing scrolls sideways */
+#ladder .tcard { position: absolute; top: 0; left: 0; right: 0; margin: 0 auto; width: min(330px, calc(100% - 56px)); box-sizing: border-box; padding: 14px 14px 16px;
+  border-radius: var(--rk); border: 1px solid rgba(255,255,255,.22); background: rgba(10,10,14,.94); display: flex; flex-direction: column; gap: 10px;
+  transition: transform .25s ease, opacity .25s ease; cursor: pointer; }
+#ladder .tcard.cur { border-color: rgba(255,255,255,.5); cursor: default; }
+#ladder .tcard:not(.cur) .chcard { pointer-events: none; }      /* a tap on a peeking card brings it in, never opens a brief */
+#ladder .tier { margin: 0; padding: 0 2px; align-items: center; }
+#ladder .tier > span:first-child { font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); font-weight: 600; white-space: nowrap; }
+#ladder .tier .ts, #ladder .tier .lkl { font-size: 14px; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+#ladder .tier .lkl { font-size: 13.5px; gap: 7px; text-align: right; }
+#ladder .tier .ts svg { width: 15px; height: 15px; fill: #ffcd30; stroke: #ffcd30; }
+#ladder .lk2 { width: 10px; height: 12px; color: var(--dim); flex: none; }
+#ladder .lvs { display: flex; flex-direction: column; gap: 8px; }
+#ladder .chcard { grid-template-rows: auto auto auto; gap: 2px 12px; padding: 11px 13px 12px; border-radius: var(--rc); background: rgba(255,255,255,.035); min-height: 98px; }
+#ladder .chcard b { font-size: 18px; font-weight: 700; }
+#ladder .chcard .d { font-size: 13.5px; }
+#ladder .chcard .best { font-size: 13px; margin-top: 2px; }
+#ladder .chcard .best { margin-top: 5px; padding-top: 6px; border-top: 1px solid var(--hair); }      /* 50.6.6 (Henry): a hairline sets your best apart from the blurb above it */
+#ladder .chcard.locked .best { border-top-color: #2c2c32; }
+#ladder .chcard .stars { gap: 4px; }
+#ladder .chcard .stars svg { width: 19px; height: 19px; stroke: #6a6a72; stroke-width: 1.1; }
+#ladder .chcard .stars svg.on { stroke: #ffcd30; }
+#ladder .chcard:active { background: rgba(40,40,44,.8); }
+#ladder .chcard.locked { background: rgba(255,255,255,.035); border-color: var(--faint); }      /* dimmed text on the same backing, so the map never shows through a locked level */
+#ladder .chcard.locked b, #ladder .chcard.locked .d, #ladder .chcard.locked .best { color: #5c5c64; }
+#ladder .chcard.locked .stars svg { stroke: #3c3c42; }
+#ladder .lvtbd { min-height: 98px; display: grid; place-items: center; border: 1px dashed rgba(255,255,255,.22); border-radius: var(--rc); }      /* a slot with no level yet */
+#ladder .lvtbd b { font-size: 15px; font-weight: 600; letter-spacing: .14em; color: var(--dim); }
+.ldeck .shopnav { margin-top: 14px; }
 @media (orientation: landscape) and (max-height: 520px) {
-  #scrLadder { width: min(100%, 800px); }
-  #scrLadder .ladder { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
-  #scrLadder .tier { grid-column: 1 / -1; margin-top: 2px; }
-  #scrBrief { width: min(100%, 560px); }
+  #scrLadder { width: min(100%, 860px); }
+  #ladder .tcard { width: min(640px, calc(100% - 150px)); }
+  #ladder .lvs { display: grid; grid-template-columns: repeat(3, 1fr); }
+  #ladder .chcard { grid-template-columns: 1fr; grid-template-rows: auto auto auto auto; min-height: 150px; align-content: start; }
+  #ladder .chcard .stars { grid-row: auto; grid-column: 1; margin-top: 6px; }
+  #ladder .chcard .d { min-height: 36px; }
+  #ladder .lvtbd { min-height: 150px; }
+  .ldeck .shopnav { margin-top: 10px; }
+  #scrLadder .snav svg { transform: none; }      /* the Shop's arrows turn with its upright strip in landscape; these stay sideways */
 }
 .modes { display: grid; gap: 8px; }
 .mode { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 14px 16px; border: 1px solid var(--faint); border-radius: var(--rk); background: rgba(0,0,0,.35); }
@@ -492,6 +529,8 @@ body:has(#menu:not([hidden])) :is(#coach, .cRing, .cArrow) { visibility: hidden;
 @media (orientation: landscape) and (max-height: 430px) { .hintline { font-size: 11px; line-height: 1.3; min-height: 2.6em; } .spec { padding: 6px 10px; } .spec span { font-size: 12px; } }
 #info { position: fixed; z-index: 4; width: 232px; padding: 10px 12px; pointer-events: none; display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; line-height: 1.35; }
 #info[hidden] { display: none; }
+#info.pv { z-index: 7; background: rgba(0,0,0,.7); --dim: #c0c0c8; --faint: rgba(255,255,255,.36); --hair: rgba(255,255,255,.22); }      /* 50.7.2: over a preview map the card sits above the menu (deckOn is 6) and wears the menu's clearer lines (48.8.1) on a slightly darker card, so its grey text is 4.5:1 or better on the light looks (Ink's brightest paper: about 5.9:1) */
+html:root[data-colors="contrast"] #info.pv { background: rgba(0,0,0,.9); }      /* 50.7.2: High contrast keeps its more solid panel */
 #info .ih { display: flex; align-items: center; gap: 8px; }
 #info .ih b { font-size: 15px; font-weight: 600; }
 #info .ih span { margin-left: auto; color: var(--dim); font-size: 12px; }
@@ -681,6 +720,27 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
   .dkbody, .dkbar { transition: opacity .2s; }
 }
 @media (prefers-reduced-motion: reduce) { .dkhandle i, .dkdeck, .dkbody { animation: none !important; transition: none !important; } }
+/* 50.6.2: the brief is the setup deck, holding text only. Its text a size up; "Goals" wears the deck's row label. */
+#scrBrief .dkrows { display: flex; flex-direction: column; gap: 12px; padding: 6px 2px 18px; }
+#scrBrief .dkrows p { font-size: 15px; }
+#scrBrief .dkrows p.note { font-size: 13px; }
+#scrBrief .dkrows h3 { margin: 2px 0 -3px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; }
+#scrBrief .goals { font-size: 15px; gap: 11px; }
+#scrBrief .goals li { grid-template-columns: 17px 1fr; }
+#scrBrief .goals svg { width: 16px; height: 16px; }
+#scrBrief .dksum { font-size: 13px; }
+/* 50.6.5: the star link (a DC draft look): B and C count only on a run that earns A, so they hang off it, on the level cards and in the brief */
+.vh { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }      /* said by a screen reader, never seen */
+#ladder .chcard .stars { align-items: center; gap: 0; }
+#ladder .stars .sl { width: 7px; height: 1.5px; margin: 0 1px 0 3px; background: rgba(255,255,255,.3); flex: none; }
+#ladder .stars .bc { display: flex; gap: 3px; padding: 2px 5px; border: 1.5px solid rgba(255,255,255,.2); border-radius: 14px; }
+#ladder .chcard.locked .stars .sl { background: #34343a; }
+#ladder .chcard.locked .stars .bc { border-color: #2c2c32; }
+#ladder .chcard .d { text-wrap: pretty; }      /* WC: no lone last word */
+#scrBrief .goals.link li:nth-child(n+2) { position: relative; margin-left: 8px; padding-left: 13px; }
+#scrBrief .goals.link li:nth-child(n+2)::before { content: ''; position: absolute; left: 0; top: -11px; width: 9px; height: calc(50% + 11px); box-sizing: border-box;
+  border-left: 1.5px solid var(--faint); border-bottom: 1.5px solid var(--faint); border-bottom-left-radius: 5px; }
+#scrBrief .goals.link li:nth-child(2)::after { content: ''; position: absolute; left: 0; top: 50%; bottom: 0; border-left: 1.5px solid var(--faint); }      /* meets the third goal's line (which starts 11 px up, the list's gap) without overlapping: the line is see-through */
 </style>
 </head>
 <body>
@@ -750,7 +810,7 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
       <p class="newhere" id="newHere" hidden>New here? Check <b>How to Play</b>.</p>
       <p class="qualnote" id="qualNote" hidden></p>
     </div>
-    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 50.5.15</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
+    <div class="ver"><span class="bw"><span class="build" id="buildNo">Build 50.7.3</span><button class="newsBtn" id="newsBtn" data-go="scrNews" aria-label="What's new in this build"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg><i id="newsDot" hidden></i></button></span></div>
     <div class="homeR">
       <button id="bPlay" class="primary big" data-go="scrPlay">Play</button>
       <button class="ghost big2 shopbtn" id="bShop" data-go="scrShop">Shop<i id="shopDot"></i></button>
@@ -867,17 +927,22 @@ body:has(#menu.shopOn:not([hidden])) #hud { visibility: hidden; }     /* Styles 
 
   <section class="screen wide" id="scrLadder" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2>Challenges</h2></header>
-    <p class="specintro" id="ladderIntro">Every map has three star goals: the first is the objective, the other two are bonuses. Earn stars to unlock new tiers.</p>
-    <div id="ladder" class="ladder"></div>
+    <div class="ldeck"><div id="ladder"></div>
+      <div class="shopnav"><button class="snav" id="ladPrev" aria-label="Previous tier"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><div class="spage" aria-hidden="true"><div class="sdots" id="ladDots"></div><span class="scount" id="ladCount"></span></div><span class="vh" id="ladSR"></span><button class="snav" id="ladNext" aria-label="Next tier"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg></button></div></div>
   </section>
 
-  <section class="screen brief" id="scrBrief" hidden>
+  <section class="screen deck brief" id="scrBrief" hidden>
     <header><button class="back" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg></button><h2 id="briefTitle"></h2></header>
-    <p id="briefDesc"></p>
-    <h3>Goals</h3>
-    <ul id="briefGoals" class="goals"></ul>
-    <p id="briefNote" class="note" hidden></p>
-    <button id="bBriefStart" class="primary big">Start</button>
+    <div class="dkdeck">
+      <button class="dkhandle" aria-label="Show or hide the brief"><i></i><span class="dkhint"></span></button>
+      <div class="dkbody"><div class="dkrows">
+        <p id="briefDesc"></p>
+        <h3>Goals</h3>
+        <ul id="briefGoals" class="goals link" aria-label="The other two stars count only on a win that earns the first."></ul>
+        <p id="briefPair" class="note" hidden></p>
+      </div></div>
+      <div class="dkbar"><span class="dksum" id="briefBest"></span><button id="bBriefStart" class="primary big">Start</button></div>
+    </div>
   </section>
 
   <section class="screen wide" id="scrStats" hidden>
@@ -1104,7 +1169,9 @@ const TRUCE_AI = { smart: 1, spawn: 0.5, margin: 2.6, interval: [6, 9], truce: {
 const MANHUNT_RED = { smart: 1, spawn: 1, margin: 1.6, frac: 0.75, interval: [2, 3.5], firstThink: 20, stay: { 4: 15 } };      // T2_M3's near rival (50.5.9, Manhunt; AC's spec): a fat home that keeps 15. 50.5.10 (Henry's runs; AC + DC sims): AC's hunting numbers, first think at 0:20. 50.5.11: margin 1.6, so it does not throw its army away before 1:00
 const MANHUNT_YELLOW = { smart: 1, spawn: 1, margin: 1.4, frac: 0.85, interval: [2, 3.5], away: { min: 8, hops: 4, margin: 1.8, frac: 0.9, bonus: 2.5 },      // T2_M3's far rival: awake, it goes where your army isn't (One Army's away; 50.5.11: AC's spec numbers again, it hunts once it wakes);
   sleep: { spawn: 1.2, margin: 1.15, frac: 0.85, interval: [1, 1.8] } };      // asleep (G.hunt), it grabs the neutral bases in its zone only, with Truce's grab numbers (50.5.10: builds at 1.2 asleep, so an early wake is no gift)
+const NEST_AI = { smart: 1, spawn: 1, margin: 1.4, frac: 0.8, interval: [2, 3.5], firstThink: 20 };      // 50.7.1: T3_M1's rival
 const LOADED_AI = { smart: 1, spawn: 0.3, margin: 2.6, interval: [6, 9] };         // T1_M3's rival (50.0.9, Bases Loaded): punishes an empty base next to it (smart 1), slow to build and patient, so sending everything down one road costs bases but a newcomer can still win
+const BACK_BLUE = D => Object.assign({}, DIFF.normal, D.truce ? { truce: D.truce } : {});      // 50.6.1: blue's AI in a level's backdrop (behind its brief): Normal, plus the level's truce grab numbers; never the rival's own dials
 const SCENARIOS = [
   { id: 'alone', tier: 1, name: 'Land Rush', desc: 'Look at alllll thooose bases.',      // 50.0.14: Tier 1 text from Henry and WC (spelling deliberate)
     size: 'small', teams: 2, shape: 'continent', map: 'alone', face: 'wide', diff: 'easy', seed: 9001, fair: true, mods: {}, specials: true, aiTune: ALONE_AI, rule: "Take a base and it'll make troops for you. Take another, and you can see where this is going. Godspeed.",
@@ -1133,40 +1200,19 @@ const SCENARIOS = [
     stars: [{ k: 'win', t: 'Take every base' }, { k: 'time', v: 390, t: 'Win in under 6:30' }, { k: 'truceko', v: 60, t: 'Knock out a rival within 1:00 of the truce ending' }] },      // 50.5.7: 6:30 from Henry's normal runs on 50.5.6 (4:07-6:00) and his call
   // 50.5.9: Tier 2's final level, Manhunt (AC's spec, Henry Nov 1 and Nov 4). Its text is final since 50.5.14 (Henry + WC, Nov 4).
   // Iron wall and Glass cannon (Tier 2 since 49.x) retired here (Henry, Nov 4): written into the challenge toolbox's section 7.
-  { id: 'manhunt', tier: 2, name: 'Manhunt', desc: "There's a bounty on your head, and everyone wants it.",      // 50.5.14: Manhunt's text, final (Henry + WC, Nov 4)
+  { id: 'manhunt', tier: 2, name: 'Manhunt', desc: "There's a bounty on your head, and everyone wants it.", card: "There's a bounty on your head.",      // 50.5.14: Manhunt's text, final (Henry + WC, Nov 4)
     size: 'medium', teams: 3, active: [0, 1, 3], shape: 'islands', map: 'manhunt', face: 'wide', diff: 'easy', seed: 9103, fair: true, mods: {}, specials: true, forcePair: 'blackiron',
     aiTune: {}, teamTune: { 1: MANHUNT_RED, 3: MANHUNT_YELLOW }, pact: true, hunt: { near: 1, far: 3, nearHome: 4, low: 1, zone: [15, 16, 17, 18, 19, 20, 21, 22, 23], quiet: [15], clock: 135, hit: 0.15, full: 'cap' },      // 50.5.12: wakes on a full region at its army limit and on your hits too; clock 2:15
     rule: "Both rivals hunt only you. {R} wastes no time, while {Y} gathers its forces behind the fence until it's ready, or you cross it.",      // {R}/{Y}: the match's colour names (nameText)
     objective: { type: 'conquest', text: 'Take every base' },
     stars: [{ k: 'time', v: 360, t: 'Take every base in under 6:00' }, { k: 'nohome', t: 'Win without losing your home base' }, { k: 'redwake', t: 'Bring {R} to its last base before {Y} wakes up' }] },      // 50.5.13: win + time merged into star 1 (Henry's T3 pattern); star 3 new. 50.5.14: final text
-  { id: 'forge-wars', tier: 3, name: 'Forge wars', desc: 'Three Forges and three skilled rivals. Hold every Forge at once.',
-    size: 'medium', teams: 4, shape: 'river', diff: 'hard', seed: 7234, fair: true, mods: {}, specials: true, specialKinds: ['forge', 'forge', 'forge'], aiTune: { spawn: 0.93, margin: 1.45, playerBias: 0.15 },
-    objective: { type: 'forges', secs: 15, text: 'Hold every Forge for 15 seconds' },
-    stars: [{ k: 'win', t: 'Hold every Forge for 15 seconds' }, { k: 'time', v: 420, t: 'Win in under 7:00' }, { k: 'bases', v: 12, t: 'Finish with 12 or more bases' }] },
-  { id: 'last-stand', tier: 3, name: 'Last stand', desc: 'You start in the middle of the map with two skilled rivals right beside you. Survive.',
-    size: 'medium', teams: 3, shape: 'continent', diff: 'hard', seed: 4606, mods: {}, specials: false, surround: true, playerTroops: 12, aiTune: { spawn: 1.0, margin: 1.4, playerBias: 0.28 },
-    objective: { type: 'survive', secs: 300, text: 'Survive for 5 minutes' },
-    stars: [{ k: 'win', t: 'Survive for 5 minutes' }, { k: 'bases', v: 5, t: 'Hold 5 or more bases at the end' }, { k: 'ko', t: 'Knock out a rival' }] },
-  { id: 'blackout', tier: 4, name: 'Blackout', desc: 'Three colors on islands, fog of war, and you can barely see past your own bases.',
-    rule: 'Sight is cut to just over half.',
-    size: 'medium', teams: 3, shape: 'islands', diff: 'normal', seed: 8101, fair: true, mods: { fog: true }, fogScale: 0.55, specials: false, aiTune: { spawn: 0.89 },
+  { id: 'nest', tier: 3, name: "Hornet's Nest", desc: "The land looks after its own.",      // 50.7.1: Tier 3's first level
+    size: 'medium', teams: 2, active: [0, 1], shape: 'islands', map: 'nest', face: 'wide', diff: 'easy', seed: 9201, fair: true, mods: {}, specials: true, aiTune: NEST_AI,
+    nest: { share: 0.5, cool: 15, lvl: 10, aware: true, awareK: 0.6, noRegrow: true, heart: 14, bonus: 1.5, grow: { rate: 0.6, max: 2, every: 4, from: 90, idle: 15 }, strike: 1, netXp: 0.5 },      // 50.7.3: no level cap (lvl 10 is the game's top), bases left alone grow (grow), the land strikes back (strike), half XP for neutral kills (netXp)
+    rule: "Attack a neutral base and its neighbors send help. Take it, and they throw everything left to win it back. Neutral bases left alone slowly grow.",      // 50.7.3: a placeholder line (WC's); the final wording waits until the level is wrapped (Henry, Nov 5)
     objective: { type: 'conquest', text: 'Take every base' },
-    stars: [{ k: 'win', t: 'Take every base' }, { k: 'time', v: 600, t: 'Win in under 10:00' }, { k: 'bases', v: 14, t: 'Finish with 14 or more bases' }] },
-  { id: 'double-crown', tier: 4, name: 'Double crown', desc: 'Two crowns, far apart. Time only counts while one color holds both.',
-    rule: 'Hold both crowns for 60 seconds in total.',
-    size: 'medium', teams: 3, shape: 'continent', diff: 'normal', seed: 8202, fair: true, mods: { koth: true }, crowns: 2, kothTarget: 60, specials: false,
-    objective: { type: 'crown', text: 'Hold both crowns for 60 seconds' },
-    stars: [{ k: 'win', t: 'Hold both crowns for 60 seconds' }, { k: 'time', v: 360, t: 'Win in under 6:00' }, { k: 'bases', v: 10, t: 'Finish with 10 or more bases' }] },
-  { id: 'fortress-ring', tier: 4, name: 'Fortress ring', desc: 'A ring of bases with double health. Nothing falls quickly, so every attack has to count.',
-    rule: 'Every base has twice the health.',
-    size: 'medium', teams: 4, shape: 'ring', diff: 'hard', seed: 8307, fair: true, mods: {}, hpMul: 2, specials: false, aiTune: { spawn: 0.95, margin: 1.5, playerBias: 0.2 },
-    objective: { type: 'conquest', text: 'Take every base' },
-    stars: [{ k: 'win', t: 'Take every base' }, { k: 'time', v: 720, t: 'Win in under 12:00' }, { k: 'time', v: 540, t: 'Win in under 9:00' }] },
-  { id: 'aftershock', tier: 4, name: 'Aftershock', desc: 'The ground shakes under whoever is winning. Hold a big territory while it keeps cracking.',
-    rule: 'Every 40 seconds the biggest color has its strongest base cracked open.',
-    size: 'medium', teams: 4, shape: 'continent', diff: 'hard', seed: 8401, fair: true, mods: {}, quake: 40, specials: false, aiTune: { spawn: 0.9, margin: 1.6, playerBias: 0.15 },
-    objective: { type: 'hold', n: 12, secs: 90, text: 'Hold 12 bases for 90 seconds' },
-    stars: [{ k: 'win', t: 'Hold 12 bases for 90 seconds' }, { k: 'time', v: 420, t: 'Win in under 7:00' }, { k: 'bases', v: 16, t: 'Finish with 16 or more bases' }] }
+    stars: [{ k: "time", v: 300, t: "Take every base in under 5:00" }, { k: "takeby", base: 14, v: 170, t: "Take the Forge before 2:50" }, { k: "netlost", v: 40, t: "Lose fewer than 40 troops to neutral help" }] },      // 50.7.3: A and C reset from the refit sims (B stays)
+  // 50.6.0: the old Tier 3 and Tier 4 levels (Forge wars, Last stand; Blackout, Double crown, Fortress ring, Aftershock) retired here (Henry, Nov 5): written into the challenge toolbox's section 7; their engine parts stay. Tiers 3 and 4 are rebuilt from scratch in 50.7 and 50.8.
 ];
 // ---- Practice lessons (How to play). 50.4.2: one lesson, the guided match, rebuilt (spec GUIDED_MATCH_SPEC_50.4.md, text GUIDED_MATCH_TEXT_FINAL.md).
 // Every step waits for the player to do something (ui.js: COACH_STEPS holds each step's gate, ring and skip rule). {R} is the rival's palette name
@@ -1212,7 +1258,7 @@ function scenarioOpts(id) {
   const c = SCENARIOS.find(x => x.id === id); if (!c) return {};
   return { scenarioId: c.id, map: c.map, size: c.size, teams: c.teams, shape: c.shape, diff: c.diff, seed: c.seed, mods: c.mods, specials: c.specials,
     specialKinds: c.specialKinds, surround: c.surround, playerTroops: c.playerTroops, fair: c.fair, persona: c.persona, objective: c.objective, stars: c.stars,
-    aiTune: c.aiTune, hpMul: c.hpMul, fogScale: c.fogScale, quake: c.quake, crowns: c.crowns, kothTarget: c.kothTarget, kothRival: c.kothRival, oneArmy: c.oneArmy, truce: c.truce, active: c.active, teamTune: c.teamTune, pact: c.pact, hunt: c.hunt };
+    aiTune: c.aiTune, hpMul: c.hpMul, fogScale: c.fogScale, quake: c.quake, crowns: c.crowns, kothTarget: c.kothTarget, kothRival: c.kothRival, oneArmy: c.oneArmy, truce: c.truce, active: c.active, teamTune: c.teamTune, pact: c.pact, hunt: c.hunt, nest: c.nest };
 }
 function starMet(g) {
   const P = G.teams[PLAYER];
@@ -1223,6 +1269,8 @@ function starMet(g) {
     case 'nohome': return G.homeLost == null;      // 50.5.9: your home base never fell (Manhunt)
     case 'redwake': return !!G.hunt && G.hunt.wakeBy === 'red' && G.hunt.redLow === true;      // 50.5.13: the sleeper woke because the near rival nearly fell, before anything else woke it (Manhunt); 50.5.14: with Red on its last base (or out), not just its home lost
     case 'nostat': return P.lv[g.v] === 0;
+    case 'takeby': return !!G.ownAt && G.ownAt[g.base] != null && G.ownAt[g.base] <= g.v;      // 50.7.1: you owned base g.base at some moment by g.v s
+    case 'netlost': return !!G.nest && G.nest.netLost < g.v;      // 50.7.1: fewer than g.v of your troops killed by neutral help
     case 'bases': return P.bases >= g.v;
     case 'ko': return G.teams.some(T => T.i !== PLAYER && T.active && !T.alive);
     case 'truceko': return !!G.truce && G.truce.end != null && G.log.some(e => e.k === 'out' && e.b !== PLAYER && e.a === PLAYER && e.t <= G.truce.end + g.v);   // 50.5.5: you took a rival's last base within v s of the truce ending
@@ -1301,6 +1349,13 @@ STATIC_MAPS.manhunt = { id: 'manhunt', w: 1500, h: 940, size: 'medium',
   garrison: { 0: 10, 1: 6, 2: 6, 3: 6, 4: 20, 5: 6, 6: 6, 7: 6, 8: 6, 9: 9, 10: 9, 11: 10, 12: 10, 13: 10, 14: 14, 15: 22, 16: 8, 17: 10, 18: 8, 19: 6, 20: 8, 21: 14, 22: 8, 23: 10, 24: 10 } };
 STATIC_MAPS.manhunt.deco = { kind: 'islands', groups: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], hulls: [[[138,294],[156,322],[166,361],[149,400],[145,420],[145,440],[151,466],[157,480],[171,499],[176,513],[169,555],[156,582],[154,608],[158,624],[174,648],[186,657],[202,664],[212,666],[238,664],[257,655],[276,637],[355,597],[366,594],[382,597],[470,668],[476,674],[485,691],[499,705],[516,714],[541,720],[619,772],[634,796],[648,809],[663,817],[689,825],[700,839],[704,859],[714,882],[727,899],[738,909],[748,916],[771,926],[790,930],[810,930],[829,926],[852,916],[869,903],[886,882],[895,862],[903,833],[917,822],[937,817],[952,809],[966,796],[974,784],[982,757],[980,723],[999,665],[1023,636],[1031,614],[1032,593],[1027,573],[1019,558],[1008,545],[1005,537],[1007,519],[1018,507],[1034,503],[1062,510],[1078,510],[1106,502],[1121,492],[1132,481],[1140,470],[1147,452],[1155,443],[1175,429],[1185,425],[1196,425],[1206,429],[1265,467],[1275,481],[1289,495],[1301,502],[1322,508],[1348,506],[1371,495],[1387,478],[1398,454],[1457,395],[1474,387],[1488,376],[1502,354],[1506,338],[1506,322],[1500,301],[1505,196],[1522,162],[1525,148],[1525,132],[1519,110],[1508,92],[1486,74],[1458,65],[1442,65],[1428,68],[1402,82],[1384,104],[1377,120],[1370,127],[1359,132],[1320,130],[1301,134],[1280,143],[1270,144],[1252,138],[1234,123],[1218,116],[1192,114],[1176,118],[1163,125],[1144,142],[1101,162],[1072,166],[1056,173],[1042,184],[1028,206],[1024,222],[1024,238],[1028,254],[1042,276],[1067,293],[1079,307],[1084,323],[1079,339],[1069,348],[1050,352],[1030,360],[999,385],[906,404],[895,403],[884,398],[846,358],[834,326],[826,314],[806,297],[788,290],[777,288],[756,289],[734,297],[717,311],[709,314],[568,345],[530,342],[455,310],[445,302],[428,282],[410,271],[388,265],[352,267],[256,230],[234,213],[208,204],[192,204],[176,208],[154,222],[143,236],[136,252],[134,278]],[[1159,791],[1136,798],[1112,814],[1098,836],[1094,852],[1094,868],[1103,894],[1119,912],[1142,924],[1168,926],[1194,917],[1206,908],[1223,888],[1409,769],[1434,762],[1456,748],[1467,734],[1474,718],[1476,692],[1472,676],[1458,654],[1434,638],[1418,634],[1402,634],[1386,638],[1364,652],[1347,672]]], lakes: [[[449,491],[447,478],[451,466],[462,456],[470,453],[481,453],[489,456],[499,465],[501,465],[502,467],[511,472],[522,476],[542,480],[606,521],[616,532],[617,536],[624,546],[634,556],[658,571],[687,615],[690,624],[690,632],[684,646],[680,650],[670,655],[654,655],[605,624],[601,620],[595,609],[581,595],[579,595],[578,593],[569,588],[547,581],[461,511],[454,504]]] };
 STATIC_MAPS.manhunt.fence = [[[1130,382],[1142,398],[1158,410],[1171,415],[1182,411],[1196,411],[1212,417],[1274,456],[1286,472],[1307,489],[1318,493],[1324,500],[1372,653],[1371,662],[1368,669],[1357,682],[1342,693],[1345,720],[1353,738],[1367,753],[1390,765],[1404,756],[1428,749],[1446,737],[1460,715],[1462,693],[1459,682],[1448,664],[1421,647],[1414,638],[1369,494],[1369,485],[1371,476],[1389,443],[1448,384],[1477,366],[1489,348],[1492,324],[1486,300],[1491,194],[1509,157],[1511,147],[1511,134],[1506,116],[1497,101],[1479,87],[1456,79],[1443,79],[1433,81],[1411,93],[1396,111],[1387,130],[1342,163],[1323,162],[1300,169],[1246,151],[1227,135],[1215,130],[1193,128],[1171,137],[1151,154],[1107,175],[1076,180],[1063,185],[1053,194],[1041,212],[1038,224],[1041,248],[1052,266],[1078,284],[1123,341],[1123,363]]];      // 50.5.15: one outline; a causeway along the 20-23 bridge joins Yellow's lone base to the hub (Henry)
+STATIC_MAPS.nest = { id: 'nest', w: 1500, h: 940, size: 'medium',
+  nodes: [[160, 560], [250, 410], [260, 710], [390, 560], [400, 250], [690, 120], [1030, 170], [1340, 380], [1250, 530], [1240, 230], [1110, 380], [1100, 690], [810, 820], [470, 770], [750, 470], [590, 470], [670, 331], [830, 331], [910, 470], [830, 609], [670, 609]],
+  edges: [[0, 1], [0, 2], [0, 3], [1, 3], [2, 3], [7, 8], [7, 9], [7, 10], [8, 10], [9, 10], [1, 4], [4, 5], [5, 6], [6, 9], [8, 11], [11, 12], [12, 13], [13, 2], [3, 15], [10, 18], [14, 15], [14, 16], [14, 17], [14, 18], [14, 19], [14, 20], [15, 16], [16, 17], [17, 18], [18, 19], [19, 20], [20, 15], [16, 5], [19, 12]],
+  bridges: [[6, 9], [13, 2], [3, 15], [10, 18], [16, 5], [19, 12]],
+  starts: [0, 7], specials: { 5: 'beacon', 12: 'beacon', 14: 'forge' }, shape: 'islands',
+  garrison: { 0: 10, 1: 6, 2: 6, 3: 8, 4: 8, 5: 12, 6: 8, 7: 10, 8: 6, 9: 6, 10: 8, 11: 8, 12: 12, 13: 8, 14: 20, 15: 10, 16: 10, 17: 10, 18: 10, 19: 10, 20: 10 } };      // 50.7.1
+STATIC_MAPS.nest.deco = { kind: 'islands', groups: [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2], hulls: [[[157, 449], [145, 460], [128, 465], [102, 478], [87, 491], [74, 508], [65, 528], [60, 550], [60, 570], [65, 592], [78, 618], [98, 639], [108, 646], [128, 655], [151, 661], [162, 671], [187, 708], [190, 715], [193, 732], [199, 745], [215, 764], [233, 775], [246, 779], [267, 780], [282, 777], [298, 769], [314, 755], [321, 745], [327, 732], [328, 725], [334, 716], [407, 632], [412, 627], [435, 614], [444, 605], [457, 582], [460, 567], [460, 553], [457, 538], [449, 522], [435, 506], [425, 499], [411, 493], [404, 487], [350, 430], [343, 414], [344, 402], [349, 392], [418, 319], [438, 309], [464, 287], [678, 191], [704, 189], [718, 185], [980, 223], [1003, 235], [1016, 239], [1037, 240], [1052, 237], [1075, 224], [1091, 205], [1097, 192], [1100, 177], [1100, 163], [1097, 148], [1089, 132], [1075, 116], [1057, 105], [1044, 101], [1023, 100], [999, 105], [740, 67], [717, 55], [704, 51], [683, 50], [668, 53], [652, 61], [626, 83], [412, 179], [393, 180], [378, 183], [355, 196], [339, 215], [333, 231], [327, 240], [236, 337], [229, 343], [212, 351], [196, 365], [183, 388], [178, 414]], [[477, 840], [501, 835], [760, 873], [788, 887], [803, 890], [817, 890], [832, 887], [845, 881], [874, 857], [1088, 761], [1114, 759], [1135, 751], [1154, 735], [1161, 725], [1167, 709], [1173, 700], [1264, 603], [1271, 597], [1288, 589], [1304, 575], [1317, 552], [1322, 526], [1348, 485], [1359, 478], [1372, 475], [1392, 466], [1409, 453], [1422, 438], [1435, 412], [1440, 390], [1440, 370], [1438, 358], [1426, 328], [1413, 311], [1398, 298], [1372, 285], [1349, 279], [1338, 269], [1313, 232], [1310, 225], [1307, 208], [1301, 195], [1285, 176], [1267, 165], [1247, 160], [1226, 161], [1205, 169], [1195, 176], [1181, 192], [1173, 208], [1172, 215], [1166, 224], [1093, 308], [1088, 313], [1065, 326], [1056, 335], [1043, 358], [1040, 373], [1040, 387], [1043, 402], [1051, 418], [1065, 434], [1075, 441], [1089, 447], [1096, 453], [1150, 510], [1157, 526], [1156, 538], [1151, 548], [1082, 621], [1062, 631], [1036, 653], [822, 749], [796, 751], [782, 755], [520, 717], [497, 705], [484, 701], [463, 700], [448, 703], [425, 716], [409, 735], [403, 748], [400, 763], [400, 777], [403, 792], [416, 815], [435, 831], [448, 837], [463, 840]], [[560, 402], [536, 425], [525, 443], [520, 463], [520, 477], [523, 492], [536, 515], [559, 536], [597, 602], [600, 609], [603, 631], [616, 654], [635, 670], [656, 678], [684, 678], [709, 669], [791, 669], [816, 678], [837, 679], [852, 676], [865, 670], [875, 663], [891, 644], [897, 631], [900, 609], [903, 602], [941, 536], [964, 515], [971, 505], [979, 484], [980, 463], [975, 443], [964, 425], [941, 404], [903, 338], [900, 331], [897, 309], [891, 296], [875, 277], [857, 266], [844, 262], [816, 262], [791, 271], [709, 271], [692, 264], [677, 261], [656, 262], [643, 266], [625, 277], [609, 296], [603, 309], [598, 336]]] };
 function validateStaticMap(mp) {
   const bad = [], isN = v => typeof v === 'number' && isFinite(v);
   if (!mp || typeof mp !== 'object') return ['not a map'];
@@ -1774,7 +1829,7 @@ function newGame(opts) {
     spawnT: rng() * C.spawnEvery, pres: new Int32Array(6) }));
   for (const [a, b] of m.edges) { nodes[a].adj.push(b); nodes[b].adj.push(a); }
   const D = Object.assign({}, DIFF[opts.diff] || DIFF.normal, opts.aiTune || {});     // aiTune: a challenge can nudge its rivals' numbers
-  const TD = i => opts.teamTune && opts.teamTune[i] ? Object.assign({}, D, opts.teamTune[i]) : D;      // 50.5.9: and give one rival numbers of its own (Manhunt)
+  const TD = i => opts.backdrop && i === PLAYER ? BACK_BLUE(D) : opts.teamTune && opts.teamTune[i] ? Object.assign({}, D, opts.teamTune[i]) : D;      // 50.6.1: a backdrop's blue plays at Normal      // 50.5.9: and give one rival numbers of its own (Manhunt)
   G = {
     t: 0, step: 0, nodes, edges: m.edges, troops: [], nextId: 1, rng, seed,
     shape: m.shape || 'continent', deco: m.deco || null, noTurn: opts.aspect > 0 || !!(fp && fp.outline),      // 50.1.2: a New-Gen map is never turned to fit the screen
@@ -1782,10 +1837,13 @@ function newGame(opts) {
     mods, baseHP, crown: -1, crown2: -1, kothTarget: opts.kothTarget || KOTH_TARGET, kothRival: opts.kothRival || 0, fogScale: opts.fogScale || 1, quake: opts.quake || 0, nextQuake: opts.quake || 0, endReason: null,
     overtimeOn: !!opts.overtime && !opts.scenarioId, maxedT: null, otCrown: false,
     truce: opts.truce ? { end: null, hunt: opts.truce.hunt || 15 } : null,      // 50.5.5: Truce's rule; truceOn() while a neutral base is left, then end is when the last one fell; for hunt s after it each rival favours the prey it picked then
+    backdrop: !!opts.backdrop,      // 50.6.1: this match plays behind a level's brief, the AI on every side (ui.js buildLevelBack); nothing it does counts
     oneArmy: !!opts.oneArmy,      // 50.5.0: One Army's rule; ui.js sends the whole army on every order and greys 25% and 50%
     pact: opts.pact ? active.filter(i => i !== PLAYER) : null,      // 50.5.9: Manhunt's rule: the rivals never hurt each other (the truce's machinery, for them only)
     hunt: opts.hunt ? Object.assign({ wakeAt: null, wakeBy: null, told: false, fence: (fixed && fixed.fence) || null }, opts.hunt) : null,      // 50.5.9: Manhunt's sleeper: wakeAt/wakeBy once it wakes
     homeLost: null,      // 50.5.9: when your home base first fell (the nohome star)
+    ownAt: {},      // 50.7.1: when you first owned each base (the takeby star)
+    nest: opts.nest ? Object.assign({ calls: {}, don: {}, helpCalls: [0, 0, 0, 0, 0], sent: 0, netLost: 0, netLostAll: 0, netTook: [], heartAt: null, heartBy: null }, opts.nest) : null,      // 50.7.1: neutral help (nestCall)
     scenarioId: opts.scenarioId || null, practice: opts.practice || null, lesson: opts.lesson ? Object.assign({ awake: false, wokeAt: null }, opts.lesson) : null, obj: opts.objective || { type: 'conquest' }, starGoals: opts.stars || null,
     os: { hold: 0, forges: 0, surv: 0 }, playerLosses: 0,
     bridges: new Set((m.bridges || []).map(([a, b]) => a < b ? a + '-' + b : b + '-' + a)),
@@ -1976,8 +2034,18 @@ const lvOf = (team, k) => team < 0 ? 0 : G.teams[team].lv[k];
 const capOf = team => C.capBase + G.capPer * G.teams[team].bases + Math.round(SPECIALS.forge.cap * G.capPer) * G.teams[team].forges;
 const needXP = T => Math.round(5 + 2 * T.earned + 0.11 * T.earned * T.earned);   // 5, 7, 9 ... 63 at the 30th was the old curve; now the 30th costs 156
 
+function nestLv(k) {                                // 50.7.1: neutral troops fight at the average levels of the colours alive, capped at G.nest.lvl
+  if (!G.nest || !G.nest.lvl) return 0;
+  let s = 0, c = 0; for (const T of G.teams) if (T.active && T.alive) { s += T.lv[k]; c++; }
+  return c ? Math.min(G.nest.lvl, s / c) : 0;
+}
+function nestQuiet(id) {                            // 50.7.3: a neutral base left alone: no call for help and no help sent for grow.idle s (ever, without idle)
+  const N = G.nest, I = N.grow && N.grow.idle, a = N.calls[id], b = N.don[id];
+  return I ? (a == null || G.t - a >= I) && (b == null || G.t - b >= I) : a == null && b == null;
+}
 function statArrays() {
   if (G._S && G._S.step === G.step) return G._S;
+  const lvOf = (i, k) => i < 0 ? nestLv(k) : G.teams[i].lv[k];
   const hp = [], dp = [], sp = [], st = [], ar = [], bd = [];
   for (let i = -1; i < 5; i++) {
     const nm = i < 0;
@@ -2100,6 +2168,7 @@ function update(dt) {
             t.hitT = G.t;
             t.cd = C.atkEvery * (0.85 + G.rng() * 0.3);
             e.dmg += S.dp[ti] * C.atkEvery * guardOf(e); e.lastHit = t.team;
+            if (G.nest) { e.lastHelp = t.help === 1; if (t.team >= 0 ? e.team < 0 && !e.path.length : !t.path.length && e.team >= 0) nestCall(t.team >= 0 ? e.home : t.home, t.team >= 0 ? t.team : e.team); }      // 50.7.1
             if (G.sfx.length < 48) G.sfx.push({ x: t.x, y: t.y, tx: e.x, ty: e.y, team: t.team, base: false });
           }
         } else if (dd > E2) { t.tgt = e = null; }
@@ -2168,7 +2237,8 @@ function update(dt) {
   for (const t of troops) {
     if (t.dmg >= S.hp[t.team + 1]) {
       t.dead = true; died++; if (t.team >= 0) G.teams[t.team].lost++;      // 49.8.2: troops lost, for the end card
-      if (t.lastHit !== null && t.lastHit >= 0) awardKill(t.lastHit);
+      if (G.nest && t.team === PLAYER && t.lastHit === NEUTRAL) { G.nest.netLostAll++; if (t.lastHelp) G.nest.netLost++; }      // 50.7.1
+      if (t.lastHit !== null && t.lastHit >= 0) awardKill(t.lastHit, t.team === NEUTRAL);      // 50.7.3: neu, for netXp
       if (!t.path.length) {
         const h = nodes[t.home];
         if (h.owner === t.team && (t.x - h.x) ** 2 + (t.y - h.y) ** 2 < C.presenceR ** 2) {
@@ -2224,7 +2294,12 @@ function presenceStep(dt) {
     n.heat *= cool;
     const bf = G.mods.blitz ? 1.5 : 1; n.budget = Math.min(C.baseDpsCap * 0.5 * bf, n.budget + C.baseDpsCap * bf * dt);
     if (n.hp < n.maxHp && G.t - n.lastHitT > C.regenDelay) n.hp = Math.min(n.maxHp, n.hp + C.baseRegen * (n.maxHp / G.baseHP) * dt);
-    if (n.owner === NEUTRAL && dt > 0) {
+    if (n.owner === NEUTRAL && dt > 0 && G.nest && G.nest.grow && nestQuiet(n.id)) {      // 50.7.3: a base left alone (nestQuiet) grows toward
+      const R = G.nest.grow, cap = Math.round(n.nCap * Math.min(R.max, 1 + R.rate * Math.max(0, G.t - (R.from || 0)) / 60));      // its garrison times a factor that rises with the clock from R.from s (the opening keeps its prices)
+      n.growT = (n.growT == null ? R.every : n.growT) - dt;
+      if (n.growT <= 0) { n.growT = R.every; if (n.nCount < cap) { spawnTroop(NEUTRAL, n.id, false); n.nCount++; } }
+    }
+    if (n.owner === NEUTRAL && dt > 0 && !(G.nest && G.nest.noRegrow)) {      // 50.7.1: a level can stop neutral regrowth
       n.spawnT -= dt * (n.kind === 'forge' ? SPECIALS.forge.spawn : 1) * (G.mods.blitz ? 2 : 1);
       if (n.spawnT <= 0) {
         n.spawnT = C.neutralRespawn;
@@ -2235,11 +2310,12 @@ function presenceStep(dt) {
 }
 
 function hitBase(n, team, dmg, x, y) {
-  if (team < 0) return;                               // unclaimed troops guard their ground; they never take bases
+  if (team < 0 && !G.nest) return;                    // unclaimed troops guard their ground; they never take bases (50.7.1: except under G.nest)
   // a base can only soak up so much per second, so even a huge army needs a few seconds
   const d = Math.min(dmg, n.budget);
   const hl = d / (1 + C.hpPer * lvOf(n.owner, 'hp') * C.baseHpFactor);
   n.budget -= d; n.hp -= hl; n.lastHitT = G.t; n.heat += d; n.heatBy = team;
+  if (G.nest && team >= 0 && n.owner === NEUTRAL) nestCall(n.id, team);      // 50.7.1
   if (G.hunt && G.hunt.wakeAt == null && team === PLAYER && n.owner === G.hunt.far) { const hd = G.hunt.hurt || (G.hunt.hurt = {}); hd[n.id] = (hd[n.id] || 0) + hl; }      // 50.5.12: Manhunt: your hits on the sleeper's bases
   if (G.sfx.length < 48) G.sfx.push({ x, y, tx: n.x, ty: n.y, team, base: true, ni: n.id, hf: Math.max(0, n.hp / n.maxHp) });
   if (n.hp <= 0) takeNode(n, team);
@@ -2247,11 +2323,15 @@ function hitBase(n, team, dmg, x, y) {
 
 function takeNode(n, team) {
   const prev = n.owner;
+  if (team < 0) { nestRetake(n, prev); return; }      // 50.7.1
   if (prev >= 0) {
     G.lastTaker[prev] = team; G.spot[prev] = { x: n.x, y: n.y };
     if (G.homes[prev] === n.id) G.log.push({ t: G.t, k: 'home', a: team, b: prev });
   }
   if (team === PLAYER) G.playerCaps++;
+  if (team === PLAYER && G.ownAt && G.ownAt[n.id] == null) G.ownAt[n.id] = G.t;      // 50.7.1
+  if (G.nest && n.id === G.nest.heart && G.nest.heartAt == null) { G.nest.heartAt = G.t; G.nest.heartBy = team; }
+  if (G.nest && G.nest.strike && prev === NEUTRAL) nestStrike(n, team);      // 50.7.3: the land strikes back at once
   if (team === PLAYER && prev >= 0 && prev !== PLAYER && !G.firstTake) G.firstTake = { t: G.t, from: prev };      // 49.8.2: the first base you took from a rival
   if (prev === PLAYER) G.playerLosses++;
   n.owner = team; n.hp = n.maxHp * C.flipHP; n.lastHitT = G.t; n.spawnT = C.spawnEvery * 0.5; n.heat = 0;
@@ -2262,6 +2342,40 @@ function takeNode(n, team) {
   if (G.lock[team] === n.id) G.lock[team] = null; // got it, lock's done
 }
 
+// 50.7.1: neutral help. A neutral base under attack calls; each neutral neighbour free to send gives share of its standing guards (closest first).
+function nestCall(id, by) {
+  const N = G.nest, n = G.nodes[id]; if (n.owner !== NEUTRAL || (N.calls[id] != null && G.t - N.calls[id] < N.cool)) return;
+  N.calls[id] = G.t; N.helpCalls[by]++;
+  for (const u of n.adj) {
+    if (G.nodes[u].owner !== NEUTRAL || (N.don[u] != null && G.t - N.don[u] < N.cool)) continue;
+    const g = G.troops.filter(t => t.team === NEUTRAL && t.home === u && !t.path.length), k = Math.floor(N.share * g.length); if (!k) continue;
+    g.sort((a, b) => ((a.x - n.x) ** 2 + (a.y - n.y) ** 2) - ((b.x - n.x) ** 2 + (b.y - n.y) ** 2));
+    for (let i = 0; i < k; i++) { const t = g[i]; t.path = [id]; t.tgt = null; t.help = 1; }
+    N.don[u] = G.t; N.sent += k;
+  }
+}
+function nestStrike(n, team) {                      // 50.7.3: strike: a neutral base just fell to team; each neutral neighbour sends strike x its standing guards, cool-down or not
+  const N = G.nest; let s = 0; for (const u of n.adj) { if (G.nodes[u].owner !== NEUTRAL) continue;
+    const g = G.troops.filter(t => t.team === NEUTRAL && t.home === u && !t.path.length), k = Math.floor(N.strike * g.length); if (!k) continue;
+    for (let i = 0; i < k; i++) { const t = g[i]; t.path = [n.id]; t.tgt = null; t.help = 1; }
+    N.don[u] = G.t; N.sent += k; s += k; }
+  N.struck = (N.struck || 0) + s; if (s && team === PLAYER && N.strikeT == null) N.strikeT = G.t;      // strikeT: the first strike at a base you took (the toast)
+}
+function nestHelp(v) {                              // the help base v would call now (the AI's cost of a bite)
+  const N = G.nest, nodes = G.nodes; if (N.calls[v] != null && G.t - N.calls[v] < N.cool) return 0;
+  let s = 0; for (const u of nodes[v].adj) { const m = nodes[u]; if (m.owner !== NEUTRAL || (N.don[u] != null && G.t - N.don[u] < N.cool)) continue; s += Math.floor(N.share * m.pres[0]); }
+  return s;
+}
+function nestRetake(n, prev) {                      // neutral troops won a coloured base back: it is neutral again, held by the troops that won it
+  G.lastTaker[prev] = NEUTRAL; G.spot[prev] = { x: n.x, y: n.y };
+  if (G.homes[prev] === n.id) G.log.push({ t: G.t, k: 'home', a: NEUTRAL, b: prev });
+  if (prev === PLAYER) G.playerLosses++;
+  G.nest.netTook.push([n.id, prev, +G.t.toFixed(1)]);
+  let k = 0; for (const t of G.troops) if (t.team === NEUTRAL && t.home === n.id && !t.path.length) k++;
+  n.owner = NEUTRAL; n.hp = n.maxHp * C.flipHP; n.lastHitT = G.t; n.heat = 0; n.spawnT = C.neutralRespawn; n.nCap = k;
+  G.fx.push({ k: 'ring', x: n.x, y: n.y, c: NEUTRAL, from: prev, b: G.t });
+  if (n.kind) G.fx.push({ k: 'special', c: NEUTRAL, from: prev, kind: n.kind, b: G.t });
+}
 function spawnStep(dt) {
   for (const n of G.nodes) {
     if (n.owner < 0) continue;
@@ -2391,11 +2505,12 @@ function checkEnd() {
   else if (!P.alive && (!G.autoplay || G.scenarioId)) { G.over = true; G.result = 'lose'; }
 }
 
-function awardKill(team) {
+function awardKill(team, neu) {
   const T = G.teams[team];
   T.kills++;
   if (G.mods.noup || T.earned >= C.maxPoints) return;
-  T.xp += ((team === PLAYER && !G.autoplay) ? 1 : (T.diff.xp || 1)) * (1 + SPECIALS.beacon.xp * Math.min(SPECIALS.beacon.cap, T.beacons));
+  const x = ((team === PLAYER && !G.autoplay) ? 1 : (T.diff.xp || 1)) * (1 + SPECIALS.beacon.xp * Math.min(SPECIALS.beacon.cap, T.beacons)) * (neu && G.nest && G.nest.netXp != null ? G.nest.netXp : 1);      // 50.7.3: netXp: the share of XP a neutral kill gives
+  T.xp += x; T.xpAll = (T.xpAll || 0) + x; if (neu) T.xpNet = (T.xpNet || 0) + x;      // 50.7.3: XP earned, all and from neutral kills (the Logger's xpNet)
   while (T.earned < C.maxPoints && T.xp >= needXP(T)) { T.xp -= needXP(T); T.earned++; T.points++; }
   if (team !== PLAYER || G.autoplay) aiSpend(team);
 }
@@ -2461,6 +2576,7 @@ function followPath(rt, s, target) {
 }
 
 function command(team, target, frac, filter, maxCost = Infinity) {
+  if (G.oneArmy && G.backdrop && team === PLAYER) { frac = 1; filter = null; maxCost = Infinity; }      // 50.6.1: One Army behind its brief: blue's AI sends its whole army on every order, as the rule does for you
   if (peaceAt(team, G.nodes[target].owner)) return null;      // 50.5.5: no orders at a colour in a truce (50.5.9: nor at a partner in Manhunt's pact)
   const nodes = G.nodes, rt = routeTable(team, target), cands = [], stay = (team !== PLAYER || G.autoplay) && G.teams[team].diff.stay || null, kept = {};      // 50.5.0: a challenge rival's held bases (stay) keep their troops; 50.5.1: up to a count per base
   for (const t of G.troops) {
@@ -2589,6 +2705,7 @@ function aiThink(team) {
     }
   }
   const enemyAt = v => { let s = 0; for (let k = 0; k < 6; k++) if (k !== ti) s += P6[v * 6 + k]; return s; };
+  const NS = G.nest, defAt = NS && NS.aware ? (v => enemyAt(v) + (nodes[v].owner === NEUTRAL ? nestHelp(v) * S.st[0] * (NS.awareK != null ? NS.awareK : 1) : 0)) : enemyAt;      // 50.7.1
   // smart rivals keep a garrison at the base that enemy troops are walking up to, so an attack elsewhere does not strip it.
   // Only moving enemy troops count, only against the nearest of our bases, and the reserve is picked once so every command agrees on it.
   const held = sm ? new Set() : null;
@@ -2791,7 +2908,7 @@ function aiThink(team) {
       if (bAllow && o >= 0 && !bAllow[o]) continue;   // BOUNTY: only the allowed colours (and neutrals) are targets
       if (ZN && !ZN.has(v)) continue;                   // 50.5.9: Manhunt's sleeper: its own zone only
       if (v === T.avoid && G.t < T.avoidUntil) continue;  // just got bounced off this one
-      const def = enemyAt(v), rt = routeTable(team, v);
+      const def = defAt(v), rt = routeTable(team, v);
       const far = awayHop && awayHop[v] >= AW.hops;
       const cB = nodes[v].crown && D.crownMargin, cf = cB ? (D.crownFrac || frac) : far ? AW.frac : frac;   // 50.0.7: a challenge rival can be bolder about the crown alone (crownMargin, crownFrac); no other rival has them
       let need = Math.max(5, def * (cB ? D.crownMargin : far ? AW.margin : margin) + 1.2) / cf, fr = cf;
@@ -2811,6 +2928,7 @@ function aiThink(team) {
       if (nodes[v].crown) sc += 1.0 + 2.2 * (o >= 0 && o !== team ? G.teams[o].hill / kothGoal(o) : 0);   // and everyone chases whoever is close to winning
       if (hopCrown && hopCrown[v] >= 0) sc += 1.6 * Math.max(0, 1 - hopCrown[v] / 7);                         // and heads for it: bases on the way count extra
       if (far) sc += AW.bonus;
+      if (NS && v === NS.heart && o !== team && def < armyAll4) sc += NS.bonus;      // 50.7.1: the Heart, once its cost is under the army
       if (o === NEUTRAL) sc += 0.6;
       else {
         if (bPrey >= 0 && o === bPrey) sc += 2.0;   // BOUNTY: the crown (or its challenger) is the prize
@@ -2862,7 +2980,7 @@ function aiThink(team) {
       const v = nv.id; if (nv.owner === team) continue;
       if (bAllow && nv.owner >= 0 && !bAllow[nv.owner]) continue;
       if (ZN && !ZN.has(v)) continue;
-      const def = enemyAt(v); if (def > (SL ? SL.maxDef : 5)) continue;
+      const def = defAt(v); if (def > (SL ? SL.maxDef : 5)) continue;
       if (v === T.target || (v === T.avoid && G.t < T.avoidUntil)) continue;
       const need = Math.max(5, def * D.margin + 3);
       if (committed[v] >= need * 0.8) continue;
@@ -2900,7 +3018,7 @@ function aiThink(team) {
       if (o === team || v === T.target || (v === T.avoid && G.t < T.avoidUntil)) continue;
       if (bAllow && o >= 0 && !bAllow[o]) continue;
       if (ZN && !ZN.has(v)) continue;
-      const def = enemyAt(v), avail = idleStr * 0.65;
+      const def = defAt(v), avail = idleStr * 0.65;
       if (avail < def * D.margin * (T.style.margin || 1) + 2) continue;
       const sc = (avail - def) / (def + 2) + (o === NEUTRAL ? 0.5 : 0) + (1 - nodes[v].hp / nodes[v].maxHp) * 0.6 + G.rng() * 0.3;
       if (!pick || sc > pick.sc) pick = { sc, v };
@@ -3192,7 +3310,9 @@ function mapView() {                                  // the same box with a lit
   return { u0: b.u0 - pad, v0: b.v0 - pad, w: b.u1 - b.u0 + 2 * pad, h: b.v1 - b.v0 + 2 * pad };
 }
 const MAP_MARGIN = 0.10;                              // share of the screen left empty on each side of the tight axis at the full view (the same on every map size)
-const fitScale = () => { const b = boxUV(), k = 1 - 2 * MAP_MARGIN; return Math.max(0.05, Math.min(FI.w * k / Math.max(1, b.u1 - b.u0), FI.h * k / Math.max(1, b.v1 - b.v0)) * FIT_K); };
+let BF = null;                                        // 50.6.2: on a level's brief, the open part of the screen its map is framed in (frameBrief); null everywhere else
+const fitScale = () => { if (BF && backLevel && mode === 'demo') { const mv = mapView(); return Math.max(0.05, Math.min((BF.x1 - BF.x0) / mv.w, (BF.y1 - BF.y0) / mv.h)); }      // 50.6.2: the setup screens' framing (the map with a little room round it)
+  const b = boxUV(), k = 1 - 2 * MAP_MARGIN; return Math.max(0.05, Math.min(FI.w * k / Math.max(1, b.u1 - b.u0), FI.h * k / Math.max(1, b.v1 - b.v0)) * FIT_K); };
 function refitHud() {                                   // the whole-battlefield view backs away, a step at a time, until no base sits under a HUD piece (zoomed in, nothing changes)
   FIT_K = 1; wholeDY = 0;
   if (hudEl.hidden || !G || !G.nodes || !G.nodes.length) return;
@@ -3304,7 +3424,7 @@ function layout() {
   tall = r.height > r.width * 1.1;                  // the screen's shape (portrait HUD layout)
   F = { x: b.left, y: b.top, w: Math.max(1, b.width), h: Math.max(1, b.height) };     // 49.9.1: the whole screen, in menus too (it was inset 16 px there, so every background and decoration stopped at a visible rectangle)
   FI = { w: Math.max(1, r.width), h: Math.max(1, r.height) };                         // the size the map is fitted into: still 16 px in from each edge in menus
-  { const want = G && G.noTurn ? false : tall; if (mode === 'demo' && want !== rot) { rot = want; resetCam(); } }     // 50.1.1: in a match the map keeps the way it faced at the start; turning the phone only reshapes the view. 50.1.2: a map that never turns (New-Gen) stays as it is in the preview too
+  { const want = G && (G.noTurn || (backLevel && G.scenarioId === backLevel && (SCENARIOS.find(x => x.id === backLevel) || {}).face === 'wide')) ? false : tall; if (mode === 'demo' && want !== rot) { rot = want; resetCam(); } }      // 50.6.1: a level's backdrop faces as the level does     // 50.1.1: in a match the map keeps the way it faced at the start; turning the phone only reshapes the view. 50.1.2: a map that never turns (New-Gen) stays as it is in the preview too
   hudEl.classList.toggle('rotv', tall);
   applyHudSize();
   if (!hudEl.hidden) placeMapButton();
@@ -3342,6 +3462,7 @@ function paintMap(x, w, h, live, u) {                // the map as a diagram: te
 // The setup screens' preview: a minimap card in the free space beside the panel (landscape) or above it (portrait).
 function placePreview() {
   const card = $('pvCard'), pv = $('pvMap');
+  if (brOn()) { card.hidden = true; const g = pvGeom(); if (g) pvClamp(g); updateView(); drawDirty = true; return; }      // 50.6.3: on a brief the camera moves the live map itself
   if (!pvOnly || !G || !G.nodes || $('menu').hidden) { card.hidden = true; return; }
   if ($(stack[stack.length - 1]).classList.contains('deck')) { placeFull(card, pv); return; }
   card.classList.remove('full');
@@ -3377,6 +3498,11 @@ function pvDeckEdges(W, Hh) {
   return land ? { closed, open: W - dk.offsetWidth - 37, now: Math.min(closed, d.left - 37) } : { closed, open: null, now: Math.min(closed, d.top) };
 }
 function pvGeom() {                                    // where the fitted map sits (its centre cx, cy and size w, h at 1x), the open area its limits use (ax0..ax1, ay0..ay1) and the zoom floor (kmin)
+  if (brOn()) {                                         // 50.6.3: a brief's live map, in its frame (BF, frameBrief), with the setup preview's numbers so the camera works the same
+    const B = document.body.getBoundingClientRect(), W = Math.round(B.width), Hh = Math.round(B.height), land = BF.land, E = pvDeckEdges(W, Hh), mv = mapView(), b = boxUV(), k = fitScale();
+    return { W, Hh, w: mv.w * k, h: mv.h * k, cx: (BF.x0 + BF.x1) / 2, cy: (BF.y0 + BF.y1) / 2, land, kmin: 1, ax0: BF.x0, ax1: BF.x1, ay0: BF.y0, ay1: BF.y1,
+      mx: land ? (BF.x0 + E.now - 1) / 2 : W / 2, my: land ? (BF.y0 + BF.y1) / 2 : Math.max(BF.y0, (BF.y0 + E.now - 14) / 2), bw: (b.u1 - b.u0) * k, bh: (b.v1 - b.v0) * k };
+  }
   const B = document.body.getBoundingClientRect(), W = Math.round(B.width), Hh = Math.round(B.height), land = W > Hh, E = pvDeckEdges(W, Hh);
   // 50.1.10 (Henry): with the deck closed you see the whole map. Landscape fits it left of the closed rail's handle (was left of the open rail), portrait above the closed
   // deck's handle and Start bar (was the whole screen below the header). The open area is that same space: 22 px in at the sides, the header above, 14 px clear of the closed deck.
@@ -3437,10 +3563,11 @@ function placeFull(card, pv) {
   card.classList.add('full'); card.hidden = false; card.style.left = card.style.top = '';
   const nw = Math.round(W * d), nh = Math.round(Hh * d); if (pv.width !== nw || pv.height !== nh) { pv.width = nw; pv.height = nh; }
   pv.style.width = W + 'px'; pv.style.height = Hh + 'px';
-  if (!g) return;
+  PVV.paint = null; if (!g) return;
   const land = W > Hh; if (PVV.land !== land) { PVV.land = land; pvReset(); }        // turning the phone is a new picture
   pvClamp(g);
   const k = PVV.k, w = Math.round(g.w * k), h = Math.round(g.h * k), ox = Math.round(g.cx + PVV.x - w / 2), oy = Math.round(g.cy + PVV.y - h / 2);
+  { const mv = mapView(); PVV.paint = { ox, oy, mv, k: Math.min(w / mv.w, h / mv.h) }; }      // 50.7.2: where the map is drawn (paintMap's own numbers), for the hold
   pvCtx = pv.getContext('2d'); pvCtx.setTransform(d, 0, 0, d, 0, 0); pvCtx.clearRect(0, 0, W, Hh); pvCtx.setTransform(d, 0, 0, d, ox * d, oy * d);
   const now = G.nodes.map(n => n.owner);
   if (pvOwners && pvOwners.length === now.length) G.nodes.forEach((n, i) => { n.owner = pvOwners[i]; });
@@ -3462,7 +3589,8 @@ function pvFlingGo() {
   PVF.raf = requestAnimationFrame(step);
 }
 const pvReset = () => { pvFlingStop(); pvSpringStop(); PVV.k = PVV.rk = 1; PVV.x = PVV.y = PVV.rx = PVV.ry = 0; PVV.held = PVV.ptrs.size > 0; PVV.rest = null; };
-const pvLive = () => pvOnly && !$('menu').hidden && !!dkScr() && !$('pvCard').hidden && !!G && !!G.nodes;
+const brOn = () => !!BF && mode === 'demo' && !!backLevel && !!G && !!G.nodes && !$('menu').hidden && stack[stack.length - 1] === 'scrBrief';      // 50.6.3: the brief's camera is live
+const pvLive = () => brOn() || (pvOnly && !$('menu').hidden && !!dkScr() && !$('pvCard').hidden && !!G && !!G.nodes);
 function pvApply() {                                   // re-limit the view (the deck moved) and redraw only if that changed it
   if (!pvLive()) return; const g = pvGeom(); if (!g) return;
   const was = PVV.k + '|' + PVV.x + '|' + PVV.y; pvClamp(g);
@@ -3478,16 +3606,45 @@ function pvZoomAt(px, py, k2) {
   PVV.x = ox - r * (ox - PVV.x); PVV.y = oy - r * (oy - PVV.y); PVV.k = k2; placePreview(); pvRest(g);
 }
 const pvOnMap = e => pvLive() && !e.target.closest('.dkdeck, .screen.deck header > *, .ver, .newsBtn');
+// 50.7.2 (Henry): press and hold a base on a preview map and the match's info card shows (the match's 450 ms; a finger that slides 12 px is a pan).
+// A brief's map is the live backdrop match (the game's own view, V); a setup screen's is the preview drawing (placeFull's PVV.paint), the starting layout.
+let pvHoldT = 0, infoPv = false, PVS = null;          // infoPv: the card is up over a preview map; PVS: a setup map's starting layout (owner, health, defenders)
+function pvPt(n) {                                     // where a base sits on the setup preview, in screen pixels (paintMap's P)
+  const P = PVV.paint, mv = P.mv, k = P.k;
+  return rot ? { x: P.ox + (H - n.y - mv.u0) * k, y: P.oy + (n.x - mv.v0) * k } : { x: P.ox + (n.x - mv.u0) * k, y: P.oy + (n.y - mv.v0) * k };
+}
+function pvPick(px, py) {                              // the base under a finger: the match's reach (34 map units, never under 24 px), nearest first
+  if (brOn()) return pickNode(px, py);
+  if (!PVV.paint) return null;
+  const r = Math.max(34 * PVV.paint.k, 24); let best = null, bd = r * r;
+  for (const n of G.nodes) { const p = pvPt(n), d = (p.x - px) ** 2 + (p.y - py) ** 2; if (d < bd) { bd = d; best = n; } }
+  return best;
+}
+function pvArea() {                                    // the part of the screen the map is seen in: under the header, clear of the deck as it stands
+  const B = document.body.getBoundingClientRect(), sc = dkScr(), dk = sc && sc.querySelector('.dkdeck'), d = dk && dk.getBoundingClientRect(), land = dkLand();
+  const a = { x0: 8, y0: 64, x1: B.width - 8, y1: B.height - 8 };
+  if (d) { if (land) a.x1 = Math.min(a.x1, d.left - 37 - 8); else a.y1 = Math.min(a.y1, d.top - 8); }
+  return a;
+}
+function pvHold(p) {
+  if (!pvLive() || PVV.ptrs.size !== 1 || PVV.ptrs.get(p.id) !== p || Math.hypot(p.x - p.sx, p.y - p.sy) >= 12) return;
+  const n = pvPick(p.x, p.y); if (!n) return;
+  p.hold = true; infoPv = true; $('info').classList.add('pv'); showInfo(n); buzz('press');      // that finger no longer moves the map, and its lift is no tap
+}
 window.addEventListener('pointerdown', e => {
+  if (infoPv) hideInfo();                                // 50.7.2: the card goes at the next touch, anywhere
   if (!pvOnMap(e) || (e.pointerType === 'mouse' && e.button !== 0)) return;
   try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
   pvFlingStop();
   if (!PVV.held) { pvSpringStop(); PVV.held = true; PVV.rx = PVV.x; PVV.ry = PVV.y; PVV.rk = PVV.k; }      // 50.1.10: from here the finger moves the asked-for view; the limits give
   PVV.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, t0: performance.now(), id: e.pointerId, hist: [] });
+  clearTimeout(pvHoldT); if (PVV.ptrs.size === 1) { const p = PVV.ptrs.get(e.pointerId); pvHoldT = setTimeout(() => pvHold(p), 450); }      // 50.7.2: a second finger is a pinch
 });
 window.addEventListener('pointermove', e => {
   const p = PVV.ptrs.get(e.pointerId); if (!p) return;
   if (PVV.ptrs.size === 1) {
+    if (p.hold) return;                                  // 50.7.2: a held finger reads the card; it does not drag
+    if (Math.hypot(e.clientX - p.sx, e.clientY - p.sy) >= 12) clearTimeout(pvHoldT);
     PVV.rx += e.clientX - p.x; PVV.ry += e.clientY - p.y; p.x = e.clientX; p.y = e.clientY; placePreview();
     p.hist.push([performance.now(), e.clientX, e.clientY]); if (p.hist.length > 8) p.hist.shift(); return;
   }
@@ -3503,7 +3660,7 @@ window.addEventListener('pointermove', e => {
   placePreview();
 });
 function pvUp(e) {
-  const p = PVV.ptrs.get(e.pointerId); if (!p) return; PVV.ptrs.delete(e.pointerId);
+  const p = PVV.ptrs.get(e.pointerId); if (!p) return; PVV.ptrs.delete(e.pointerId); clearTimeout(pvHoldT);
   if (PVV.ptrs.size) { PVV.tap = null; return; }
   // 50.1.10: the last finger is off. Past a limit the view springs back (no flick); inside them a flick glides on and stops at the limits
   PVV.held = false; const g = pvGeom(), fx = PVV.fx != null ? PVV.fx : e.clientX, fy = PVV.fy != null ? PVV.fy : e.clientY; PVV.fx = PVV.fy = null;
@@ -3520,7 +3677,7 @@ function pvUp(e) {
   else PVV.tap = still ? { t: now, x: e.clientX, y: e.clientY } : null;
 }
 window.addEventListener('pointerup', pvUp); window.addEventListener('pointercancel', pvUp);
-window.addEventListener('wheel', e => { if (!pvOnMap(e)) return; e.preventDefault(); pvZoomAt(e.clientX, e.clientY, PVV.k * Math.exp(-e.deltaY * .0015)); }, { passive: false });
+window.addEventListener('wheel', e => { if (!pvOnMap(e)) return; e.preventDefault(); if (infoPv) hideInfo(); pvZoomAt(e.clientX, e.clientY, PVV.k * Math.exp(-e.deltaY * .0015)); }, { passive: false });
 // ---- the setup deck (49.9.2, shared by Classic, Custom and Spectate in 49.9.3) ----
 // Portrait: a window of collapsed rows over the map. Its height is yours (drag the handle to any height; tap it to hide or bring it back) and expanding a row grows
 // downward inside the window, so a row's header never moves. Landscape: a fixed right rail that slides out, its tab kept 44 px in from the screen edge.
@@ -3529,7 +3686,12 @@ const DK = { open: true, h: 0, drag: null, id: '', keep: false };
 const DECK_OF = { classic: 'scrClassic', custom: 'scrCustom', spec: 'scrSpectate' };
 const dkLand = () => matchMedia('(orientation: landscape)').matches;
 const dkScr = () => { const sc = $(stack[stack.length - 1]); return sc && sc.classList.contains('deck') ? sc : null; };
-const dkDefaultH = sc => Math.min(window.innerHeight * .56, sc.querySelectorAll('.drow').length * 56 + 150);
+const dkFits = sc => !!sc && sc.id === 'scrBrief';  // 50.6.2: the brief's deck holds text only, so it fits its text (the setup decks keep their slack, where a row unfolds)
+const dkTextH = sc => Math.ceil(sc.querySelector('.dkrows').offsetHeight);
+const dkFixH = sc => { const dk = sc.querySelector('.dkdeck'); return dk.offsetHeight - dk.querySelector('.dkbody').offsetHeight; };      // the handle and the Start bar
+// the brief's cap (50.6.2): 56% of the screen, and never so tall that its map gets under a quarter of the screen (50.1.8's small-phone rule); at least 120 px
+const dkDefaultH = sc => dkFits(sc) ? Math.min(window.innerHeight * .56, Math.max(120, Math.floor(window.innerHeight * .75 - dkFixH(sc) - 78)), dkTextH(sc))
+  : Math.min(window.innerHeight * .56, sc.querySelectorAll('.drow').length * 56 + 150);
 function dkApply() {
   const sc = dkScr(); if (!sc) return;
   const dk = sc.querySelector('.dkdeck'), body = sc.querySelector('.dkbody'), land = dkLand();
@@ -3585,11 +3747,11 @@ function dkEnd() {
   const dk = d.hd.closest('.dkdeck'); dk.classList.remove('dragging'); dk.querySelector('.dkbody').classList.remove('dragging');
   if (!d.moved) DK.open = !DK.open;
   else if (dkLand()) DK.open = d.tx < d.w / 2;
-  else if (d.h < 40) DK.open = false; else { DK.open = true; DK.h = d.h; }
+  else if (d.h < 40) DK.open = false; else { const sc = dk.closest('.screen'); DK.open = true; DK.h = dkFits(sc) ? Math.min(d.h, dkTextH(sc)) : d.h; }      // 50.6.2: pulled taller than its text, the brief settles back to fit
   dkApply();
 }
 document.addEventListener('pointerup', dkEnd); document.addEventListener('pointercancel', dkEnd);
-window.addEventListener('resize', () => { if (dkScr()) { dkApply(); placePreview(); } });
+window.addEventListener('resize', () => { if (infoPv) hideInfo(); const sc = dkScr(); if (sc) { if (dkFits(sc) && DK.open) DK.h = dkDefaultH(sc); dkApply(); placePreview(); frameBrief(); } });      // 50.6.2: a turned phone fits the brief to its text again and frames its map again
 // fling: a quick swipe keeps gliding and slows down, like any map app
 const fling = { vx: 0, vy: 0 }, panHist = [];
 function stepFling(dt) {
@@ -3617,6 +3779,8 @@ function updateView() {
     cam.cu = Math.min(B.u1, Math.max(B.u0, cam.cu));
     cam.cv = Math.min(B.v1, Math.max(B.v0, cam.cv));
   }
+  const fr = BF && backLevel && mode === 'demo' ? BF : null;      // 50.6.2: a brief's map sits in the open part; 50.6.3: in its middle both ways round, moved by the setup screens' camera (PVV)
+  if (fr) { const b = boxUV(), sk = s0 * PVV.k; V = { s: sk, rot, ex: (fr.x0 + fr.x1) / 2 + PVV.x - (b.u0 + b.u1) / 2 * sk, ey: (fr.y0 + fr.y1) / 2 + PVV.y - (b.v0 + b.v1) / 2 * sk }; return; }
   V = { s, rot, ex: F.x + F.w / 2 - cam.cu * s, ey: F.y + F.h / 2 - cam.cv * s };
 }
 function zoomAround(px, py, z) {          // keep the point under (px, py) fixed while zooming
@@ -4648,6 +4812,7 @@ function drawEmberTroops(buckets) {
     ctx.fillStyle = 'rgba(150,135,125,0.55)'; ctx.beginPath();
     for (const t of buckets[0]) troopShape(ctx, 'circle', t.x, t.y, t.nx, t.ny, 0.45);
     ctx.fill();
+    if (G.nest) { ctx.fillStyle = 'rgb(150,135,125)'; ctx.beginPath(); for (const t of buckets[0]) if (t.help === 1 && t.path.length) troopShape(ctx, 'circle', t.x, t.y, t.nx, t.ny, 0.45); ctx.fill(); }      // 50.7.1: neutral help on the move is solid (3:1 against the ground)
   }
   if (quality < 3) {                                  // a white-hot speck in each, like a spark
     ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = 'rgba(255,241,220,0.55)'; ctx.beginPath();
@@ -6533,6 +6698,7 @@ function drawNeonTroops(buckets) {                     // points of light, each 
     ctx.fillStyle = 'rgba(140,148,165,0.6)'; ctx.beginPath();
     for (const t of buckets[0]) troopShape(ctx, 'circle', t.x, t.y, t.nx, t.ny, 0.6);
     ctx.fill();
+    if (G.nest) { ctx.fillStyle = 'rgb(140,148,165)'; ctx.beginPath(); for (const t of buckets[0]) if (t.help === 1 && t.path.length) troopShape(ctx, 'circle', t.x, t.y, t.nx, t.ny, 0.6); ctx.fill(); }      // 50.7.1: neutral help on the move is solid (3:1 against the ground)
   }
   if (quality < 3) {                                  // a hot white speck in each, like a lamp
     ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.beginPath();
@@ -9043,13 +9209,18 @@ function hud() {
     } else if (f.k === 'special') {                 // you took one, lost one, or (when watching) anyone took one
       f.seen = true;
       const you = !watching && f.c === PLAYER, lost = !watching && f.from === PLAYER;
-      if (you || lost || watching) toast(`${you ? 'You' : TEAM_NAMES[f.c]} took ${lost ? 'your' : 'the'} ${SPECIALS[f.kind].name}`, TEAM_COLORS[f.c], f.c);
+      if (f.c >= 0 && (you || lost || watching)) toast(`${you ? 'You' : TEAM_NAMES[f.c]} took ${lost ? 'your' : 'the'} ${SPECIALS[f.kind].name}`, TEAM_COLORS[f.c], f.c);      // 50.7.1: a neutral retake has its own toast (below)
+    } else if (f.k === 'ring' && f.c < 0 && !f.nt) {      // 50.7.1: the neutrals took a base back (WC's words)
+      f.nt = 1;
+      if (!watching && f.from === PLAYER) toast('The neutrals took a base back.', NEUTRAL_COLOR); else if (f.from >= 0) toast(`The neutrals took a base back from ${TEAM_NAMES[f.from]}.`, NEUTRAL_COLOR);
     }
   }
   if (G.truce && G.truce.end != null && !G.truce.told) {      // 50.5.5: the truce is over: seen (banner, toast, shake) and heard (truceCue). Words settled with WC (50.5.8)
     G.truce.told = true;
     if (G.t - G.truce.end < 3) { banner('THE TRUCE IS OVER', '#ffcd30'); toast('The truce is over. Every base is fair game.', '#ffcd30'); shake(8); truceCue(); }
   }
+  if (G.nest && G.nest.sent > 0 && !G.nest.told) { G.nest.told = true; toast('Neutral help is on the way.', NEUTRAL_COLOR); }      // 50.7.1: the first help of the match (WC)
+  if (G.nest && G.nest.strikeT != null && !G.nest.toldS) { G.nest.toldS = true; if (!watching && G.t - G.nest.strikeT < 3) toast('The neighbors want it back.', NEUTRAL_COLOR); }      // 50.7.3: the first strike-back at a base you took, once a match (WC)
   if (G.hunt && G.hunt.wakeAt != null && !G.hunt.told) {      // 50.5.9: Manhunt's sleeper wakes: seen (banner, toast, shake) and heard. Words: WC's (50.5.14)
     G.hunt.told = true;
     if (G.t - G.hunt.wakeAt < 3) { const nm = TEAM_NAMES[G.hunt.far].toUpperCase(), c = TEAM_COLORS[G.hunt.far]; banner(nm + ' WAKES', c); toast(G.hunt.wakeBy === 'zone' || G.hunt.wakeBy === 'hit' ? 'You crossed the fence. ' + TEAM_NAMES[G.hunt.far] + ' is awake and hunting you.' : G.hunt.wakeBy === 'red' ? TEAM_NAMES[G.hunt.near] + ' is broken, and ' + TEAM_NAMES[G.hunt.far] + ' is awake and hunting you.' : TEAM_NAMES[G.hunt.far] + ' is awake and hunting you.', c, G.hunt.far); shake(8); truceCue(); }
@@ -9277,6 +9448,7 @@ function syncLook() {                                 // Colors and Team symbols
 function currentColorArgs() {                         // the color choice that is in force right now: the running match, or the setup behind the menu
   const live = mode === 'play' || mode === 'paused' || mode === 'ending' || mode === 'over';
   const key = live ? curModeKey : previewMode, watch = live ? watching : key === 'spec';
+  if (!live && backLevel) return [false, settings.classic.color];      // 50.6.1: a level's backdrop wears the match's colours
   return [watch, live && curPrac ? COLOR_KEYS[0] : live && curScen ? settings.classic.color : key === 'spec' ? 'blue' : settings[key].color];
 }
 function applyLook() {                                // a Colors or Team symbols change takes effect at once, even in the middle of a match
@@ -12264,7 +12436,9 @@ const SCREEN_MODE = { scrClassic: 'classic', scrCustom: 'custom', scrSpectate: '
 // ---- tester notes: a short, plain-words list of what changed. Newest first, about three builds. TESTER_NOTES = false removes all of it. ----
 const TESTER_NOTES = true;
 const NEWS = [
-  { v: '50.5.9', t: 'Build 50.5', b: ['Challenge Maps\' Tier 2 is rebuilt around three new levels, One Army, Truce and Manhunt, each built around a single idea like Tier 1\'s.', 'Iron wall and Glass cannon are retired, so stars you earned on them no longer count, and the tiers above need fewer stars to open.', 'Save and quit works again in Black Iron on maps with islands, rivers or rings.'] },     // 50.5.9: DC's draft (Henry's notes; WC rewrites before Build 51)
+  { v: '50.7.3', t: 'Build 50.7', b: ['Tier 3 has its first new level, Hornet\'s Nest.', 'In Hornet\'s Nest the land now strikes back when a neutral base falls, and bases left alone grow stronger.', 'Press and hold a base on a level\'s brief, or on the map behind Classic, Custom and Spectate, to see what it is, with the same card as in a match.'] },     // 50.7.1: DC's draft, one line naming the level and nothing about it while it is sealed (WC rewrites before Build 51)
+  { v: '50.6.0', t: 'Build 50.6', b: ['The six older Tier 3 and Tier 4 levels are retired, so Challenge Maps holds Tiers 1 and 2 for now. The tokens you earned on them stay yours, and new Tier 3 and Tier 4 levels are on the way.'] },     // 50.6.0: DC's draft (WC rewrites before Build 51); fold later 50.6.x items in
+  { v: '50.5.9', t: 'Build 50.5', b: ['Tier 2 of Challenge Maps is three new levels, One Army, Truce and Manhunt.', 'In One Army every order sends your full army, in Truce nobody can fight until the neutral land runs out, and in Manhunt both rivals hunt only you.', 'Manhunt plays in Black Iron + Hollow.', 'Save and quit works again in Black Iron on maps with islands, rivers or rings.'] },     // 50.5.9: DC's draft. 50.7.3: WC's text, Henry's yes (Nov 5)
   { v: '50.4.2', t: 'Build 50.4', b: ['The minimap is gone. The map button now shows the whole map in one tap, and a second tap takes you back to where you were.', 'You can zoom in further than before, and changing the HUD size or turning your phone no longer changes your zoom.', 'The Guided match is rebuilt from scratch. It\'s one short match on a map of its own that teaches each idea the moment you need it.'] },
   { v: '50.3.26', t: 'Build 50.3', b: ['Atlas + Drift are reworked. Atlas is a surveyor\'s chart with pieces of its own, and Drift is the sea the battle is fought on, growing rougher with the fighting.', 'Ink + Tide are reworked too: a calmer, darker page that reads even zoomed out, with Tide built around a piano\'s sustain pedal. Neon\'s river is water now.', 'Zooming is smoother on most looks, and Leadlight, Black Iron, Ember and Pixel run smoother on slower phones.', 'Special bases have new icons, so you can tell what each one does at a glance, upright and readable at any zoom. Ember\'s team symbols are burned in, so they show at any health.', 'All thirteen sounds are evened out, so on a phone none plays much louder or quieter than the rest, endings included.'] },     // 50.3.1 on: DC's summary, Henry's OK Nov 1 (50.1's size); fold later 50.3.x items into these lines
   { v: '50.2', t: 'Build 50.2', b: ['Maps are landmasses now. Every map has its own coastline with rivers, rings and islands inside it, and every color starts with a fair share of the land.', 'The map no longer turns when your phone does, and on the setup screen it stays put while you pull up the deck.', 'Two new style pairs, Black Iron + Hollow and Leadlight + Bellows, and the space around the land has its own look in each style.', 'Panning is smoother in most styles, a long list of flashes is gone, and Drift and Cosmos come through on a phone speaker.', 'Smaller things: HUD size in Settings, a page counter in the Shop, and Reset all data on a screen of its own.'] },     // 50.1.1 to 50.2.15 (shipped labelled Build 50.3): DC's summary, Henry's OK Nov 1
@@ -12366,7 +12540,9 @@ function fitHints() {
 }
 let fitT = 0; window.addEventListener('resize', () => { clearTimeout(fitT); fitT = setTimeout(fitHints, 150); });
 function showScreen(id) {
+  if (infoPv) hideInfo();                              // 50.7.2
   if (id !== 'scrShop' && shopReal) closeShop();
+  if (mode === 'demo') { if (id === 'scrBrief' && briefId) { buildLevelBack(briefId); backFade(); } else if (backLevel) { leaveLevelBack(); if (!SCREEN_MODE[id]) buildPreview(previewMode); backFade(); } }      // 50.6.1: the brief shows its level's map; leaving it brings the menu's match back
   for (const sc of document.querySelectorAll('#menu .screen')) sc.hidden = sc.id !== id;
   $('menu').classList.toggle('shopOn', id === 'scrShop');
   $('menu').classList.toggle('deckOn', $(id).classList.contains('deck'));      // 49.9.2: the setup deck screens
@@ -12375,6 +12551,7 @@ function showScreen(id) {
   const m = SCREEN_MODE[id], isDeck = $(id).classList.contains('deck');
   pvOnly = !!m;                                       // setup screens show the map as a preview behind the deck, not the live world
   if (isDeck) dkEnter(id);
+  if (id === 'scrBrief') { PVV.sig = 'brief'; pvReset(); PVV.land = dkLand(); frameBrief(); }      // 50.6.2: the level's map framed beside the brief's deck; 50.6.3: every brief opens on the whole map
   if (m) { syncSeg(); syncText(m); buildPreview(m); }
   if (id === 'scrSettings') { $('bSetStyles').disabled = !!forcedReal; $('setStylesOff').hidden = !forcedReal;      // 50.0.14: in a challenge that sets its own pair, Styles shows greyed out with a reason (was hidden in 50.0.13)
     settingsKey = 'volume'; syncGlobalSeg(); renderSettingsHint();
@@ -12382,6 +12559,7 @@ function showScreen(id) {
   if (id === 'scrData') { clearTimeout(allReset.t); allReset.n = 0; $('bResetAll').textContent = 'Reset all data'; }          // 50.2.4: each visit starts the three taps from zero
   if (id === 'scrAccess') { settingsKey = 'colors'; syncGlobalSeg(); renderSettingsHint(); }
   if (id === 'scrPlay') { updateLadderBlurb(); refreshResume(); }
+  if (id === 'scrLadder') placeLadder(true);      // 50.6.4: the cards measured once they can be seen
   if (id === 'scrStats') renderStats();
   if (id === 'scrNews') { renderNews(); $('updMsg').textContent = ''; }
   if (id === 'scrQual') syncQual();
@@ -12421,12 +12599,12 @@ function shopStarSync() {                           // every challenge star pays
   if (tot <= shop.stars) return 0;
   const g = tot - shop.stars; shop.stars = tot; shop.tok += g; saveShop(); return g;
 }
-function forceStyles(pairId) {                     // 50.0.13: a challenge can name a style pair (`forcePair` in SCENARIOS) that every player sees, owned or not; null puts yours back
+function forceStyles(pairId, lookOnly) {           // 50.6.1: lookOnly (a level's brief) wears the pair's look and keeps your sound. 50.0.13: a challenge can name a style pair (`forcePair` in SCENARIOS) that every player sees, owned or not; null puts yours back
   const P = pairId && SHOP_PAIRS.find(x => x.id === pairId);
   if (!P) { releaseStyles(); return; }
   if (!forcedReal) forcedReal = { visual: settings.visual, tone: settings.tone };
   if (settings.visual !== P.v) applyStyle('visual', P.v);
-  if (settings.tone !== P.s) applyStyle('tone', P.s, true);
+  if (!lookOnly && settings.tone !== P.s) applyStyle('tone', P.s, true);
 }
 function releaseStyles() {                          // leaving a forced challenge: your own pair comes back (it was never saved over, see save())
   const r = forcedReal; if (!r) return;
@@ -12542,7 +12720,7 @@ $('scYes').addEventListener('click', () => { const f = shopAskFn; shopAskClose()
 $('bSetStyles').addEventListener('click', () => { shopNextOwned = true; go('scrShop'); });      // 49.5.3: Styles lives in Settings only (the Pause menu no longer has its own button)
 window.addEventListener('resize', () => { if (shopReal) placeShop(); });
 // ---- the challenge ladder ----
-let curScen = null, briefId = null, nextScen = null, curPrac = null, coach = null;
+let curScen = null, briefId = null, nextScen = null, curPrac = null, coach = null, backLevel = null;      // 50.6.1: backLevel, the level whose own map plays behind its brief
 const ladder = {}, bests = {};
 {                                                     // stars are three booleans per challenge, a best is a time or a base count; anything else is dropped
   const rawL = load('ice-ladder', {}), rawB = load('ice-bests', {});
@@ -12551,6 +12729,11 @@ const ladder = {}, bests = {};
     const b = rawB[c.id]; if (!isObj(b)) continue;
     const e = {}; if (Number(b.t) > 0) e.t = +b.t; if (b.bases != null && count(b.bases) >= 0 && Number.isFinite(+b.bases)) e.bases = count(b.bases);
     if (Object.keys(e).length) bests[c.id] = e;
+  }
+  {                                                 // 50.6.0: stars and a best saved on a level that is no longer in the ladder are set aside once, never deleted (above keeps only SCENARIOS, so the next save would drop them)
+    const R = load('ice-retired', {}), gone = isObj(R.gone) ? R.gone : {}; let n = 0;
+    for (const k of new Set([...Object.keys(rawL), ...Object.keys(rawB)])) if (!SCENARIOS.some(c => c.id === k) && !(k in gone)) { gone[k] = { stars: rawL[k] == null ? null : rawL[k], best: rawB[k] == null ? null : rawB[k] }; n++; }
+    if (n) { R.gone = gone; save('ice-retired', R); }
   }
   const R = load('ice-retired', {});              // 50.5.14: once, Manhunt's stars and best from before 50.5.13 (its slots changed meaning) are set aside here, never deleted; tokens paid stay
   if (!R.manhunt5013) { R.manhunt5013 = { stars: ladder.manhunt || null, best: bests.manhunt || null }; save('ice-retired', R); delete ladder.manhunt; delete bests.manhunt; save('ice-ladder', ladder); save('ice-bests', bests); }
@@ -12570,15 +12753,43 @@ function bestText(c) {
   const b = bests[c.id]; if (!b) return 'Not completed yet';
   return c.objective.type === 'survive' ? `Best: ${b.bases} bases held at the end` : `Best: ${fmt(b.t)}`;
 }
+// 50.6.4: the tier list (Henry picked option A, Nov 5): each tier the ladder shows and its level slots. A slot with no level yet shows a TBD chip, never a dummy
+// level (that would add stars nobody can earn, move the tiers' needs and give Manhunt a Next). A new tier is one entry here; its levels come from SCENARIOS.
+const TIER_LIST = [{ t: 1, slots: 3 }, { t: 2, slots: 3 }, { t: 3, slots: 3 }];
+const ladTiers = () => Array.from({ length: Math.max(TIER_LIST.length, TIERS.length) }, (_, i) => ({ t: i + 1, slots: (TIER_LIST[i] || { slots: 3 }).slots }));
+const LOCK2 = '<svg class="lk2" viewBox="0 0 8 10" aria-hidden="true"><path d="M2 4V3a2 2 0 014 0v1" fill="none" stroke="currentColor"/><rect x=".5" y="4" width="7" height="5.5" rx="1" fill="currentColor"/></svg>';
+let ladIdx = null, ladSwipe = null, ladSwiped = 0;      // the card in front (null: the tier of the last level played, worked out on the next render)
 function renderLadder() {
-  let h = '';
-  for (let t = 1; t <= TIERS.length; t++) {
-    const need = TIERS[t - 1].need, open = unlocks.tiers || totalStars() >= need, more = need - totalStars();
-    h += `<div class="tier"><span>Tier ${t}</span><span>${open ? '' : `Earn ${more} more ${more === 1 ? 'star' : 'stars'} to unlock`}</span></div>`;
-    for (const c of SCENARIOS.filter(x => x.tier === t))
-      h += `<button class="chcard${open ? '' : ' locked'}" data-c="${c.id}"><b>${c.name}</b><span class="d">${nameText(c.desc, scenNames())}</span><span class="best">${bestText(c)}</span><span class="stars">${starsOfId(c.id).map(starSvg).join('')}</span></button>`;
+  const T = ladTiers(), tot = totalStars(), names = scenNames();
+  if (ladIdx == null) { const c = SCENARIOS.find(x => x.id === load('ice-lastlevel', {}).id); ladIdx = c ? c.tier - 1 : 0; }      // the tier you last played; Tier 1 the first time
+  ladIdx = Math.max(0, Math.min(T.length - 1, ladIdx));
+  $('ladder').innerHTML = T.map((x, i) => {
+    const lv = SCENARIOS.filter(c => c.tier === x.t), need = TIERS[x.t - 1] ? TIERS[x.t - 1].need : null;
+    const open = lv.length > 0 && (unlocks.tiers || tot >= need), more = need == null ? 0 : need - tot, got = lv.reduce((a, c) => a + starsOfId(c.id).filter(Boolean).length, 0);
+    const right = !lv.length ? `${LOCK2}<span class="vh">Locked</span>` : open ? `<span class="ts">${starSvg(true)}${got} of ${lv.length * 3}<span class="vh"> stars</span></span>` : `<span class="lkl">${LOCK2}Earn ${more} more ${more === 1 ? 'star' : 'stars'} to unlock</span>`;      // 50.6.5: what the pictures say, said (WC)
+    const rows = lv.map(c => `<button class="chcard${open ? '' : ' locked'}" data-c="${c.id}"${open ? '' : ' aria-disabled="true"'}><b>${c.name}</b><span class="d">${nameText(c.card || c.desc, names)}</span><span class="best">${bestText(c)}</span>${starRow(starsOfId(c.id))}</button>`).join('')
+      + '<div class="lvtbd"><b>TBD</b></div>'.repeat(Math.max(0, x.slots - lv.length));
+    return `<div class="tcard" data-i="${i}"><div class="tier"><span>Tier ${x.t}</span>${right}</div><div class="lvs">${rows}</div></div>`;
+  }).join('');
+  placeLadder(true);
+}
+const starRow = st => `<span class="stars">${starSvg(st[0])}<i class="sl" aria-hidden="true"></i><span class="bc">${starSvg(st[1])}${starSvg(st[2])}</span><span class="vh">${st.filter(Boolean).length} of 3 stars</span></span>`;      // 50.6.5: star A, then B and C held together off it (a DC draft look)
+function placeLadder(measure) {                     // the card in front centred, its neighbours peeking at the sides (the Shop's strip), and the arrows, dots and count
+  const st = $('ladder'), cs = [...st.children], n = cs.length; if (!n) return;
+  if (measure) { for (const c of cs) c.style.height = ''; const h = Math.max(...cs.map(c => c.offsetHeight)); if (h > 0) { for (const c of cs) c.style.height = h + 'px'; st.style.height = h + 'px'; } }      // every card as tall as the tallest, so the strip never jumps
+  for (const c of cs) {
+    const off = +c.dataset.i - ladIdx, ab = Math.abs(off), W = c.offsetWidth || 330;
+    c.classList.toggle('cur', off === 0);
+    c.style.transform = `translateX(${Math.max(-2, Math.min(2, off)) * (W * 0.97 + 10)}px) scale(${off ? 0.94 : 1})`; c.style.opacity = off === 0 ? 1 : ab === 1 ? 0.5 : 0;      // 10 px between a card and its shrunk neighbour, so about 20 px of it shows on any phone
+    c.style.pointerEvents = ab <= 1 ? 'auto' : 'none'; c.style.zIndex = 10 - ab;
   }
-  $('ladder').innerHTML = h;
+  $('ladDots').innerHTML = cs.map((c, i) => `<i${i === ladIdx ? ' class="on"' : ''}></i>`).join('');
+  $('ladCount').textContent = `${ladIdx + 1}/${n}`; $('ladSR').textContent = `Tier ${ladIdx + 1} of ${n}`;
+  $('ladPrev').disabled = ladIdx <= 0; $('ladNext').disabled = ladIdx >= n - 1;
+}
+function ladGo(i) {
+  i = Math.max(0, Math.min($('ladder').children.length - 1, i)); if (i === ladIdx) return;
+  ladIdx = i; placeLadder(); buzz('press');
 }
 function updateLadderBlurb() {
   const lk = !unlocks.challenge, b = $('mLadder');
@@ -12587,10 +12798,12 @@ function updateLadderBlurb() {
 }
 function openBrief(id) {
   const c = SCENARIOS.find(x => x.id === id); briefId = id;
-  $('briefTitle').textContent = c.name; $('briefDesc').textContent = nameText(c.desc + (c.rule ? ' ' + c.rule : ''), scenNames());
+  if (ladIdx !== c.tier - 1) { ladIdx = c.tier - 1; placeLadder(); }      // 50.6.4: Back from a brief shows its level's tier
+  $('briefTitle').textContent = c.name; $('briefBest').textContent = bestText(c); $('briefDesc').textContent = nameText(c.desc + (c.rule ? ' ' + c.rule : ''), scenNames());
   const st = starsOfId(id);
   $('briefGoals').innerHTML = c.stars.map((g, i) => `<li>${starSvg(st[i])}<span>${nameText(g.t, scenNames())}</span></li>`).join('');
-  { const g0 = c.stars[0], nt = $('briefNote'); nt.hidden = g0.k === 'win'; nt.textContent = g0.k === 'win' ? '' : g0.k === 'time' ? `The other stars count only on a win under ${fmt(g0.v)}.` : 'The other stars count only on a win that earns the first.'; }      // 50.5.14: the gate, said (WC's words)
+  { const P = c.forcePair && SHOP_PAIRS.find(x => x.id === c.forcePair), pr = $('briefPair'); pr.hidden = !P;      // 50.6.5: the forced pair, named from the Shop's names (50.6.6: Henry's short form)
+    pr.textContent = P ? `This level plays in ${SHOP_TEXT.visualName[P.v]} + ${SHOP_TEXT.soundName[P.s]}.` : ''; }
   go('scrBrief');
 }
 // ---- rules in the stats drop-down: the challenge's goals with live status, or whatever modifiers are on ----
@@ -12603,6 +12816,8 @@ function goalState(g, P) {
     case 'nohome': return G.homeLost != null ? { s: 'fail', n: 'missed' } : { s: 'pending', n: '' };      // 50.5.9
     case 'redwake': return !G.hunt || G.hunt.wakeAt == null ? { s: 'pending', n: '' } : G.hunt.wakeBy === 'red' && G.hunt.redLow === true ? { s: 'ok', n: '' } : { s: 'fail', n: 'missed' };      // 50.5.13; 50.5.14: Red on its last base at the wake
     case 'nostat': return P.lv[g.v] > 0 ? { s: 'fail', n: 'missed' } : { s: 'pending', n: '' };
+    case 'takeby': return G.ownAt && G.ownAt[g.base] != null && G.ownAt[g.base] <= g.v ? { s: 'ok', n: 'taken' } : G.t > g.v ? { s: 'fail', n: 'missed' } : { s: 'pending', n: fmt(g.v - G.t) + ' left' };      // 50.7.1 (WC's words)
+    case 'netlost': { const k = G.nest ? G.nest.netLost : 0; return k >= g.v ? { s: 'fail', n: 'missed' } : { s: 'pending', n: `${k} lost · under ${g.v}` }; }      // 50.7.1 (WC's words)
     case 'bases': return { s: P.bases >= g.v ? 'ok' : 'pending', n: `${P.bases}/${g.v}` };
     case 'ko': return G.teams.some(T => T.i !== PLAYER && T.active && !T.alive) ? { s: 'ok', n: '' } : { s: 'pending', n: '' };
     case 'hillcap': { let h = 0; for (const T of G.teams) if (T.i !== PLAYER && T.active) h = Math.max(h, T.hill); return h >= g.v ? { s: 'fail', n: 'missed' } : { s: 'pending', n: `${Math.floor(h)}/${g.v} s` }; }
@@ -12715,6 +12930,7 @@ function doResetStats() {
 function doResetChallenges() {
   for (const k of Object.keys(ladder)) delete ladder[k];
   for (const k of Object.keys(bests)) delete bests[k];
+  try { localStorage.removeItem('ice-lastlevel'); } catch (e) {} ladIdx = null;      // 50.6.4: and which level you played last
   save('ice-ladder', ladder); save('ice-bests', bests); renderLadder(); updateLadderBlurb();
 }
 function clearEffects() {
@@ -12729,17 +12945,55 @@ function optsFor(key) {
 }
 function buildPreview(key) {                         // the map behind the menu is the map you'll get
   if (mode !== 'demo') return;
+  if (infoPv) hideInfo();                              // 50.7.2
   previewMode = key; clearEffects();
   applyColors(key === 'spec', settings[key].color);
   layout();
   newGame(optsFor(key));
   pvOwners = G.nodes.map(n => n.owner);
+  PVS = G.nodes.map(n => ({ o: n.owner, hp: n.hp, max: n.maxHp, d: n.owner >= 0 ? n.pres[n.owner + 1] : n.nCount }));      // 50.7.2: the starting layout, for the hold's card
   const sig = key + '|' + teamsFor(key) + '|' + G.nodes.reduce((a, n, i) => (a * 31 + Math.round(n.x * 3) + Math.round(n.y * 7) * 13 + i) | 0, 7);
   if (sig !== PVV.sig) { PVV.sig = sig; pvReset(); }      // 49.9.4: the view starts over only when the map itself changes (size, shape, seed, teams, mode), never for a colour or a modifier
   G.autoplay = true; acc = 0; hl = []; uiFx = [];
   resetCam(); layout(); placePreview();
 }
-function startDemo() { mode = 'demo'; buildPreview(previewMode); }
+function buildLevelBack(id) {                       // 50.6.1: a level's brief plays that level's own map behind it: its own rules, the AI on every side, in its forced look
+  if (mode !== 'demo') return;
+  const sc = SCENARIOS.find(x => x.id === id); if (!sc) return;
+  if (infoPv) hideInfo();                              // 50.7.2
+  backLevel = id; clearEffects();
+  applyColors(false, settings.classic.color);       // the colours the match will use (startGame's, for a challenge)
+  layout();
+  newGame({ scenario: id, backdrop: true });        // Start's own path (startGame), so a new level gets its backdrop for free
+  forceStyles(sc.forcePair, true);                  // its forced look, as a preview: never saved (forcedReal)
+  backTone(sc.forcePair);                           // 50.6.2: and its sound, once you rest on the brief
+  rot = G.noTurn || sc.face === 'wide' ? false : tall;
+  G.autoplay = true; acc = 0; hl = []; uiFx = [];
+  resetCam(); layout();
+}
+function leaveLevelBack() { clearTimeout(backToneT); if (!backLevel) return; backLevel = null; BF = null; releaseStyles(); }      // 50.6.1: off the brief: your own look comes back
+function frameBrief() {                              // 50.6.2: the setup screens' framing: under the header, 22 px in at the sides, 14 px clear of the deck where it RESTS (its fitted
+  BF = null; const sc = dkScr();                     // height in portrait, the open rail in landscape), so dragging or closing the deck never moves the map
+  if (mode === 'demo' && backLevel && sc && sc.id === 'scrBrief') {
+    const dk = sc.querySelector('.dkdeck'), body = sc.querySelector('.dkbody'), B = document.body.getBoundingClientRect(), W = B.width, Hh = B.height, land = dkLand(), top = 64, mg = 14;
+    const x1 = land ? W - dk.offsetWidth - 37 - mg : W - 22, y1 = land ? Hh - mg : Hh - (dk.offsetHeight - body.offsetHeight) - dkDefaultH(sc) - mg;
+    if (x1 - 22 >= 90 && y1 - top >= 60) BF = { x0: 22, x1, y0: top, y1, land };
+  }
+  if (BF && PVV.land !== BF.land) { PVV.land = BF.land; pvReset(); }      // 50.6.3: turning the phone is a new picture, as on the setup screens
+  if (G && G.nodes) { updateView(); drawDirty = true; }
+}
+let backToneT = 0;
+function backTone(pairId) {                          // 50.6.2 (Henry's pick, Nov 5 03:22): a forced level's brief plays its pair's sound too, once you have rested on it 0.35 s (the Shop's settle),
+  clearTimeout(backToneT);                            // so quick taps never thrash the music; never saved (forcedReal), and leaving the brief gives yours back at once (releaseStyles)
+  const P = pairId && SHOP_PAIRS.find(x => x.id === pairId); if (!P) return;
+  backToneT = setTimeout(() => { const sc = backLevel && SCENARIOS.find(x => x.id === backLevel);
+    if (mode === 'demo' && sc && sc.forcePair === pairId && stack[stack.length - 1] === 'scrBrief' && forcedReal && settings.tone !== P.s) applyStyle('tone', P.s, true); }, 350);
+}
+function backFade() {                                // 50.6.2 (Henry: a quick fade, as long as rapid taps never make a visual issue): a switch between the menu's match and a level's map
+  if (reduceMotion) return;                           // cuts to dark and fades back in over 0.25 s; a new switch starts it over from dark, so taps never stack. Reduced motion: a cut.
+  cv.style.transition = 'none'; cv.style.opacity = '0'; void cv.offsetWidth; cv.style.transition = 'opacity .25s ease-out'; cv.style.opacity = '1';
+}
+function startDemo() { mode = 'demo'; if (backLevel && stack[stack.length - 1] === 'scrBrief') { buildLevelBack(backLevel); return; } leaveLevelBack(); buildPreview(previewMode); }      // 50.6.1: a finished backdrop match on a brief starts that level again
 let curModeKey = 'custom';
 
 // ---- SAVE AND QUIT (49.3) ----
@@ -12801,8 +13055,9 @@ function resumeSaved() {
   pause();                                          // a saved match opens paused, so you can look around before it moves
 }
 function startGame(watch, scen, modeKey, prac, resume) {
-  resetPtrs(); if (!resume) resumedFromSlot = false;
+  resetPtrs(); if (!resume) resumedFromSlot = false; backLevel = null; BF = null; clearTimeout(backToneT);      // 50.6.1: a real match is never a brief's backdrop (a forced look stays forced; forceStyles below adds its sound)
   curPrac = prac || null; curScen = scen || null; curModeKey = scen ? curModeKey : (modeKey || (watch ? 'spec' : 'custom'));
+  if (curScen && !watch) save('ice-lastlevel', { id: curScen });      // 50.6.4: the ladder opens on this level's tier
   const cfg = settings[curModeKey];
   audioOn(); armBack(); hideInfo();
   watching = !!watch;
@@ -12934,6 +13189,7 @@ const END_TEXT = {
   board: { name: 'Color', defeated: 'Defeated', lost: 'Lost', peak: 'Peak', up: 'Upgrades', you: 'You', note: 'Defeated and Lost are troops. Peak is the most bases held at once. Upgrades are Health · Speed · Damage.' },
   facts: {                                          // the Moments tab, under the graph; each is shown only when it is true
     firstCapture: (team, t) => ({ t, text: `You first took a base from ${team}.` }),
+    netTook: (n, t) => ({ t, text: `The neutrals took back ${bs(n)} from you.` }),      // 50.7.1 (WC)
     lead:         t => `You spent ${t} in the lead.`,
     leadNone:     'You were never in the lead.',
     low:          (n, t) => ({ t, text: `Your lowest point: ${bs(n)}.` }),               // wins only, and only after a real dip
@@ -12995,6 +13251,7 @@ function endFacts(ES) {                             // the Moments tab text, as 
   const add = (t, i, text) => out.push(`<li><time>${t == null ? '' : fmt(t)}</time><i data-s="${slotOf(i)}" style="background:${colorOf(i)}"></i><span>${text}</span></li>`);
   if (you) {
     if (G.firstTake) { const f = F.firstCapture(TEAM_NAMES[G.firstTake.from], G.firstTake.t); add(f.t, G.firstTake.from, f.text); }
+    if (G.nest) { const k = G.nest.netTook.filter(x => x[1] === PLAYER); if (k.length) { const f = F.netTook(k.length, k[0][2]); add(f.t, NEUTRAL, f.text); } }      // 50.7.1
     add(null, PLAYER, ES.lead > 0.5 ? F.lead(fmt(ES.lead)) : F.leadNone);
     if (G.result === 'win') { if (ES.low && ES.depth >= 2) { const f = F.low(ES.low.n, ES.low.t); add(f.t, PLAYER, f.text); } }
     else if (ES.peak.n) { const f = F.peak(ES.peak.n, ES.peak.t); add(f.t, PLAYER, f.text); }
@@ -13186,19 +13443,32 @@ for (const ev of ['pointerdown', 'pointerup', 'touchend', 'keydown']) document.a
 let infoNode = null, infoTimer = 0;
 function renderInfo() {
   const n = infoNode, sp = n.kind ? SPECIALS[n.kind] : null, el = $('info');
-  const blind = fogOn() && !n.vis, ow = blind ? n.sOwner : n.owner;       // out of sight: only what you last saw
-  const owner = ow >= 0 ? (ow === PLAYER && !watching ? 'You' : TEAM_NAMES[ow]) : 'Unclaimed', col = colorOf(ow);
-  const def = ow >= 0 ? n.pres[ow + 1] : n.nCount;
+  const S = infoPv && !brOn() && PVS ? PVS[n.id] : null;      // 50.7.2: a setup map's card reads its starting layout, which is what it draws
+  const blind = fogOn() && !n.vis, ow = blind ? n.sOwner : S ? S.o : n.owner;       // out of sight: only what you last saw
+  const owner = ow >= 0 ? (ow === PLAYER && !watching && !(S && previewMode === 'spec') ? 'You' : TEAM_NAMES[ow]) : 'Unclaimed', col = colorOf(ow);
+  const def = S ? S.d : ow >= 0 ? n.pres[ow + 1] : n.nCount, hp = S ? S.hp : n.hp, maxHp = S ? S.max : n.maxHp;
   el.innerHTML = `<div class="ih"><i class="sw" data-s="${slotOf(ow)}" style="background:${col}"></i><b>${sp ? sp.name : n.crown ? 'The crown' : 'Base'}</b><span>${owner}</span></div>` +
     (blind ? `<div class="il">Out of sight. Showing what you last saw.</div>` :
-      `<div class="ib"><i style="width:${Math.round(100 * n.hp / n.maxHp)}%;background:${col}"></i></div>` +
-      `<div class="il">Health ${Math.round(n.hp)} / ${n.maxHp} &middot; Defenders ${def}</div>`) +
+      `<div class="ib"><i style="width:${Math.round(100 * hp / maxHp)}%;background:${col}"></i></div>` +
+      `<div class="il">Health ${Math.round(hp)} / ${maxHp} &middot; Defenders ${def}</div>`) +
     (sp ? `<div>${sp.text}</div>` : '') + (n.crown ? `<div>${G.crown2 >= 0 ? 'Hold both crowns' : 'Hold the crown'} for ${kothGoal(PLAYER)} seconds in total to win.${G.kothRival ? ` Rivals need ${G.kothRival}.` : ''}</div>` : '');
 }
 function positionInfo() {
-  const el = $('info'), p = toScreen(infoNode.x, infoNode.y), w = 232 * hudZ, h = (el.offsetHeight || 90) * hudZ;          // 50.2.3: the card is zoomed with the HUD
+  const el = $('info'), p = infoPv && !brOn() ? pvPt(infoNode) : toScreen(infoNode.x, infoNode.y), w = 232 * hudZ, h = (el.offsetHeight || 90) * hudZ;          // 50.2.3: the card is zoomed with the HUD
   const cl = (x, y) => [Math.min(Math.max(x, F.x + 8), F.x + F.w - w - 8), Math.min(Math.max(y, F.y + 8), F.y + F.h - h - 8)];
   let [x, y] = cl(p.x - w / 2, p.y - h - 26 < F.y + 8 ? p.y + 26 : p.y - h - 26);
+  if (infoPv) {                                      // 50.7.2: over a preview map: beside the base (above, below, right, left), inside the part the map is seen in
+    const scr = { x0: F.x + 8, y0: F.y + 8, x1: F.x + F.w - 8, y1: F.y + F.h - 8 }, free = (x, y) => !(p.x > x - 22 && p.x < x + w + 22 && p.y > y - 22 && p.y < y + h + 22);      // where it fits, else anywhere on screen; never over the base itself
+    let hit = null;
+    for (const R of [pvArea(), scr]) {
+      if (R.x1 - R.x0 < w || R.y1 - R.y0 < h) continue;
+      for (const [cx, cy] of [[p.x - w / 2, p.y - h - 26], [p.x - w / 2, p.y + 26], [p.x + 34, p.y - h / 2], [p.x - w - 34, p.y - h / 2]]) {
+        const q = [Math.min(Math.max(cx, R.x0), R.x1 - w), Math.min(Math.max(cy, R.y0), R.y1 - h)]; if (free(q[0], q[1])) { hit = q; break; }
+      }
+      if (hit) break;
+    }
+    if (hit) [x, y] = hit;
+  }
   if (coach) {                                       // 50.4.4: in the lesson it stays up until your next touch, so it sits clear of the card, the toast's place and the HUD where it can (blind run 4, 13)
     const obs = coachObstacles(), tz = coachToastZone(), ov = (x, y, o) => Math.max(0, Math.min(x + w, o.right) - Math.max(x, o.left)) * Math.max(0, Math.min(y + h, o.bottom) - Math.max(y, o.top));
     const cost = (x, y) => {                          // what it would hide: the card's words most, then a toast, then the HUD (taps go through it); never the base itself
@@ -13220,7 +13490,7 @@ function showInfo(n) {
   infoNode = n; renderInfo(); $('info').hidden = false; positionInfo();
   clearTimeout(infoTimer); if (!coach) infoTimer = setTimeout(hideInfo, 4500);      // 50.4.2: in the lesson it stays until your next touch (spec 5.4)
 }
-function hideInfo() { infoNode = null; $('info').hidden = true; clearTimeout(infoTimer); }
+function hideInfo() { infoNode = null; infoPv = false; $('info').hidden = true; $('info').classList.remove('pv'); clearTimeout(infoTimer); }
 function refreshInfo() { if (infoNode) { renderInfo(); positionInfo(); } }
 function longPress(g) {                              // press and hold on a base: what is it?
   if (gest !== g || g.kind !== 'tap' || ptrs.size !== 1 || mode !== 'play' || !G) return;
@@ -13434,14 +13704,14 @@ function leaveToMenu() {                            // back to where you set the
   const was = curScen, key = curModeKey, prac = curPrac; toMenu();
   if (prac) { renderPractice(); go('scrPlay'); go('scrHelp'); return; }          // a lesson goes back to the lesson list
   go('scrPlay');
-  if (was) { renderLadder(); go('scrLadder'); }
+  if (was) { ladIdx = null; renderLadder(); go('scrLadder'); }
   else { const scr = { classic: 'scrClassic', custom: 'scrCustom', spec: 'scrSpectate' }[key]; if (scr) go(scr); }
 }
 $('bQuit').addEventListener('click', leaveToMenu);
 $('bPauseSave').addEventListener('click', saveAndQuit);
 $('mResume').addEventListener('click', resumeSaved);
 $('bAgain').addEventListener('click', () => { if (performance.now() - endAt < 450) return; startGame(watching, curScen, curModeKey, curPrac); });
-$('bNext').addEventListener('click', () => { if (performance.now() - endAt < 450) return; startGame(false, nextScen); });
+$('bNext').addEventListener('click', () => { if (performance.now() - endAt < 450) return; const id = nextScen; toMenu(); go('scrPlay'); renderLadder(); go('scrLadder'); openBrief(id); });      // 50.6.2: Next opens the next level's brief, its map already behind it (was: started its match)
 $('bMenu').addEventListener('click', () => { if (performance.now() - endAt < 450) return; leaveToMenu(); });
 $('bReset').addEventListener('click', () => confirmReset($('bReset'), 'Reset stats', doResetStats));
 // Reset all data (Settings > Data since 50.2.4, main menu only): three taps, each within 3 s of the last. Clears stats, challenge stars and bests, and the unlocks (Deadly locks again). Reset stats alone keeps the unlocks on purpose.
@@ -13488,8 +13758,22 @@ $('statsBtn').addEventListener('click', () => {
 });
 syncSeg(); syncGlobalSeg(); syncAllText(); renderMods(); renderSettingsHint(); renderSpecials();
 { const g = shopStarSync(); if (g && !shop.quiet) { pendingUnlocks.push(SHOP_TEXT.starsAtStart(g)); save('ice-pending', pendingUnlocks); } syncShopDot(); }
-$('mLadder').addEventListener('click', () => { if (!unlocks.challenge) return; renderLadder(); go('scrLadder'); });
-$('ladder').addEventListener('click', e => { const b = e.target.closest('.chcard'); if (b) openBrief(b.dataset.c); });
+$('mLadder').addEventListener('click', () => { if (!unlocks.challenge) return; ladIdx = null; renderLadder(); go('scrLadder'); });      // 50.6.4: opens on the tier you last played
+$('ladder').addEventListener('click', e => {      // 50.6.4: a tap on a peeking card brings it in; on the card in front, a level opens its brief
+  if (performance.now() - ladSwiped < 120) return;
+  const c = e.target.closest('.tcard'); if (!c) return;
+  if (+c.dataset.i !== ladIdx) { ladGo(+c.dataset.i); return; }
+  const b = e.target.closest('.chcard'); if (b && !b.classList.contains('locked')) openBrief(b.dataset.c);
+});
+$('ladder').addEventListener('pointerdown', e => { ladSwipe = { x: e.clientX, y: e.clientY }; });      // the Shop's swipe: sideways past 30 px moves one card
+$('ladder').addEventListener('pointerup', e => {
+  if (!ladSwipe) return; const dx = e.clientX - ladSwipe.x, dy = e.clientY - ladSwipe.y; ladSwipe = null;
+  if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)) { ladSwiped = performance.now(); ladGo(ladIdx + (dx < 0 ? 1 : -1)); }
+});
+$('ladder').addEventListener('pointercancel', () => { ladSwipe = null; });
+$('ladPrev').addEventListener('click', () => ladGo(ladIdx - 1));
+$('ladNext').addEventListener('click', () => ladGo(ladIdx + 1));
+window.addEventListener('resize', () => { if (!$('scrLadder').hidden) placeLadder(true); });
 $('bBriefStart').addEventListener('click', () => startGame(false, briefId));
 document.querySelectorAll('[data-start]').forEach(b => b.addEventListener('click', () => { const k = b.dataset.start; startGame(k === 'spec', null, k); }));
 document.querySelectorAll('.mods[data-mm]').forEach(list => list.addEventListener('click', e => {
@@ -14326,6 +14610,7 @@ function frame(nowMs) {
   } else fogRestore(fsw);
   perfTick(nowMs, tDraw - tSim, performance.now() - tDraw);
   if (!(PERF && window.__noWatch)) watchFrameRate(dt * 1000, nowMs);
+  if (infoPv && mode === 'demo' && nowMs - lastHud > 250 && brOn()) { lastHud = nowMs; refreshInfo(); }      // 50.7.2
   if (mode === 'play' && nowMs - lastHud > 100) { lastHud = nowMs; hud(); if (wholeBack && !atWhole()) mapBack(null); }      // 50.4.0: the map moved off the whole view: the way back is dropped
   requestAnimationFrame(frame);
 }
@@ -14358,4 +14643,4 @@ if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWor
 </script>
 </body>
 </html>
-<!-- Aiced build 50.5.15, from source sha256 c2fd4309f1447467 -->
+<!-- Aiced build 50.7.3, from source sha256 7416e2a6a3ba9cca -->
